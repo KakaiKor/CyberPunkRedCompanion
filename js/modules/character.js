@@ -661,68 +661,102 @@ export class IdealCharacterBuilder {
         return remaining >= 0;
     }
     buildSkillsGrid() {
-        const container = document.getElementById('idealSkillsList');
-        if (!container) return;
-        const controlHtml = `
-            <div class="skills-controls">
-                <div class="role-row">
-                    <label>Роль для рекомендации: 
-                        <select id="idealRoleSelect">
-                            <option value="Рокербой">Рокербой</option><option value="Соло">Соло</option>
-                            <option value="Нетраннер">Нетраннер</option><option value="Техник">Техник</option>
-                            <option value="Медтех">Медтех</option><option value="Медиа">Медиа</option>
-                            <option value="Законник">Законник</option><option value="Менеджер">Менеджер</option>
-                            <option value="Фиксер">Фиксер</option><option value="Кочевник">Кочевник</option>
-                        </select>
-                    </label>
-                    <button type="button" id="applyRecommendedSkillsBtn">✨ Применить рекомендованные</button>
-                    <button type="button" id="copySkillsBtn" class="copy-skills-btn">📋 Копировать список навыков</button>
-                </div>
-                <div class="search-row">
-                    <input type="text" id="skillsSearchInput" placeholder="🔍 Поиск по названию навыка...">
-                </div>
+    const container = document.getElementById('idealSkillsList');
+    if (!container) return;
+    
+    // Управляющие элементы (роль, рекомендации, поиск)
+    const controlHtml = `
+        <div class="skills-controls">
+            <div class="role-row">
+                <label>Роль для рекомендации: 
+                    <select id="idealRoleSelect">
+                        <option value="Рокербой">Рокербой</option><option value="Соло">Соло</option>
+                        <option value="Нетраннер">Нетраннер</option><option value="Техник">Техник</option>
+                        <option value="Медтех">Медтех</option><option value="Медиа">Медиа</option>
+                        <option value="Законник">Законник</option><option value="Менеджер">Менеджер</option>
+                        <option value="Фиксер">Фиксер</option><option value="Кочевник">Кочевник</option>
+                    </select>
+                </label>
+                <button type="button" id="applyRecommendedSkillsBtn">✨ Применить рекомендованные</button>
+                <button type="button" id="copySkillsBtn" class="copy-skills-btn">📋 Копировать список навыков</button>
+            </div>
+            <div class="search-row">
+                <input type="text" id="skillsSearchInput" placeholder="🔍 Поиск по названию навыка...">
+            </div>
+        </div>
+    `;
+    container.innerHTML = controlHtml;
+    
+    // Контейнер для всех навыков (сетка)
+    const skillsGrid = document.createElement('div');
+    skillsGrid.className = 'skills-grid-modern';
+    container.appendChild(skillsGrid);
+    
+    // Группируем навыки по категориям (как было)
+    const categories = this.groupSkillsByCategory();
+    
+    for (const [category, skills] of Object.entries(categories)) {
+        const categorySection = document.createElement('div');
+        categorySection.className = 'skills-category-modern';
+        categorySection.innerHTML = `
+            <div class="category-header-modern" data-category="${category}">
+                <span class="category-toggle-modern">▶</span> <strong>${category}</strong> <span class="skill-count">(${skills.length})</span>
+            </div>
+            <div class="category-body-modern" style="display: none;">
+                <div class="skills-grid-modern-inner"></div>
             </div>
         `;
-        container.innerHTML = controlHtml;
-        const categories = this.groupSkillsByCategory();
-        for (const [category, skills] of Object.entries(categories)) {
-            const categoryDiv = document.createElement('div');
-            categoryDiv.className = 'skills-category';
-            categoryDiv.innerHTML = `
-                <div class="category-header" data-category="${category}">
-                    <span class="category-toggle">▶</span> <strong>${category}</strong> <span class="skill-count">(${skills.length})</span>
-                </div>
-                <div class="category-body" style="display: none;">
-                    <table class="cyber-table skills-table">
-                        <thead><tr><th>Навык</th><th>ХАР</th><th>×2</th><th>Уровень</th></tr></thead>
-                        <tbody id="skills-tbody-${category.replace(/\s/g, '')}"></tbody>
-                    </table>
-                </div>
+        skillsGrid.appendChild(categorySection);
+        
+        const innerGrid = categorySection.querySelector('.skills-grid-modern-inner');
+        skills.forEach(skill => {
+            const defaultValue = skill.base ? 2 : 0;
+            const skillCard = document.createElement('div');
+            skillCard.className = 'skill-card-modern';
+            skillCard.setAttribute('data-skill-name', skill.name);
+            skillCard.innerHTML = `
+                <div class="skill-name-modern">${skill.name}</div>
+                <div class="skill-stat-modern">${skill.stat}</div>
+                <div class="skill-x2-modern">${skill.costMult === 2 ? '×2' : ''}</div>
+                <input type="number" class="skill-level-modern" data-skill="${skill.name}" data-cost="${skill.costMult}" min="0" max="10" value="${defaultValue}" step="1">
             `;
-            container.appendChild(categoryDiv);
-            this.renderCategoryTable(category, skills);
-        }
-        document.querySelectorAll('.category-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const body = header.parentElement.querySelector('.category-body');
-                const toggle = header.querySelector('.category-toggle');
-                if (body.style.display === 'none') {
-                    body.style.display = 'block';
-                    toggle.textContent = '▼';
-                } else {
-                    body.style.display = 'none';
-                    toggle.textContent = '▶';
-                }
-            });
+            innerGrid.appendChild(skillCard);
         });
-        document.getElementById('skillsSearchInput')?.addEventListener('input', () => this.filterSkills());
-        document.getElementById('applyRecommendedSkillsBtn')?.addEventListener('click', () => {
-            const role = document.getElementById('idealRoleSelect').value;
-            this.applyRecommendedSkills(role);
+        
+        // Привязываем обработчики изменения уровня
+        innerGrid.querySelectorAll('.skill-level-modern').forEach(input => {
+            input.addEventListener('input', () => this.updateSkillRemaining());
         });
-        document.getElementById('copySkillsBtn')?.addEventListener('click', () => this.copySkillsToClipboard());
-        this.updateSkillRemaining();
+        innerGrid.style.display = 'grid';
+innerGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(220px, 1fr)';
+innerGrid.style.gap = '8px';
     }
+    
+    // Обработчики для раскрытия категорий
+    document.querySelectorAll('.category-header-modern').forEach(header => {
+        header.addEventListener('click', () => {
+            const body = header.parentElement.querySelector('.category-body-modern');
+            const toggle = header.querySelector('.category-toggle-modern');
+            if (body.style.display === 'none') {
+                body.style.display = 'block';
+                toggle.textContent = '▼';
+            } else {
+                body.style.display = 'none';
+                toggle.textContent = '▶';
+            }
+        });
+    });
+    
+    // Поиск
+    document.getElementById('skillsSearchInput')?.addEventListener('input', () => this.filterSkillsModern());
+    document.getElementById('applyRecommendedSkillsBtn')?.addEventListener('click', () => {
+        const role = document.getElementById('idealRoleSelect').value;
+        this.applyRecommendedSkills(role);
+    });
+    document.getElementById('copySkillsBtn')?.addEventListener('click', () => this.copySkillsToClipboard());
+    
+    this.updateSkillRemaining();
+}
     getCurrentSkills() {
         const skills = {};
         document.querySelectorAll('#idealSkillsList .skill-row').forEach(row => {
@@ -772,86 +806,138 @@ export class IdealCharacterBuilder {
         return categories;
     }
     renderCategoryTable(category, skills) {
-        const tbodyId = `skills-tbody-${category.replace(/\s/g, '')}`;
-        const tbody = document.getElementById(tbodyId);
-        if (!tbody) return;
-        let html = '';
-        skills.forEach(skill => {
-            const defaultValue = skill.base ? 2 : 0;
-            html += `<tr class="skill-row" data-skill-name="${skill.name}">
-                <td>${skill.name}</td>
-                <td>${skill.stat}</td>
-                <td>${skill.costMult === 2 ? 'да' : 'нет'}</td>
-                <td><input type="number" class="skill-level" data-skill="${skill.name}" data-cost="${skill.costMult}" min="0" max="10" value="${defaultValue}" step="1"></td>
-            </tr>`;
-        });
-        tbody.innerHTML = html;
-        tbody.querySelectorAll('.skill-level').forEach(input => {
-            input.addEventListener('input', () => this.updateSkillRemaining());
-        });
+    const tbodyId = `skills-tbody-${category.replace(/\s/g, '')}`;
+    const container = document.getElementById(tbodyId);
+    if (!container) return;
+
+    // Создаём таблицу с правильными классами
+    const table = document.createElement('table');
+    table.className = 'cyber-table skills-table';   // ВАЖНО: добавили skills-table
+    table.innerHTML = `
+        <thead>
+            <tr><th>Навык</th><th>ХАР</th><th>×2</th><th>Уровень</th></tr>
+        </thead>
+        <tbody id="${tbodyId}"></tbody>
+    `;
+    
+    // Обёртка для горизонтальной прокрутки
+    const wrapper = document.createElement('div');
+    wrapper.className = 'table-wrapper';
+    wrapper.appendChild(table);
+    
+    // Вставляем вместо старого содержимого
+    const oldContainer = container.parentElement?.querySelector(`#${tbodyId}`)?.parentElement?.parentElement;
+    if (oldContainer && oldContainer.classList.contains('category-body')) {
+        // Очищаем category-body и добавляем wrapper
+        oldContainer.innerHTML = '';
+        oldContainer.appendChild(wrapper);
+    } else {
+        // Запасной вариант: просто вставляем wrapper в нужное место
+        const targetDiv = document.querySelector(`#skills-tbody-${category.replace(/\s/g, '')}`)?.closest('.category-body');
+        if (targetDiv) {
+            targetDiv.innerHTML = '';
+            targetDiv.appendChild(wrapper);
+        }
     }
-    filterSkills() {
-        const term = document.getElementById('skillsSearchInput').value.toLowerCase();
-        const allRows = document.querySelectorAll('#idealSkillsList .skill-row');
-        allRows.forEach(row => {
-            const name = row.getAttribute('data-skill-name') || '';
-            row.style.display = name.toLowerCase().includes(term) ? '' : 'none';
-        });
-        document.querySelectorAll('.skills-category').forEach(cat => {
-            const visibleRows = Array.from(cat.querySelectorAll('.skill-row')).some(r => r.style.display !== 'none');
-            const body = cat.querySelector('.category-body');
-            const toggle = cat.querySelector('.category-toggle');
-            if (visibleRows && body.style.display === 'none') {
-                body.style.display = 'block';
-                if (toggle) toggle.textContent = '▼';
-            }
-        });
-    }
+    
+    // Заполняем строки
+    const newTbody = table.querySelector('tbody');
+    skills.forEach(skill => {
+        const defaultValue = skill.base ? 2 : 0;
+        const row = document.createElement('tr');
+        row.className = 'skill-row';
+        row.setAttribute('data-skill-name', skill.name);
+        row.innerHTML = `
+            <td>${skill.name}</td>
+            <td>${skill.stat}</td>
+            <td>${skill.costMult === 2 ? 'да' : 'нет'}</td>
+            <td><input type="number" class="skill-level" data-skill="${skill.name}" data-cost="${skill.costMult}" min="0" max="10" value="${defaultValue}" step="1"></td>
+        `;
+        newTbody.appendChild(row);
+    });
+    
+    // Перепривязываем события
+    newTbody.querySelectorAll('.skill-level').forEach(input => {
+        input.addEventListener('input', () => this.updateSkillRemaining());
+    });
+}
+    filterSkillsModern() {
+    const term = document.getElementById('skillsSearchInput').value.toLowerCase();
+    const allCards = document.querySelectorAll('.skill-card-modern');
+    allCards.forEach(card => {
+        const name = card.querySelector('.skill-name-modern')?.innerText.toLowerCase() || '';
+        if (name.includes(term)) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    // Показываем категории, в которых есть видимые карточки
+    document.querySelectorAll('.skills-category-modern').forEach(cat => {
+        const visibleCards = Array.from(cat.querySelectorAll('.skill-card-modern')).some(c => c.style.display !== 'none');
+        const body = cat.querySelector('.category-body-modern');
+        const toggle = cat.querySelector('.category-toggle-modern');
+        if (visibleCards && body.style.display === 'none') {
+            body.style.display = 'block';
+            if (toggle) toggle.textContent = '▼';
+        } else if (!visibleCards && body.style.display === 'block') {
+            body.style.display = 'none';
+            if (toggle) toggle.textContent = '▶';
+        }
+    });
+}
     applyRecommendedSkills(role) {
-        const template = roleTemplates[role];
-        if (!template) return;
-        for (const skill of allSkills) {
-            const defaultValue = skill.base ? 2 : 0;
-            const input = document.querySelector(`.skill-level[data-skill="${skill.name}"]`);
-            if (input) input.value = defaultValue;
-        }
-        for (const [skillName, level] of Object.entries(template)) {
-            const input = document.querySelector(`.skill-level[data-skill="${skillName}"]`);
-            if (input && level <= 10) input.value = level;
-        }
-        for (const skill of allSkills) {
-            if (skill.base) {
-                const input = document.querySelector(`.skill-level[data-skill="${skill.name}"]`);
-                if (input && parseInt(input.value) < 2) input.value = 2;
-            }
-        }
-        this.updateSkillRemaining();
-        alert(`Рекомендованные навыки для ${role} применены.`);
+    const template = roleTemplates[role];
+    if (!template) return;
+    
+    // Сброс всех навыков до базовых (2 для базовых, 0 для остальных)
+    document.querySelectorAll('.skill-level-modern').forEach(input => {
+        const skillName = input.dataset.skill;
+        const skill = allSkills.find(s => s.name === skillName);
+        const defaultValue = (skill && skill.base) ? 2 : 0;
+        input.value = defaultValue;
+    });
+    
+    // Установка рекомендованных значений
+    for (const [skillName, level] of Object.entries(template)) {
+        const input = document.querySelector(`.skill-level-modern[data-skill="${skillName}"]`);
+        if (input && level <= 10) input.value = level;
     }
+    
+    // Проверка базовых навыков (минимум 2)
+    for (const skill of allSkills) {
+        if (skill.base) {
+            const input = document.querySelector(`.skill-level-modern[data-skill="${skill.name}"]`);
+            if (input && parseInt(input.value) < 2) input.value = 2;
+        }
+    }
+    
+    this.updateSkillRemaining();
+    alert(`Рекомендованные навыки для ${role} применены.`);
+}
     copySkillsToClipboard() {
-        let text = "Навыки персонажа:\n";
-        const rows = document.querySelectorAll('#idealSkillsList .skill-row');
-        rows.forEach(row => {
-            const name = row.querySelector('td:first-child')?.innerText;
-            const input = row.querySelector('.skill-level');
-            if (name && input) {
-                const level = input.value;
-                if (level != 0) text += `${name}: ${level}\n`;
-            }
-        });
-        navigator.clipboard.writeText(text).then(() => alert("Список навыков скопирован в буфер обмена!"));
-    }
+    let text = "Навыки персонажа:\n";
+    document.querySelectorAll('.skill-card-modern').forEach(card => {
+        const name = card.querySelector('.skill-name-modern')?.innerText;
+        const input = card.querySelector('.skill-level-modern');
+        if (name && input) {
+            const level = input.value;
+            if (level != 0) text += `${name}: ${level}\n`;
+        }
+    });
+    navigator.clipboard.writeText(text).then(() => alert("Список навыков скопирован в буфер обмена!"));
+}
     updateSkillRemaining() {
-        let total = 0;
-        document.querySelectorAll('.skill-level').forEach(input => {
-            const level = parseInt(input.value) || 0;
-            const costMult = parseInt(input.dataset.cost) || 1;
-            total += level * costMult;
-        });
-        const remaining = 86 - total;
-        document.getElementById('idealSkillPoints').innerHTML = remaining;
-        return remaining >= 0;
-    }
+    let total = 0;
+    document.querySelectorAll('.skill-level-modern').forEach(input => {
+        const level = parseInt(input.value) || 0;
+        const costMult = parseInt(input.dataset.cost) || 1;
+        total += level * costMult;
+    });
+    const remaining = 86 - total;
+    document.getElementById('idealSkillPoints').innerHTML = remaining;
+    return remaining >= 0;
+}
     attachEvents() {
         document.getElementById('idealStatsGrid')?.addEventListener('input', () => this.updateStatsRemaining());
         document.getElementById('calcIdealStatsBtn')?.addEventListener('click', () => this.calcDerived());
