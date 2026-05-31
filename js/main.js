@@ -199,4 +199,17 @@ if (terminalCode) {
         });
     }
 }
+function syncActiveSubPane() {
+    const activeMain = document.querySelector('.main-pane.active');
+    if (!activeMain) return;
+    const activeSubBtn = activeMain.querySelector('.sub-tab-btn.active');
+    if (!activeSubBtn) return;
+    const targetId = activeSubBtn.getAttribute('data-sub');
+    const targetPane = document.getElementById(targetId);
+    if (!targetPane) return;
+    // Скрыть все подпанели внутри этой main-панели
+    activeMain.querySelectorAll('.sub-pane').forEach(pane => pane.classList.remove('active'));
+    targetPane.classList.add('active');
+}
+syncActiveSubPane();
 });
