@@ -779,7 +779,7 @@ export class IdealCharacterBuilder {
         skills.forEach(skill => {
             const defaultValue = skill.base ? 2 : 0;
             html += `<tr class="skill-row" data-skill-name="${skill.name}">
-                <td style="white-space: nowrap;">${skill.name}</td>
+                <td>${skill.name}</td>
                 <td>${skill.stat}</td>
                 <td>${skill.costMult === 2 ? 'да' : 'нет'}</td>
                 <td><input type="number" class="skill-level" data-skill="${skill.name}" data-cost="${skill.costMult}" min="0" max="10" value="${defaultValue}" step="1"></td>
