@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Cyberpunk RED Companion</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>⚡ КИБЕРПАНК RED ⚡</h1>
+            <div class="glitch-line"></div>
+            <div class="search-bar">
+                <input type="text" id="globalSearch" placeholder="🔍 Поиск по всем таблицам...">
+                <button id="clearSearch" class="reset-btn">✖</button>
+            </div>
+            <div class="toolbar">
+                <button id="exportDataBtn" class="tool-btn">📤 Экспорт</button>
+                <button id="importDataBtn" class="tool-btn">📥 Импорт</button>
+                <input type="file" id="importFileInput" style="display:none" accept=".json">
+                <button id="resetAllDataBtn" class="tool-btn">♻️ Сброс</button>
+            </div>
+        </header>
+
+        <div class="main-tabs">
+            <button class="tab-btn active" data-tab="tab-character">🧑‍🎤 Персонаж</button>
+            <button class="tab-btn" data-tab="tab-gear">⚔️ Снаряжение</button>
+            <button class="tab-btn" data-tab="tab-combat">💥 Бой</button>
+            <button class="tab-btn" data-tab="tab-gm">🎲 GM инструменты</button>
+            <button class="tab-btn" data-tab="tab-market">🏪 Рынок & Трофеи</button>
+        </div>
+
+        <!-- Панель ПЕРСОНАЖА -->
+        <div id="tab-character" class="main-pane active">
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" data-sub="char-main">📋 Основное</button>
+                <button class="sub-tab-btn" data-sub="char-stats">📊 ХАР & Навыки</button>
+                <button class="sub-tab-btn" data-sub="char-cyber">🦾 Киберимпланты</button>
+                <button class="sub-tab-btn" data-sub="char-shop">🛒 Идеал-шоп</button>
+                <button class="sub-tab-btn" data-sub="char-ideal">✨ Идеал конструктор</button>
+            </div>
+
+            <!-- Основное -->
+            <div id="char-main" class="sub-pane active">
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>Основной персонаж</h3>
+                        <label>Имя: <input type="text" id="charName" placeholder="Джонни Силверхенд"></label>
+                        <label>Роль: <select id="genRole">
+                                <option>Рокербой</option>
+                                <option>Соло</option>
+                                <option>Нетраннер</option>
+                                <option>Техник</option>
+                                <option>Медтех</option>
+                                <option>Медиа</option>
+                                <option>Законник</option>
+                                <option>Менеджер</option>
+                                <option>Фиксер</option>
+                                <option>Кочевник</option>
+                            </select></label>
+                        <div class="button-group"><button id="calcCharBtn">📐 Рассчитать</button><button
+                                id="saveCharBtn">💾 Сохранить</button><button id="loadCharBtn">📂 Загрузить</button>
+                        </div>
+                        <div id="charDerived" class="info-block"></div>
+                        <div id="charSaveStatus" class="status-message"></div>
+                    </div>
+                    <div class="card">
+                        <h3>Человечность (киберпсихоз)</h3>
+                        <label>Текущая ЧЕЛ: <input type="number" id="currentHumanity" value="60"></label>
+                        <label>Имплант: <select id="implantSelect">
+                                <option value="0">Выберите...</option>
+                                <option value="14">Боргирование (4d6)</option>
+                                <option value="7">Тяжёлый (2d6)</option>
+                                <option value="3">Стандартный (1d6)</option>
+                            </select></label>
+                        <div class="button-group"><button id="rollHumanityBtn">🎲 Бросить ПЧ</button><button
+                                id="applyHumanityBtn">⚡ Применить</button></div>
+                        <div id="humanityResult" class="info-block"></div>
+                    </div>
+                    <div class="card">
+                        <h3>Месячные расходы</h3>
+                        <label>Образ жизни: <select id="lifestyleSelect">
+                                <option value="100">На киббле (100eb)</option>
+                                <option value="300">Полуфабрикаты (300eb)</option>
+                                <option value="600">Хорошие (600eb)</option>
+                                <option value="1500">Свежая еда (1500eb)</option>
+                            </select></label>
+                        <label>Жильё: <select id="housingSelect">
+                                <option value="500">Куб-отель (500eb)</option>
+                                <option value="1000">Контейнер (1000eb)</option>
+                                <option value="1500">Студия (1500eb)</option>
+                                <option value="2500">2-спальная (2500eb)</option>
+                            </select></label>
+                        <button id="calcExpensesBtn">💰 Рассчитать</button>
+                        <div id="expensesResult" class="info-block"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ХАР и Навыки (упрощённые) -->
+            <div id="char-stats" class="sub-pane">
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>Характеристики</h3>
+                        <div id="statsGrid" class="stats-grid"></div>
+                        <button id="randomStatsBtn" class="random-stats-btn">🎲 Случайные</button>
+                    </div>
+                    <div class="card">
+                        <h3>Навыки (справочник)</h3>
+                        <div id="skillsTable"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Киберимпланты -->
+            <div id="char-cyber" class="sub-pane">
+                <div class="card">
+                    <h3>🦾 Киберимпланты (полный справочник)</h3>
+                    <label>Фильтр: <select id="cyberFilter">
+                            <option value="all">Все</option>
+                            <option value="стилевые">Стилевые</option>
+                            <option value="нейро">Нейро</option>
+                            <option value="оптика">Оптика</option>
+                            <option value="аудио">Аудио</option>
+                            <option value="внутренние">Внутренние</option>
+                            <option value="внешние">Внешние</option>
+                            <option value="конечности">Конечности</option>
+                            <option value="боргирование">Боргирование</option>
+                        </select></label>
+                    <div id="cyber-detailed-table"></div>
+                </div>
+            </div>
+
+            <!-- Идеал-шоп -->
+            <div id="char-shop" class="sub-pane">
+                <div class="card">
+                    <h3>🛒 Идеал-шоп</h3>
+                    <div class="budget-row">Основной бюджет: <strong id="mainRemaining">2550</strong> eb</div>
+                    <div class="budget-row">Стиль бюджет: <strong id="styleRemaining">800</strong> eb</div>
+                    <div class="form-row">
+                        <label>Категория: <select id="shopCategory">
+                                <option value="ranged">Дальнобойное</option>
+                                <option value="melee">Холодное</option>
+                                <option value="armor">Броня</option>
+                                <option value="cyber">Киберимпланты</option>
+                                <option value="gear">Снаряжение</option>
+                                <option value="style">Стиль</option>
+                            </select></label>
+                        <div id="shopItemSelectContainer"></div>
+                        <label>Кол-во: <input type="number" id="shopQuantity" value="1" min="1"></label>
+                        <div class="button-group"><button id="addToCartBtn">➕ Добавить</button><button
+                                id="resetCartBtn">🗑️ Очистить</button></div>
+                    </div>
+                    <h4>Корзина:</h4>
+                    <div id="cartList"></div>
+                </div>
+            </div>
+
+            <!-- Идеал конструктор -->
+            <div id="char-ideal" class="sub-pane">
+                <div class="card">
+                    <h3>✨ Идеальный конструктор (расчёт)</h3>
+                    <div id="idealStatsGrid" class="stats-grid"></div>
+                    <button id="randomIdealStatsBtn" class="random-stats-btn">🎲 Случайные ХАР</button>
+                    <div>Очки ХАР осталось: <span id="idealStatsPoints">62</span></div>
+                    <div id="idealSkillsList"></div>
+                    <div>Очки навыков осталось: <span id="idealSkillPoints">86</span></div>
+                    <button id="calcIdealStatsBtn">📐 Рассчитать ПЗ / Человечность</button>
+                    <div id="idealDerived" class="info-block"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Панель СНАРЯЖЕНИЕ (таблицы) -->
+        <div id="tab-gear" class="main-pane">
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" data-sub="gear-weapons">🔫 Оружие</button>
+                <button class="sub-tab-btn" data-sub="gear-armor">🛡️ Броня</button>
+                <button class="sub-tab-btn" data-sub="gear-cyber">🧠 Киберимпланты</button>
+                <button class="sub-tab-btn" data-sub="gear-transport">🚗 Транспорт</button>
+                <button class="sub-tab-btn" data-sub="gear-drugs">💊 Наркотики</button>
+                <button class="sub-tab-btn" data-sub="gear-ammo">🔫 Боеприпасы</button>
+                <button class="sub-tab-btn" data-sub="gear-attach">🔧 Приспособления</button>
+                <button class="sub-tab-btn" data-sub="gear-gear">🎒 Снаряжение</button>
+            </div>
+            <div id="gear-weapons" class="sub-pane active">
+                <div class="card">
+                    <h3>Дальнобойное</h3>
+                    <div id="ranged-table"></div><button id="addRangedWeaponBtn">➕ Добавить</button>
+                </div>
+                <div class="card">
+                    <h3>Холодное</h3>
+                    <div id="melee-table"></div><button id="addMeleeWeaponBtn">➕ Добавить</button>
+                </div>
+            </div>
+            <div id="gear-armor" class="sub-pane">
+                <div class="card">
+                    <h3>Броня</h3>
+                    <div id="armor-table"></div><button id="addArmorBtn">➕ Добавить</button>
+                </div>
+            </div>
+            <div id="gear-cyber" class="sub-pane">
+                <div class="card">
+                    <h3>Киберимпланты</h3>
+                    <div id="cyber-detailed-table-gear"></div><button id="addCyberBtn">➕ Добавить</button>
+                </div>
+            </div>
+            <div id="gear-transport" class="sub-pane">
+                <div class="card">
+                    <h3>Транспорт</h3>
+                    <div id="transport-table"></div>
+                    <div id="vehicleList"></div><button id="buyVehicleBtn">🚀 Купить</button><select
+                        id="buyVehicleSelect"></select>
+                </div>
+            </div>
+            <div id="gear-drugs" class="sub-pane">
+                <div class="card">
+                    <h3>Наркотики</h3>
+                    <div id="drugs-table"></div>
+                </div>
+            </div>
+            <div id="gear-ammo" class="sub-pane">
+                <div class="card">
+                    <h3>Боеприпасы</h3>
+                    <div id="ammo-table"></div>
+                </div>
+            </div>
+            <div id="gear-attach" class="sub-pane">
+                <div class="card">
+                    <h3>Приспособления</h3>
+                    <div id="attachments-table"></div>
+                </div>
+            </div>
+            <div id="gear-gear" class="sub-pane">
+                <div class="card">
+                    <h3>Снаряжение</h3>
+                    <div id="gear-table"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Панель БОЙ -->
+        <div id="tab-combat" class="main-pane">
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" data-sub="combat-calc">⚙️ Калькуляторы</button>
+                <button class="sub-tab-btn" data-sub="combat-distance">📏 Дистанция</button>
+                <button class="sub-tab-btn" data-sub="combat-init">⏱️ Инициатива</button>
+                <button class="sub-tab-btn" data-sub="combat-crit">💀 Криты</button>
+                <button class="sub-tab-btn" data-sub="combat-formulas">📐 Формулы</button>
+            </div>
+            <div id="combat-calc" class="sub-pane active">
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>ПЗ и спасбросок</h3><label>ТЕЛО: <input id="calcBody" value="6"></label><label>ВОЛЯ: <input
+                                id="calcWill" value="6"></label><button id="calcHpBtn">Рассчитать</button>
+                        <div id="calcResult"></div>
+                    </div>
+                    <div class="card">
+                        <h3>Урон и броня</h3><label>Урон: <input id="damageInput" type="number"></label><label>Броня
+                            (ОС): <input id="armorInput" type="number"></label><label><input type="checkbox"
+                                id="coldWeaponCheck"> Холодное (½ ОС)</label><button
+                            id="calcDamageBtn">Рассчитать</button>
+                        <div id="damageResult"></div>
+                    </div>
+                    <div class="card">
+                        <h3>Таран</h3><label>Скорость: <input id="ramSpeed" value="60"></label><label>Масса: <input
+                                id="ramWeight" value="1500"></label><button id="calcRamBtn">Урон</button>
+                        <div id="ramResult"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="combat-distance" class="sub-pane">
+                <div class="card">
+                    <h3>Дистанция</h3><select id="weaponDistanceSelect">
+                        <option value="pistol">Пистолет</option>
+                        <option value="smg">ПП</option>
+                        <option value="shotgun">Дробовик</option>
+                        <option value="rifle">Винтовка</option>
+                        <option value="sniper">Снайперская</option>
+                    </select><br><input type="range" id="distanceSlider" min="0" max="800" value="50"><span
+                        id="distanceValue">50</span> м<br>
+                    <div>СЛ: <strong id="slValue">—</strong></div>
+                    <div class="distance-chart">
+                        <div id="goldenZone" class="golden-zone"></div>
+                    </div>
+                    <div id="goldenZoneInfo"></div>
+                </div>
+            </div>
+            <div id="combat-init" class="sub-pane">
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>Трекер инициативы</h3><label>Имя: <input id="initName"></label><label>Значение: <input
+                                id="initValue" type="number"></label><button id="rollInitiativeForTrackerBtn">🎲
+                            d10+РЕФ</button><button id="addInitiativeBtn">➕ Добавить</button><button
+                            id="clearInitiativeBtn">Очистить</button>
+                        <div id="initiativeList"></div>
+                    </div>
+                    <div class="card">
+                        <h3>Групповая</h3><label>Имя: <input id="groupInitName"></label><label>РЕФ: <input
+                                id="groupInitRef" value="5"></label><button id="addToGroupInitBtn">➕
+                            Добавить</button><button id="rollGroupInitBtn">🎲 Всем</button><button
+                            id="clearGroupInitBtn">Очистить</button>
+                        <div id="groupInitList"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="combat-crit" class="sub-pane">
+                <div class="card">
+                    <h3>Критические травмы</h3><button id="rollCritBtn">🎲 Тело</button><button id="rollCritHeadBtn">🎲
+                        Голова</button>
+                    <div id="critResult"></div>
+                    <div id="crit-body-table"></div>
+                    <div id="crit-head-table"></div>
+                </div>
+            </div>
+            <div id="combat-formulas" class="sub-pane">
+                <div class="card">
+                    <h3>Калькулятор атаки</h3><label>Тип атаки: <select id="combatType">
+                            <option value="ranged">Дистанционная</option>
+                            <option value="melee">Рукопашная</option>
+                        </select></label>
+                    <div id="rangedFields"><label>РЕФ: <input id="refValue" value="6"></label><label>Навык: <input
+                                id="rangedSkill" value="6"></label></div>
+                    <div id="meleeFields" style="display:none"><label>ЛВК: <input id="dexValue"
+                                value="6"></label><label>Навык: <input id="meleeSkill" value="6"></label></div>
+                    <label>d10: <input id="d10Roll" value="5"></label><label>Модификаторы: <input id="modifiers"
+                            value="0"></label><button id="calcAttackBtn">Рассчитать</button>
+                    <div id="attackResult"></div>
+                </div>
+                <div class="card">
+                    <h3>Таблица СЛ</h3>
+                    <div id="distanceTable"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Панель GM -->
+        <div id="tab-gm" class="main-pane">
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" data-sub="gm-npc">🤖 NPC</button>
+                <button class="sub-tab-btn" data-sub="gm-encounters">🗺️ Случайные встречи</button>
+                <button class="sub-tab-btn" data-sub="gm-mooks">💀 Пушечное мясо</button>
+                <button class="sub-tab-btn" data-sub="gm-group">👥 Группа</button>
+                <button class="sub-tab-btn" data-sub="gm-contract">📜 Контракт</button>
+                <button class="sub-tab-btn" data-sub="gm-psycho">🧠 Киберпсихоз</button>
+                <button class="sub-tab-btn" data-sub="gm-net">🌐 Архитектура сети</button>
+            </div>
+            <div id="gm-npc" class="sub-pane active">
+                <div class="card">
+                    <h3>Генератор NPC</h3><button id="generateNpcBtn">🎲 Создать</button>
+                    <div id="npcResult"></div>
+                </div>
+            </div>
+
+            <div id="gm-encounters" class="sub-pane">
+                <div class="card">
+                    <h3>Генератор случайных встреч</h3>
+                    <div class="form-row">
+                        <label>Время суток:
+                            <select id="encounterTime">
+                                <option value="day">День</option>
+                                <option value="evening">Вечер</option>
+                                <option value="night">Ночь</option>
+                            </select>
+                        </label>
+                        <label>Зона/Район:
+                            <select id="encounterZone">
+                                <option value="corporate">Корпоративная зона</option>
+                                <option value="moderate">Умеренная зона</option>
+                                <option value="combat">Боевая зона</option>
+                                <option value="hot">Горячая зона</option>
+                            </select>
+                        </label>
+                        <button id="generateEncounterBtn">🎲 Сгенерировать встречу</button>
+                    </div>
+                    <div id="encounterResult" class="encounter-result"></div>
+                </div>
+            </div>
+
+            <div id="gm-group" class="sub-pane">
+                <div class="card">
+                    <h3>👥 Трекер группы / раненые</h3>
+                    <div class="form-row">
+                        <label>Имя: <input id="memberName" placeholder="Новый персонаж"></label>
+                        <label>Макс ПЗ: <input id="memberMaxHp" type="number" placeholder="35"></label>
+                        <button id="addMemberBtn">➕ Добавить</button>
+                        <button id="clearGroupBtn">🗑️ Очистить группу</button>
+                    </div>
+                    <div id="groupList"></div>
+                    <p class="note">💡 Нажмите на чипс травмы, чтобы добавить/удалить. Штраф пересчитывается
+                        автоматически.</p>
+                </div>
+            </div>
+            <div id="gm-contract" class="sub-pane">
+                <div class="card">
+                    <h3>Контракт</h3><button id="genContractBtn">🎲 Сгенерировать</button>
+                    <div id="contractResult"></div>
+                </div>
+            </div>
+            <div id="gm-psycho" class="sub-pane">
+                <div class="card">
+                    <h3>Киберпсихоз</h3><label>Имя: <input id="psychoName" value="Персонаж"></label><label>ЧЕЛ: <input
+                            id="psychoHumanity" type="number"></label><button id="calcPsychoBtn">Проверить</button>
+                    <div id="psychoResult"></div>
+                </div>
+            </div>
+            <div id="gm-net" class="sub-pane">
+                <div class="card">
+                    <h3>Архитектура сети</h3><label>Сложность: <select id="netComplexity">
+                            <option value="1">Низкая (СЛ6)</option>
+                            <option value="2">Средняя (СЛ8)</option>
+                            <option value="3">Высокая (СЛ10)</option>
+                            <option value="4">Очень высокая (СЛ12)</option>
+                        </select></label><button id="genNetArchBtn">🎲 Сгенерировать</button>
+                    <div id="netArchResult"></div>
+                </div>
+            </div>
+            <div id="gm-mooks" class="sub-pane">
+                <div class="card">
+                    <h3>💀 Генератор врагов (пушечное мясо)</h3>
+                    <div class="form-row">
+                        <label>Количество игроков: <input type="number" id="playerCount" value="4" min="1"
+                                max="10"></label>
+                        <label>Сложность:
+                            <select id="encounterDifficulty">
+                                <option value="easy">Лёгкая (шестёрки 1:1)</option>
+                                <option value="normal">Средняя (лейтенанты + шестёрки)</option>
+                                <option value="hard">Тяжёлая (мини-босс + подчинённые)</option>
+                                <option value="deadly">Смертельная (босс + элита)</option>
+                            </select>
+                        </label>
+                        <button id="generateMooksBtn">🎲 Сгенерировать врагов</button>
+                    </div>
+                    <div id="mookResult" class="mook-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Панель Рынок -->
+        <div id="tab-market" class="main-pane">
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" data-sub="market-night">🌙 Ночной рынок</button>
+                <button class="sub-tab-btn" data-sub="market-treasure">💎 Трофеи</button>
+            </div>
+            <div id="market-night" class="sub-pane active">
+                <div class="card">
+                    <h3>Ночной рынок</h3><label>Категория: <select id="marketCategory">
+                            <option value="all">Все</option>
+                            <option value="оружие">Оружие</option>
+                            <option value="броня">Броня</option>
+                            <option value="имплант">Импланты</option>
+                            <option value="наркотик">Наркотики</option>
+                            <option value="снаряжение">Снаряжение</option>
+                        </select></label><button id="generateMarketBtn">🎲 Товары</button><button
+                        id="haggleMarketBtn">🤝 Торг</button>
+                    <div id="marketList"></div>
+                </div>
+            </div>
+            <div id="market-treasure" class="sub-pane">
+                <div class="card">
+                    <h3>Трофеи</h3><button id="generateTreasureBtn">🎲 Найти</button>
+                    <div id="treasureResult"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
