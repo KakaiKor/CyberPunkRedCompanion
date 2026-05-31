@@ -85,7 +85,7 @@ export function updateAllTables() {
     if (document.getElementById('ammo-table')) document.getElementById('ammo-table').innerHTML = renderAmmo(ammoTypes);
     if (document.getElementById('attachments-table')) document.getElementById('attachments-table').innerHTML = renderAttachments(weaponAttachments);
     if (document.getElementById('gear-table')) document.getElementById('gear-table').innerHTML = renderGear(gearItems);
-    
+
     // Вместо прямых вызовов renderCyberware используем фильтрующую функцию
     renderFilteredCyberware();
 }
@@ -94,16 +94,16 @@ export function updateAllTables() {
 // Для совместимости: при глобальном поиске фильтр по типу сбрасывается – оставляем как есть.
 export function filterTables(term) {
     const flt = arr => arr.filter(i => JSON.stringify(i).toLowerCase().includes(term));
-    if(document.getElementById('ranged-table')) document.getElementById('ranged-table').innerHTML = renderRanged(flt(rangedWeapons));
-    if(document.getElementById('melee-table')) document.getElementById('melee-table').innerHTML = renderMelee(flt(meleeWeapons));
-    if(document.getElementById('armor-table')) document.getElementById('armor-table').innerHTML = renderArmor(flt(armors));
-    if(document.getElementById('crit-body-table')) document.getElementById('crit-body-table').innerHTML = renderCrit(flt(critBody));
-    if(document.getElementById('crit-head-table')) document.getElementById('crit-head-table').innerHTML = renderCrit(flt(critHead));
-    if(document.getElementById('transport-table')) document.getElementById('transport-table').innerHTML = renderTransport(flt(transport));
-    if(document.getElementById('drugs-table')) document.getElementById('drugs-table').innerHTML = renderDrugs(flt(streetDrugs));
-    if(document.getElementById('ammo-table')) document.getElementById('ammo-table').innerHTML = renderAmmo(flt(ammoTypes));
-    if(document.getElementById('attachments-table')) document.getElementById('attachments-table').innerHTML = renderAttachments(flt(weaponAttachments));
-    if(document.getElementById('gear-table')) document.getElementById('gear-table').innerHTML = renderGear(flt(gearItems));
-    if(document.getElementById('cyber-detailed-table')) document.getElementById('cyber-detailed-table').innerHTML = renderCyberware(flt(detailedCyberware));
-    if(document.getElementById('cyber-detailed-table-gear')) document.getElementById('cyber-detailed-table-gear').innerHTML = renderCyberware(flt(detailedCyberware));
+    if (document.getElementById('ranged-table')) document.getElementById('ranged-table').innerHTML = renderRanged(flt(rangedWeapons));
+    if (document.getElementById('melee-table')) document.getElementById('melee-table').innerHTML = renderMelee(flt(meleeWeapons));
+    if (document.getElementById('armor-table')) document.getElementById('armor-table').innerHTML = renderArmor(flt(armors));
+    if (document.getElementById('crit-body-table')) document.getElementById('crit-body-table').innerHTML = renderCrit(flt(critBody));
+    if (document.getElementById('crit-head-table')) document.getElementById('crit-head-table').innerHTML = renderCrit(flt(critHead));
+    if (document.getElementById('transport-table')) document.getElementById('transport-table').innerHTML = renderTransport(flt(transport));
+    if (document.getElementById('drugs-table')) document.getElementById('drugs-table').innerHTML = renderDrugs(flt(streetDrugs));
+    if (document.getElementById('ammo-table')) document.getElementById('ammo-table').innerHTML = renderAmmo(flt(ammoTypes));
+    if (document.getElementById('attachments-table')) document.getElementById('attachments-table').innerHTML = renderAttachments(flt(weaponAttachments));
+    if (document.getElementById('gear-table')) document.getElementById('gear-table').innerHTML = renderGear(flt(gearItems));
+    if (document.getElementById('cyber-detailed-table')) document.getElementById('cyber-detailed-table').innerHTML = renderCyberware(flt(detailedCyberware));
+    if (document.getElementById('cyber-detailed-table-gear')) document.getElementById('cyber-detailed-table-gear').innerHTML = renderCyberware(flt(detailedCyberware));
 }

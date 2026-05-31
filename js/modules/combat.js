@@ -110,17 +110,18 @@ export class CombatFormulas {
         const rangedDiv = document.getElementById('rangedFields');
         const meleeDiv = document.getElementById('meleeFields');
         if (type === 'ranged') {
-            rangedDiv.style.display = 'block';
-            meleeDiv.style.display = 'none';
+            if (rangedDiv) rangedDiv.style.display = 'block';
+            if (meleeDiv) meleeDiv.style.display = 'none';
         } else {
-            rangedDiv.style.display = 'none';
-            meleeDiv.style.display = 'block';
+            if (rangedDiv) rangedDiv.style.display = 'none';
+            if (meleeDiv) meleeDiv.style.display = 'block';
         }
     }
 
     fillDistanceTable() {
-        const tbody = document.getElementById('distanceTableBody');
-        if (!tbody) return;
+        const container = document.getElementById('distanceTable');
+        if (!container) return;
+        
         const weapons = [
             { name: "Пистолет", values: [13,15,20,25,30,30,"—","—"] },
             { name: "Пистолет-пулемёт", values: [15,13,15,20,25,25,30,"—"] },
@@ -131,7 +132,17 @@ export class CombatFormulas {
             { name: "Гранатомёт", values: [16,15,15,17,20,22,25,"—"] },
             { name: "Ракетница", values: [17,16,15,15,20,20,25,30] }
         ];
-        tbody.innerHTML = weapons.map(w => `<tr><td>${w.name}</td>${w.values.map(v => `<td>${v === "—" ? "—" : v}</td>`).join('')}</tr>`).join('');
+        
+        let html = `<div class="table-wrapper"><table class="cyber-table">
+            <thead><tr><th>Оружие</th><th>0-6м</th><th>7-12м</th><th>13-25м</th><th>26-50м</th><th>51-100м</th><th>101-200м</th><th>201-400м</th><th>401-800м</th></tr></thead>
+            <tbody>`;
+        weapons.forEach(w => {
+            html += `<tr><td><strong>${w.name}</strong></td>`;
+            w.values.forEach(v => html += `<td>${v}</td>`);
+            html += `</tr>`;
+        });
+        html += `</tbody></table></div><p class="note">* При использовании ПП и штурмовых винтовок в режиме автоматического огня используются другие СЛ.</p>`;
+        container.innerHTML = html;
     }
 
     calculateAttack() {

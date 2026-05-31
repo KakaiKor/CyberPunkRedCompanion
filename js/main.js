@@ -7,7 +7,7 @@ import { NPCGenerator, GroupTracker, initGM } from './modules/gm.js';
 import { updateAllTables, filterTables } from './modules/gear.js';
 import { rangedWeapons, meleeWeapons, armors, detailedCyberware, transport, streetDrugs, ammoTypes, weaponAttachments, gearItems, playerVehicles, addVehicle, saveVehicles, loadVehicles } from './data.js';
 import { saveCharacter, loadCharacter, saveGroup, loadGroup } from './storage.js';
-
+import { renderRoles } from './modules/roles.js';
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
     const data = { characters: loadCharacter(), group: loadGroup(), vehicles: playerVehicles, version: '1.0' };
@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.idealShop = new IdealShop();
     initTransport();
     initGM();
+    renderRoles();
     new CombatFormulas();
     document.getElementById('calcExpensesBtn')?.addEventListener('click', () => ExpensesCalc.calc());
     document.getElementById('generateTreasureBtn')?.addEventListener('click', () => TreasureGenerator.generate());
@@ -85,4 +86,88 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('addMeleeWeaponBtn')?.addEventListener('click', addMeleeWeapon);
     document.getElementById('addArmorBtn')?.addEventListener('click', addArmor);
     document.getElementById('addCyberBtn')?.addEventListener('click', addCyberware);
+    // ========== КИБЕРПАНК-ТЕРМИНАЛ С ЭФФЕКТОМ ПЕЧАТИ ==========
+function initTerminal() {
+    const terminalCode = document.getElementById('terminalCode');
+    if (!terminalCode) return;
+    
+    const messages = [
+        "> Инициализация Cyberpunk RED Companion...",
+        "> Загрузка модулей: ХАР, Навыки, Снаряжение...",
+        "> Подключение к базе данных киберимплантов...",
+        "> Калибровка генератора случайных встреч...",
+        "> Система готова. Добро пожаловать, эджраннер!",
+        "> Введите команду или используйте интерфейс выше."
+    ];
+    
+    let lineIndex = 0;
+    let charIndex = 0;
+    let currentLine = '';
+    let isPrinting = false;
+    
+    function printNextChar() {
+        if (lineIndex >= messages.length) {
+            // После всех сообщений оставляем мигающий курсор
+            terminalCode.innerHTML = '<span class="blink">█</span>';
+            return;
+        }
+        
+        if (!isPrinting) {
+            isPrinting = true;
+            currentLine = messages[lineIndex];
+            charIndex = 0;
+            terminalCode.innerHTML = ''; // очищаем перед новой строкой
+        }
+        
+        if (charIndex < currentLine.length) {
+            terminalCode.innerHTML += currentLine[charIndex];
+            charIndex++;
+            setTimeout(printNextChar, 40 + Math.random() * 30);
+        } else {
+            terminalCode.innerHTML += '<br>';
+            lineIndex++;
+            isPrinting = false;
+            setTimeout(printNextChar, 200);
+        }
+    }
+    
+    // Запускаем печать через небольшую задержку
+    setTimeout(printNextChar, 500);
+    
+    // Сворачивание/разворачивание терминала
+    const terminalHeader = document.getElementById('terminalHeader');
+    const terminalBody = document.getElementById('terminalBody');
+    const terminalToggle = document.getElementById('terminalToggle');
+    
+    if (terminalHeader && terminalBody && terminalToggle) {
+        terminalHeader.addEventListener('click', (e) => {
+            if (e.target !== terminalToggle) {
+                terminalBody.classList.toggle('collapsed');
+                terminalToggle.textContent = terminalBody.classList.contains('collapsed') ? '+' : '−';
+            }
+        });
+        terminalToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            terminalBody.classList.toggle('collapsed');
+            terminalToggle.textContent = terminalBody.classList.contains('collapsed') ? '+' : '−';
+        });
+    }
+}
+// Переключение киберпанк-темы
+const toggleThemeBtn = document.getElementById('toggleThemeBtn');
+if (toggleThemeBtn) {
+    // Проверяем сохранённое состояние
+    if (localStorage.getItem('cyberpunkTheme') === 'true') {
+        document.body.classList.add('cyberpunk-theme');
+        toggleThemeBtn.textContent = '🎨 Обычная тема';
+    }
+    toggleThemeBtn.addEventListener('click', () => {
+        document.body.classList.toggle('cyberpunk-theme');
+        const isActive = document.body.classList.contains('cyberpunk-theme');
+        localStorage.setItem('cyberpunkTheme', isActive);
+        toggleThemeBtn.textContent = isActive ? '🎨 Обычная тема' : '🎨 Cyberpunk Theme';
+    });
+}
+
+initTerminal();
 });

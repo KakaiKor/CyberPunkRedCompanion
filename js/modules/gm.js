@@ -480,6 +480,51 @@ class EncounterGenerator {
         document.getElementById('rerollEncounterBtn')?.addEventListener('click', () => this.generate());
     }
 }
+// ========== Калькулятор развития (IP) ==========
+function calculateIPCost(current, target, type) {
+    if (current >= target) return 0;
+    const costMapNormal = { 1:20,2:40,3:60,4:80,5:100,6:120,7:140,8:160,9:180,10:200 };
+    const costMapHard = { 1:40,2:80,3:120,4:160,5:200,6:240,7:280,8:320,9:360,10:400 };
+    const costMapRole = { 1:60,2:120,3:180,4:240,5:300,6:360,7:420,8:480,9:540,10:600 };
+    let costMap = costMapNormal;
+    if (type === 'hard') costMap = costMapHard;
+    if (type === 'role') costMap = costMapRole;
+    let total = 0;
+    for (let i = current+1; i <= target; i++) total += costMap[i];
+    return total;
+}
+
+function renderIPTable() {
+    const container = document.getElementById('ipTableWrapper');
+    if (!container) return;
+    const normal = [20,40,60,80,100,120,140,160,180,200];
+    const hard = [40,80,120,160,200,240,280,320,360,400];
+    const role = [60,120,180,240,300,360,420,480,540,600];
+    let html = `<table class="cyber-table"><thead><tr><th>Уровень</th><th>Обычный</th><th>Сложный (×2)</th><th>Ролевой</th></tr></thead><tbody>`;
+    for (let i = 1; i <= 10; i++) {
+        html += `<tr><td>${i}</td><td>${normal[i-1]}</td><td>${hard[i-1]}</td><td>${role[i-1]}</td></tr>`;
+    }
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+}
+
+function updateIPCalculator() {
+    const type = document.getElementById('ipSkillType').value;
+    let current = parseInt(document.getElementById('currentLevel').value);
+    let target = parseInt(document.getElementById('targetLevel').value);
+    if (isNaN(current)) current = 0;
+    if (isNaN(target)) target = 0;
+    if (current < 0 || current > 10 || target < 0 || target > 10) {
+        document.getElementById('ipResult').innerHTML = '<span style="color:#ff3c5f;">⚠️ Уровни должны быть от 0 до 10</span>';
+        return;
+    }
+    if (target <= current) {
+        document.getElementById('ipResult').innerHTML = '<span class="note">🎯 Целевой уровень не выше текущего. Стоимость = 0 IP.</span>';
+        return;
+    }
+    const cost = calculateIPCost(current, target, type);
+    document.getElementById('ipResult').innerHTML = `<strong>💰 Стоимость повышения с ${current} до ${target}:</strong> ${cost} IP`;
+}
 // ========== Инициализация всех GM-инструментов ==========
 export function initGM() {
     document.getElementById('generateNpcBtn')?.addEventListener('click', () => NPCGenerator.generate());
@@ -488,5 +533,10 @@ export function initGM() {
     document.getElementById('genNetArchBtn')?.addEventListener('click', generateNetArchitecture);
     document.getElementById('generateMooksBtn')?.addEventListener('click', () => MookGenerator.generate());
     document.getElementById('generateEncounterBtn')?.addEventListener('click', () => EncounterGenerator.generate());  // 👈 Новая строка
+    initTransport();
+    document.getElementById('generateMooksBtn')?.addEventListener('click', () => MookGenerator.generate());
+    document.getElementById('generateEncounterBtn')?.addEventListener('click', () => EncounterGenerator.generate());
+    document.getElementById('calcIPBtn')?.addEventListener('click', updateIPCalculator);
+    renderIPTable(); // заполняем таблицу
     initTransport();
 }
