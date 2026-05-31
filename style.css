@@ -596,6 +596,382 @@ button:hover {
     background: #ff3c5f;
     color: #0a0c12;
 }
+
+/* Карточка персонажа */
+.character-card-container {
+    margin-top: 20px;
+}
+.character-card {
+    background: linear-gradient(135deg, #1a1a2a, #0f0f1a);
+    border: 2px solid #ff3c5f;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(255, 60, 95, 0.3);
+}
+.character-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #ff9a3c;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+.character-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ff9a3c;
+}
+.character-role {
+    font-size: 1rem;
+    background: #ff3c5f;
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: #0a0c12;
+    font-weight: bold;
+}
+.close-card-btn {
+    background: none;
+    border: none;
+    color: #ff3c5f;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+.stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 10px 0;
+}
+.stats-row span {
+    background: #0a0c12;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-family: monospace;
+}
+.character-derived button {
+    margin: 5px 5px 0 0;
+}
+
+/* Карточка персонажа — улучшенная вёрстка */
+.character-card {
+    background: linear-gradient(145deg, #1a1e2a, #0f1219);
+    border: 1px solid #ff3c5f;
+    border-radius: 20px;
+    padding: 0;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,60,95,0.2);
+    overflow: hidden;
+}
+
+.character-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f1219;
+    padding: 15px 20px;
+    border-bottom: 2px solid #ff3c5f;
+}
+
+.character-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ff9a3c;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(255,60,95,0.5);
+}
+
+.character-role {
+    background: #ff3c5f;
+    padding: 5px 15px;
+    border-radius: 30px;
+    font-weight: bold;
+    color: #0a0c12;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.close-card-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #ff3c5f;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.close-card-btn:hover {
+    color: #ff9a3c;
+    transform: scale(1.1);
+}
+
+.character-card-body {
+    padding: 20px;
+}
+
+.char-section {
+    background: #0a0c12;
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border: 1px solid #2a1a2a;
+}
+
+.char-section h4 {
+    margin: 0 0 12px 0;
+    color: #ff9a3c;
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-left: 3px solid #ff3c5f;
+    padding-left: 10px;
+}
+
+/* Сетка характеристик */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 10px;
+}
+.stat-item {
+    background: #1a1e2a;
+    border-radius: 12px;
+    text-align: center;
+    padding: 6px 4px;
+    transition: 0.1s;
+}
+.stat-name {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #9aa4bf;
+    display: block;
+}
+.stat-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ff9a3c;
+    font-family: monospace;
+}
+
+/* Производные */
+.derived-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+.derived-stats div {
+    background: #1a1e2a;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+}
+.derived-label {
+    font-weight: bold;
+    color: #9aa4bf;
+}
+.current-hp {
+    font-weight: bold;
+    color: #ff3c5f;
+    font-size: 1.1rem;
+}
+.hp-threshold {
+    font-size: 0.7rem;
+    color: #9aa4bf;
+}
+.emp-value {
+    font-size: 0.8rem;
+    color: #9aa4bf;
+}
+.combat-buttons {
+    display: flex;
+    gap: 12px;
+}
+.combat-buttons button {
+    background: #1a1e2a;
+    border: 1px solid #ff3c5f;
+    padding: 6px 16px;
+    font-size: 0.8rem;
+}
+
+/* Навыки – компактный много‑колоночный список */
+.skills-list.compact {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 6px 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.skills-list.compact li {
+    display: flex;
+    justify-content: space-between;
+    background: #1a1e2a;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+.skill-name {
+    color: #e0e0e0;
+}
+.skill-level {
+    color: #ff9a3c;
+    font-weight: bold;
+}
+
+/* Сетка для снаряжения */
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 15px;
+}
+.equipment-grid .char-section {
+    margin-bottom: 0;
+}
+ul.compact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+ul.compact li {
+    padding: 4px 0;
+    border-bottom: 1px dashed #2a1a2a;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+ul.compact li:last-child {
+    border-bottom: none;
+}
+/* Карточка на всю ширину */
+.full-width-card {
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+/* Таблица навыков – делаем широкой и удобной для чтения */
+#skillsTable .cyber-table {
+    width: 100%;
+    min-width: 100%;
+    table-layout: auto;
+}
+#skillsTable .cyber-table th,
+#skillsTable .cyber-table td {
+    padding: 10px 12px;
+    white-space: normal;
+    word-break: normal;
+}
+#skillsTable .cyber-table th:first-child,
+#skillsTable .cyber-table td:first-child {
+    width: 30%; /* Название навыка занимает 30% */
+}
+#skillsTable .cyber-table th:nth-child(2),
+#skillsTable .cyber-table td:nth-child(2) {
+    width: 15%; /* ХАР */
+}
+#skillsTable .cyber-table td:nth-child(3),
+#skillsTable .cyber-table th:nth-child(3) {
+    width: 55%; /* Описание */
+}
+
+/* Для мобильных устройств – позволяем скроллить, если не влезает */
+@media (max-width: 700px) {
+    #skillsTable {
+        overflow-x: auto;
+    }
+    #skillsTable .cyber-table {
+        min-width: 500px;
+    }
+}
+/* Две колонки: характеристики + навыки рядом */
+.stats-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: stretch;
+}
+.stats-card {
+    flex: 0 0 320px; /* фиксированная ширина для характеристик */
+    min-width: 280px;
+}
+.skills-card {
+    flex: 1; /* занимает оставшееся пространство */
+    min-width: 300px;
+}
+.skills-card .card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.skills-card .card h3 {
+    flex-shrink: 0;
+}
+#skillsTable {
+    flex: 1;
+    overflow-x: auto;
+}
+#skillsTable .cyber-table {
+    width: 100%;
+    min-width: 600px; /* чтобы таблица не сжималась слишком сильно */
+    table-layout: auto;
+}
+#skillsTable .cyber-table th,
+#skillsTable .cyber-table td {
+    padding: 8px 10px;
+    white-space: normal;
+}
+#skillsTable .cyber-table th:first-child,
+#skillsTable .cyber-table td:first-child {
+    width: 30%;
+}
+#skillsTable .cyber-table th:nth-child(2),
+#skillsTable .cyber-table td:nth-child(2) {
+    width: 15%;
+}
+#skillsTable .cyber-table th:nth-child(3),
+#skillsTable .cyber-table td:nth-child(3) {
+    width: 55%;
+}
+
+/* Адаптивность – на узких экранах всё в колонку */
+@media (max-width: 800px) {
+    .stats-layout {
+        flex-direction: column;
+    }
+    .stats-card {
+        flex: auto;
+        width: 100%;
+    }
+    .skills-card {
+        width: 100%;
+    }
+}
+/* Адаптивность для мобильных */
+@media (max-width: 700px) {
+    .character-name {
+        font-size: 1.2rem;
+    }
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .skills-list.compact {
+        grid-template-columns: 1fr;
+    }
+    .equipment-grid {
+        grid-template-columns: 1fr;
+    }
+    .derived-stats {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .combat-buttons {
+        flex-direction: column;
+    }
+}
 @keyframes fade {
     from { opacity: 0; transform: translateY(5px);}
     to { opacity: 1; transform: translateY(0);}

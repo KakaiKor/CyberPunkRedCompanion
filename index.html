@@ -62,8 +62,11 @@
                                 <option>Фиксер</option>
                                 <option>Кочевник</option>
                             </select></label>
-                        <div class="button-group"><button id="calcCharBtn">📐 Рассчитать</button><button
-                                id="saveCharBtn">💾 Сохранить</button><button id="loadCharBtn">📂 Загрузить</button>
+                        <div class="button-group">
+                            <button id="calcCharBtn">📐 Рассчитать производные</button>
+                            <button id="buildCharCardBtn">🃏 Создать карточку персонажа</button>
+                            <button id="saveCharBtn">💾 Сохранить</button>
+                            <button id="loadCharBtn">📂 Загрузить</button>
                         </div>
                         <div id="charDerived" class="info-block"></div>
                         <div id="charSaveStatus" class="status-message"></div>
@@ -98,20 +101,25 @@
                         <button id="calcExpensesBtn">💰 Рассчитать</button>
                         <div id="expensesResult" class="info-block"></div>
                     </div>
+                    <div id="characterCardContainer" class="character-card-container" style="margin-top: 20px;"></div>
                 </div>
             </div>
 
             <!-- ХАР и Навыки (упрощённые) -->
             <div id="char-stats" class="sub-pane">
-                <div class="card-grid">
-                    <div class="card">
-                        <h3>Характеристики</h3>
-                        <div id="statsGrid" class="stats-grid"></div>
-                        <button id="randomStatsBtn" class="random-stats-btn">🎲 Случайные</button>
+                <div class="stats-layout">
+                    <div class="stats-card">
+                        <div class="card">
+                            <h3>Характеристики</h3>
+                            <div id="statsGrid" class="stats-grid"></div>
+                            <button id="randomStatsBtn" class="random-stats-btn">🎲 Случайные</button>
+                        </div>
                     </div>
-                    <div class="card">
-                        <h3>Навыки (справочник)</h3>
-                        <div id="skillsTable"></div>
+                    <div class="skills-card">
+                        <div class="card">
+                            <h3>Навыки (справочник)</h3>
+                            <div id="skillsTable"></div>
+                        </div>
                     </div>
                 </div>
             </div>
