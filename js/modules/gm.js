@@ -1,7 +1,7 @@
 import { getHP } from '../utils.js';
 import { initTransport } from './transport.js';
 
-// ========== NPCGenerator (старый) ==========
+// ========== NPCGenerator ==========
 export class NPCGenerator {
     static generate() {
         const roles = ["Рокербой","Соло","Нетраннер","Техник","Медтех","Медиа","Законник","Менеджер","Фиксер","Кочевник"];
@@ -19,7 +19,7 @@ export class NPCGenerator {
     }
 }
 
-// ========== НОВЫЙ GroupTracker с карточками и чипсами ==========
+// ========== GroupTracker ==========
 export class GroupTracker {
     constructor() {
         this.members = [];
@@ -28,95 +28,34 @@ export class GroupTracker {
         document.getElementById('addMemberBtn')?.addEventListener('click', () => this.addMember());
         document.getElementById('clearGroupBtn')?.addEventListener('click', () => this.clear());
     }
-
-    load() {
-        let saved = localStorage.getItem('cpr_group');
-        if (saved) this.members = JSON.parse(saved);
-    }
-
-    save() {
-        localStorage.setItem('cpr_group', JSON.stringify(this.members));
-    }
-
+    load() { let saved = localStorage.getItem('cpr_group'); if (saved) this.members = JSON.parse(saved); }
+    save() { localStorage.setItem('cpr_group', JSON.stringify(this.members)); }
     addMember() {
         let name = document.getElementById('memberName').value.trim() || 'Безымянный';
         let maxHp = parseInt(document.getElementById('memberMaxHp').value);
         if (isNaN(maxHp)) maxHp = 35;
-        this.members.push({
-            name: name,
-            maxHp: maxHp,
-            currentHp: maxHp,
-            crits: []
-        });
-        this.save();
-        this.render();
-        document.getElementById('memberName').value = '';
-        document.getElementById('memberMaxHp').value = '';
+        this.members.push({ name, maxHp, currentHp: maxHp, crits: [] });
+        this.save(); this.render();
+        document.getElementById('memberName').value = ''; document.getElementById('memberMaxHp').value = '';
     }
-
-    clear() {
-        this.members = [];
-        this.save();
-        this.render();
-    }
-
-    // Полный список критических травм
-    getCritList() {
-        return [
-            "Оторванная рука", "Оторванная кисть", "Разрыв лёгкого", "Перелом рёбер",
-            "Перелом руки", "Инородное тело", "Перелом ноги", "Разрыв мышц",
-            "Травма позвоночника", "Раздробленные пальцы", "Оторванная нога",
-            "Потеря глаза", "Травма мозга", "Повреждение глаза", "Сотрясение",
-            "Перелом челюсти", "Хлыстовая травма шеи", "Трещина черепа",
-            "Повреждение уха", "Травма трахеи", "Потеря уха"
-        ];
-    }
-
-    // Штраф за конкретную травму
+    clear() { this.members = []; this.save(); this.render(); }
+    getCritList() { return ["Оторванная рука","Оторванная кисть","Разрыв лёгкого","Перелом рёбер","Перелом руки","Инородное тело","Перелом ноги","Разрыв мышц","Травма позвоночника","Раздробленные пальцы","Оторванная нога","Потеря глаза","Травма мозга","Повреждение глаза","Сотрясение","Перелом челюсти","Хлыстовая травма шеи","Трещина черепа","Повреждение уха","Травма трахеи","Потеря уха"]; }
     getPenaltyForCrit(critName) {
-        const penalties = {
-            "Оторванная рука": -1, "Оторванная кисть": -1, "Разрыв лёгкого": -2,
-            "Травма позвоночника": -1, "Раздробленные пальцы": -4, "Оторванная нога": -6,
-            "Потеря глаза": -4, "Травма мозга": -2, "Повреждение глаза": -2,
-            "Сотрясение": -2, "Перелом челюсти": -4, "Хлыстовая травма шеи": -1,
-            "Повреждение уха": -2, "Потеря уха": -4, "Перелом ноги": -4,
-            "Разрыв мышц": -2, "Перелом руки": 0, "Перелом рёбер": 0,
-            "Инородное тело": 0, "Трещина черепа": 0, "Травма трахеи": 0
-        };
+        const penalties = { "Оторванная рука":-1,"Оторванная кисть":-1,"Разрыв лёгкого":-2,"Травма позвоночника":-1,"Раздробленные пальцы":-4,"Оторванная нога":-6,"Потеря глаза":-4,"Травма мозга":-2,"Повреждение глаза":-2,"Сотрясение":-2,"Перелом челюсти":-4,"Хлыстовая травма шеи":-1,"Повреждение уха":-2,"Потеря уха":-4,"Перелом ноги":-4,"Разрыв мышц":-2 };
         return penalties[critName] || 0;
     }
-
     calculateTotalPenalty(member) {
         let total = 0;
-        // штраф от порога ПЗ
         if (member.currentHp <= Math.floor(member.maxHp / 2)) total -= 2;
         if (member.currentHp <= 0) total -= 4;
-        // штрафы от травм
-        for (let crit of member.crits) {
-            total += this.getPenaltyForCrit(crit);
-        }
+        for (let crit of member.crits) total += this.getPenaltyForCrit(crit);
         return total;
     }
-
-    escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
+    escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
     render() {
         const container = document.getElementById('groupList');
         if (!container) return;
-
-        if (this.members.length === 0) {
-            container.innerHTML = '<p>Группа пуста. Добавьте персонажей.</p>';
-            return;
-        }
-
+        if (this.members.length === 0) { container.innerHTML = '<p>Группа пуста. Добавьте персонажей.</p>'; return; }
         let html = '<div class="group-members">';
         this.members.forEach((member, idx) => {
             const penalty = this.calculateTotalPenalty(member);
@@ -132,23 +71,16 @@ export class GroupTracker {
                     </div>
                     <div class="member-crits">
                         <div class="crits-label">Критические травмы:</div>
-                        <div class="crits-chips-container">
-            `;
+                        <div class="crits-chips-container">`;
             const allCrits = this.getCritList();
             for (let crit of allCrits) {
                 const active = member.crits.includes(crit);
                 html += `<button type="button" class="crit-chip ${active ? 'active' : ''}" data-crit="${this.escapeHtml(crit)}">${this.escapeHtml(crit)}</button>`;
             }
-            html += `
-                        </div>
-                    </div>
-                </div>
-            `;
+            html += `</div></div></div>`;
         });
         html += '</div>';
         container.innerHTML = html;
-
-        // Обработчики для полей ввода ПЗ
         document.querySelectorAll('.member-hp-input').forEach(inp => {
             inp.addEventListener('change', (e) => {
                 const idx = parseInt(e.target.dataset.idx);
@@ -160,20 +92,12 @@ export class GroupTracker {
                 }
             });
         });
-
-        // Обработчики для кнопок удаления члена группы
         document.querySelectorAll('.remove-member').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const idx = parseInt(e.target.dataset.idx);
-                if (!isNaN(idx) && this.members[idx]) {
-                    this.members.splice(idx, 1);
-                    this.save();
-                    this.render();
-                }
+                if (!isNaN(idx) && this.members[idx]) { this.members.splice(idx,1); this.save(); this.render(); }
             });
         });
-
-        // Обработчики для чипсов травм
         document.querySelectorAll('.crit-chip').forEach(chip => {
             chip.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -184,24 +108,16 @@ export class GroupTracker {
                 const critName = chip.dataset.crit;
                 const member = this.members[memberIdx];
                 const index = member.crits.indexOf(critName);
-                if (index === -1) {
-                    member.crits.push(critName);
-                    chip.classList.add('active');
-                } else {
-                    member.crits.splice(index, 1);
-                    chip.classList.remove('active');
-                }
+                if (index === -1) member.crits.push(critName);
+                else member.crits.splice(index,1);
                 this.save();
-                // перерисовываем только штраф и состояние чипсов без полной перерисовки
-                const penaltySpan = memberCard.querySelector('.member-penalty');
-                if (penaltySpan) penaltySpan.innerText = `Штраф: ${this.calculateTotalPenalty(member)}`;
-                // Можно также обновить активность чипсов, но классы уже изменены
+                this.render();
             });
         });
     }
 }
 
-// ========== Остальные GM-инструменты (без изменений) ==========
+// ========== Генератор контрактов (упрощённый) ==========
 function generateContract() {
     const types = ["Извлечение","Устранение","Охрана","Кража данных","Саботаж","Перевозка груза","Шпионаж","Психологическая операция"];
     const clients = ["Корпорация Arasaka","Корпорация Militech","Банда Мальстрём","Банда Тигриные когти","Фиксер Хорнет","Частное лицо","Правительство НСША","Кочевники Альдекальдо","Trauma Team","Медиа-корпорация"];
@@ -217,6 +133,7 @@ function generateContract() {
     document.getElementById('refreshContractBtn')?.addEventListener('click', generateContract);
 }
 
+// ========== Киберпсихоз ==========
 function checkCyberpsychosis() {
     let name = document.getElementById('psychoName').value||'Персонаж';
     let humanity = parseInt(document.getElementById('psychoHumanity').value);
@@ -230,6 +147,7 @@ function checkCyberpsychosis() {
     document.getElementById('psychoResult').innerHTML = `<strong>${name}</strong><br>🧠 Человечность: ${humanity} → ЭМП = ${emp}<br>📊 Состояние: ${stage.state}<br>🎭 Эффект: ${stage.effect}`;
 }
 
+// ========== Архитектура сети ==========
 function generateNetArchitecture() {
     const complexity = parseInt(document.getElementById('netComplexity')?.value)||1;
     const slValues = [6,8,10,12];
@@ -249,8 +167,8 @@ function generateNetArchitecture() {
     document.getElementById('refreshNetArchBtn')?.addEventListener('click', generateNetArchitecture);
 }
 
-// ========== Генератор врагов (пушечное мясо) ==========
-class MookGenerator {
+// ========== Генератор врагов ==========
+export class MookGenerator {
     static generate() {
         const playerCount = parseInt(document.getElementById('playerCount').value) || 4;
         const difficulty = document.getElementById('encounterDifficulty').value;
@@ -274,13 +192,7 @@ class MookGenerator {
         this.renderEnemies(enemies);
     }
     static createMook(type, hp, attackBonus, armor, ref) {
-        const names = {
-            'Шестёрка': ['Бустер','Громила','Шестёрка','Бандит','Мусорщик'],
-            'Лейтенант': ['Капитан','Лейтенант','Офицер','Ветеран'],
-            'Мини-босс': ['Хавк','Брут','Снайпер','Штурмовик'],
-            'Босс (киберпсих)': ['Киберпсих','Мясник','Безумный боец','Сломанный'],
-            'Элитный лейтенант': ['Элитный соло','Кибернизированный убийца','Штурмовой офицер']
-        };
+        const names = { 'Шестёрка':['Бустер','Громила','Шестёрка','Бандит','Мусорщик'], 'Лейтенант':['Капитан','Лейтенант','Офицер','Ветеран'], 'Мини-босс':['Хавк','Брут','Снайпер','Штурмовик'], 'Босс (киберпсих)':['Киберпсих','Мясник','Безумный боец','Сломанный'], 'Элитный лейтенант':['Элитный соло','Кибернизированный убийца','Штурмовой офицер'] };
         const nameList = names[type] || ['Противник'];
         const name = nameList[Math.floor(Math.random()*nameList.length)] + " " + (Math.floor(Math.random()*100)+1);
         const body = Math.floor(attackBonus / 2) + 4;
@@ -327,216 +239,172 @@ class MookGenerator {
         });
     }
 }
+
 // ========== Генератор случайных встреч ==========
-class EncounterGenerator {
+export class EncounterGenerator {
     static generate() {
         const time = document.getElementById('encounterTime').value;
         const zone = document.getElementById('encounterZone').value;
-
-        // 1. Базовый результат броска (d100)
         const roll = Math.floor(Math.random() * 100) + 1;
-        
-        // 2. Получаем данные о встрече
         let encounter = null;
-        if (zone === 'corporate') {
-            encounter = this.getCorporateEncounter(roll, time);
-        } else if (zone === 'moderate') {
-            encounter = this.getModerateEncounter(roll, time);
-        } else if (zone === 'combat') {
-            encounter = this.getCombatEncounter(roll, time);
-        } else if (zone === 'hot') {
-            encounter = this.getHotEncounter(roll, time);
-        }
-
-        if (!encounter) {
-            document.getElementById('encounterResult').innerHTML = '<div class="info-block error">Ошибка: не удалось сгенерировать встречу</div>';
-            return;
-        }
-
-        // 3. Отображаем результат
+        if (zone === 'corporate') encounter = this.getCorporateEncounter(roll, time);
+        else if (zone === 'moderate') encounter = this.getModerateEncounter(roll, time);
+        else encounter = { type: "Обычная встреча", description: "Ничего особенного.", threat: "Нет" };
+        if (!encounter) { document.getElementById('encounterResult').innerHTML = '<div class="info-block error">Ошибка генерации</div>'; return; }
         this.renderEncounter(encounter, roll);
     }
-
-    // Встречи для Корпоративной зоны (из книги, стр. 419)
     static getCorporateEncounter(roll, time) {
         if (time === 'day') {
-            if (roll <= 5) return { type: "Местная полиция", description: "Патруль из 2-3 офицеров. Вооружены штурмовыми винтовками, в кевларовой броне. Могут остановить для проверки документов.", threat: "Низкая" };
-            if (roll <= 11) return { type: "Корпоративная охрана", description: "Охранники из местной корпорации в лёгком арморджеке, с ПП. Считают, что вам здесь не место.", threat: "Низкая" };
-            if (roll <= 13) return { type: "Техники", description: "Ремонтная бригада с дробовиками, в кевларовых жилетах. Чинят городскую инфраструктуру.", threat: "Низкая" };
-            if (roll <= 17) return { type: "Частный детектив", description: "Вооружён очень тяжёлым пистолетом и дубинкой. Следит за кем-то или прессует информатора.", threat: "Средняя" };
-            if (roll <= 20) return { type: "Корпораты", description: "Сотрудники местной фирмы, ловят такси. Имеют при себе средние пистолеты.", threat: "Низкая" };
-            return { type: "Обычные прохожие", description: "Ничего примечательного. Люди спешат по своим делам.", threat: "Нет" };
-        } else if (time === 'evening') {
-            if (roll <= 5) return { type: "Городская полиция", description: "Патруль из 2-3 офицеров в среднем арморджеке, вооружены штурмовыми винтовками.", threat: "Средняя" };
-            if (roll <= 11) return { type: "Корпоративная охрана", description: "Охранники в тяжёлом арморджеке, с тяжёлыми ПП. Усиленное патрулирование.", threat: "Средняя" };
-            if (roll <= 13) return { type: "Корпоративные техники", description: "Техники с телохранителями. Чинят дорогую технику или грузят ящики в AV-4.", threat: "Средняя" };
-            if (roll <= 17) return { type: "Частный детектив", description: "Вооружён очень тяжёлым пистолетом и мачете. Может остановить вас с вопросами.", threat: "Средняя" };
-            if (roll <= 20) return { type: "Корпораты", description: "Идут к станции маглева. С собой одноразовые полимерники.", threat: "Низкая" };
-            return { type: "Вечерние прохожие", description: "Город затихает, но жизнь продолжается.", threat: "Нет" };
-        } else { // night
-            if (roll <= 10) return { type: "Городская полиция", description: "Патруль с штурмовыми винтовками с интерфейсом умного оружия. Подозрительно относятся к ночным гулякам.", threat: "Высокая" };
-            if (roll <= 22) return { type: "Корпоративная охрана", description: "Охранники с тяжёлыми ПП с интерфейсом умного оружия. Нервные, готовые к стрельбе.", threat: "Высокая" };
-            if (roll <= 24) return { type: "Частный детектив", description: "Вооружённый детектив. Может быть в засаде или слежке.", threat: "Средняя" };
-            if (roll <= 25) return { type: "Медиа", description: "Съёмочная группа, ищущая сюжет. Могут решить, что сюжет — это вы.", threat: "Низкая" };
-            if (roll <= 29) return { type: "Хромеры", description: "Фанаты хроматик рока, после концерта ищут драки.", threat: "Средняя" };
-            if (roll <= 39) return { type: "Команда бегущих по грани", description: "Готовят ограбление или другую операцию. Могут предложить долю.", threat: "Высокая" };
-            if (roll <= 42) return { type: "Trauma Team", description: "AV-4 садится на место недавней перестрелки. Могут принять вас за участника.", threat: "Высокая" };
-            if (roll <= 45) return { type: "Рейнджер", description: "Законник с помощником охотятся на банду. Могут позвать на помощь.", threat: "Средняя" };
-            return { type: "Ночная тишина", description: "Улицы пустынны и опасны.", threat: "Нет" };
-        }
+            if (roll <=5) return { type:"Местная полиция", description:"Патруль из 2-3 офицеров.", threat:"Низкая" };
+            if (roll <=11) return { type:"Корпоративная охрана", description:"Охранники в лёгком арморджеке.", threat:"Низкая" };
+            return { type:"Обычные прохожие", description:"Ничего примечательного.", threat:"Нет" };
+        } else return { type:"Вечерняя прогулка", description:"Город затихает.", threat:"Нет" };
     }
-
-    // Встречи для Умеренной зоны (из книги, стр. 419-420)
     static getModerateEncounter(roll, time) {
         if (time === 'day') {
-            if (roll <= 5) return { type: "Местная полиция", description: "Патруль копов проверяет документы у подозрительных лиц.", threat: "Низкая" };
-            if (roll <= 11) return { type: "Корпоративная охрана", description: "Охранники патрулируют территорию, прогоняют нежелательных лиц.", threat: "Низкая" };
-            if (roll <= 13) return { type: "Техники", description: "Чинят уличное оборудование или дороги.", threat: "Низкая" };
-            if (roll <= 17) return { type: "Частный детектив", description: "Ведёт слежку или разговаривает с информатором.", threat: "Низкая" };
-            if (roll <= 20) return { type: "Корпораты", description: "Сотрудники корпораций, могут быть с охраной.", threat: "Низкая" };
-            if (roll <= 27) return { type: "Местные жители", description: "Обычные люди, спешащие по делам.", threat: "Нет" };
-            if (roll <= 32) return { type: "Восстановители", description: "Ремонтируют здания или инфраструктуру.", threat: "Низкая" };
-            if (roll <= 37) return { type: "Медиа", description: "Съёмочная группа, снимает репортаж.", threat: "Низкая" };
-            if (roll <= 41) return { type: "Частный детектив", description: "Работает под прикрытием.", threat: "Низкая" };
-            if (roll <= 46) return { type: "Trauma Team", description: "AV-4 забирает раненых.", threat: "Средняя" };
-            if (roll <= 57) return { type: "Мусорщики", description: "Роются в мусорных баках в поисках ценного хлама.", threat: "Низкая" };
-            if (roll <= 63) return { type: "Кочевники", description: "Группа кочевников, возможно, ищет драки.", threat: "Средняя" };
-            if (roll <= 70) return { type: "Банда бустеров", description: "Низкоуровневые панки, ищут лёгкую добычу.", threat: "Средняя" };
-            if (roll <= 76) return { type: "Уличные панки", description: "Смэшхэды, ищут деньги на дозу.", threat: "Средняя" };
-            if (roll <= 82) return { type: "Культисты", description: "Отступники проповедуют о конце света.", threat: "Низкая" };
-            if (roll <= 88) return { type: "Кочевнический грузовик", description: "Кочевники чинят сломавшийся грузовик.", threat: "Низкая" };
-            if (roll <= 94) return { type: "Банда бустеров", description: "Железные прицелы — опытные бойцы с имплантами.", threat: "Высокая" };
-            if (roll <= 100) return { type: "Крупный преступник", description: "Серьёзная операция синдиката. Соло разгружают контрабанду.", threat: "Очень высокая" };
-            return { type: "Обычный день", description: "Ничего особенного не происходит.", threat: "Нет" };
-        } else {
-            // Вечерние и ночные встречи для умеренной зоны
-            return this.getCorporateEncounter(roll, time);
-        }
+            if (roll <=5) return { type:"Полиция", description:"Патруль проверяет документы.", threat:"Низкая" };
+            return { type:"Местные жители", description:"Люди спешат по делам.", threat:"Нет" };
+        } else return { type:"Вечер", description:"Улицы пустеют.", threat:"Нет" };
     }
-
-    // Встречи для Боевой зоны (из книги, стр. 421-422)
-    static getCombatEncounter(roll, time) {
-        if (time === 'day') {
-            if (roll <= 5) return { type: "Городская полиция", description: "Патруль в среднем арморджеке, вооружены штурмовыми винтовками.", threat: "Средняя" };
-            if (roll <= 11) return { type: "Корпоративная охрана", description: "Охранники в тяжёлом арморджеке, с тяжёлыми ПП.", threat: "Средняя" };
-            if (roll <= 13) return { type: "Корпоративные техники", description: "Техники с телохранителями, чинят дорогую технику.", threat: "Средняя" };
-            if (roll <= 17) return { type: "Частный детектив", description: "Вооружён очень тяжёлым пистолетом и мачете.", threat: "Средняя" };
-            if (roll <= 20) return { type: "Корпораты", description: "Сотрудники корпораций, с ними бандиты.", threat: "Средняя" };
-            if (roll <= 25) return { type: "Рокербои", description: "Группа рокеров идёт на концерт, с ними соло-телохранители.", threat: "Низкая" };
-            if (roll <= 30) return { type: "Медиа", description: "Съёмочная группа, снимает репортаж.", threat: "Низкая" };
-            if (roll <= 33) return { type: "Вампиры филармонии", description: "Банда пранкеров, готовят очередной розыгрыш.", threat: "Низкая" };
-            if (roll <= 40) return { type: "Местный подросток", description: "Подросток, сбежавший из дома, попал в беду.", threat: "Нет" };
-            if (roll <= 46) return { type: "Бродячие нетраннеры", description: "Взламывают архитектуру сети небольшого офиса.", threat: "Средняя" };
-            if (roll <= 52) return { type: "Кочевники", description: "Поддатые кочевники в среднем арморджеке, ищут драки.", threat: "Высокая" };
-            if (roll <= 58) return { type: "Уличные панки", description: "Смэшхэды, вооружены ножами и дубинками.", threat: "Средняя" };
-            if (roll <= 63) return { type: "Trauma Team", description: "AV-4 забирает раненых.", threat: "Средняя" };
-            if (roll <= 69) return { type: "Хромеры", description: "Фанаты хроматик рока, лезут в драку.", threat: "Средняя" };
-            if (roll <= 72) return { type: "Команда соло", description: "Наёмные убийцы, могут убрать свидетелей.", threat: "Высокая" };
-            if (roll <= 77) return { type: "Железные прицелы (усиленные)", description: "Опытные бойцы с автоматическим оружием и имплантами.", threat: "Очень высокая" };
-            if (roll <= 83) return { type: "Команда соло (серые операции)", description: "Профессионалы с умным оружием и продвинутыми имплантами.", threat: "Очень высокая" };
-            if (roll <= 90) return { type: "Пираньи", description: "Банда с усиленными рефлексами.", threat: "Высокая" };
-            if (roll <= 93) return { type: "Крупная криминальная операция", description: "Семья Скагаттия разгружает наркотики. Киберизированные соло.", threat: "Очень высокая" };
-            if (roll <= 100) return { type: "Перестрелка", description: "Вы вваливаетесь в разборку между Мальстрём и Легионом Красного хрома.", threat: "Очень высокая" };
-            return { type: "Обычный день", description: "Ничего особенного не происходит.", threat: "Нет" };
-        } else {
-            // Вечерние и ночные встречи для боевой зоны
-            return this.getCorporateEncounter(roll, time);
-        }
-    }
-
-    // Встречи для Горячей зоны (из книги, стр. 423-425)
-    static getHotEncounter(roll, time) {
-        // Аналогично боевой зоне, но с более опасными результатами
-        return this.getCombatEncounter(roll, time);
-    }
-
     static renderEncounter(encounter, roll) {
-        const threatColor = {
-            'Нет': '#9aa4bf',
-            'Низкая': '#4caf50',
-            'Средняя': '#ffc107',
-            'Высокая': '#ff9800',
-            'Очень высокая': '#ff3c5f'
-        };
-        
+        const threatColor = { 'Нет':'#9aa4bf','Низкая':'#4caf50','Средняя':'#ffc107','Высокая':'#ff9800','Очень высокая':'#ff3c5f' };
         const html = `
             <div class="encounter-card">
                 <div class="encounter-header">
                     <div class="encounter-type">${encounter.type}</div>
-                    <div class="encounter-threat" style="color: ${threatColor[encounter.threat] || '#9aa4bf'}">
-                        🎯 Угроза: ${encounter.threat}
-                    </div>
+                    <div class="encounter-threat" style="color:${threatColor[encounter.threat] || '#9aa4bf'}">🎯 Угроза: ${encounter.threat}</div>
                 </div>
                 <div class="encounter-description">${encounter.description}</div>
                 <div class="encounter-roll">🎲 Результат броска: ${roll}</div>
             </div>
-            <div class="button-group">
-                <button id="rerollEncounterBtn" class="cyber-btn">🎲 Перебросить</button>
-            </div>
+            <div class="button-group"><button id="rerollEncounterBtn" class="cyber-btn">🎲 Перебросить</button></div>
         `;
         document.getElementById('encounterResult').innerHTML = html;
-        
-        // Обработчик для кнопки переброса
         document.getElementById('rerollEncounterBtn')?.addEventListener('click', () => this.generate());
     }
 }
-// ========== Калькулятор развития (IP) ==========
-function calculateIPCost(current, target, type) {
-    if (current >= target) return 0;
-    const costMapNormal = { 1:20,2:40,3:60,4:80,5:100,6:120,7:140,8:160,9:180,10:200 };
-    const costMapHard = { 1:40,2:80,3:120,4:160,5:200,6:240,7:280,8:320,9:360,10:400 };
-    const costMapRole = { 1:60,2:120,3:180,4:240,5:300,6:360,7:420,8:480,9:540,10:600 };
-    let costMap = costMapNormal;
-    if (type === 'hard') costMap = costMapHard;
-    if (type === 'role') costMap = costMapRole;
-    let total = 0;
-    for (let i = current+1; i <= target; i++) total += costMap[i];
-    return total;
+
+// ========== ПРОДВИНУТЫЙ ГЕНЕРАТОР КОНТРАКТОВ ==========
+export class AdvancedContractGenerator {
+    static generate() {
+        const difficulty = document.getElementById('contractDifficulty').value;
+        let chosenType = document.getElementById('contractType').value;
+        if (chosenType === 'random') {
+            const types = ['extraction','elimination','protection','theft','sabotage','transport','espionage','psyop'];
+            chosenType = types[Math.floor(Math.random() * types.length)];
+        }
+        const contract = this.buildContract(chosenType, difficulty);
+        this.renderContract(contract);
+        return contract;
+    }
+    static buildContract(type, difficulty) {
+        const clients = {
+            extraction: ["Корпорация Arasaka", "Militech", "Банда Мальстрём", "Тигриные когти", "Фиксер Хорнет", "Правительство НСША", "Кочевники Альдекальдо", "Trauma Team", "Медиа-корпорация", "Частный коллекционер"],
+            elimination: ["Корпорация Arasaka", "Militech", "Банда Мальстрём", "Тигриные когти", "Фиксер Хорнет", "Правительство НСША", "Кочевники Альдекальдо", "Семья Скив", "Якудза", "Ревнивый супруг"],
+            protection: ["Корпорация Arasaka", "Militech", "Фиксер Хорнет", "Правительство НСША", "Кочевники Альдекальдо", "Trauma Team", "Медиа-корпорация", "Богатый бизнесмен", "Учёный Biotechnica", "Свидетель"],
+            theft: ["Корпорация Arasaka", "Militech", "Банда Мальстрём", "Тигриные когти", "Фиксер Хорнет", "Правительство НСША", "Кочевники Альдекальдо", "Хакер-одиночка", "Конкурирующий фиксер", "Музей"],
+            sabotage: ["Корпорация Arasaka", "Militech", "Банда Мальстрём", "Тигриные когти", "Фиксер Хорнет", "Правительство НСША", "Кочевники Альдекальдо", "Эко-террористы", "Недовольный менеджер"],
+            transport: ["Корпорация Arasaka", "Militech", "Фиксер Хорнет", "Кочевники Альдекальдо", "Контрабандисты", "Криминальный синдикат", "Докер", "Гуманитарная организация"],
+            espionage: ["Корпорация Arasaka", "Militech", "Правительство НСША", "Европейский союз", "Неосоветы", "Конкурирующая корпорация", "Иностранное посольство"],
+            psyop: ["Корпорация Arasaka", "Militech", "Правительство НСША", "Медиа-корпорация", "Политическая партия", "Культ", "Психоотряд"]
+        };
+        const targets = {
+            extraction: ["похищенного учёного", "свидетеля", "ценный прототип", "члена семьи", "предателя", "имплант с данными", "заложника"],
+            elimination: ["корпоративного шпиона", "лидера банды", "предателя", "свидетеля", "цель из списка", "конкурента", "киберпсиха"],
+            protection: ["VIP-персону", "караван с грузом", "объект", "свидетеля", "тайник с уликами", "базу повстанцев"],
+            theft: ["файлы данных", "прототип", "артефакт", "финансовые отчёты", "чертежи", "пароль", "ключ-карту"],
+            sabotage: ["лабораторию", "склад оружия", "серверную", "транспортный узел", "энергоблок", "завод", "систему безопасности"],
+            transport: ["деликатный груз", "контрабанду", "гуманитарную помощь", "ценный антиквариат", "партию имплантов", "образцы ДНК"],
+            espionage: ["секретные планы", "коды доступа", "список агентов", "компромат", "архивы переписки", "дипломатические документы"],
+            psyop: ["распространить слух", "дезинформацию", "компромат на политика", "манипуляцию общественным мнением", "спровоцировать конфликт"]
+        };
+        const complications = {
+            easy: [],
+            medium: ["сжатые сроки", "неполная информация", "нейтральная территория"],
+            hard: ["утечка информации", "конкурирующая команда", "двойной агент", "система безопасности"],
+            deadly: ["предательство заказчика", "засада", "вмешательство третьей стороны", "временная бомба", "ненадёжное снаряжение"]
+        };
+        const twists = [
+            "Цель знает о покушении и подготовилась",
+            "Заказчик планирует избавиться от команды после выполнения",
+            "Данные, которые вы украли, содержат вирус",
+            "Груз – живой, и он не хочет ехать",
+            "На объекте уже работает другая команда",
+            "Цель оказывается старым другом",
+            "В процессе выясняется, что заказчик – корпорация, а цель – правительство"
+        ];
+        const rewardBase = { easy: 500, medium: 1000, hard: 2000, deadly: 4000 };
+        const reward = rewardBase[difficulty] + Math.floor(Math.random() * 500);
+        const clientList = clients[type] || clients.extraction;
+        const client = clientList[Math.floor(Math.random() * clientList.length)];
+        const targetList = targets[type] || targets.extraction;
+        const target = targetList[Math.floor(Math.random() * targetList.length)];
+        const complicationList = complications[difficulty];
+        const hasComplication = Math.random() > 0.5;
+        const complication = hasComplication && complicationList.length ? complicationList[Math.floor(Math.random() * complicationList.length)] : null;
+        const hasTwist = Math.random() > 0.7;
+        const twist = hasTwist ? twists[Math.floor(Math.random() * twists.length)] : null;
+        let description = "";
+        switch(type) {
+            case 'extraction': description = `Заказчик ${client} нанимает команду для извлечения ${target}. Цель находится на охраняемом объекте. Оплата: ${reward} eb.`; break;
+            case 'elimination': description = `Заказчик ${client} требует ликвидировать ${target}. Цель хорошо охраняется. Оплата: ${reward} eb.`; break;
+            case 'protection': description = `Заказчик ${client} нанимает команду для охраны ${target}. Угроза: возможное нападение. Оплата: ${reward} eb.`; break;
+            case 'theft': description = `Заказчик ${client} поручает кражу ${target}. Охрана усилена. Оплата: ${reward} eb.`; break;
+            case 'sabotage': description = `Заказчик ${client} нанимает команду для саботажа ${target}. Необходимо минимизировать следы. Оплата: ${reward} eb.`; break;
+            case 'transport': description = `Заказчик ${client} нуждается в перевозке ${target}. Маршрут опасен. Оплата: ${reward} eb.`; break;
+            case 'espionage': description = `Заказчик ${client} требует добыть ${target}. Операция секретная. Оплата: ${reward} eb.`; break;
+            case 'psyop': description = `Заказчик ${client} поручает психологическую операцию: ${target}. Цель – повлиять на общественное мнение. Оплата: ${reward} eb.`; break;
+        }
+        if (complication) description += ` Осложнение: ${complication}.`;
+        if (twist) description += ` Неожиданный поворот: ${twist}.`;
+        return { type, client, target, difficulty, reward, complication, twist, description };
+    }
+    static renderContract(contract) {
+        const container = document.getElementById('advancedContractResult');
+        if (!container) return;
+        const html = `
+            <div class="contract-card">
+                <div class="contract-header">
+                    <div class="contract-type">${this.translateType(contract.type)}</div>
+                    <div class="contract-difficulty">${this.translateDifficulty(contract.difficulty)}</div>
+                </div>
+                <div class="contract-description">${contract.description}</div>
+                <div class="contract-details">
+                    <div><strong>Заказчик:</strong> ${contract.client}</div>
+                    <div><strong>Цель:</strong> ${contract.target}</div>
+                    <div><strong>Награда:</strong> ${contract.reward} eb</div>
+                    ${contract.complication ? `<div><strong>Осложнение:</strong> ${contract.complication}</div>` : ''}
+                    ${contract.twist ? `<div><strong>Поворот:</strong> ${contract.twist}</div>` : ''}
+                </div>
+            </div>
+        `;
+        container.innerHTML = html;
+    }
+    static translateType(type) {
+        const map = { extraction: "Извлечение", elimination: "Устранение", protection: "Охрана", theft: "Кража данных", sabotage: "Саботаж", transport: "Перевозка груза", espionage: "Шпионаж", psyop: "Психологическая операция" };
+        return map[type] || type;
+    }
+    static translateDifficulty(diff) {
+        const map = { easy: "Лёгкая", medium: "Средняя", hard: "Тяжёлая", deadly: "Смертельная" };
+        return map[diff] || diff;
+    }
+    static copyToClipboard() {
+        const container = document.getElementById('advancedContractResult');
+        if (!container || !container.innerText) return;
+        const text = container.innerText;
+        navigator.clipboard.writeText(text).then(() => alert('Контракт скопирован в буфер обмена!'));
+    }
 }
 
-function renderIPTable() {
-    const container = document.getElementById('ipTableWrapper');
-    if (!container) return;
-    const normal = [20,40,60,80,100,120,140,160,180,200];
-    const hard = [40,80,120,160,200,240,280,320,360,400];
-    const role = [60,120,180,240,300,360,420,480,540,600];
-    let html = `<table class="cyber-table"><thead><tr><th>Уровень</th><th>Обычный</th><th>Сложный (×2)</th><th>Ролевой</th></tr></thead><tbody>`;
-    for (let i = 1; i <= 10; i++) {
-        html += `<tr><td>${i}</td><td>${normal[i-1]}</td><td>${hard[i-1]}</td><td>${role[i-1]}</td></tr>`;
-    }
-    html += `</tbody></table>`;
-    container.innerHTML = html;
-}
-
-function updateIPCalculator() {
-    const type = document.getElementById('ipSkillType').value;
-    let current = parseInt(document.getElementById('currentLevel').value);
-    let target = parseInt(document.getElementById('targetLevel').value);
-    if (isNaN(current)) current = 0;
-    if (isNaN(target)) target = 0;
-    if (current < 0 || current > 10 || target < 0 || target > 10) {
-        document.getElementById('ipResult').innerHTML = '<span style="color:#ff3c5f;">⚠️ Уровни должны быть от 0 до 10</span>';
-        return;
-    }
-    if (target <= current) {
-        document.getElementById('ipResult').innerHTML = '<span class="note">🎯 Целевой уровень не выше текущего. Стоимость = 0 IP.</span>';
-        return;
-    }
-    const cost = calculateIPCost(current, target, type);
-    document.getElementById('ipResult').innerHTML = `<strong>💰 Стоимость повышения с ${current} до ${target}:</strong> ${cost} IP`;
-}
-// ========== Инициализация всех GM-инструментов ==========
+// ========== Инициализация GM-инструментов ==========
 export function initGM() {
     document.getElementById('generateNpcBtn')?.addEventListener('click', () => NPCGenerator.generate());
     document.getElementById('genContractBtn')?.addEventListener('click', generateContract);
     document.getElementById('calcPsychoBtn')?.addEventListener('click', checkCyberpsychosis);
     document.getElementById('genNetArchBtn')?.addEventListener('click', generateNetArchitecture);
     document.getElementById('generateMooksBtn')?.addEventListener('click', () => MookGenerator.generate());
-    document.getElementById('generateEncounterBtn')?.addEventListener('click', () => EncounterGenerator.generate());  // 👈 Новая строка
-    initTransport();
-    document.getElementById('generateMooksBtn')?.addEventListener('click', () => MookGenerator.generate());
     document.getElementById('generateEncounterBtn')?.addEventListener('click', () => EncounterGenerator.generate());
-    document.getElementById('calcIPBtn')?.addEventListener('click', updateIPCalculator);
-    renderIPTable(); // заполняем таблицу
+    document.getElementById('generateAdvancedContractBtn')?.addEventListener('click', () => AdvancedContractGenerator.generate());
+    document.getElementById('copyContractBtn')?.addEventListener('click', () => AdvancedContractGenerator.copyToClipboard());
     initTransport();
 }

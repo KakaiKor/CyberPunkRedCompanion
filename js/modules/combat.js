@@ -30,6 +30,7 @@ export class CombatCalculatorUI {
         });
     }
 }
+
 export class DistanceCalculator {
     constructor() {
         const distTable = { pistol:[13,15,20,25,30,30,null,null], smg:[15,13,15,20,25,25,30,null], shotgun:[13,15,20,25,30,35,null,null], rifle:[17,16,15,13,15,20,25,30], sniper:[30,25,25,20,15,16,17,20] };
@@ -62,6 +63,7 @@ export class DistanceCalculator {
         update();
     }
 }
+
 export class InitiativeTracker {
     constructor() { this.entries=[]; this.render(); document.getElementById('addInitiativeBtn')?.addEventListener('click',()=>this.add()); document.getElementById('rollInitiativeForTrackerBtn')?.addEventListener('click',()=>this.roll()); document.getElementById('clearInitiativeBtn')?.addEventListener('click',()=>this.clear()); }
     render() {
@@ -70,7 +72,7 @@ export class InitiativeTracker {
         if(this.entries.length===0) { container.innerHTML='<p>Список пуст. Добавьте участников.</p>'; return; }
         const sorted = [...this.entries].sort((a,b)=>b.init-a.init);
         let html = `<table style="width:100%"><thead><tr><th>Имя</th><th>Инициатива</th><th></th></tr></thead><tbody>`;
-        sorted.forEach((e,idx)=> html += `<tr><td>${e.name}</td><td>${e.init}</td><td><button onclick="window.initTracker.remove(${idx})">🗑️</button></td></tr>`);
+        sorted.forEach((e,idx)=> html += `<tr>}<strong>${e.name}</strong></td>}<strong>${e.init}</strong></td>}<button onclick="window.initTracker.remove(${idx})">🗑️</button></td></tr>`);
         html += `</tbody></table>`;
         container.innerHTML = html;
     }
@@ -79,6 +81,7 @@ export class InitiativeTracker {
     remove(idx) { this.entries.splice(idx,1); this.render(); }
     clear() { this.entries=[]; this.render(); }
 }
+
 export class GroupInitiative {
     constructor() { this.participants=[]; this.render(); document.getElementById('addToGroupInitBtn')?.addEventListener('click',()=>this.add()); document.getElementById('rollGroupInitBtn')?.addEventListener('click',()=>this.rollAll()); document.getElementById('clearGroupInitBtn')?.addEventListener('click',()=>this.clear()); }
     add() { let name = document.getElementById('groupInitName').value.trim(); let ref = parseInt(document.getElementById('groupInitRef').value); if(!name) name="Персонаж"; if(isNaN(ref)) ref=5; this.participants.push({name,ref,init:0}); this.render(); document.getElementById('groupInitName').value=''; }
@@ -90,13 +93,13 @@ export class GroupInitiative {
         if(this.participants.length===0) { container.innerHTML='<p>Список пуст. Добавьте участников.</p>'; return; }
         const sorted = [...this.participants].sort((a,b)=>b.init-a.init);
         let html = `<table style="width:100%"><thead><tr><th>Имя</th><th>РЕФ</th><th>Инициатива</th><th></th></tr></thead><tbody>`;
-        sorted.forEach((p,idx)=> html += `<tr><td>${p.name}</td><td>${p.ref}</td><td>${p.init||'—'}</td><td><button onclick="window.groupInitiative.remove(${idx})">🗑️</button></td></tr>`);
+        sorted.forEach((p,idx)=> html += `<tr>}<strong>${p.name}</strong></td>}<strong>${p.ref}</strong></td>}<strong>${p.init||'—'}</strong></td>}<button onclick="window.groupInitiative.remove(${idx})">🗑️</button></td></tr>`);
         html += `</tbody></table>`;
         container.innerHTML = html;
     }
     remove(idx) { this.participants.splice(idx,1); this.render(); }
-    
 }
+
 export class CombatFormulas {
     constructor() {
         this.fillDistanceTable();
@@ -121,7 +124,6 @@ export class CombatFormulas {
     fillDistanceTable() {
         const container = document.getElementById('distanceTable');
         if (!container) return;
-        
         const weapons = [
             { name: "Пистолет", values: [13,15,20,25,30,30,"—","—"] },
             { name: "Пистолет-пулемёт", values: [15,13,15,20,25,25,30,"—"] },
@@ -132,16 +134,15 @@ export class CombatFormulas {
             { name: "Гранатомёт", values: [16,15,15,17,20,22,25,"—"] },
             { name: "Ракетница", values: [17,16,15,15,20,20,25,30] }
         ];
-        
         let html = `<div class="table-wrapper"><table class="cyber-table">
-            <thead><tr><th>Оружие</th><th>0-6м</th><th>7-12м</th><th>13-25м</th><th>26-50м</th><th>51-100м</th><th>101-200м</th><th>201-400м</th><th>401-800м</th></tr></thead>
+            <thead><tr><th>Оружие</th><th>0-6м</th><th>7-12м</th><th>13-25м</th><th>26-50м</th><th>51-100м</th><th>101-200м</th><th>201-400м</th><th>401-800м</th><tr></thead>
             <tbody>`;
         weapons.forEach(w => {
             html += `<tr><td><strong>${w.name}</strong></td>`;
             w.values.forEach(v => html += `<td>${v}</td>`);
             html += `</tr>`;
         });
-        html += `</tbody></table></div><p class="note">* При использовании ПП и штурмовых винтовок в режиме автоматического огня используются другие СЛ.</p>`;
+        html += `</tbody></table></div><p class="note">* Автоогонь использует другие СЛ (см. книгу правил).</p>`;
         container.innerHTML = html;
     }
 

@@ -1949,8 +1949,8 @@ body.cyberpunk-theme select {
   border-right: 3px solid var(--black-color);
   border-bottom: 6px solid var(--black-color);
   font-size: 1rem;
-  padding: 8px 12px;
-  width: calc(100% - 20px);
+  padding: 11px 0px;
+  width: calc(100% - -5px);
 }
 
 body.cyberpunk-theme textarea {
@@ -2028,6 +2028,435 @@ body.cyberpunk-theme .scanline {
     opacity: 0.7;
     border-radius: 4px;
     display: none;
+}
+
+/* ========== ВЕРТИКАЛЬНОЕ МЕНЮ ГЛАВНЫХ ВКЛАДОК ========== */
+@media (min-width: 701px) {
+    .main-tabs {
+        flex-direction: column;
+        width: 220px;
+        float: left;
+        border-right: 1px solid #2a3342;
+        border-bottom: none;
+        margin-right: 20px;
+        padding-bottom: 0;
+    }
+    .main-pane {
+        margin-left: 240px;
+    }
+    .main-tabs .tab-btn {
+        width: 100%;
+        text-align: left;
+        margin-bottom: 5px;
+    }
+}
+
+/* ========== КОРРЕКТНОЕ ОТОБРАЖЕНИЕ ЦИФР ХАРАКТЕРИСТИК ========== */
+.stats-grid .stat-value,
+.stats-grid input {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ff9a3c;  /* яркий цвет для видимости */
+    background: #1e2530;
+    border-radius: 8px;
+    padding: 2px 6px;
+}
+.stat-item .stat-value {
+    color: #ff9a3c;
+    font-weight: bold;
+}
+body.cyberpunk-theme .stats-grid .stat-value,
+body.cyberpunk-theme .stats-grid input {
+    color: var(--neon-color);
+    text-shadow: 0 0 2px var(--neon-color);
+}
+/* ========== ИСПРАВЛЕНИЕ НАСЛОЕНИЯ DROPDOWN В КИБЕРПАНК-ТЕМЕ ========== */
+body.cyberpunk-theme select {
+    clip-path: none !important;
+    overflow: visible !important;
+    position: relative;
+    z-index: 1000;
+    background: var(--black-color);
+    border: 1px solid var(--yellow-color);
+    color: var(--yellow-color);
+}
+body.cyberpunk-theme .stat-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--neon-color);
+    text-shadow: 0 0 3px var(--neon-color);
+    display: inline-block;
+    min-width: 40px;
+    text-align: center;
+}
+
+body.cyberpunk-theme .stat-name {
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+}
+
+
+
+
+
+/* Центрирование содержимого в разделе Роли */
+.roles-accordion {
+    max-width: 900px;
+    margin: 0 auto;
+}
+.role-details {
+    text-align: center;
+}
+.role-summary {
+    justify-content: center;
+    gap: 20px;
+}
+.role-content {
+    text-align: left;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.role-content ul, .role-content p {
+    text-align: left;
+}
+/* Стили для раздела Роли – центрирование карточек, но текст по краям */
+.roles-accordion {
+    max-width: 900px;
+    margin: 0 auto;
+}
+.role-details {
+    text-align: left;
+    background: #14181f;
+    border: 1px solid #2a3342;
+    border-radius: 16px;
+    margin-bottom: 16px;
+}
+.role-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    background: #1e2530;
+    border-radius: 16px;
+    list-style: none;
+}
+.role-summary::-webkit-details-marker {
+    display: none;
+}
+.role-summary::before {
+    content: '▶';
+    margin-right: 12px;
+    color: #ff9a3c;
+    transition: transform 0.2s;
+}
+.role-details[open] .role-summary::before {
+    transform: rotate(90deg);
+}
+.role-name {
+    font-size: 1.3rem;
+    color: #ff9a3c;
+    font-family: monospace;
+    flex: 1;
+    text-align: left;
+}
+.role-skill {
+    background: #ff3c5f;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #0a0c12;
+    text-align: right;
+    margin-left: auto;
+}
+.role-content {
+    padding: 12px 20px 20px 20px;
+    border-top: 1px solid #2a3342;
+}
+.role-content ul, .role-content p {
+    text-align: left;
+    margin-left: 0;
+    padding-left: 20px;
+}
+body.cyberpunk-theme #idealStatsGrid input,
+body.cyberpunk-theme .skill-level,
+body.cyberpunk-theme .stat-value,
+body.cyberpunk-theme .number-value,
+body.cyberpunk-theme .current-hp,
+body.cyberpunk-theme #idealStatsPoints,
+body.cyberpunk-theme #idealSkillPoints {
+    color: #f9f002 !important;
+    text-shadow: 0 0 3px #f9f002, 0 0 5px #000 !important;
+    -webkit-text-stroke: 0.5px #000 !important;
+    font-weight: bold !important;
+}
+/* Опции внутри селекта – тоже должны быть чёткими */
+body.cyberpunk-theme select option {
+    background: var(--black-color);
+    color: var(--yellow-color);
+    border: 1px solid var(--yellow-color);
+}
+/* ========== ВЕРТИКАЛЬНОЕ МЕНЮ (для десктопа) ========== */
+@media (min-width: 701px) {
+    .main-tabs {
+        flex-direction: column;
+        width: 220px;
+        float: left;
+        border-right: 1px solid #2a3342;
+        border-bottom: none;
+        margin-right: 20px;
+        padding-bottom: 0;
+    }
+    .main-pane {
+        margin-left: 240px;
+    }
+    .main-tabs .tab-btn {
+        width: 100%;
+        text-align: left;
+        margin-bottom: 5px;
+    }
+}
+
+/* ========== ИСПРАВЛЕНИЕ НАСЛОЕНИЯ DROPDOWN ========== */
+select {
+    position: relative;
+    z-index: 1000;
+    overflow: visible !important;
+}
+.card, .sub-pane, .main-pane {
+    overflow: visible !important;
+}
+/* Для киберпанк-темы */
+body.cyberpunk-theme select {
+    clip-path: none !important;
+    background: var(--black-color);
+    border: 1px solid var(--yellow-color);
+}
+body.cyberpunk-theme select option {
+    background: var(--black-color);
+    color: var(--yellow-color);
+}
+
+/* ========== ЧИТАЕМЫЕ ЦИФРЫ В ИДЕАЛ-КОНСТРУКТОРЕ ========== */
+body.cyberpunk-theme .stats-grid .stat-value,
+body.cyberpunk-theme .stat-item .stat-value,
+body.cyberpunk-theme .skill-level,
+body.cyberpunk-theme .number-value,
+body.cyberpunk-theme .current-hp,
+body.cyberpunk-theme #idealStatsPoints,
+body.cyberpunk-theme #idealSkillPoints {
+    color: #39ff14 !important;          /* яркий неоново-зелёный */
+    text-shadow: 0 0 2px #39ff14;
+    font-weight: bold;
+}
+body.cyberpunk-theme .stats-grid input,
+body.cyberpunk-theme .skill-level {
+    background: #000;
+    border: 1px solid #f9f002;
+    color: #f9f002;
+    text-align: center;
+}
+.contract-card {
+    background: #14181f;
+    border: 1px solid #ff3c5f;
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 15px;
+}
+.contract-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+.contract-type {
+    color: #ff9a3c;
+    font-size: 1.2rem;
+}
+.contract-difficulty {
+    background: #2a1a2a;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+.contract-description {
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+.contract-details div {
+    margin-top: 6px;
+    font-size: 0.9rem;
+}
+/* Яркие цифры для всех версий */
+.stats-grid .stat-value,
+.stat-item .stat-value,
+.skill-level,
+.current-hp,
+#idealStatsPoints,
+#idealSkillPoints {
+    color: #39ff14 !important;
+    text-shadow: 0 0 2px #39ff14;
+    font-weight: bold;
+}
+.stats-grid input,
+.skill-level {
+    background: #1e2530;
+    color: #f9f002;
+    text-align: center;
+}
+/* Чтобы выпадающие списки не обрезались и не налезали */
+select {
+    position: relative;
+    z-index: 1000;
+    overflow: visible !important;
+}
+.card, .sub-pane, .main-pane {
+    overflow: visible !important;
+}
+/* Для киберпанк-темы, если она активна */
+body.cyberpunk-theme select {
+    clip-path: none !important;
+}
+/* Унификация полей ввода в калькуляторах боя */
+#combat-calc input[type="number"] {
+    width: 100px;            /* как у calcBody и calcWill */
+    /* text-align: center; */
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    background: #1e2530;
+    border: 1px solid #2e3a48;
+    border-radius: 16px;
+    color: white;
+    transition: 0.2s;
+}
+/* Дополнительно для киберпанк-темы */
+body.cyberpunk-theme #combat-calc input[type="number"] {
+    background: var(--black);
+    border-color: var(--yellow);
+    color: var(--yellow);
+}
+/* Терминал */
+.terminal-container {
+    margin-bottom: 20px;
+    border: 1px solid #ff3c5f;
+    background: #0a0c12;
+}
+.terminal-header {
+    background: #1a1a2a;
+    padding: 6px 12px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    border-bottom: 1px solid #ff3c5f;
+}
+.terminal-title {
+    color: #ff9a3c;
+    font-weight: bold;
+}
+.terminal-code {
+    background: #0a0c12;
+    color: #00ffcc;
+    font-family: monospace;
+    padding: 12px;
+    margin: 0;
+    white-space: pre-wrap;
+}
+.blink {
+    animation: blink 1s step-end infinite;
+}
+/* Пошаговый конструктор */
+.wizard-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+.wizard-steps .step {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    background: #1e2530;
+    border-radius: 20px;
+    margin: 0 4px;
+    font-weight: bold;
+    color: #9aa4bf;
+}
+.wizard-steps .step.active {
+    background: #ff3c5f;
+    color: white;
+    box-shadow: 0 0 8px #ff3c5f;
+}
+.stats-wizard-grid, .skills-wizard-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+.skill-wizard-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f1219;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+.skill-wizard-item input {
+    width: 70px;
+    text-align: center;
+}
+.cyber-wizard-list, .gear-category {
+    max-height: 300px;
+    overflow-y: auto;
+    margin: 15px 0;
+    padding: 10px;
+    border: 1px solid #2a3342;
+    border-radius: 16px;
+}
+.cyber-option, .gear-category label {
+    display: block;
+    margin: 5px 0;
+}
+.points-counter {
+    font-size: 1.2rem;
+    margin: 10px 0;
+}
+.points-counter .over {
+    color: #ff3c5f;
+}
+.points-counter .ok {
+    color: #39ff14;
+}
+.wizard-summary {
+    background: #0f1219;
+    padding: 15px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+}
+.wizard-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+.role-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0;
+}
+.role-option {
+    background: #1e2530;
+    padding: 8px 15px;
+    border-radius: 30px;
+    cursor: pointer;
+}
+.role-option.selected {
+    background: #ff3c5f;
+    color: white;
+}
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }
 @media (max-width: 700px) {
     body { padding: 12px; }

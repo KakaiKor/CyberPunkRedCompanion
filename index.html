@@ -16,7 +16,7 @@
 
     <div class="app-container">
         <header>
-            <h1>⚡ КИБЕРПАНК RED ⚡</h1>
+            <h1>⚡ CYBERPUNK RED ⚡</h1>
             <div class="search-bar">
                 <input type="text" id="globalSearch" placeholder="🔍 Поиск по всем таблицам...">
                 <button id="clearSearch" class="reset-btn">✖</button>
@@ -31,9 +31,10 @@
         </header>
 
         <!-- КИБЕРПАНК-ТЕРМИНАЛ -->
+        <!-- Киберпанк-терминал -->
         <div class="terminal-container">
             <div class="terminal-header" id="terminalHeader">
-                <span class="terminal-title">⚡ NETRUNNER INTERFACE v.2.0 ⚡</span>
+                <span class="terminal-title">⚡ NETRUNNER INTERFACE v.0.0.0.1_alpha ⚡</span>
                 <button class="terminal-toggle" id="terminalToggle">−</button>
             </div>
             <div class="terminal-body" id="terminalBody">
@@ -42,24 +43,43 @@
         </div>
 
         <div class="main-tabs">
-            <button class="tab-btn active" data-tab="tab-character">🧑‍🎤 Персонаж</button>
-            <button class="tab-btn" data-tab="tab-gear">⚔️ Снаряжение</button>
-            <button class="tab-btn" data-tab="tab-combat">💥 Бой</button>
-            <button class="tab-btn" data-tab="tab-gm">🎲 GM инструменты</button>
-            <button class="tab-btn" data-tab="tab-market">🏪 Рынок & Трофеи</button>
+            <button class="tab-btn active" data-tab="tab-character">Персонаж</button>
+            <button class="tab-btn" data-tab="tab-gear">Снаряжение</button>
+            <button class="tab-btn" data-tab="tab-combat">Бой</button>
+            <button class="tab-btn" data-tab="tab-gm">GM инструменты</button>
+            <button class="tab-btn" data-tab="tab-market">Рынок & Трофеи</button>
         </div>
 
         <!-- Панель ПЕРСОНАЖА -->
         <div id="tab-character" class="main-pane active">
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" data-sub="char-main">📋 Основное</button>
-                <button class="sub-tab-btn" data-sub="char-stats">📊 ХАР & Навыки</button>
-                <button class="sub-tab-btn" data-sub="char-cyber">🦾 Киберимпланты</button>
-                <button class="sub-tab-btn" data-sub="char-shop">🛒 Идеал-шоп</button>
-                <button class="sub-tab-btn" data-sub="char-ideal">✨ Идеал конструктор</button>
-                <button class="sub-tab-btn" data-sub="char-roles">📖 Роли</button>
+                <button class="sub-tab-btn" data-sub="char-wizard">Конструктор</button>
+                <button class="sub-tab-btn active" data-sub="char-main"> Основное</button>
+                <button class="sub-tab-btn" data-sub="char-stats">ХАР & Навыки</button>
+                <button class="sub-tab-btn" data-sub="char-cyber">Киберимпланты</button>
+                <button class="sub-tab-btn" data-sub="char-shop">Идеал-шоп</button>
+                <button class="sub-tab-btn" data-sub="char-ideal">Идеал конструктор</button>
+                <button class="sub-tab-btn" data-sub="char-roles">Роли</button>
             </div>
-
+            <div id="char-wizard" class="sub-pane">
+    <div class="card">
+        <div class="wizard-steps">
+            <div class="step active" data-step="1">Роль</div>
+            <div class="step" data-step="2">ХАР</div>
+            <div class="step" data-step="3">Навыки</div>
+            <div class="step" data-step="4">Киберимпланты</div>
+            <div class="step" data-step="5">Снаряжение</div>
+            <div class="step" data-step="6">Проверка</div>
+        </div>
+        <div class="wizard-content" id="wizardContent"></div>
+        <div class="wizard-buttons">
+            <button id="wizardPrevBtn" class="cyber-btn" disabled>◀ Назад</button>
+            <button id="wizardNextBtn" class="cyber-btn">Далее ▶</button>
+            <button id="wizardSaveBtn" class="cyber-btn" style="display:none">💾 Сохранить персонажа</button>
+        </div>
+        <div id="wizardStatus" class="info-block"></div>
+    </div>
+</div>
             <div id="char-main" class="sub-pane active">
                 <div class="card-grid">
                     <div class="card">
@@ -277,8 +297,9 @@
             <div id="combat-calc" class="sub-pane active">
                 <div class="card-grid">
                     <div class="card">
-                        <h3>ПЗ и спасбросок</h3><label>ТЕЛО: <input id="calcBody" value="6"></label><label>ВОЛЯ: <input
-                                id="calcWill" value="6"></label><button id="calcHpBtn">Рассчитать</button>
+                        <h3>ПЗ и спасбросок</h3><label>ТЕЛО: <input id="calcBody" type="number"
+                                value="6"></label><label>ВОЛЯ: <input id="calcWill" type="number"
+                                value="6"></label><button id="calcHpBtn">Рассчитать</button>
                         <div id="calcResult"></div>
                     </div>
                     <div class="card">
@@ -289,8 +310,9 @@
                         <div id="damageResult"></div>
                     </div>
                     <div class="card">
-                        <h3>Таран</h3><label>Скорость: <input id="ramSpeed" value="60"></label><label>Масса: <input
-                                id="ramWeight" value="1500"></label><button id="calcRamBtn">Урон</button>
+                        <h3>Таран</h3><label>Скорость: <input id="ramSpeed" type="number"
+                                value="60"></label><label>Масса: <input id="ramWeight" type="number"
+                                value="1500"></label><button id="calcRamBtn">Урон</button>
                         <div id="ramResult"></div>
                     </div>
                 </div>
@@ -387,6 +409,7 @@
                 <button class="sub-tab-btn active" data-sub="gm-npc">🤖 NPC</button>
                 <button class="sub-tab-btn" data-sub="gm-group">👥 Группа</button>
                 <button class="sub-tab-btn" data-sub="gm-contract">📜 Контракт</button>
+                <button class="sub-tab-btn" data-sub="gm-contract-advanced">📜 Контракт (продвинутый)</button>
                 <button class="sub-tab-btn" data-sub="gm-psycho">🧠 Киберпсихоз</button>
                 <button class="sub-tab-btn" data-sub="gm-net">🌐 Архитектура сети</button>
                 <button class="sub-tab-btn" data-sub="gm-mooks">💀 Пушечное мясо</button>
@@ -412,6 +435,37 @@
                 <div class="card">
                     <h3>Контракт</h3><button id="genContractBtn">🎲 Сгенерировать</button>
                     <div id="contractResult"></div>
+                </div>
+            </div>
+            <div id="gm-contract-advanced" class="sub-pane">
+                <div class="card">
+                    <h3>⚙️ Генератор контрактов</h3>
+                    <div class="form-row">
+                        <label>Сложность:
+                            <select id="contractDifficulty">
+                                <option value="easy">Лёгкая</option>
+                                <option value="medium" selected>Средняя</option>
+                                <option value="hard">Тяжёлая</option>
+                                <option value="deadly">Смертельная</option>
+                            </select>
+                        </label>
+                        <label>Тип задания:
+                            <select id="contractType">
+                                <option value="random">Случайный</option>
+                                <option value="extraction">Извлечение</option>
+                                <option value="elimination">Устранение</option>
+                                <option value="protection">Охрана</option>
+                                <option value="theft">Кража данных</option>
+                                <option value="sabotage">Саботаж</option>
+                                <option value="transport">Перевозка груза</option>
+                                <option value="espionage">Шпионаж</option>
+                                <option value="psyop">Психологическая операция</option>
+                            </select>
+                        </label>
+                        <button id="generateAdvancedContractBtn">🎲 Сгенерировать контракт</button>
+                        <button id="copyContractBtn">📋 Скопировать</button>
+                    </div>
+                    <div id="advancedContractResult" class="contract-card"></div>
                 </div>
             </div>
             <div id="gm-psycho" class="sub-pane">

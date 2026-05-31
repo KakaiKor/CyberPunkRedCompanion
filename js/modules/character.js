@@ -882,4 +882,5 @@ export class IdealCharacterBuilder {
         if (!this.updateStatsRemaining()) alert("Превышение очков ХАР (максимум 62)");
         if (!this.updateSkillRemaining()) alert("Превышение очков навыков (максимум 86)");
         }
+        
 }
