@@ -1,0 +1,3 @@
+export function renderCyberware(data) {
+    return `<div class="table-wrapper"><table class="cyber-table"><thead><tr><th>Название</th><th>Тип</th><th>Установка</th><th>Эффект</th><th>Цена</th><th>ПЧ</th><th>Прим.</th></tr></thead><tbody>${data.map(c => `<tr><td>${c.name}</td><td>${c.type}</td><td>${c.install}</td><td>${c.effect}</td><td>${c.cost} eb</td><td>${c.humanity}</td><td>${c.notes || ''}</td></tr>`).join('')}</tbody></table></div>`;
+}

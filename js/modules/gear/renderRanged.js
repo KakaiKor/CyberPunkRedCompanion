@@ -1,0 +1,3 @@
+export function renderRanged(data) {
+    return `<div class="table-wrapper"><table class="cyber-table"><thead><tr><th>Название</th><th>Навык</th><th>Урон</th><th>Маг.</th><th>СКОР</th><th>Рук</th><th>Скрыть</th><th>Цена</th></tr></thead><tbody>${data.map(w => `<tr><td>${w.name}</td><td>${w.skill}</td><td>${w.dmg}</td><td>${w.mag}</td><td>${w.rof}</td><td>${w.hands}</td><td>${w.conceal}</td><td>${w.cost} eb</td></tr>`).join('')}</tbody></table></div>`;
+}

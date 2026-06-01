@@ -1,0 +1,3 @@
+export function renderTransport(data) {
+    return `<div class="table-wrapper"><table class="cyber-table"><thead><tr><th>Название</th><th>Тип</th><th>ПСП</th><th>Мест</th><th>СКО (бой)</th><th>Скорость</th><th>Цена</th></tr></thead><tbody>${data.map(t => `<tr><td><strong>${t.name}</strong></td><td>${t.type}</td><td>${t.psp}</td><td>${t.seats}</td><td>${t.speedCombat}</td><td>${t.speedNarrative}</td><td>${t.cost.toLocaleString()} eb</td></tr>`).join('')}</tbody></table></div>`;
+}
