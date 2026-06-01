@@ -41,7 +41,27 @@ export class CharacterWizard {
             totalSpentOnGearAndCyber: 0,
         };
     }
-
+    jumpToStep(targetStep) {
+    if (targetStep === this.currentStep) return;
+    // Проверяем, что все шаги от 0 до targetStep-1 валидны
+    for (let i = 0; i < targetStep; i++) {
+        // временно меняем currentStep, вызываем валидацию для шага i
+        const oldStep = this.currentStep;
+        this.currentStep = i;
+        const isValid = this.validateStep();
+        this.currentStep = oldStep;
+        if (!isValid) {
+            alert(`Сначала завершите шаг ${this.getStepName(i)}`);
+            return;
+        }
+    }
+    this.currentStep = targetStep;
+    this.renderStep();
+}
+getStepName(step) {
+    const names = ["Имя", "Роль", "ХАР", "Снаряжение", "Навыки", "Импланты", "Стиль", "Человечность", "Расходы", "Заметки", "Итог"];
+    return names[step] || "Шаг";
+}
     loadProgress() {
         const saved = localStorage.getItem('wizard_progress');
         return saved ? JSON.parse(saved) : null;
@@ -177,7 +197,14 @@ export class CharacterWizard {
             default: html = '<p>Ошибка: шаг не найден</p>';
         }
         container.innerHTML = html;
-
+        const stepElements = document.querySelectorAll('.wizard-steps .step');
+stepElements.forEach((el, idx) => {
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.jumpToStep(idx);
+    });
+});
         if (this.currentStep === 4 || this.currentStep === 5) this.restoreGroupStates();
 
         this.attachStepEvents();
