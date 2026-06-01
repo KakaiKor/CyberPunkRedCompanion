@@ -98,3 +98,37 @@ body.cyberpunk-theme .terminal-title {
 body.cyberpunk-theme .terminal-code {
     color: var(--border-color);
 }
+* Киберпанк-тема для скримлиста */
+body.cyberpunk-theme .scream-sheet {
+    background: #111111;
+    background-image: linear-gradient(0deg, rgba(255,60,95,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,60,95,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: #e0e0e0;
+    border-left-color: #ff3c5f;
+}
+body.cyberpunk-theme .scream-sheet::before {
+    background: #111111;
+    color: #ff3c5f;
+}
+body.cyberpunk-theme .sheet-header {
+    border-bottom-color: #ff3c5f;
+    color: #ff9a3c;
+}
+body.cyberpunk-theme .sheet-headline {
+    color: #ff9a3c;
+    border-left-color: #ff3c5f;
+}
+body.cyberpunk-theme .sheet-body {
+    column-rule-color: #ff3c5f;
+}
+body.cyberpunk-theme .copy-sheet-btn {
+    background: #ff3c5f;
+    color: #0a0c12;
+}
+body.cyberpunk-theme .copy-sheet-btn:hover {
+    background: #ff9a3c;
+}
+body.cyberpunk-theme .sheet-section {
+    background: #ff3c5f;
+    color: #0a0c12;
+}

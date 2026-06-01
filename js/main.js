@@ -7,7 +7,7 @@ import { ExpensesCalc } from './modules/expenses.js';
 import { IdealCharacterBuilder } from './modules/ideal-builder.js';
 import { CombatCalculatorUI, DistanceCalculator, InitiativeTracker, GroupInitiative, CombatFormulas } from './modules/combat.js';
 import { initTransport } from './modules/transport.js';
-import { NPCGenerator, GroupTracker, initGM, MookGenerator, EncounterGenerator, AdvancedContractGenerator, generateSimpleContract, generateNetArchitecture } from './modules/gm.js';
+import { NPCGenerator, GroupTracker, initGM, MookGenerator, EncounterGenerator, AdvancedContractGenerator, generateSimpleContract, generateNetArchitecture, ScreamSheetGenerator  } from './modules/gm.js';
 import { updateAllTables, filterTables, renderFilteredCyberware } from './modules/gear.js';
 import { renderRoles } from './modules/roles.js';
 import {
@@ -18,6 +18,7 @@ import {
 import { saveCharacter, loadCharacter, saveGroup, loadGroup } from './storage.js';
 import { allSkills, roleTemplates } from './data/skills-data.js';
 import { NightMarket, TreasureGenerator, IdealShop } from './modules/market.js';
+
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
     const data = {
@@ -55,7 +56,6 @@ function importAllData(file) {
     reader.readAsText(file);
 }
 
-// Функции добавления новых предметов (остаются в main.js)
 function addRangedWeapon() {
     let newWeapon = { name: prompt("Название:") || "Новое", skill: prompt("Навык:") || "Короткоствольное", dmg: prompt("Урон:") || "2d6", mag: parseInt(prompt("Магазин:")||"10"), rof: parseInt(prompt("СКОР:")||"2"), hands: parseInt(prompt("Рук:")||"1"), conceal: prompt("Скрыть (да/нет):")||"да", cost: parseInt(prompt("Цена:")||"100"), notes: "" };
     rangedWeapons.push(newWeapon);
@@ -77,7 +77,6 @@ function addCyberware() {
     updateAllTables();
 }
 
-// Заполнение таблицы стоимости IP
 function fillIpTable() {
     const tbody = document.getElementById('ipTableBody');
     if (!tbody) return;
@@ -105,11 +104,9 @@ function calculateIp() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Первичный рендеринг таблиц
     updateAllTables();
     fillIpTable();
 
-    // Инициализация основных модулей
     new TabManager();
     new CharacterHelper();
     new NightMarket();
@@ -122,56 +119,12 @@ document.addEventListener('DOMContentLoaded', () => {
     window.idealBuilder = new IdealCharacterBuilder();
     window.idealShop = new IdealShop();
     initTransport();
-    // Инициализация GM-модулей
-    initGM(); // эта функция должна быть определена где-то (например, в отдельном модуле) или мы вызовем отдельные инициализаторы
-    // Альтернативно – вызовем каждую инициализацию вручную, если нет единого initGM.
-    // Для простоты создадим небольшую функцию initGM прямо здесь, если она не экспортируется из gm.js.
-    // В старом gm.js была функция initGM. Сейчас её нет, поэтому создадим временную.
-    function initGM() {
-        // NPC
-        document.getElementById('generateNpcBtn')?.addEventListener('click', () => NPCGenerator.generate());
-        // Простой контракт
-        const simpleContractBtn = document.getElementById('genContractBtn');
-        if (simpleContractBtn) {
-            simpleContractBtn.addEventListener('click', generateSimpleContract);
-        }
-        // Продвинутый контракт
-        const advancedContractBtn = document.getElementById('generateAdvancedContractBtn');
-        if (advancedContractBtn) {
-            advancedContractBtn.addEventListener('click', () => AdvancedContractGenerator.generate());
-        }
-        const copyContractBtn = document.getElementById('copyContractBtn');
-        if (copyContractBtn) {
-            copyContractBtn.addEventListener('click', () => AdvancedContractGenerator.copyToClipboard());
-        }
-        // Киберпсихоз
-        const psychoBtn = document.getElementById('calcPsychoBtn');
-        if (psychoBtn) {
-            psychoBtn.addEventListener('click', () => checkCyberpsychosis());
-        }
-        // Архитектура сети
-        const netBtn = document.getElementById('genNetArchBtn');
-        if (netBtn) {
-            netBtn.addEventListener('click', generateNetArchitecture);
-        }
-        // Мобы
-        const mookBtn = document.getElementById('generateMooksBtn');
-        if (mookBtn) {
-            mookBtn.addEventListener('click', () => MookGenerator.generate());
-        }
-        // Случайные встречи
-        const encounterBtn = document.getElementById('generateEncounterBtn');
-        if (encounterBtn) {
-            encounterBtn.addEventListener('click', () => EncounterGenerator.generate());
-        }
-    }
-    initGM();
+    initGM();   // ЕДИНСТВЕННЫЙ ВЫЗОВ (импортирован из gm.js)
 
     renderRoles();
     new CombatFormulas();
     new CharacterWizard();
 
-    // Обработчики кнопок
     document.getElementById('calcExpensesBtn')?.addEventListener('click', () => ExpensesCalc.calc());
     document.getElementById('generateTreasureBtn')?.addEventListener('click', () => TreasureGenerator.generate());
     document.getElementById('exportDataBtn')?.addEventListener('click', exportAllData);
@@ -187,7 +140,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('addCyberBtn')?.addEventListener('click', addCyberware);
     document.getElementById('calculateIpBtn')?.addEventListener('click', calculateIp);
 
-    // Тема
     const toggleThemeBtn = document.getElementById('toggleThemeBtn');
     if (toggleThemeBtn) {
         if (localStorage.getItem('cyberpunkTheme') === 'true') {
@@ -202,7 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Терминал
     const terminalCode = document.getElementById('terminalCode');
     if (terminalCode) {
         const messages = [
@@ -256,7 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Синхронизация активных подпанелей (для корректного отображения при загрузке)
     function syncActiveSubPane() {
         const activeMain = document.querySelector('.main-pane.active');
         if (!activeMain) return;

@@ -6,6 +6,7 @@ import { checkCyberpsychosis } from './cyberpsychosis.js';
 import { generateNetArchitecture } from './net-architecture.js';
 import { MookGenerator } from './mook-generator.js';
 import { EncounterGenerator } from './encounter-generator.js';
+import { ScreamSheetGenerator } from './scream-sheet-generator.js';  // ДОБАВИТЬ
 
 export function initGM() {
     // NPC
@@ -23,4 +24,6 @@ export function initGM() {
     document.getElementById('generateMooksBtn')?.addEventListener('click', () => MookGenerator.generate());
     // Случайные встречи
     document.getElementById('generateEncounterBtn')?.addEventListener('click', () => EncounterGenerator.generate());
+    // Скрим листы
+    document.getElementById('generateScreamSheetBtn')?.addEventListener('click', () => ScreamSheetGenerator.render());  // ДОБАВИТЬ
 }

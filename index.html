@@ -62,27 +62,28 @@
                 <button class="sub-tab-btn" data-sub="char-roles">Роли</button>
             </div>
             <div id="char-wizard" class="sub-pane">
-    <div class="card" style="position: relative;">
-        <!-- ПЛАШКА IN PROGRESS (начало) -->
-        <div class="wip-overlay">
-            <div class="wip-badge">⚠️ IN PROGRESS ⚠️</div>
-            <div class="wip-message">Разработка еще ведется<br>Пока что всё находится в ознакомительных целях</div>
-        </div>
-        <!-- Конец плашки -->
-        <div class="wizard-steps">
-    <div class="step">Имя</div>
-    <div class="step">Роль</div>
-    <div class="step">ХАР</div>
-    <div class="step">Снаряжение</div>
-    <div class="step">Навыки</div>
-    <div class="step">Импланты</div>
-    <div class="step">Стиль</div>
-    <div class="step">Человечность</div>
-    <div class="step">Расходы</div>
-    <div class="step">Заметки</div>
-    <div class="step">Итог</div>
-</div>
-        <div class="wizard-content" id="wizardContent"></div>
+                <div class="card" style="position: relative;">
+                    <!-- ПЛАШКА IN PROGRESS (начало) -->
+                    <div class="wip-overlay">
+                        <div class="wip-badge">⚠️ IN PROGRESS ⚠️</div>
+                        <div class="wip-message">Разработка еще ведется<br>Пока что всё находится в ознакомительных
+                            целях</div>
+                    </div>
+                    <!-- Конец плашки -->
+                    <div class="wizard-steps">
+                        <div class="step">Имя</div>
+                        <div class="step">Роль</div>
+                        <div class="step">ХАР</div>
+                        <div class="step">Снаряжение</div>
+                        <div class="step">Навыки</div>
+                        <div class="step">Импланты</div>
+                        <div class="step">Стиль</div>
+                        <div class="step">Человечность</div>
+                        <div class="step">Расходы</div>
+                        <div class="step">Заметки</div>
+                        <div class="step">Итог</div>
+                    </div>
+                    <div class="wizard-content" id="wizardContent"></div>
                     <div class="wizard-buttons">
                         <button id="wizardPrevBtn" class="cyber-btn" disabled>◀ Назад</button>
                         <button id="wizardNextBtn" class="cyber-btn">Далее ▶</button>
@@ -422,6 +423,7 @@
                 <button class="sub-tab-btn" data-sub="gm-group">👥 Группа</button>
                 <button class="sub-tab-btn" data-sub="gm-contract">📜 Контракт</button>
                 <button class="sub-tab-btn" data-sub="gm-contract-advanced">📜 Контракт (продвинутый)</button>
+                <button class="sub-tab-btn" data-sub="gm-scream">📰 Скримлист</button>
                 <button class="sub-tab-btn" data-sub="gm-psycho">🧠 Киберпсихоз</button>
                 <button class="sub-tab-btn" data-sub="gm-net">🌐 Архитектура сети</button>
                 <button class="sub-tab-btn" data-sub="gm-mooks">💀 Пушечное мясо</button>
@@ -480,6 +482,14 @@
                     <div id="advancedContractResult" class="contract-card"></div>
                 </div>
             </div>
+            <div id="gm-scream" class="sub-pane">
+    <div class="card">
+        <h3>📰 Скримлист — Night City Today</h3>
+        <p class="note">Газетная вырезка (или новость из ДатаПула) для быстрого погружения в атмосферу.</p>
+        <button id="generateScreamSheetBtn" class="cyber-btn">🎲 Случайный выпуск</button>
+        <div id="screamSheetResult" class="scream-container" style="margin-top: 15px;"></div>
+    </div>
+</div>
             <div id="gm-psycho" class="sub-pane">
                 <div class="card">
                     <h3>Киберпсихоз</h3><label>Имя: <input id="psychoName" value="Персонаж"></label><label>ЧЕЛ: <input
@@ -590,28 +600,31 @@
     </div>
     <script type="module" src="js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 <!-- Footer с юридической информацией -->
 <footer class="cyber-footer">
     <div class="footer-content">
         <div class="footer-section">
             <h4>📖 Источник</h4>
-            <p>Данный инструмент основан на правилах настольной ролевой игры <strong>Cyberpunk RED</strong> 
-            (© R. Talsorian Games, Inc.)</p>
+            <p>Данный инструмент основан на правилах настольной ролевой игры <strong>Cyberpunk RED</strong>
+                (© R. Talsorian Games, Inc.)</p>
         </div>
         <div class="footer-section">
             <h4>⚠️ Ознакомительные цели</h4>
-            <p>Этот проект создан чисто для <strong>кайфа</strong> в некоммерческих и ознакомительных целях. 
-            Чтобы просто сесть и начать играть.</p>
+            <p>Этот проект создан чисто для <strong>кайфа</strong> в некоммерческих и ознакомительных целях.
+                Чтобы просто сесть и начать играть.</p>
         </div>
         <div class="footer-section">
             <h4>🛠️ Реализация</h4>
-            <p>"Cyberpunk RED Companion" — Сборная-солянка инструментов для Мастеров и игроков. 
-           Функционал в разработке, что-то может не работать, а что-то будет меняться, но когда-то будет готово</p>
+            <p>"Cyberpunk RED Companion" — Сборная-солянка инструментов для Мастеров и игроков.
+                Функционал в разработке, что-то может не работать, а что-то будет меняться, но когда-то будет готово</p>
         </div>
     </div>
     <div class="footer-bottom">
-        <p>Cyberpunk RED Companion. 2026. | <a href="#" id="toggleThemeBtn" style="color:#ff9a3c;">Версия 0.0.0.1_alpha</a></p>
+        <p>Cyberpunk RED Companion. 2026. | <a href="#" id="toggleThemeBtn" style="color:#ff9a3c;">Версия
+                0.0.0.1_alpha</a></p>
     </div>
 </footer>
+
 </html>

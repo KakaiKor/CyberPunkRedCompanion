@@ -8,3 +8,4 @@ export { generateNetArchitecture } from './gm/net-architecture.js';
 export { MookGenerator } from './gm/mook-generator.js';
 export { EncounterGenerator } from './gm/encounter-generator.js';
 export { initGM } from './gm/gm-init.js';
+export { ScreamSheetGenerator } from './gm/scream-sheet-generator.js';
