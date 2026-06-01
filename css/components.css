@@ -1,0 +1,426 @@
+/* components.css – карточки, таблицы, формы, кнопки, сетки, терминал */
+.app-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+header {
+    margin-bottom: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    background: var(--bg-card);
+    padding: 15px 20px;
+    border-radius: 20px;
+    border-bottom: 2px solid var(--accent-red);
+}
+
+h1 {
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--accent-red), #b13b5e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.search-bar {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    max-width: 400px;
+}
+#globalSearch {
+    flex: 1;
+    padding: 10px 15px;
+    border-radius: 40px;
+    border: none;
+    background: var(--bg-hover);
+    color: #fff;
+}
+
+.reset-btn, .tool-btn {
+    background: #2a3342;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 40px;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.reset-btn:hover, .tool-btn:hover {
+    background: var(--accent-red);
+}
+
+/* Вкладки */
+.main-tabs, .sub-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+.tab-btn, .sub-tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 18px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 30px;
+    transition: 0.2s;
+}
+.tab-btn.active, .sub-tab-btn.active {
+    background: var(--accent-red);
+    color: white;
+    box-shadow: 0 0 8px var(--accent-red);
+}
+
+/* Карточки */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+.card {
+    background: var(--bg-card);
+    border-radius: 24px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: cardFadeIn 0.3s ease-out;
+}
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+.card h3 {
+    margin-bottom: 16px;
+    color: var(--accent-red);
+    font-weight: 700;
+    font-size: 1.3rem;
+    border-left: 3px solid var(--accent-red);
+    padding-left: 12px;
+}
+
+/* Формы */
+label {
+    display: inline-block;
+    margin-right: 16px;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+input, select, textarea, button {
+    background: var(--bg-hover);
+    border: 1px solid #2e3a48;
+    padding: 8px 12px;
+    border-radius: 16px;
+    color: white;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 12px rgba(255, 60, 95, 0.5);
+    outline: none;
+}
+button {
+    cursor: pointer;
+    font-weight: 600;
+}
+button:hover {
+    background: var(--accent-red);
+    border-color: var(--accent-red);
+}
+.button-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+.info-block {
+    background: #0f1219;
+    padding: 12px;
+    border-radius: 16px;
+    margin-top: 15px;
+    border-left: 4px solid var(--accent-red);
+}
+
+/* Таблицы */
+.cyber-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+.cyber-table th, .cyber-table td {
+    border: 1px solid var(--border-color);
+    padding: 8px 6px;
+    text-align: left;
+    vertical-align: top;
+}
+.cyber-table th {
+    background: var(--bg-hover);
+    color: var(--accent-red);
+}
+.cyber-table tr:hover {
+    background: rgba(255, 60, 95, 0.15);
+    box-shadow: inset 0 0 0 1px var(--accent-red);
+}
+.table-wrapper {
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+/* Расстояния, ползунок */
+.distance-slider {
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+.distance-chart {
+    position: relative;
+    height: 20px;
+    background: var(--border-color);
+    margin: 15px 0;
+    border-radius: 4px;
+}
+.golden-zone {
+    position: absolute;
+    height: 100%;
+    background: #ffd966;
+    opacity: 0.7;
+    border-radius: 4px;
+    display: none;
+}
+
+/* Терминал */
+.terminal-container {
+    margin-bottom: 20px;
+    border: 1px solid var(--accent-red);
+    border-radius: 8px;
+    background: var(--bg-dark);
+    box-shadow: 0 0 15px rgba(255, 60, 95, 0.3);
+    overflow: hidden;
+    font-family: monospace;
+}
+.terminal-header {
+    background: #1a1a2a;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border-bottom: 1px solid var(--accent-red);
+}
+.terminal-title {
+    color: var(--accent-orange);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+.terminal-toggle {
+    background: none;
+    border: none;
+    color: var(--accent-red);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+.terminal-body {
+    padding: 12px;
+    background: var(--bg-dark);
+    transition: all 0.2s;
+}
+.terminal-body.collapsed {
+    display: none;
+}
+.terminal-code {
+    font-family: inherit;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: #00ffcc;
+    text-shadow: 0 0 3px #00ffcc;
+    margin: 0;
+    white-space: pre-wrap;
+}
+.blink {
+    animation: blink 1s step-end infinite;
+}
+
+/* Сканирующая линия */
+.scanline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 0, 0.03) 50%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: scanlineMove 10s linear infinite;
+}
+
+/* Сетка навыков (идеальный конструктор) */
+.skills-grid-modern-inner,
+body .skills-grid-modern-inner,
+.cyberpunk-theme .skills-grid-modern-inner {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+    gap: 8px !important;
+}
+.skill-card-modern {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    background: #0f1219;
+    border-radius: 32px;
+    padding: 6px 12px;
+}
+.skill-name-modern {
+    flex: 2;
+    font-weight: 500;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.skill-stat-modern {
+    width: 36px;
+    text-align: center;
+    background: var(--bg-hover);
+    border-radius: 20px;
+    padding: 2px 4px;
+    font-weight: bold;
+    color: var(--accent-orange);
+}
+.skill-x2-modern {
+    width: 30px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--accent-red);
+}
+.skill-level-modern {
+    width: 65px;
+    text-align: center;
+    background: var(--bg-hover);
+    border: 1px solid #2e3a48;
+    border-radius: 20px;
+    padding: 4px 0;
+}
+.skills-category-modern {
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--bg-card);
+    margin-bottom: 15px;
+}
+.category-header-modern {
+    padding: 10px 15px;
+    background: var(--bg-hover);
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 16px 16px 0 0;
+}
+.category-body-modern {
+    padding: 12px;
+    overflow-x: auto;
+}
+.category-toggle-modern {
+    display: inline-block;
+    width: 20px;
+}
+
+/* Карточка персонажа */
+.character-card {
+    background: linear-gradient(145deg, #1a1e2a, #0f1219);
+    border: 1px solid var(--accent-red);
+    border-radius: 20px;
+    overflow: hidden;
+}
+.character-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f1219;
+    padding: 15px 20px;
+    border-bottom: 2px solid var(--accent-red);
+}
+.character-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--accent-orange);
+}
+.character-role {
+    background: var(--accent-red);
+    padding: 5px 15px;
+    border-radius: 30px;
+    font-weight: bold;
+    color: #0a0c12;
+}
+.close-card-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--accent-red);
+    cursor: pointer;
+}
+.character-card-body {
+    padding: 20px;
+}
+.char-section {
+    background: #0a0c12;
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-left: 3px solid var(--accent-red);
+}
+.char-section h4 {
+    color: var(--accent-orange);
+    font-family: 'Orbitron', monospace;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 10px;
+}
+.stat-item {
+    background: #1a1e2a;
+    border-radius: 12px;
+    text-align: center;
+    padding: 6px 4px;
+}
+.stat-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--accent-orange);
+}
+.derived-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+.combat-buttons {
+    display: flex;
+    gap: 12px;
+}
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 15px;
+}
+.compact {
+    list-style: none;
+    padding: 0;
+}
+.compact li {
+    padding: 4px 0;
+    border-bottom: 1px dashed #2a1a2a;
+}

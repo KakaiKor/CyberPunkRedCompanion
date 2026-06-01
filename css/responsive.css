@@ -1,0 +1,66 @@
+/* responsive.css – адаптивность для мобильных и планшетов */
+@media (max-width: 700px) {
+    body {
+        padding: 12px;
+    }
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .tab-btn, .sub-tab-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    .card {
+        padding: 12px;
+    }
+    .skills-grid-modern-inner {
+        grid-template-columns: 1fr !important;
+    }
+    .skill-card-modern {
+        flex-wrap: wrap;
+    }
+    .skill-name-modern {
+        white-space: normal;
+        flex: 1 1 100%;
+    }
+    .character-name {
+        font-size: 1.2rem;
+    }
+    .equipment-grid {
+        grid-template-columns: 1fr;
+    }
+    .derived-stats {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .tab-btn, .sub-tab-btn {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+}
+/* Вертикальное меню для десктопа */
+@media (min-width: 701px) {
+    .main-tabs {
+        flex-direction: column;
+        width: 220px;
+        float: left;
+        border-right: 1px solid var(--border-color);
+        border-bottom: none;
+        margin-right: 20px;
+        padding-bottom: 0;
+    }
+    .main-pane {
+        margin-left: 240px;
+    }
+    .main-tabs .tab-btn {
+        width: 100%;
+        text-align: left;
+        margin-bottom: 5px;
+    }
+}

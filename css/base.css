@@ -1,0 +1,78 @@
+/* base.css – переменные, сброс, базовые стили */
+:root {
+    --bg-dark: #0a0c12;
+    --bg-card: #14181f;
+    --bg-hover: #1e2530;
+    --border-color: #2a3342;
+    --text-primary: #e0e0e0;
+    --text-secondary: #9aa4bf;
+    --accent-red: #ff3c5f;
+    --accent-orange: #ff9a3c;
+    --accent-green: #39ff14;
+    --glitch-duration: 0.9s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    padding: 20px;
+    background-image: 
+        linear-gradient(rgba(0, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 30px 30px;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(0deg, rgba(0,255,0,0.03) 0px, rgba(0,255,0,0.03) 2px, transparent 2px, transparent 6px);
+    pointer-events: none;
+    z-index: 9998;
+}
+
+/* Кастомный скроллбар */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-hover);
+    border-left: 1px solid #2a1a2a;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--accent-red);
+    border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-orange);
+}
+
+/* Анимации */
+@keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+@keyframes scanlineMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100%; }
+}
+@keyframes fade {
+    from { opacity: 0; transform: translateY(5px);}
+    to { opacity: 1; transform: translateY(0);}
+}
