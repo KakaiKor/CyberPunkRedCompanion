@@ -1,10 +1,21 @@
+// main.js
 import { CharacterWizard } from './modules/wizard.js';
 import { TabManager } from './modules/tabs.js';
-import { CharacterHelper, HumanityCalculator, ExpensesCalc, IdealCharacterBuilder } from './modules/character.js';
+import { CharacterHelper } from './modules/character-helper.js';
+import { HumanityCalculator } from './modules/humanity.js';
+import { ExpensesCalc } from './modules/expenses.js';
+import { IdealCharacterBuilder } from './modules/ideal-builder.js';
 import { CombatCalculatorUI, DistanceCalculator, InitiativeTracker, GroupInitiative, CombatFormulas } from './modules/combat.js';
 import { NightMarket, TreasureGenerator, IdealShop } from './modules/market.js';
 import { initTransport } from './modules/transport.js';
-import { NPCGenerator, GroupTracker, initGM, MookGenerator, EncounterGenerator, AdvancedContractGenerator } from './modules/gm.js';
+import { NPCGenerator } from './modules/npc-generator.js';
+import { GroupTracker } from './modules/group-tracker.js';
+import { generateSimpleContract, initSimpleContract } from './modules/simple-contract.js';
+import { AdvancedContractGenerator } from './modules/advanced-contract-generator.js';
+import { checkCyberpsychosis, initCyberpsychosis } from './modules/cyberpsychosis.js';
+import { generateNetArchitecture, initNetArchitecture } from './modules/net-architecture.js';
+import { MookGenerator } from './modules/mook-generator.js';
+import { EncounterGenerator } from './modules/encounter-generator.js';
 import { updateAllTables, filterTables, renderFilteredCyberware } from './modules/gear.js';
 import { renderRoles } from './modules/roles.js';
 import {
@@ -13,6 +24,8 @@ import {
     playerVehicles, addVehicle, saveVehicles, loadVehicles
 } from './data.js';
 import { saveCharacter, loadCharacter, saveGroup, loadGroup } from './storage.js';
+import { allSkills, roleTemplates } from './data/skills-data.js';
+
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
     const data = {
@@ -50,6 +63,7 @@ function importAllData(file) {
     reader.readAsText(file);
 }
 
+// Функции добавления новых предметов (остаются в main.js)
 function addRangedWeapon() {
     let newWeapon = { name: prompt("Название:") || "Новое", skill: prompt("Навык:") || "Короткоствольное", dmg: prompt("Урон:") || "2d6", mag: parseInt(prompt("Магазин:")||"10"), rof: parseInt(prompt("СКОР:")||"2"), hands: parseInt(prompt("Рук:")||"1"), conceal: prompt("Скрыть (да/нет):")||"да", cost: parseInt(prompt("Цена:")||"100"), notes: "" };
     rangedWeapons.push(newWeapon);
@@ -71,6 +85,7 @@ function addCyberware() {
     updateAllTables();
 }
 
+// Заполнение таблицы стоимости IP
 function fillIpTable() {
     const tbody = document.getElementById('ipTableBody');
     if (!tbody) return;
@@ -98,9 +113,11 @@ function calculateIp() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Первичный рендеринг таблиц
     updateAllTables();
     fillIpTable();
 
+    // Инициализация основных модулей
     new TabManager();
     new CharacterHelper();
     new NightMarket();
@@ -113,10 +130,56 @@ document.addEventListener('DOMContentLoaded', () => {
     window.idealBuilder = new IdealCharacterBuilder();
     window.idealShop = new IdealShop();
     initTransport();
+    // Инициализация GM-модулей
+    initGM(); // эта функция должна быть определена где-то (например, в отдельном модуле) или мы вызовем отдельные инициализаторы
+    // Альтернативно – вызовем каждую инициализацию вручную, если нет единого initGM.
+    // Для простоты создадим небольшую функцию initGM прямо здесь, если она не экспортируется из gm.js.
+    // В старом gm.js была функция initGM. Сейчас её нет, поэтому создадим временную.
+    function initGM() {
+        // NPC
+        document.getElementById('generateNpcBtn')?.addEventListener('click', () => NPCGenerator.generate());
+        // Простой контракт
+        const simpleContractBtn = document.getElementById('genContractBtn');
+        if (simpleContractBtn) {
+            simpleContractBtn.addEventListener('click', generateSimpleContract);
+        }
+        // Продвинутый контракт
+        const advancedContractBtn = document.getElementById('generateAdvancedContractBtn');
+        if (advancedContractBtn) {
+            advancedContractBtn.addEventListener('click', () => AdvancedContractGenerator.generate());
+        }
+        const copyContractBtn = document.getElementById('copyContractBtn');
+        if (copyContractBtn) {
+            copyContractBtn.addEventListener('click', () => AdvancedContractGenerator.copyToClipboard());
+        }
+        // Киберпсихоз
+        const psychoBtn = document.getElementById('calcPsychoBtn');
+        if (psychoBtn) {
+            psychoBtn.addEventListener('click', () => checkCyberpsychosis());
+        }
+        // Архитектура сети
+        const netBtn = document.getElementById('genNetArchBtn');
+        if (netBtn) {
+            netBtn.addEventListener('click', generateNetArchitecture);
+        }
+        // Мобы
+        const mookBtn = document.getElementById('generateMooksBtn');
+        if (mookBtn) {
+            mookBtn.addEventListener('click', () => MookGenerator.generate());
+        }
+        // Случайные встречи
+        const encounterBtn = document.getElementById('generateEncounterBtn');
+        if (encounterBtn) {
+            encounterBtn.addEventListener('click', () => EncounterGenerator.generate());
+        }
+    }
     initGM();
+
     renderRoles();
     new CombatFormulas();
     new CharacterWizard();
+
+    // Обработчики кнопок
     document.getElementById('calcExpensesBtn')?.addEventListener('click', () => ExpensesCalc.calc());
     document.getElementById('generateTreasureBtn')?.addEventListener('click', () => TreasureGenerator.generate());
     document.getElementById('exportDataBtn')?.addEventListener('click', exportAllData);
@@ -132,6 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('addCyberBtn')?.addEventListener('click', addCyberware);
     document.getElementById('calculateIpBtn')?.addEventListener('click', calculateIp);
 
+    // Тема
     const toggleThemeBtn = document.getElementById('toggleThemeBtn');
     if (toggleThemeBtn) {
         if (localStorage.getItem('cyberpunkTheme') === 'true') {
@@ -145,71 +209,72 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleThemeBtn.textContent = isActive ? '🎨 Обычная тема' : '🎨 Cyberpunk Theme';
         });
     }
-    // ========== ТЕРМИНАЛ С ЭФФЕКТОМ ПЕЧАТИ ==========
-const terminalCode = document.getElementById('terminalCode');
-if (terminalCode) {
-    const messages = [
-        "> Инициализация Cyberpunk RED Companion...",
-        "> Загрузка модулей: ХАР, Навыки, Снаряжение...",
-        "> Подключение к базе данных киберимплантов...",
-        "> Калибровка генератора случайных встреч...",
-        "> Система готова. Добро пожаловать, эджраннер!",
-        "> Введите команду или используйте интерфейс выше."
-    ];
-    let lineIndex = 0, charIndex = 0, currentLine = '', isPrinting = false;
-    function printNextChar() {
-        if (lineIndex >= messages.length) {
-            terminalCode.innerHTML = '<span class="blink">█</span>';
-            return;
-        }
-        if (!isPrinting) {
-            isPrinting = true;
-            currentLine = messages[lineIndex];
-            charIndex = 0;
-            terminalCode.innerHTML = '';
-        }
-        if (charIndex < currentLine.length) {
-            terminalCode.innerHTML += currentLine[charIndex];
-            charIndex++;
-            setTimeout(printNextChar, 40 + Math.random() * 30);
-        } else {
-            terminalCode.innerHTML += '<br>';
-            lineIndex++;
-            isPrinting = false;
-            setTimeout(printNextChar, 200);
-        }
-    }
-    setTimeout(printNextChar, 500);
 
-    // Сворачивание/разворачивание
-    const terminalHeader = document.getElementById('terminalHeader');
-    const terminalBody = document.getElementById('terminalBody');
-    const terminalToggle = document.getElementById('terminalToggle');
-    if (terminalHeader && terminalBody && terminalToggle) {
-        terminalHeader.addEventListener('click', (e) => {
-            if (e.target !== terminalToggle) {
+    // Терминал
+    const terminalCode = document.getElementById('terminalCode');
+    if (terminalCode) {
+        const messages = [
+            "> Инициализация Cyberpunk RED Companion...",
+            "> Загрузка модулей: ХАР, Навыки, Снаряжение...",
+            "> Подключение к базе данных киберимплантов...",
+            "> Калибровка генератора случайных встреч...",
+            "> Система готова. Добро пожаловать, эджраннер!",
+            "> Введите команду или используйте интерфейс выше."
+        ];
+        let lineIndex = 0, charIndex = 0, currentLine = '', isPrinting = false;
+        function printNextChar() {
+            if (lineIndex >= messages.length) {
+                terminalCode.innerHTML = '<span class="blink">█</span>';
+                return;
+            }
+            if (!isPrinting) {
+                isPrinting = true;
+                currentLine = messages[lineIndex];
+                charIndex = 0;
+                terminalCode.innerHTML = '';
+            }
+            if (charIndex < currentLine.length) {
+                terminalCode.innerHTML += currentLine[charIndex];
+                charIndex++;
+                setTimeout(printNextChar, 40 + Math.random() * 30);
+            } else {
+                terminalCode.innerHTML += '<br>';
+                lineIndex++;
+                isPrinting = false;
+                setTimeout(printNextChar, 200);
+            }
+        }
+        setTimeout(printNextChar, 500);
+
+        const terminalHeader = document.getElementById('terminalHeader');
+        const terminalBody = document.getElementById('terminalBody');
+        const terminalToggle = document.getElementById('terminalToggle');
+        if (terminalHeader && terminalBody && terminalToggle) {
+            terminalHeader.addEventListener('click', (e) => {
+                if (e.target !== terminalToggle) {
+                    terminalBody.classList.toggle('collapsed');
+                    terminalToggle.textContent = terminalBody.classList.contains('collapsed') ? '+' : '−';
+                }
+            });
+            terminalToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
                 terminalBody.classList.toggle('collapsed');
                 terminalToggle.textContent = terminalBody.classList.contains('collapsed') ? '+' : '−';
-            }
-        });
-        terminalToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            terminalBody.classList.toggle('collapsed');
-            terminalToggle.textContent = terminalBody.classList.contains('collapsed') ? '+' : '−';
-        });
+            });
+        }
     }
-}
-function syncActiveSubPane() {
-    const activeMain = document.querySelector('.main-pane.active');
-    if (!activeMain) return;
-    const activeSubBtn = activeMain.querySelector('.sub-tab-btn.active');
-    if (!activeSubBtn) return;
-    const targetId = activeSubBtn.getAttribute('data-sub');
-    const targetPane = document.getElementById(targetId);
-    if (!targetPane) return;
-    // Скрыть все подпанели внутри этой main-панели
-    activeMain.querySelectorAll('.sub-pane').forEach(pane => pane.classList.remove('active'));
-    targetPane.classList.add('active');
-}
-syncActiveSubPane();
+
+    // Синхронизация активных подпанелей (для корректного отображения при загрузке)
+    function syncActiveSubPane() {
+        const activeMain = document.querySelector('.main-pane.active');
+        if (!activeMain) return;
+        const activeSubBtn = activeMain.querySelector('.sub-tab-btn.active');
+        if (!activeSubBtn) return;
+        const targetId = activeSubBtn.getAttribute('data-sub');
+        const targetPane = document.getElementById(targetId);
+        if (!targetPane) return;
+        activeMain.querySelectorAll('.sub-pane').forEach(pane => pane.classList.remove('active'));
+        targetPane.classList.add('active');
+    }
+    syncActiveSubPane();
 });

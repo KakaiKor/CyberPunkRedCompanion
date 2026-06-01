@@ -1,6 +1,9 @@
+// character.js
 import { getHP } from '../utils.js';
 import { saveCharacter, loadCharacter } from '../storage.js';
+import { allSkills, roleTemplates } from '../data/skills-data.js';
 
+// ========== CharacterHelper ==========
 export class CharacterHelper {
     constructor() {
         this.buildStatsGrid();
@@ -62,7 +65,6 @@ export class CharacterHelper {
         }
     }
 
-    // ========== ГЕНЕРАЦИЯ ПЕРСОНАЖА "УЛИЧНАЯ КРЫСА" ==========
     generateStreetRatCharacter() {
         const role = document.getElementById('genRole').value;
         const name = document.getElementById('charName').value.trim() || 'Безымянный';
@@ -80,60 +82,19 @@ export class CharacterHelper {
         document.getElementById('charSaveStatus').innerText = 'Персонаж сгенерирован!';
     }
     
-    // Генерация ХАР по таблицам из книги (стр. 74-78)
     generateStatsForRole(role) {
-        const roll = Math.floor(Math.random() * 10) + 1; // 1d10
+        const roll = Math.floor(Math.random() * 10) + 1;
         const templates = {
-            "Рокербой": [
-                [7,6,5,6,8,7,7,3,8,2], [7,7,7,7,6,7,7,5,8,3], [8,5,7,7,6,7,7,5,8,4], [5,7,7,6,8,7,7,5,8,3],
-                [7,7,6,8,7,6,5,5,8,3], [8,7,5,7,7,6,5,6,8,4], [7,5,7,7,8,6,7,6,8,3], [6,5,7,7,7,8,7,6,8,4],
-                [8,9,3,5,5,6,7,8,7,5], [4,5,6,5,8,8,7,6,4,7]
-            ],
-            "Соло": [
-                [6,7,7,3,8,6,5,5,6,5], [7,8,6,3,6,6,7,5,6,6], [8,7,4,7,7,6,7,8,5,4], [6,4,6,4,7,6,5,7,6,5],
-                [7,6,5,7,6,7,6,5,6,7], [6,7,7,6,8,4,6,7,6,7], [7,7,6,5,7,6,6,7,7,6], [7,7,8,7,8,7,5,6,6,5],
-                [4,9,7,7,6,4,6,6,6,5], [6,6,8,5,6,6,5,6,6,5]
-            ],
-            "Нетраннер": [
-                [5,8,7,7,4,8,7,7,4,2], [5,6,7,5,8,3,8,7,5,5], [6,8,6,6,4,7,6,7,4,4], [7,7,7,5,8,5,5,5,5,5],
-                [5,5,7,8,7,3,7,5,6,6], [6,6,7,7,5,5,5,6,6,6], [7,6,7,7,6,5,7,7,6,6], [5,7,7,7,6,5,7,6,5,5],
-                [7,7,6,7,6,3,6,5,6,5], [7,8,6,6,4,7,7,5,6,6]
-            ],
-            "Техник": [
-                [6,7,7,8,4,4,5,7,6,2], [7,6,7,7,5,5,3,7,5,3], [6,5,7,5,7,4,7,7,4,7], [7,4,7,7,5,5,6,7,4,6],
-                [6,6,7,7,7,4,5,6,7,5], [5,6,4,7,6,7,5,5,5,5], [6,7,5,7,7,7,4,6,7,5], [7,5,5,7,7,5,6,7,6,5],
-                [6,6,7,7,5,4,6,5,4,6], [7,5,6,7,5,5,7,6,5,5]
-            ],
-            "Медтех": [
-                [7,5,6,7,5,3,8,5,5,2], [7,7,7,4,6,7,7,3,6,5], [5,5,8,5,3,8,5,7,8,4], [8,6,8,6,5,6,7,5,7,4],
-                [7,6,7,5,8,5,6,6,5,6], [7,5,7,5,8,5,6,7,5,6], [7,6,5,6,7,6,5,6,5,6], [6,7,6,5,6,6,5,6,5,6],
-                [7,6,6,5,6,6,5,5,5,6], [5,6,6,5,6,6,5,5,5,6]
-            ],
-            "Медиа": [
-                [6,6,5,5,8,7,5,7,5,2], [8,7,7,3,6,6,5,6,5,6], [6,7,5,5,6,8,5,5,7,4], [7,5,6,5,7,6,5,6,5,5],
-                [6,6,7,5,6,7,6,6,5,6], [7,5,6,5,7,6,6,6,5,6], [8,5,5,6,7,6,7,6,5,6], [7,5,6,6,7,6,6,6,5,6],
-                [7,6,6,6,7,6,5,6,5,6], [5,6,6,6,7,6,5,6,5,6]
-            ],
-            "Законник": [
-                [5,6,7,5,7,8,5,6,5,6], [6,6,6,5,6,8,5,7,5,5], [7,7,7,5,6,7,5,6,5,5], [6,6,6,5,8,5,7,6,5,6],
-                [6,6,6,5,7,6,7,6,5,6], [6,6,6,5,8,7,6,6,5,5], [8,7,5,6,7,6,5,6,5,6], [5,6,5,6,7,6,6,6,5,6],
-                [5,6,6,6,7,6,6,5,5,6], [6,6,6,5,7,6,5,6,5,5]
-            ],
-            "Менеджер": [
-                [8,5,5,3,8,6,6,5,5,2], [8,6,6,4,7,7,5,7,5,3], [7,6,3,8,6,4,5,8,5,4], [8,5,6,4,7,5,6,5,5,4],
-                [7,5,6,5,7,7,5,7,5,3], [6,5,7,6,7,5,7,6,5,4], [7,6,5,7,7,5,6,6,5,4], [6,7,5,5,6,6,6,5,5,5],
-                [7,6,5,6,7,6,7,5,5,5], [5,5,6,6,7,6,5,6,5,5]
-            ],
-            "Фиксер": [
-                [8,5,7,4,6,5,8,5,5,2], [8,5,5,6,7,8,7,5,5,3], [7,6,6,5,4,6,6,5,5,4], [6,8,5,6,5,7,6,6,5,5],
-                [7,6,6,6,6,7,6,5,5,5], [5,6,6,6,6,6,6,5,5,5], [7,6,6,6,7,5,6,5,5,5], [6,6,5,5,7,6,6,5,5,5],
-                [7,6,5,6,7,6,6,5,5,5], [5,6,5,6,6,5,6,5,5,5]
-            ],
-            "Кочевник": [
-                [6,6,8,3,6,7,6,6,4,2], [5,7,6,8,8,8,7,5,4,3], [8,6,3,8,6,5,6,5,4,4], [8,7,4,8,7,6,7,5,5,4],
-                [5,8,6,6,7,5,6,6,5,4], [6,7,8,6,7,5,7,6,5,4], [8,7,6,5,7,5,7,6,5,4], [5,5,7,6,6,6,6,5,5,4],
-                [7,6,5,6,7,5,6,5,5,5], [5,6,7,4,7,8,7,7,4,4]
-            ]
+            "Рокербой": [[7,6,5,6,8,7,7,3,8,2], [7,7,7,7,6,7,7,5,8,3], [8,5,7,7,6,7,7,5,8,4], [5,7,7,6,8,7,7,5,8,3], [7,7,6,8,7,6,5,5,8,3], [8,7,5,7,7,6,5,6,8,4], [7,5,7,7,8,6,7,6,8,3], [6,5,7,7,7,8,7,6,8,4], [8,9,3,5,5,6,7,8,7,5], [4,5,6,5,8,8,7,6,4,7]],
+            "Соло": [[6,7,7,3,8,6,5,5,6,5], [7,8,6,3,6,6,7,5,6,6], [8,7,4,7,7,6,7,8,5,4], [6,4,6,4,7,6,5,7,6,5], [7,6,5,7,6,7,6,5,6,7], [6,7,7,6,8,4,6,7,6,7], [7,7,6,5,7,6,6,7,7,6], [7,7,8,7,8,7,5,6,6,5], [4,9,7,7,6,4,6,6,6,5], [6,6,8,5,6,6,5,6,6,5]],
+            "Нетраннер": [[5,8,7,7,4,8,7,7,4,2], [5,6,7,5,8,3,8,7,5,5], [6,8,6,6,4,7,6,7,4,4], [7,7,7,5,8,5,5,5,5,5], [5,5,7,8,7,3,7,5,6,6], [6,6,7,7,5,5,5,6,6,6], [7,6,7,7,6,5,7,7,6,6], [5,7,7,7,6,5,7,6,5,5], [7,7,6,7,6,3,6,5,6,5], [7,8,6,6,4,7,7,5,6,6]],
+            "Техник": [[6,7,7,8,4,4,5,7,6,2], [7,6,7,7,5,5,3,7,5,3], [6,5,7,5,7,4,7,7,4,7], [7,4,7,7,5,5,6,7,4,6], [6,6,7,7,7,4,5,6,7,5], [5,6,4,7,6,7,5,5,5,5], [6,7,5,7,7,7,4,6,7,5], [7,5,5,7,7,5,6,7,6,5], [6,6,7,7,5,4,6,5,4,6], [7,5,6,7,5,5,7,6,5,5]],
+            "Медтех": [[7,5,6,7,5,3,8,5,5,2], [7,7,7,4,6,7,7,3,6,5], [5,5,8,5,3,8,5,7,8,4], [8,6,8,6,5,6,7,5,7,4], [7,6,7,5,8,5,6,6,5,6], [7,5,7,5,8,5,6,7,5,6], [7,5,5,6,7,6,5,6,5,6], [6,7,6,5,6,6,5,6,5,6], [7,6,6,5,6,6,5,5,5,6], [5,6,6,5,6,6,5,5,5,6]],
+            "Медиа": [[6,6,5,5,8,7,5,7,5,2], [8,7,7,3,6,6,5,6,5,6], [6,7,5,5,6,8,5,5,7,4], [7,5,6,5,7,6,5,6,5,5], [6,6,7,5,6,7,6,6,5,6], [7,5,6,5,7,6,6,6,5,6], [8,5,5,6,7,6,7,6,5,6], [7,5,6,6,7,6,6,6,5,6], [7,6,6,6,7,6,5,6,5,6], [5,6,6,6,7,6,5,6,5,6]],
+            "Законник": [[5,6,7,5,7,8,5,6,5,6], [6,6,6,5,6,8,5,7,5,5], [7,7,7,5,6,7,5,6,5,5], [6,6,6,5,8,5,7,6,5,6], [6,6,6,5,7,6,7,6,5,6], [6,6,6,5,8,7,6,6,5,5], [8,7,5,6,7,6,5,6,5,6], [5,6,5,6,7,6,6,6,5,6], [5,6,6,6,7,6,6,5,5,6], [6,6,6,5,7,6,5,6,5,5]],
+            "Менеджер": [[8,5,5,3,8,6,6,5,5,2], [8,6,6,4,7,7,5,7,5,3], [7,6,3,8,6,4,5,8,5,4], [8,5,6,4,7,5,6,5,5,4], [7,5,6,5,7,7,5,7,5,3], [6,5,7,6,7,5,7,6,5,4], [7,6,5,7,7,5,6,6,5,4], [6,7,5,5,6,6,6,5,5,5], [7,6,5,6,7,6,7,5,5,5], [5,5,6,6,7,6,5,6,5,5]],
+            "Фиксер": [[8,5,7,4,6,5,8,5,5,2], [8,5,5,6,7,8,7,5,5,3], [7,6,6,5,4,6,6,5,5,4], [6,8,5,6,5,7,6,6,5,5], [7,6,6,6,6,7,6,5,5,5], [5,6,6,6,6,6,6,5,5,5], [7,6,6,6,7,5,6,5,5,5], [6,6,5,5,7,6,6,5,5,5], [7,6,5,6,7,6,6,5,5,5], [5,6,5,6,6,5,6,5,5,5]],
+            "Кочевник": [[6,6,8,3,6,7,6,6,4,2], [5,7,6,8,8,8,7,5,4,3], [8,6,3,8,6,5,6,5,4,4], [8,7,4,8,7,6,7,5,5,4], [5,8,6,6,7,5,6,6,5,4], [6,7,8,6,7,5,7,6,5,4], [8,7,6,5,7,5,7,6,5,4], [5,5,7,6,6,6,6,5,5,4], [7,6,5,6,7,5,6,5,5,5], [5,6,7,4,7,8,7,7,4,4]]
         };
         const template = templates[role];
         if (!template) return {};
@@ -195,7 +156,6 @@ export class CharacterHelper {
         };
     }
     
-    // Построение карточки персонажа с возможностью редактирования
     buildCharacterCard(name, role, stats, skills, gear, hp, severe, humanity, empFrom, deathSave) {
         const container = document.getElementById('characterCardContainer');
         const cardHtml = this.buildCharacterCardHTML(name, role, stats, skills, gear, hp, severe, humanity, empFrom, deathSave);
@@ -491,7 +451,7 @@ export class CharacterHelper {
     }
 }
 
-// ========== ОСТАЛЬНЫЕ КЛАССЫ (без изменений) ==========
+// ========== HumanityCalculator ==========
 export class HumanityCalculator {
     constructor() {
         this.curr = 60;
@@ -539,6 +499,7 @@ export class HumanityCalculator {
     }
 }
 
+// ========== ExpensesCalc ==========
 export class ExpensesCalc {
     static calc() {
         const lifestyle = parseInt(document.getElementById('lifestyleSelect').value);
@@ -548,89 +509,7 @@ export class ExpensesCalc {
     }
 }
 
-// Полный список навыков для идеал-конструктора
-const allSkills = [
-    { name:"Восприятие", stat:"ИНТ", costMult:1, base:true },
-    { name:"Скрытность", stat:"ЛВК", costMult:1, base:true },
-    { name:"Выслеживание", stat:"ИНТ", costMult:1, base:false },
-    { name:"Сопротивление пыткам/наркотикам", stat:"ВОЛЯ", costMult:1, base:false },
-    { name:"Концентрация", stat:"ВОЛЯ", costMult:1, base:true },
-    { name:"Танец", stat:"ЛВК", costMult:1, base:false },
-    { name:"Чтение по губам", stat:"ИНТ", costMult:1, base:false },
-    { name:"Скрытие/обнаружение объекта", stat:"ИНТ", costMult:1, base:false },
-    { name:"Акробатика", stat:"ЛВК", costMult:1, base:false },
-    { name:"Атлетика", stat:"ЛВК", costMult:1, base:true },
-    { name:"Выносливость", stat:"ВОЛЯ", costMult:1, base:false },
-    { name:"Верховая езда", stat:"РЕФ", costMult:1, base:false },
-    { name:"Вождение", stat:"РЕФ", costMult:1, base:false },
-    { name:"Пилотирование", stat:"РЕФ", costMult:2, base:false },
-    { name:"Судовождение", stat:"РЕФ", costMult:1, base:false },
-    { name:"Азартные игры", stat:"ИНТ", costMult:1, base:false },
-    { name:"Бизнес", stat:"ИНТ", costMult:1, base:false },
-    { name:"Бухгалтерия", stat:"ИНТ", costMult:1, base:false },
-    { name:"Бюрократия", stat:"ИНТ", costMult:1, base:false },
-    { name:"Выживание в дикой местности", stat:"ИНТ", costMult:1, base:false },
-    { name:"Дедукция", stat:"ИНТ", costMult:1, base:false },
-    { name:"Знание района", stat:"ИНТ", costMult:1, base:true },
-    { name:"Композиция", stat:"ИНТ", costMult:1, base:false },
-    { name:"Криминология", stat:"ИНТ", costMult:1, base:false },
-    { name:"Криптография", stat:"ИНТ", costMult:1, base:false },
-    { name:"Наука", stat:"ИНТ", costMult:1, base:false },
-    { name:"Образование", stat:"ИНТ", costMult:1, base:true },
-    { name:"Обращение с животными", stat:"ИНТ", costMult:1, base:false },
-    { name:"Поиск информации", stat:"ИНТ", costMult:1, base:false },
-    { name:"Тактика", stat:"ИНТ", costMult:1, base:false },
-    { name:"Язык (родной)", stat:"ИНТ", costMult:1, base:true },
-    { name:"Боевые искусства", stat:"ЛВК", costMult:2, base:false },
-    { name:"Драка", stat:"ЛВК", costMult:1, base:true },
-    { name:"Уклонение", stat:"ЛВК", costMult:1, base:true },
-    { name:"Холодное оружие", stat:"ЛВК", costMult:1, base:false },
-    { name:"Актёрское мастерство", stat:"КРУТ", costMult:1, base:false },
-    { name:"Игра на инструменте", stat:"ТЕХ", costMult:1, base:false },
-    { name:"Автоогонь", stat:"РЕФ", costMult:2, base:false },
-    { name:"Длинноствольное оружие", stat:"РЕФ", costMult:1, base:false },
-    { name:"Короткоствольное оружие", stat:"РЕФ", costMult:1, base:false },
-    { name:"Луки и арбалеты", stat:"РЕФ", costMult:1, base:false },
-    { name:"Тяжёлое оружие", stat:"РЕФ", costMult:2, base:false },
-    { name:"Взяточничество", stat:"КРУТ", costMult:1, base:false },
-    { name:"Гардероб и стиль", stat:"КРУТ", costMult:1, base:false },
-    { name:"Допрос", stat:"КРУТ", costMult:1, base:false },
-    { name:"Общение", stat:"ЭМП", costMult:1, base:true },
-    { name:"Опыт на улицах", stat:"КРУТ", costMult:1, base:false },
-    { name:"Проницательность", stat:"ЭМП", costMult:1, base:true },
-    { name:"Торговля", stat:"КРУТ", costMult:1, base:false },
-    { name:"Убеждение", stat:"КРУТ", costMult:1, base:true },
-    { name:"Уход за собой", stat:"КРУТ", costMult:1, base:false },
-    { name:"Авиатехника", stat:"ТЕХ", costMult:1, base:false },
-    { name:"Автомеханика", stat:"ТЕХ", costMult:1, base:false },
-    { name:"Взлом замков", stat:"ТЕХ", costMult:1, base:false },
-    { name:"Взрывотехника", stat:"ТЕХ", costMult:2, base:false },
-    { name:"Живопись/рисование/скульптура", stat:"ТЕХ", costMult:1, base:false },
-    { name:"Карманная кража", stat:"ТЕХ", costMult:1, base:false },
-    { name:"Кибертехника", stat:"ТЕХ", costMult:1, base:false },
-    { name:"Оружейная техника", stat:"ТЕХ", costMult:1, base:false },
-    { name:"Основы техники", stat:"ТЕХ", costMult:1, base:false },
-    { name:"Парамедицина", stat:"ТЕХ", costMult:2, base:false },
-    { name:"Первая помощь", stat:"ТЕХ", costMult:1, base:true },
-    { name:"Судоремонт", stat:"ТЕХ", costMult:1, base:false },
-    { name:"Фальсификация", stat:"ТЕХ", costMult:1, base:false },
-    { name:"Фотография/видео", stat:"ТЕХ", costMult:1, base:false },
-    { name:"Электроника/безопасность", stat:"ТЕХ", costMult:2, base:false }
-];
-
-const roleTemplates = {
-    "Рокербой": { "Композиция":6, "Игра на инструменте":6, "Убеждение":6, "Общение":6, "Гардероб и стиль":4, "Опыт на улицах":6 },
-    "Соло": { "Автоогонь":6, "Короткоствольное оружие":6, "Холодное оружие":6, "Длинноствольное оружие":6, "Уклонение":6, "Тактика":6, "Сопротивление пыткам/наркотикам":6 },
-    "Нетраннер": { "Основы техники":6, "Кибертехника":4, "Электроника/безопасность":6, "Криптография":6, "Поиск информации":6, "Скрытность":6 },
-    "Техник": { "Основы техники":6, "Кибертехника":6, "Электроника/безопасность":6, "Оружейная техника":6, "Автомеханика":6, "Взлом замков":4 },
-    "Медтех": { "Первая помощь":6, "Парамедицина":6, "Кибертехника":4, "Основы техники":4, "Наука":6, "Сопротивление пыткам/наркотикам":4 },
-    "Медиа": { "Композиция":6, "Поиск информации":6, "Общение":6, "Допрос":6, "Фотография/видео":4, "Опыт на улицах":6 },
-    "Законник": { "Криминология":6, "Допрос":6, "Короткоствольное оружие":6, "Убеждение":6, "Выслеживание":6, "Тактика":6 },
-    "Менеджер": { "Бизнес":6, "Бухгалтерия":6, "Бюрократия":6, "Убеждение":6, "Взяточничество":6, "Тактика":4 },
-    "Фиксер": { "Торговля":6, "Опыт на улицах":6, "Взяточничество":6, "Убеждение":6, "Фальсификация":6 },
-    "Кочевник": { "Вождение":6, "Автомеханика":6, "Выживание в дикой местности":6, "Длинноствольное оружие":6, "Скрытность":6 }
-};
-
+// ========== IdealCharacterBuilder (переделанный под сетку) ==========
 export class IdealCharacterBuilder {
     constructor() {
         this.stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
@@ -661,124 +540,92 @@ export class IdealCharacterBuilder {
         return remaining >= 0;
     }
     buildSkillsGrid() {
-    const container = document.getElementById('idealSkillsList');
-    if (!container) return;
-    
-    // Управляющие элементы (роль, рекомендации, поиск)
-    const controlHtml = `
-        <div class="skills-controls">
-            <div class="role-row">
-                <label>Роль для рекомендации: 
-                    <select id="idealRoleSelect">
-                        <option value="Рокербой">Рокербой</option><option value="Соло">Соло</option>
-                        <option value="Нетраннер">Нетраннер</option><option value="Техник">Техник</option>
-                        <option value="Медтех">Медтех</option><option value="Медиа">Медиа</option>
-                        <option value="Законник">Законник</option><option value="Менеджер">Менеджер</option>
-                        <option value="Фиксер">Фиксер</option><option value="Кочевник">Кочевник</option>
-                    </select>
-                </label>
-                <button type="button" id="applyRecommendedSkillsBtn">✨ Применить рекомендованные</button>
-                <button type="button" id="copySkillsBtn" class="copy-skills-btn">📋 Копировать список навыков</button>
-            </div>
-            <div class="search-row">
-                <input type="text" id="skillsSearchInput" placeholder="🔍 Поиск по названию навыка...">
-            </div>
-        </div>
-    `;
-    container.innerHTML = controlHtml;
-    
-    // Контейнер для всех навыков (сетка)
-    const skillsGrid = document.createElement('div');
-    skillsGrid.className = 'skills-grid-modern';
-    container.appendChild(skillsGrid);
-    
-    // Группируем навыки по категориям (как было)
-    const categories = this.groupSkillsByCategory();
-    
-    for (const [category, skills] of Object.entries(categories)) {
-        const categorySection = document.createElement('div');
-        categorySection.className = 'skills-category-modern';
-        categorySection.innerHTML = `
-            <div class="category-header-modern" data-category="${category}">
-                <span class="category-toggle-modern">▶</span> <strong>${category}</strong> <span class="skill-count">(${skills.length})</span>
-            </div>
-            <div class="category-body-modern" style="display: none;">
-                <div class="skills-grid-modern-inner"></div>
+        const container = document.getElementById('idealSkillsList');
+        if (!container) return;
+        const controlHtml = `
+            <div class="skills-controls">
+                <div class="role-row">
+                    <label>Роль для рекомендации: 
+                        <select id="idealRoleSelect">
+                            ${Object.keys(roleTemplates).map(role => `<option value="${role}">${role}</option>`).join('')}
+                        </select>
+                    </label>
+                    <button type="button" id="applyRecommendedSkillsBtn">✨ Применить рекомендованные</button>
+                    <button type="button" id="copySkillsBtn" class="copy-skills-btn">📋 Копировать список навыков</button>
+                </div>
+                <div class="search-row">
+                    <input type="text" id="skillsSearchInput" placeholder="🔍 Поиск по названию навыка...">
+                </div>
             </div>
         `;
-        skillsGrid.appendChild(categorySection);
+        container.innerHTML = controlHtml;
         
-        const innerGrid = categorySection.querySelector('.skills-grid-modern-inner');
-        skills.forEach(skill => {
-            const defaultValue = skill.base ? 2 : 0;
-            const skillCard = document.createElement('div');
-            skillCard.className = 'skill-card-modern';
-            skillCard.setAttribute('data-skill-name', skill.name);
-            skillCard.innerHTML = `
-                <div class="skill-name-modern">${skill.name}</div>
-                <div class="skill-stat-modern">${skill.stat}</div>
-                <div class="skill-x2-modern">${skill.costMult === 2 ? '×2' : ''}</div>
-                <input type="number" class="skill-level-modern" data-skill="${skill.name}" data-cost="${skill.costMult}" min="0" max="10" value="${defaultValue}" step="1">
+        const skillsGrid = document.createElement('div');
+        skillsGrid.className = 'skills-grid-modern';
+        container.appendChild(skillsGrid);
+        
+        const categories = this.groupSkillsByCategory();
+        for (const [category, skills] of Object.entries(categories)) {
+            const categorySection = document.createElement('div');
+            categorySection.className = 'skills-category-modern';
+            categorySection.innerHTML = `
+                <div class="category-header-modern" data-category="${category}">
+                    <span class="category-toggle-modern">▶</span> <strong>${category}</strong> <span class="skill-count">(${skills.length})</span>
+                </div>
+                <div class="category-body-modern" style="display: none;">
+                    <div class="skills-grid-modern-inner"></div>
+                </div>
             `;
-            innerGrid.appendChild(skillCard);
+            skillsGrid.appendChild(categorySection);
+            
+            const innerGrid = categorySection.querySelector('.skills-grid-modern-inner');
+            skills.forEach(skill => {
+                const defaultValue = skill.base ? 2 : 0;
+                const skillCard = document.createElement('div');
+                skillCard.className = 'skill-card-modern';
+                skillCard.setAttribute('data-skill-name', skill.name);
+                skillCard.innerHTML = `
+                    <div class="skill-name-modern">${skill.name}</div>
+                    <div class="skill-stat-modern">${skill.stat}</div>
+                    <div class="skill-x2-modern">${skill.costMult === 2 ? '×2' : ''}</div>
+                    <input type="number" class="skill-level-modern" data-skill="${skill.name}" data-cost="${skill.costMult}" min="0" max="10" value="${defaultValue}" step="1">
+                `;
+                innerGrid.appendChild(skillCard);
+            });
+            
+            innerGrid.querySelectorAll('.skill-level-modern').forEach(input => {
+                input.addEventListener('input', () => this.updateSkillRemaining());
+            });
+        }
+        
+        // Обработчики раскрытия категорий
+        document.querySelectorAll('.category-header-modern').forEach(header => {
+            header.addEventListener('click', () => {
+                const body = header.parentElement.querySelector('.category-body-modern');
+                const toggle = header.querySelector('.category-toggle-modern');
+                if (body.style.display === 'none') {
+                    body.style.display = 'block';
+                    toggle.textContent = '▼';
+                } else {
+                    body.style.display = 'none';
+                    toggle.textContent = '▶';
+                }
+            });
         });
         
-        // Привязываем обработчики изменения уровня
-        innerGrid.querySelectorAll('.skill-level-modern').forEach(input => {
-            input.addEventListener('input', () => this.updateSkillRemaining());
+        document.getElementById('skillsSearchInput')?.addEventListener('input', () => this.filterSkillsModern());
+        document.getElementById('applyRecommendedSkillsBtn')?.addEventListener('click', () => {
+            const role = document.getElementById('idealRoleSelect').value;
+            this.applyRecommendedSkills(role);
         });
-        innerGrid.style.display = 'grid';
-innerGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(220px, 1fr)';
-innerGrid.style.gap = '8px';
+        document.getElementById('copySkillsBtn')?.addEventListener('click', () => this.copySkillsToClipboard());
+        this.updateSkillRemaining();
     }
     
-    // Обработчики для раскрытия категорий
-    document.querySelectorAll('.category-header-modern').forEach(header => {
-        header.addEventListener('click', () => {
-            const body = header.parentElement.querySelector('.category-body-modern');
-            const toggle = header.querySelector('.category-toggle-modern');
-            if (body.style.display === 'none') {
-                body.style.display = 'block';
-                toggle.textContent = '▼';
-            } else {
-                body.style.display = 'none';
-                toggle.textContent = '▶';
-            }
-        });
-    });
-    
-    // Поиск
-    document.getElementById('skillsSearchInput')?.addEventListener('input', () => this.filterSkillsModern());
-    document.getElementById('applyRecommendedSkillsBtn')?.addEventListener('click', () => {
-        const role = document.getElementById('idealRoleSelect').value;
-        this.applyRecommendedSkills(role);
-    });
-    document.getElementById('copySkillsBtn')?.addEventListener('click', () => this.copySkillsToClipboard());
-    
-    this.updateSkillRemaining();
-}
-    getCurrentSkills() {
-        const skills = {};
-        document.querySelectorAll('#idealSkillsList .skill-row').forEach(row => {
-            const name = row.querySelector('td:first-child')?.innerText;
-            const level = row.querySelector('.skill-level')?.value;
-            if (name && level) {
-                skills[name] = parseInt(level) || 0;
-            }
-        });
-        return skills;
-    }
     groupSkillsByCategory() {
         const categories = {
-            "Восприятие": [],
-            "Физические": [],
-            "Управление": [],
-            "Образование": [],
-            "Рукопашные": [],
-            "Творческие": [],
-            "Дальний бой": [],
-            "Социальные": [],
-            "Технические": []
+            "Восприятие": [], "Физические": [], "Управление": [], "Образование": [],
+            "Рукопашные": [], "Творческие": [], "Дальний бой": [], "Социальные": [], "Технические": []
         };
         const map = {
             "Восприятие": ["Восприятие","Скрытность","Выслеживание","Сопротивление пыткам/наркотикам","Концентрация","Танец","Чтение по губам","Скрытие/обнаружение объекта"],
@@ -805,144 +652,82 @@ innerGrid.style.gap = '8px';
         for (const cat in categories) if (categories[cat].length === 0) delete categories[cat];
         return categories;
     }
-    renderCategoryTable(category, skills) {
-    const tbodyId = `skills-tbody-${category.replace(/\s/g, '')}`;
-    const container = document.getElementById(tbodyId);
-    if (!container) return;
-
-    // Создаём таблицу с правильными классами
-    const table = document.createElement('table');
-    table.className = 'cyber-table skills-table';   // ВАЖНО: добавили skills-table
-    table.innerHTML = `
-        <thead>
-            <tr><th>Навык</th><th>ХАР</th><th>×2</th><th>Уровень</th></tr>
-        </thead>
-        <tbody id="${tbodyId}"></tbody>
-    `;
     
-    // Обёртка для горизонтальной прокрутки
-    const wrapper = document.createElement('div');
-    wrapper.className = 'table-wrapper';
-    wrapper.appendChild(table);
-    
-    // Вставляем вместо старого содержимого
-    const oldContainer = container.parentElement?.querySelector(`#${tbodyId}`)?.parentElement?.parentElement;
-    if (oldContainer && oldContainer.classList.contains('category-body')) {
-        // Очищаем category-body и добавляем wrapper
-        oldContainer.innerHTML = '';
-        oldContainer.appendChild(wrapper);
-    } else {
-        // Запасной вариант: просто вставляем wrapper в нужное место
-        const targetDiv = document.querySelector(`#skills-tbody-${category.replace(/\s/g, '')}`)?.closest('.category-body');
-        if (targetDiv) {
-            targetDiv.innerHTML = '';
-            targetDiv.appendChild(wrapper);
-        }
-    }
-    
-    // Заполняем строки
-    const newTbody = table.querySelector('tbody');
-    skills.forEach(skill => {
-        const defaultValue = skill.base ? 2 : 0;
-        const row = document.createElement('tr');
-        row.className = 'skill-row';
-        row.setAttribute('data-skill-name', skill.name);
-        row.innerHTML = `
-            <td>${skill.name}</td>
-            <td>${skill.stat}</td>
-            <td>${skill.costMult === 2 ? 'да' : 'нет'}</td>
-            <td><input type="number" class="skill-level" data-skill="${skill.name}" data-cost="${skill.costMult}" min="0" max="10" value="${defaultValue}" step="1"></td>
-        `;
-        newTbody.appendChild(row);
-    });
-    
-    // Перепривязываем события
-    newTbody.querySelectorAll('.skill-level').forEach(input => {
-        input.addEventListener('input', () => this.updateSkillRemaining());
-    });
-}
     filterSkillsModern() {
-    const term = document.getElementById('skillsSearchInput').value.toLowerCase();
-    const allCards = document.querySelectorAll('.skill-card-modern');
-    allCards.forEach(card => {
-        const name = card.querySelector('.skill-name-modern')?.innerText.toLowerCase() || '';
-        if (name.includes(term)) {
-            card.style.display = 'flex';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-    // Показываем категории, в которых есть видимые карточки
-    document.querySelectorAll('.skills-category-modern').forEach(cat => {
-        const visibleCards = Array.from(cat.querySelectorAll('.skill-card-modern')).some(c => c.style.display !== 'none');
-        const body = cat.querySelector('.category-body-modern');
-        const toggle = cat.querySelector('.category-toggle-modern');
-        if (visibleCards && body.style.display === 'none') {
-            body.style.display = 'block';
-            if (toggle) toggle.textContent = '▼';
-        } else if (!visibleCards && body.style.display === 'block') {
-            body.style.display = 'none';
-            if (toggle) toggle.textContent = '▶';
-        }
-    });
-}
+        const term = document.getElementById('skillsSearchInput').value.toLowerCase();
+        const allCards = document.querySelectorAll('.skill-card-modern');
+        allCards.forEach(card => {
+            const name = card.querySelector('.skill-name-modern')?.innerText.toLowerCase() || '';
+            card.style.display = name.includes(term) ? 'flex' : 'none';
+        });
+        document.querySelectorAll('.skills-category-modern').forEach(cat => {
+            const visibleCards = Array.from(cat.querySelectorAll('.skill-card-modern')).some(c => c.style.display !== 'none');
+            const body = cat.querySelector('.category-body-modern');
+            const toggle = cat.querySelector('.category-toggle-modern');
+            if (visibleCards && body.style.display === 'none') {
+                body.style.display = 'block';
+                if (toggle) toggle.textContent = '▼';
+            } else if (!visibleCards && body.style.display === 'block') {
+                body.style.display = 'none';
+                if (toggle) toggle.textContent = '▶';
+            }
+        });
+    }
+    
     applyRecommendedSkills(role) {
-    const template = roleTemplates[role];
-    if (!template) return;
-    
-    // Сброс всех навыков до базовых (2 для базовых, 0 для остальных)
-    document.querySelectorAll('.skill-level-modern').forEach(input => {
-        const skillName = input.dataset.skill;
-        const skill = allSkills.find(s => s.name === skillName);
-        const defaultValue = (skill && skill.base) ? 2 : 0;
-        input.value = defaultValue;
-    });
-    
-    // Установка рекомендованных значений
-    for (const [skillName, level] of Object.entries(template)) {
-        const input = document.querySelector(`.skill-level-modern[data-skill="${skillName}"]`);
-        if (input && level <= 10) input.value = level;
-    }
-    
-    // Проверка базовых навыков (минимум 2)
-    for (const skill of allSkills) {
-        if (skill.base) {
-            const input = document.querySelector(`.skill-level-modern[data-skill="${skill.name}"]`);
-            if (input && parseInt(input.value) < 2) input.value = 2;
+        const template = roleTemplates[role];
+        if (!template) return;
+        document.querySelectorAll('.skill-level-modern').forEach(input => {
+            const skillName = input.dataset.skill;
+            const skill = allSkills.find(s => s.name === skillName);
+            const defaultValue = (skill && skill.base) ? 2 : 0;
+            input.value = defaultValue;
+        });
+        for (const [skillName, level] of Object.entries(template)) {
+            const input = document.querySelector(`.skill-level-modern[data-skill="${skillName}"]`);
+            if (input && level <= 10) input.value = level;
         }
+        for (const skill of allSkills) {
+            if (skill.base) {
+                const input = document.querySelector(`.skill-level-modern[data-skill="${skill.name}"]`);
+                if (input && parseInt(input.value) < 2) input.value = 2;
+            }
+        }
+        this.updateSkillRemaining();
+        alert(`Рекомендованные навыки для ${role} применены.`);
     }
     
-    this.updateSkillRemaining();
-    alert(`Рекомендованные навыки для ${role} применены.`);
-}
     copySkillsToClipboard() {
-    let text = "Навыки персонажа:\n";
-    document.querySelectorAll('.skill-card-modern').forEach(card => {
-        const name = card.querySelector('.skill-name-modern')?.innerText;
-        const input = card.querySelector('.skill-level-modern');
-        if (name && input) {
-            const level = input.value;
-            if (level != 0) text += `${name}: ${level}\n`;
-        }
-    });
-    navigator.clipboard.writeText(text).then(() => alert("Список навыков скопирован в буфер обмена!"));
-}
+        let text = "Навыки персонажа:\n";
+        document.querySelectorAll('.skill-card-modern').forEach(card => {
+            const name = card.querySelector('.skill-name-modern')?.innerText;
+            const input = card.querySelector('.skill-level-modern');
+            if (name && input) {
+                const level = input.value;
+                if (level != 0) text += `${name}: ${level}\n`;
+            }
+        });
+        navigator.clipboard.writeText(text).then(() => alert("Список навыков скопирован в буфер обмена!"));
+    }
+    
     updateSkillRemaining() {
-    let total = 0;
-    document.querySelectorAll('.skill-level-modern').forEach(input => {
-        const level = parseInt(input.value) || 0;
-        const costMult = parseInt(input.dataset.cost) || 1;
-        total += level * costMult;
-    });
-    const remaining = 86 - total;
-    document.getElementById('idealSkillPoints').innerHTML = remaining;
-    return remaining >= 0;
-}
+        let total = 0;
+        document.querySelectorAll('.skill-level-modern').forEach(input => {
+            const level = parseInt(input.value) || 0;
+            const costMult = parseInt(input.dataset.cost) || 1;
+            total += level * costMult;
+        });
+        const remaining = 86 - total;
+        document.getElementById('idealSkillPoints').innerHTML = remaining;
+        return remaining >= 0;
+    }
+    
     attachEvents() {
         document.getElementById('idealStatsGrid')?.addEventListener('input', () => this.updateStatsRemaining());
         document.getElementById('calcIdealStatsBtn')?.addEventListener('click', () => this.calcDerived());
         document.getElementById('randomIdealStatsBtn')?.addEventListener('click', () => this.randomizeStats());
     }
+    
     randomizeStats() {
         const statIds = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
         let total = 0;
@@ -956,6 +741,7 @@ innerGrid.style.gap = '8px';
         else if (total < 62) alert(`Сумма ХАР = ${total}. Осталось ${62 - total} очков.`);
         else alert(`Сумма ХАР = 62. Идеально!`);
     }
+    
     calcDerived() {
         const body = parseInt(document.getElementById('idealStatBODY').value);
         const will = parseInt(document.getElementById('idealStatWILL').value);
@@ -967,6 +753,17 @@ innerGrid.style.gap = '8px';
         document.getElementById('idealDerived').innerHTML = `<strong>ПЗ = ${hp}</strong> (тяж. ≤ ${severe})<br>Спасбросок = ${body}<br>Человечность = ${humanity} (ЭМП = ${empFrom})`;
         if (!this.updateStatsRemaining()) alert("Превышение очков ХАР (максимум 62)");
         if (!this.updateSkillRemaining()) alert("Превышение очков навыков (максимум 86)");
-        }
-        
+    }
+    
+    getCurrentSkills() {
+        const skills = {};
+        document.querySelectorAll('.skill-card-modern').forEach(card => {
+            const name = card.querySelector('.skill-name-modern')?.innerText;
+            const input = card.querySelector('.skill-level-modern');
+            if (name && input) {
+                skills[name] = parseInt(input.value) || 0;
+            }
+        });
+        return skills;
+    }
 }
