@@ -6,16 +6,8 @@ import { HumanityCalculator } from './modules/humanity.js';
 import { ExpensesCalc } from './modules/expenses.js';
 import { IdealCharacterBuilder } from './modules/ideal-builder.js';
 import { CombatCalculatorUI, DistanceCalculator, InitiativeTracker, GroupInitiative, CombatFormulas } from './modules/combat.js';
-import { NightMarket, TreasureGenerator, IdealShop } from './modules/market.js';
 import { initTransport } from './modules/transport.js';
-import { NPCGenerator } from './modules/npc-generator.js';
-import { GroupTracker } from './modules/group-tracker.js';
-import { generateSimpleContract, initSimpleContract } from './modules/simple-contract.js';
-import { AdvancedContractGenerator } from './modules/advanced-contract-generator.js';
-import { checkCyberpsychosis, initCyberpsychosis } from './modules/cyberpsychosis.js';
-import { generateNetArchitecture, initNetArchitecture } from './modules/net-architecture.js';
-import { MookGenerator } from './modules/mook-generator.js';
-import { EncounterGenerator } from './modules/encounter-generator.js';
+import { NPCGenerator, GroupTracker, initGM, MookGenerator, EncounterGenerator, AdvancedContractGenerator, generateSimpleContract, generateNetArchitecture } from './modules/gm.js';
 import { updateAllTables, filterTables, renderFilteredCyberware } from './modules/gear.js';
 import { renderRoles } from './modules/roles.js';
 import {
@@ -25,7 +17,7 @@ import {
 } from './data.js';
 import { saveCharacter, loadCharacter, saveGroup, loadGroup } from './storage.js';
 import { allSkills, roleTemplates } from './data/skills-data.js';
-
+import { NightMarket, TreasureGenerator, IdealShop } from './modules/market.js';
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
     const data = {

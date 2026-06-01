@@ -1,5 +1,5 @@
 // modules/npc-generator.js
-import { getHP } from '../utils.js';
+import { getHP } from '../../utils.js';
 
 export class NPCGenerator {
     static generate() {
