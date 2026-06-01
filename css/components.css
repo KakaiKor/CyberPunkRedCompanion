@@ -424,3 +424,240 @@ body .skills-grid-modern-inner,
     padding: 4px 0;
     border-bottom: 1px dashed #2a1a2a;
 }
+/* Стили для улучшенного шага снаряжения */
+.gear-wizard-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #2a3342;
+}
+.gear-tab-btn {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #9aa4bf;
+}
+.gear-tab-btn.active {
+    color: #ff3c5f;
+    border-bottom: 2px solid #ff3c5f;
+}
+.gear-tab-content {
+    display: none;
+}
+.gear-tab-content.active {
+    display: block;
+}
+.gear-checkbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 8px;
+    background: #0f1219;
+    border-radius: 12px;
+}
+.gear-checkbox-list label {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 4px;
+    border-bottom: 1px solid #2a3342;
+}
+.weapon-categories {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.weapon-cat {
+    flex: 1;
+    min-width: 250px;
+}
+.search-box {
+    margin-bottom: 12px;
+}
+.search-box input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 20px;
+}
+.item-desc {
+    font-size: 0.7rem;
+    color: #9aa4bf;
+    margin-left: 8px;
+}
+.gear-wizard-budget {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    text-align: right;
+}
+/* Стили для шага снаряжения (табличный вид) */
+.gear-budget {
+    font-size: 1.2rem;
+    text-align: right;
+    margin-bottom: 15px;
+    padding: 8px;
+    background: #0f1219;
+    border-radius: 12px;
+}
+.gear-filter {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.gear-filter select, .gear-filter input {
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+.gear-section {
+    margin-bottom: 25px;
+    border-top: 1px solid #2a3342;
+    padding-top: 15px;
+}
+.gear-section h4 {
+    margin: 10px 0;
+    color: #ff9a3c;
+}
+.cyber-table td:first-child, .cyber-table th:first-child {
+    text-align: center;
+}
+/* Стили для шага навыков (группировка, компактные таблицы) */
+.skills-wizard-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+    gap: 15px;
+}
+.skills-points {
+    font-size: 1.1rem;
+    background: #0f1219;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+.skills-search input {
+    padding: 6px 12px;
+    border-radius: 20px;
+    width: 200px;
+}
+.skill-category {
+    margin-bottom: 15px;
+    border: 1px solid #2a3342;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.skill-category-header {
+    padding: 10px 12px;
+    background: #1e2530;
+    cursor: pointer;
+    font-weight: bold;
+    user-select: none;
+}
+.skill-category-header:hover {
+    background: #2a3342;
+}
+.category-toggle {
+    display: inline-block;
+    width: 20px;
+}
+.skill-category-body {
+    padding: 0;
+    overflow-x: auto;
+}
+.skills-table-compact {
+    min-width: 400px;
+    font-size: 0.8rem;
+}
+.skills-table-compact td, .skills-table-compact th {
+    padding: 6px 8px;
+}
+.skills-table-compact input {
+    width: 60px;
+    text-align: center;
+    padding: 4px;
+}
+/* Таблицы навыков и имплантов */
+.skills-budget, .cyber-budget-info {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    text-align: right;
+    background: #0f1219;
+    padding: 8px 12px;
+    border-radius: 12px;
+}
+.skills-controls, .cyber-controls {
+    margin-bottom: 20px;
+}
+.skills-controls input, .cyber-controls input {
+    width: 250px;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+.skills-category-table, .cyber-group-table {
+    margin-bottom: 25px;
+    border-top: 1px solid #2a3342;
+    padding-top: 10px;
+}
+.skills-category-table h4, .cyber-group-table h4 {
+    margin: 10px 0;
+    color: #ff9a3c;
+    font-size: 1.1rem;
+}
+.skill-level-table {
+    width: 70px;
+    text-align: center;
+}
+.style-budget {
+    font-size: 1.2rem;
+    text-align: right;
+    margin-bottom: 15px;
+    padding: 8px;
+    background: #0f1219;
+    border-radius: 12px;
+}
+.style-controls {
+    margin-bottom: 20px;
+}
+.style-controls input {
+    width: 250px;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+.style-category-table {
+    margin-bottom: 25px;
+    border-top: 1px solid #2a3342;
+    padding-top: 10px;
+}
+.style-category-table h4 {
+    margin: 10px 0;
+    color: #ff9a3c;
+}
+.collapsible-header {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.collapsible-header .collapse-icon {
+    font-size: 0.8rem;
+    margin-left: 8px;
+}
+.skills-category-table .table-wrapper,
+.cyber-group-table .table-wrapper {
+    transition: all 0.2s ease;
+}
+.notes-preview {
+    background: #0a0c12;
+    padding: 12px;
+    border-radius: 12px;
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 0.85rem;
+    border-left: 3px solid #ff9a3c;
+}

@@ -1,4 +1,4 @@
-// data/skills-data.js
+// js/data/skills-data.js
 export const allSkills = [
     { name:"Восприятие", stat:"ИНТ", costMult:1, base:true },
     { name:"Скрытность", stat:"ЛВК", costMult:1, base:true },
