@@ -7,6 +7,8 @@ import { generateNetArchitecture } from './net-architecture.js';
 import { MookGenerator } from './mook-generator.js';
 import { EncounterGenerator } from './encounter-generator.js';
 import { ScreamSheetGenerator } from './scream-sheet-generator.js';  // ДОБАВИТЬ
+import { PlotBuilder } from './plot-builder.js';
+
 
 export function initGM() {
     // NPC
@@ -26,4 +28,30 @@ export function initGM() {
     document.getElementById('generateEncounterBtn')?.addEventListener('click', () => EncounterGenerator.generate());
     // Скрим листы
     document.getElementById('generateScreamSheetBtn')?.addEventListener('click', () => ScreamSheetGenerator.render());  // ДОБАВИТЬ
+
+    const addPlotBtn = document.getElementById('addPlotNodeBtn');
+    const exportPlotBtn = document.getElementById('exportPlotBtn');
+    if (exportPlotBtn) {
+        exportPlotBtn.addEventListener('click', () => PlotBuilder.exportToJSON());
+    }
+    const importPlotInput = document.getElementById('importPlotInput');
+    if (importPlotInput) {
+        importPlotInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) PlotBuilder.importFromJSON(e.target.files[0]);
+        });
+    }
+    if (addPlotBtn) {
+        addPlotBtn.addEventListener('click', () => {
+            const title = document.getElementById('plotTitle').value.trim();
+            const description = document.getElementById('plotDesc').value;
+            if (!title) {
+                alert('Введите название узла');
+                return;
+            }
+            PlotBuilder.addNode({ title, description });
+            document.getElementById('plotTitle').value = '';
+            document.getElementById('plotDesc').value = '';
+        });
+    }
+    PlotBuilder.render();
 }

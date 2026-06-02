@@ -1040,6 +1040,148 @@ body.cyberpunk-theme .copy-sheet-btn {
     text-transform: uppercase;
 }
 
+/* Сюжетный конструктор */
+.plot-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    background: #0f1219;
+    padding: 16px;
+    border-radius: 16px;
+}
+.plot-builder-container {
+    max-height: 500px;
+    overflow-y: auto;
+}
+.plot-nodes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.plot-node {
+    background: #14181f;
+    border: 1px solid #2a3342;
+    border-radius: 16px;
+    padding: 16px;
+    transition: 0.2s;
+}
+.plot-node:hover {
+    border-color: #ff9a3c;
+}
+.plot-node-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.plot-node-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    background: #1e2530;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 30px;
+    width: 70%;
+    color: #ff9a3c;
+}
+.plot-node-desc {
+    width: 100%;
+    background: #0a0c12;
+    border: 1px solid #2a3342;
+    border-radius: 12px;
+    padding: 8px;
+    margin-bottom: 12px;
+    resize: vertical;
+}
+.plot-node-links {
+    background: #0a0c12;
+    border-radius: 12px;
+    padding: 10px;
+}
+.plot-node-links ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+.plot-node-links li {
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.remove-link {
+    background: #2a1a2a;
+    border: none;
+    border-radius: 20px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 0.7rem;
+}
+.add-link {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    align-items: center;
+}
+.add-link select {
+    flex: 1;
+}
+.delete-node-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #ff3c5f;
+}
+
+.plot-node.start-node {
+    border-left: 4px solid #39ff14;
+}
+.plot-node.end-node {
+    border-left: 4px solid #ff3c5f;
+}
+.incoming-links, .outgoing-links {
+    margin-top: 8px;
+    background: #0a0c12;
+    padding: 8px;
+    border-radius: 12px;
+}
+.incoming-links ul, .outgoing-links ul {
+    margin: 6px 0 0 20px;
+}
+.link-desc {
+    font-size: 0.8rem;
+    color: #9aa4bf;
+    margin-left: 20px;
+    font-style: italic;
+}
+.link-actions {
+    margin-left: 20px;
+    display: flex;
+    gap: 8px;
+}
+.edit-link-desc, .remove-link {
+    background: #1e2530;
+    border: none;
+    border-radius: 16px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+.edit-link-desc:hover {
+    background: #ff9a3c;
+    color: #0a0c12;
+}
+.remove-link:hover {
+    background: #ff3c5f;
+}
+.plot-export-import {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
 @media (max-width: 700px) {
     .sheet-body {
         column-count: 1 !important;

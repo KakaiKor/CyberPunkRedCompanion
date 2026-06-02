@@ -2476,6 +2476,230 @@ body.cyberpunk-theme #combat-calc input[type="number"] {
     margin-right: 6px;
     font-size: 0.8rem;
 }
+
+.plot-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+    background: rgba(15, 18, 25, 0.8);
+    backdrop-filter: blur(4px);
+    padding: 20px;
+    border-radius: 24px;
+    border: 1px solid #2a3342;
+}
+.plot-form input, .plot-form textarea {
+    background: #0a0c12;
+    border: 1px solid #2a3342;
+    border-radius: 40px;
+    padding: 10px 16px;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+.plot-form input:focus, .plot-form textarea:focus {
+    border-color: #ff3c5f;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 60, 95, 0.3);
+}
+.plot-export-import {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+.plot-builder-container {
+    max-height: 65vh;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+.plot-nodes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+.plot-node {
+    background: linear-gradient(145deg, #14181f, #0f1219);
+    border: 1px solid #2a3342;
+    border-radius: 28px;
+    padding: 20px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.plot-node:hover {
+    border-color: #ff9a3c;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+.plot-node.start-node {
+    border-left: 5px solid #39ff14;
+}
+.plot-node.end-node {
+    border-left: 5px solid #ff3c5f;
+}
+.plot-node-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.plot-node-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: #1a1e2a;
+    border: 1px solid #2a3342;
+    border-radius: 40px;
+    padding: 8px 16px;
+    flex: 1;
+    color: #ff9a3c;
+    font-family: 'Orbitron', monospace;
+}
+.plot-node-desc {
+    width: 100%;
+    background: #0a0c12;
+    border: 1px solid #2a3342;
+    border-radius: 20px;
+    padding: 12px;
+    margin-bottom: 18px;
+    resize: vertical;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+.plot-node-links {
+    background: #0a0c12;
+    border-radius: 20px;
+    padding: 12px;
+    margin-top: 8px;
+}
+.incoming-links, .outgoing-links {
+    margin-bottom: 16px;
+}
+.incoming-links strong, .outgoing-links strong {
+    color: #ff9a3c;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.incoming-links ul, .outgoing-links ul {
+    margin: 8px 0 0 20px;
+    list-style: none;
+}
+.incoming-links li, .outgoing-links li {
+    margin: 8px 0;
+    padding: 6px 0;
+    border-bottom: 1px dashed #2a3342;
+}
+.link-desc {
+    font-size: 0.8rem;
+    color: #9aa4bf;
+    margin-left: 20px;
+    font-style: italic;
+    background: #1e2530;
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+}
+.link-actions {
+    display: flex;
+    gap: 12px;
+    margin-left: 20px;
+    margin-top: 6px;
+}
+.edit-link-desc, .remove-link {
+    background: #1e2530;
+    border: none;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: 0.1s;
+}
+.edit-link-desc:hover {
+    background: #ff9a3c;
+    color: #0a0c12;
+}
+.remove-link:hover {
+    background: #ff3c5f;
+    color: white;
+}
+.add-link {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+    align-items: center;
+}
+.add-link select {
+    flex: 1;
+    min-width: 140px;
+    background: #1e2530;
+    border: 1px solid #2a3342;
+    border-radius: 40px;
+    padding: 8px 12px;
+}
+.add-link input {
+    flex: 2;
+    min-width: 160px;
+    background: #1e2530;
+    border: 1px solid #2a3342;
+    border-radius: 40px;
+    padding: 8px 12px;
+}
+.add-link button {
+    background: #2a3342;
+    border: none;
+    border-radius: 40px;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.add-link button:hover {
+    background: #ff3c5f;
+    color: white;
+}
+.delete-node-btn {
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: #ff3c5f;
+    padding: 4px 10px;
+    border-radius: 30px;
+    transition: 0.2s;
+}
+.delete-node-btn:hover {
+    background: rgba(255, 60, 95, 0.2);
+    transform: scale(1.05);
+}
+
+/* Улучшение контрастности текста в полях ввода и описаниях */
+.plot-node-title,
+.plot-node-desc,
+.add-link select,
+.add-link input,
+.plot-node-title:focus,
+.plot-node-desc:focus,
+.add-link select:focus,
+.add-link input:focus {
+    color: #f0f0f0 !important;
+    background: #1a1e2a !important;
+    border-color: #ff9a3c !important;
+}
+.link-desc {
+    color: #d0d0d0 !important;
+    background: #2a2f3a !important;
+}
+.incoming-links li, .outgoing-links li {
+    color: #e0e0e0 !important;
+}
+.plot-node-title::placeholder,
+.plot-node-desc::placeholder,
+.add-link input::placeholder {
+    color: #8a8f9a !important;
+}
+
 @keyframes pulse {
     0% { box-shadow: 0 0 0 0 rgba(255,60,95,0.5); }
     70% { box-shadow: 0 0 0 6px rgba(255,60,95,0); }
