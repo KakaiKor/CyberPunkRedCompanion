@@ -2708,6 +2708,13 @@ body.cyberpunk-theme #combat-calc input[type="number"] {
 .cyber-badge {
     animation: pulse 1.5s infinite;
 }
+#damageResult {
+    margin-top: 15px;
+    padding: 8px;
+    background: #0f1219;
+    border-radius: 12px;
+    font-size: 0.9rem;
+}
 /* Footer – киберпанк-стиль */
 .cyber-footer {
     margin-top: 50px;

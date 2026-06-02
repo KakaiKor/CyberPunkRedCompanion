@@ -316,10 +316,25 @@
                         <div id="calcResult"></div>
                     </div>
                     <div class="card">
-                        <h3>Урон и броня</h3><label>Урон: <input id="damageInput" type="number"></label><label>Броня
-                            (ОС): <input id="armorInput" type="number"></label><label><input type="checkbox"
-                                id="coldWeaponCheck"> Холодное (½ ОС)</label><button
-                            id="calcDamageBtn">Рассчитать</button>
+                        <h3>Урон и броня</h3>
+                        <label>Тип урона:
+                            <select id="damageDice">
+                                <option value="1d6">1d6</option>
+                                <option value="2d6" selected>2d6</option>
+                                <option value="3d6">3d6</option>
+                                <option value="4d6">4d6</option>
+                                <option value="5d6">5d6</option>
+                                <option value="6d6">6d6</option>
+                                <option value="8d6">8d6</option>
+                            </select>
+                        </label>
+                        <label>Броня (ОС): <input id="armorInput" type="number"></label>
+                        <label><input type="checkbox" id="coldWeaponCheck"> Холодное (½ ОС)</label>
+                        <div class="button-group">
+                            <button id="rollDamageBtn" class="cyber-btn">🎲 Бросить урон</button>
+                            <button id="calcDamageBtn" class="cyber-btn">🧮 Рассчитать по введённому</button>
+                        </div>
+                        <label>Или введите урон вручную: <input id="damageInput" type="number"></label>
                         <div id="damageResult"></div>
                     </div>
                     <div class="card">
@@ -447,24 +462,27 @@
                 </div>
             </div>
             <div id="gm-plot" class="sub-pane">
-    <div class="card">
-        <h3>🗺️ Сюжетный конструктор (ветвистость)</h3>
-        <p class="note">Создавайте узлы сюжета, задавайте ветки с описанием условий. Данные сохраняются в браузере.</p>
-        <div class="plot-form">
-            <input type="text" id="plotTitle" placeholder="Название узла (сцены)">
-            <textarea id="plotDesc" rows="2" placeholder="Описание сцены, заметки ГМ..."></textarea>
-            <button id="addPlotNodeBtn" class="cyber-btn">➕ Создать узел</button>
-        </div>
-        <div class="plot-export-import">
-            <button id="exportPlotBtn" class="cyber-btn">💾 Сохранить сюжет (JSON)</button>
-            <label class="cyber-btn" style="display:inline-block; background:#2a3342; cursor:pointer;">📂 Загрузить сюжет
-                <input type="file" id="importPlotInput" accept=".json" style="display:none;">
-            </label>
-        </div>
-        <div id="plotBuilderContainer" class="plot-builder-container"></div>
-        <p class="note">Каждый узел может иметь несколько веток. У ветки можно указать описание (условие перехода, действие игроков).</p>
-    </div>
-</div>
+                <div class="card">
+                    <h3>🗺️ Сюжетный конструктор (ветвистость)</h3>
+                    <p class="note">Создавайте узлы сюжета, задавайте ветки с описанием условий. Данные сохраняются в
+                        браузере.</p>
+                    <div class="plot-form">
+                        <input type="text" id="plotTitle" placeholder="Название узла (сцены)">
+                        <textarea id="plotDesc" rows="2" placeholder="Описание сцены, заметки ГМ..."></textarea>
+                        <button id="addPlotNodeBtn" class="cyber-btn">➕ Создать узел</button>
+                    </div>
+                    <div class="plot-export-import">
+                        <button id="exportPlotBtn" class="cyber-btn">💾 Сохранить сюжет (JSON)</button>
+                        <label class="cyber-btn" style="display:inline-block; background:#2a3342; cursor:pointer;">📂
+                            Загрузить сюжет
+                            <input type="file" id="importPlotInput" accept=".json" style="display:none;">
+                        </label>
+                    </div>
+                    <div id="plotBuilderContainer" class="plot-builder-container"></div>
+                    <p class="note">Каждый узел может иметь несколько веток. У ветки можно указать описание (условие
+                        перехода, действие игроков).</p>
+                </div>
+            </div>
             <div id="gm-contract" class="sub-pane">
                 <div class="card">
                     <h3>Контракт</h3><button id="genContractBtn">🎲 Сгенерировать</button>
