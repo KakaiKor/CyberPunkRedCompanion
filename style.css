@@ -2923,7 +2923,112 @@ body.cyberpunk-theme .changelog-close-btn {
     min-width: 280px;
     overflow-x: auto;
 }
-
+/* Карточка NPC */
+.npc-card {
+    background: #14181f;
+    border: 1px solid #2a3342;
+    border-radius: 24px;
+    padding: 20px;
+    margin-top: 20px;
+    transition: all 0.2s;
+}
+.npc-card:hover {
+    border-color: #ff9a3c;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+.npc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #2a3342;
+}
+.npc-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ff9a3c;
+    font-family: 'Orbitron', monospace;
+}
+.npc-badges {
+    display: flex;
+    gap: 8px;
+}
+.npc-type, .npc-role {
+    background: #1e2530;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+.npc-type {
+    background: #ff3c5f;
+    color: white;
+}
+.npc-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.npc-hp-armor {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    background: #0a0c12;
+    padding: 10px;
+    border-radius: 16px;
+}
+.npc-description {
+    font-size: 0.85rem;
+    color: #9aa4bf;
+    background: #0a0c12;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-style: italic;
+}
+.npc-controls {
+    margin-top: 16px;
+    text-align: right;
+}
+.regenerate-npc-btn {
+    background: #2a3342;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+}
+.regenerate-npc-btn:hover {
+    background: #ff3c5f;
+    color: white;
+}
+.npc-role {
+    background: #ff9a3c;
+    color: #0a0c12;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+.npc-threat {
+    background: #2a3342;
+    color: #9aa4bf;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+body.cyberpunk-theme .npc-role {
+    background: #f9f002;
+    color: #000;
+}
+body.cyberpunk-theme .npc-threat {
+    background: #000;
+    color: #f9f002;
+    border: 1px solid #f9f002;
+}
 @keyframes pulse {
     0% { box-shadow: 0 0 0 0 rgba(255,60,95,0.5); }
     70% { box-shadow: 0 0 0 6px rgba(255,60,95,0); }

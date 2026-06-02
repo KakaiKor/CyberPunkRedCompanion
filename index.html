@@ -22,7 +22,22 @@
                 </div>
                 <div class="changelog-body" id="changelogBody">
                     <div class="changelog-version">
+                        <h3>Версия 0.0.0.4_alpha</h3>
+                        <ul>
+                            <li><strong>✨ Улучшен:</strong> Генератор NPC</li>
+                            <li><strong>✨ Улучшен:</strong> Генератор "Пушечного мяса"</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-version">
                         <h3>Версия 0.0.0.3_alpha</h3>
+                        <ul>
+                            <li><strong>➕ Добавлен:</strong> Сюжетный конструктор (ветвистость, связи с описанием)</li>
+                            <li><strong>➕ Добавлен:</strong> Планировщик игр для мастера</li>
+                            <li><strong>✨ Улучшен:</strong> Интерактивный терминал с анимацией и командами</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-version">
+                        <h3>Версия 0.0.0.2_alpha</h3>
                         <ul>
                             <li><strong>➕ Добавлен:</strong> Сюжетный конструктор (ветвистость, связи с описанием)</li>
                             <li><strong>➕ Добавлен:</strong> Планировщик игр для мастера</li>
@@ -31,24 +46,6 @@
                                 шестёрки)</li>
                             <li><strong>✨ Улучшен:</strong> Конструктор персонажа – выбор роли с описанием, рангами,
                                 примером</li>
-                            <li><strong>✨ Улучшен:</strong> Генератор "Пушечного мяса". Посмотрите сами</li>
-                            <li><strong>✨ Улучшен:</strong> Интерфейс навыков и имплантов – группировка, поиск</li>
-                            <li><strong>✨ Улучшен:</strong> Общий бюджет для снаряжения + импланты (2550 eb)</li>
-                            <li><strong>🐛 Исправлено:</strong> Сброс чекбоксов при выборе предметов</li>
-                            <li><strong>🐛 Исправлено:</strong> Подсчёт очков навыков с учётом множителя ×2</li>
-                            <li><strong>🎨 Стили:</strong> Киберпанк-тема, улучшенный внешний вид карточек</li>
-                            <li><strong>🐛 Добавлены новые</strong> баги, ну и старые часть поправил</li>
-                        </ul>
-                    </div>
-                    <div class="changelog-version">
-                        <h3>Версия 0.0.0.1_alpha</h3>
-                        <ul>
-                            <li>Базовая генерация персонажа (11 шагов)</li>
-                            <li>Таблицы снаряжения, оружия, брони, имплантов</li>
-                            <li>GM-инструменты: NPC, контракты, трекер группы, встречи</li>
-                            <li>Калькуляторы боя (ПЗ, урон, инициатива, криты)</li>
-                            <li>Ночной рынок, генератор трофеев</li>
-                            <li>Экспорт/импорт данных</li>
                         </ul>
                     </div>
                 </div>
@@ -82,7 +79,7 @@
         <!-- Киберпанк-терминал -->
         <div class="terminal-container">
             <div class="terminal-header" id="terminalHeader">
-                <span class="terminal-title">⚡ NETRUNNER INTERFACE v.0.0.0.3_alpha ⚡</span>
+                <span class="terminal-title">⚡ NETRUNNER INTERFACE v.0.0.0.4_alpha ⚡</span>
                 <button class="terminal-toggle" id="terminalToggle">−</button>
             </div>
             <div class="terminal-body" id="terminalBody">
@@ -502,11 +499,23 @@
                 <button class="sub-tab-btn" data-sub="gm-development">📈 Развитие (IP)</button>
             </div>
             <div id="gm-npc" class="sub-pane active">
-                <div class="card">
-                    <h3>Генератор NPC</h3><button id="generateNpcBtn">🎲 Создать</button>
-                    <div id="npcResult"></div>
-                </div>
-            </div>
+    <div class="card">
+        <h3>Генератор NPC</h3>
+        <div class="form-row">
+            <label>Тип NPC:
+                <select id="npcTypeFilter">
+                    <option value="all">Любой</option>
+                    <option value="mook">Пешка (Mook)</option>
+                    <option value="lieutenant">Лейтенант</option>
+                    <option value="miniboss">Мини-босс</option>
+                    <option value="boss">Босс</option>
+                </select>
+            </label>
+            <button id="generateNpcBtn" class="cyber-btn">🎲 Создать NPC</button>
+        </div>
+        <div id="npcResult" class="npc-result-container"></div>
+    </div>
+</div>
             <div id="gm-group" class="sub-pane">
                 <div class="card">
                     <h3>Трекер группы</h3>
@@ -739,7 +748,7 @@
     </div>
     <div class="footer-bottom">
         <p>Cyberpunk RED Companion. 2026. | <a href="#" id="toggleThemeBtn" style="color:#ff9a3c;">Версия
-                0.0.0.3_alpha</a></p>
+                0.0.0.4_alpha</a></p>
     </div>
 </footer>
 
