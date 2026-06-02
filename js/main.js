@@ -438,4 +438,17 @@ if (terminalOutput && terminalInput) {
         targetPane.classList.add('active');
     }
     syncActiveSubPane();
+    // ========== МОДАЛЬНОЕ ОКНО CHANGELOG ==========
+const changelogBtn = document.getElementById('changelogBtn');
+const changelogModal = document.getElementById('changelogModal');
+if (changelogBtn && changelogModal) {
+    const openModal = () => { changelogModal.style.display = 'flex'; };
+    const closeModal = () => { changelogModal.style.display = 'none'; };
+    changelogBtn.addEventListener('click', openModal);
+    document.getElementById('changelogCloseBtn')?.addEventListener('click', closeModal);
+    document.getElementById('changelogCloseBtn2')?.addEventListener('click', closeModal);
+    changelogModal.addEventListener('click', (e) => {
+        if (e.target === changelogModal) closeModal();
+    });
+}
 });

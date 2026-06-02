@@ -2755,6 +2755,104 @@ body.cyberpunk-theme .terminal-line {
 body.cyberpunk-theme .terminal-input-line {
     border-top-color: #f9f002;
 }
+/* Changelog modal – простое фиксированное позиционирование */
+.changelog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200000;
+}
+.changelog-container {
+    background: #14181f;
+    border: 1px solid #ff3c5f;
+    border-radius: 24px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(255, 60, 95, 0.3);
+}
+.changelog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: #1a1e2a;
+    border-bottom: 1px solid #ff3c5f;
+}
+.changelog-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ff9a3c;
+}
+.changelog-close {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #ff3c5f;
+    line-height: 1;
+}
+.changelog-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+.changelog-version {
+    margin-bottom: 20px;
+    border-left: 3px solid #ff9a3c;
+    padding-left: 16px;
+}
+.changelog-version h3 {
+    margin: 0 0 10px 0;
+    color: #ff9a3c;
+}
+.changelog-version ul {
+    margin: 0;
+    padding-left: 20px;
+}
+.changelog-version li {
+    margin: 6px 0;
+    line-height: 1.4;
+}
+.changelog-footer {
+    padding: 12px 20px;
+    text-align: right;
+    border-top: 1px solid #2a3342;
+}
+.changelog-close-btn {
+    background: #ff3c5f;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.changelog-close-btn:hover {
+    background: #ff9a3c;
+}
+body.cyberpunk-theme .changelog-container {
+    background: #0a0c12;
+    border-color: #f9f002;
+}
+body.cyberpunk-theme .changelog-title {
+    color: #f9f002;
+}
+body.cyberpunk-theme .changelog-version h3 {
+    color: #f9f002;
+}
+body.cyberpunk-theme .changelog-close-btn {
+    background: #f9f002;
+    color: #000;
+}
 @keyframes pulse {
     0% { box-shadow: 0 0 0 0 rgba(255,60,95,0.5); }
     70% { box-shadow: 0 0 0 6px rgba(255,60,95,0); }

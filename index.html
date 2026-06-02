@@ -12,6 +12,50 @@
 </head>
 
 <body>
+    <!-- Модальное окно Changelog (корневой элемент) -->
+<div id="changelogRoot">
+    <div id="changelogModal" class="changelog-overlay" style="display: none;">
+        <div class="changelog-container">
+            <div class="changelog-header">
+                <span class="changelog-title">📋 История изменений</span>
+                <button class="changelog-close" id="changelogCloseBtn">&times;</button>
+            </div>
+            <div class="changelog-body" id="changelogBody">
+                <div class="changelog-version">
+                    <h3>Версия 0.0.0.2_alpha</h3>
+                    <ul>
+                        <li><strong>➕ Добавлен:</strong> Сюжетный конструктор (ветвистость, связи с описанием)</li>
+                        <li><strong>➕ Добавлен:</strong> Планировщик игр для мастера</li>
+                        <li><strong>➕ Добавлен:</strong> Интерактивный терминал с анимацией и командами</li>
+                        <li><strong>➕ Добавлен:</strong> Калькулятор урона с автоматическим определением крита (две шестёрки)</li>
+                        <li><strong>✨ Улучшен:</strong> Конструктор персонажа – выбор роли с описанием, рангами, примером</li>
+                        <li><strong>✨ Улучшен:</strong> Интерфейс навыков и имплантов – группировка, поиск</li>
+                        <li><strong>✨ Улучшен:</strong> Общий бюджет для снаряжения + импланты (2550 eb)</li>
+                        <li><strong>🐛 Исправлено:</strong> Сброс чекбоксов при выборе предметов</li>
+                        <li><strong>🐛 Исправлено:</strong> Подсчёт очков навыков с учётом множителя ×2</li>
+                        <li><strong>🎨 Стили:</strong> Киберпанк-тема, улучшенный внешний вид карточек</li>
+                        <li><strong>Добавлены новые баги, ну и старые часть поправил</strong></strong></li>
+                    </ul>
+                </div>
+                <div class="changelog-version">
+                    <h3>Версия 0.0.0.1_alpha</h3>
+                    <ul>
+                        <li>Базовая генерация персонажа (11 шагов)</li>
+                        <li>Таблицы снаряжения, оружия, брони, имплантов</li>
+                        <li>GM-инструменты: NPC, контракты, трекер группы, встречи</li>
+                        <li>Калькуляторы боя (ПЗ, урон, инициатива, криты)</li>
+                        <li>Ночной рынок, генератор трофеев</li>
+                        <li>Экспорт/импорт данных</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="changelog-footer">
+                <button class="changelog-close-btn" id="changelogCloseBtn2">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
     <div class="scanline"></div>
 
     <div class="app-container">
@@ -27,6 +71,7 @@
                 <input type="file" id="importFileInput" style="display:none" accept=".json">
                 <button id="resetAllDataBtn" class="tool-btn">♻️ Сброс</button>
                 <button id="toggleThemeBtn" class="tool-btn">🎨 Cyberpunk Theme</button>
+                <button id="changelogBtn" class="tool-btn">📋 Что нового</button>
             </div>
         </header>
 
@@ -668,7 +713,7 @@
     </div>
     <div class="footer-bottom">
         <p>Cyberpunk RED Companion. 2026. | <a href="#" id="toggleThemeBtn" style="color:#ff9a3c;">Версия
-                0.0.0.1_alpha</a></p>
+                0.0.0.2_alpha</a></p>
     </div>
 </footer>
 
