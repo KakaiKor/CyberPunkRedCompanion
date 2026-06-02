@@ -33,14 +33,25 @@
         <!-- КИБЕРПАНК-ТЕРМИНАЛ -->
         <!-- Киберпанк-терминал -->
         <div class="terminal-container">
-            <div class="terminal-header" id="terminalHeader">
-                <span class="terminal-title">⚡ NETRUNNER INTERFACE v.0.0.0.1_alpha ⚡</span>
-                <button class="terminal-toggle" id="terminalToggle">−</button>
-            </div>
-            <div class="terminal-body" id="terminalBody">
-                <pre class="terminal-code" id="terminalCode"><span class="blink">█</span></pre>
-            </div>
+    <div class="terminal-header" id="terminalHeader">
+        <span class="terminal-title">⚡ NETRUNNER INTERFACE v.0.0.0.2_beta ⚡</span>
+        <button class="terminal-toggle" id="terminalToggle">−</button>
+    </div>
+    <div class="terminal-body" id="terminalBody">
+        <div class="terminal-output" id="terminalOutput">
+            <div class="terminal-line">> Инициализация Cyberpunk RED Companion...</div>
+            <div class="terminal-line">> Загрузка модулей: ХАР, Навыки, Снаряжение...</div>
+            <div class="terminal-line">> Подключение к базе данных киберимплантов...</div>
+            <div class="terminal-line">> Калибровка генератора случайных встреч...</div>
+            <div class="terminal-line">> Система готова. Добро пожаловать, эджраннер!</div>
+            <div class="terminal-line">> Введите "help" для списка команд.</div>
         </div>
+        <div class="terminal-input-line">
+            <span class="terminal-prompt">></span>
+            <input type="text" id="terminalInput" class="terminal-input" autofocus>
+        </div>
+    </div>
+</div>
 
         <div class="main-tabs">
             <button class="tab-btn active" data-tab="tab-character">Персонаж</button>

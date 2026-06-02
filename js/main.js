@@ -206,7 +206,226 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+    // ========== ТЕРМИНАЛ: АНИМАЦИЯ С ВОЗМОЖНОСТЬЮ ПРОПУСКА ==========
+const terminalOutput = document.getElementById('terminalOutput');
+const terminalInput = document.getElementById('terminalInput');
+const terminalBody = document.getElementById('terminalBody');
 
+if (terminalOutput && terminalInput) {
+    const bootMessages = [
+        "Инициализация Cyberpunk RED Companion...",
+        "Загрузка модулей: ХАР, Навыки, Снаряжение...",
+        "Подключение к базе данных киберимплантов...",
+        "Калибровка генератора случайных встреч...",
+        "Система готова. Добро пожаловать, эджраннер!"
+    ];
+    let msgIndex = 0;
+    let charIndex = 0;
+    let currentMsg = '';
+    let lineDiv = null;
+    let animationActive = true;
+    let timeouts = [];
+
+    // Очищаем вывод
+    terminalOutput.innerHTML = '';
+
+    // Функция остановки анимации и показа финальной строки
+    function skipAnimation() {
+        if (!animationActive) return;
+        animationActive = false;
+        // Очищаем все запланированные таймеры
+        timeouts.forEach(t => clearTimeout(t));
+        timeouts = [];
+        // Удаляем текущую анимируемую строку, если она есть
+        if (lineDiv && lineDiv.parentNode) lineDiv.remove();
+        // Выводим финальную строку
+        const readyLine = document.createElement('div');
+        readyLine.className = 'terminal-line';
+        readyLine.innerText = '> Система готова. Введите "help" для списка команд.';
+        terminalOutput.appendChild(readyLine);
+        terminalInput.disabled = false;
+        terminalInput.focus();
+    }
+
+    // Функция анимации
+    function animateLoading() {
+        if (!animationActive) return;
+        if (msgIndex >= bootMessages.length) {
+            // Анимация завершена естественным путём
+            const readyLine = document.createElement('div');
+            readyLine.className = 'terminal-line';
+            readyLine.innerText = '> Система готова. Введите "help" для списка команд.';
+            terminalOutput.appendChild(readyLine);
+            terminalInput.disabled = false;
+            terminalInput.focus();
+            animationActive = false;
+            return;
+        }
+        if (!lineDiv) {
+            lineDiv = document.createElement('div');
+            lineDiv.className = 'terminal-line';
+            terminalOutput.appendChild(lineDiv);
+        }
+        if (charIndex === 0) {
+            currentMsg = bootMessages[msgIndex];
+            lineDiv.innerText = '> ';
+        }
+        if (charIndex < currentMsg.length) {
+            lineDiv.innerText += currentMsg[charIndex];
+            charIndex++;
+            const timer = setTimeout(animateLoading, 40 + Math.random() * 30);
+            timeouts.push(timer);
+        } else {
+            msgIndex++;
+            charIndex = 0;
+            if (msgIndex < bootMessages.length) {
+                const timer = setTimeout(() => {
+                    if (!animationActive) return;
+                    if (lineDiv) lineDiv.innerText = '> ';
+                    animateLoading();
+                }, 400);
+                timeouts.push(timer);
+            } else {
+                const timer = setTimeout(animateLoading, 400);
+                timeouts.push(timer);
+            }
+        }
+    }
+
+    // Запускаем анимацию
+    animateLoading();
+    terminalInput.disabled = true;
+
+    // События для пропуска анимации
+    const skipHandler = () => skipAnimation();
+    document.addEventListener('keydown', skipHandler);
+    if (terminalBody) {
+        terminalBody.addEventListener('click', skipHandler);
+    }
+    // Также можно скипнуть по фокусу на поле ввода (но оно пока disabled)
+    // После скипа убираем обработчики
+    const originalSkipAnimation = skipAnimation;
+    window.skipAnimation = function() {
+        skipAnimation();
+        document.removeEventListener('keydown', skipHandler);
+        if (terminalBody) terminalBody.removeEventListener('click', skipHandler);
+    };
+
+    // Функция добавления строки (остаётся)
+    function addTerminalLine(text, isError = false) {
+        const line = document.createElement('div');
+        line.className = 'terminal-line';
+        if (isError) line.classList.add('terminal-error');
+        line.innerText = text;
+        terminalOutput.appendChild(line);
+        terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    }
+
+    // Обработчик команд (без изменений)
+    terminalInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const cmd = terminalInput.value.trim();
+            if (cmd === '') return;
+            addTerminalLine(`> ${cmd}`);
+            terminalInput.value = '';
+
+            const args = cmd.split(' ');
+            const command = args[0].toLowerCase();
+
+            switch (command) {
+                case 'help':
+                    addTerminalLine('Доступные команды:');
+                    addTerminalLine('  help           - показать справку');
+                    addTerminalLine('  clear          - очистить экран');
+                    addTerminalLine('  roll [dice]    - бросить кубики (например, roll 2d6)');
+                    addTerminalLine('  theme [dark|cyber] - сменить тему (dark/cyber)');
+                    addTerminalLine('  stats          - показать текущего персонажа');
+                    addTerminalLine('  cyberware      - список имплантов');
+                    addTerminalLine('  weapons        - список оружия');
+                    addTerminalLine('  date           - текущая дата в мире Cyberpunk');
+                    break;
+                case 'clear':
+                    terminalOutput.innerHTML = '';
+                    break;
+                case 'roll':
+                    if (args.length < 2) {
+                        addTerminalLine('Ошибка: укажите кубики, например: roll 2d6', true);
+                    } else {
+                        const dice = args[1];
+                        const [count, sides] = dice.split('d').map(Number);
+                        if (isNaN(count) || isNaN(sides)) {
+                            addTerminalLine('Ошибка: неверный формат. Пример: roll 2d6', true);
+                        } else {
+                            let total = 0;
+                            let rolls = [];
+                            for (let i = 0; i < count; i++) {
+                                const r = Math.floor(Math.random() * sides) + 1;
+                                rolls.push(r);
+                                total += r;
+                            }
+                            addTerminalLine(`🎲 Результат: ${rolls.join(', ')} → сумма = ${total}`);
+                        }
+                    }
+                    break;
+                case 'theme':
+                    if (args[1] === 'cyber') {
+                        document.body.classList.add('cyberpunk-theme');
+                        localStorage.setItem('cyberpunkTheme', 'true');
+                        addTerminalLine('Тема изменена на Cyberpunk');
+                    } else if (args[1] === 'dark') {
+                        document.body.classList.remove('cyberpunk-theme');
+                        localStorage.setItem('cyberpunkTheme', 'false');
+                        addTerminalLine('Тема изменена на Dark');
+                    } else {
+                        addTerminalLine('Используйте: theme dark или theme cyber', true);
+                    }
+                    break;
+                case 'stats':
+                    const savedChar = loadCharacter();
+                    if (savedChar && savedChar.name) {
+                        addTerminalLine(`Имя: ${savedChar.name}`);
+                        addTerminalLine(`Роль: ${savedChar.role}`);
+                        addTerminalLine(`ХАР: INT=${savedChar.INT} REF=${savedChar.REF} DEX=${savedChar.DEX} ...`);
+                    } else {
+                        addTerminalLine('Персонаж не загружен. Создайте его в конструкторе.', true);
+                    }
+                    break;
+                case 'cyberware':
+                    if (typeof detailedCyberware !== 'undefined' && detailedCyberware.length) {
+                        addTerminalLine(`Всего имплантов: ${detailedCyberware.length}`);
+                        addTerminalLine('Первые 5: ' + detailedCyberware.slice(0,5).map(c => c.name).join(', ') + '...');
+                    } else {
+                        addTerminalLine('Нет данных об имплантах');
+                    }
+                    break;
+                case 'weapons':
+                    if (typeof rangedWeapons !== 'undefined' && rangedWeapons.length) {
+                        addTerminalLine(`Всего дальнобойных: ${rangedWeapons.length}`);
+                        addTerminalLine(`Пример: ${rangedWeapons[0].name} (${rangedWeapons[0].dmg})`);
+                    } else {
+                        addTerminalLine('Нет данных об оружии');
+                    }
+                    break;
+                case 'date':
+                    const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+                    const day = Math.floor(Math.random() * 28) + 1;
+                    const month = months[Math.floor(Math.random() * 12)];
+                    const year = 2077 + Math.floor(Math.random() * 5);
+                    addTerminalLine(`📅 Сегодня: ${day} ${month} ${year} (Найт-Сити)`);
+                    break;
+                default:
+                    addTerminalLine(`Неизвестная команда: ${command}. Введите "help".`, true);
+            }
+        }
+    });
+
+    // Фокус на поле ввода при клике (после скипа оно станет enabled)
+    if (terminalBody) {
+        terminalBody.addEventListener('click', () => {
+            if (!terminalInput.disabled) terminalInput.focus();
+        });
+    }
+}    
     function syncActiveSubPane() {
         const activeMain = document.querySelector('.main-pane.active');
         if (!activeMain) return;
