@@ -13,48 +13,51 @@
 
 <body>
     <!-- Модальное окно Changelog (корневой элемент) -->
-<div id="changelogRoot">
-    <div id="changelogModal" class="changelog-overlay" style="display: none;">
-        <div class="changelog-container">
-            <div class="changelog-header">
-                <span class="changelog-title">📋 История изменений</span>
-                <button class="changelog-close" id="changelogCloseBtn">&times;</button>
-            </div>
-            <div class="changelog-body" id="changelogBody">
-                <div class="changelog-version">
-                    <h3>Версия 0.0.0.2_alpha</h3>
-                    <ul>
-                        <li><strong>➕ Добавлен:</strong> Сюжетный конструктор (ветвистость, связи с описанием)</li>
-                        <li><strong>➕ Добавлен:</strong> Планировщик игр для мастера</li>
-                        <li><strong>➕ Добавлен:</strong> Интерактивный терминал с анимацией и командами</li>
-                        <li><strong>➕ Добавлен:</strong> Калькулятор урона с автоматическим определением крита (две шестёрки)</li>
-                        <li><strong>✨ Улучшен:</strong> Конструктор персонажа – выбор роли с описанием, рангами, примером</li>
-                        <li><strong>✨ Улучшен:</strong> Интерфейс навыков и имплантов – группировка, поиск</li>
-                        <li><strong>✨ Улучшен:</strong> Общий бюджет для снаряжения + импланты (2550 eb)</li>
-                        <li><strong>🐛 Исправлено:</strong> Сброс чекбоксов при выборе предметов</li>
-                        <li><strong>🐛 Исправлено:</strong> Подсчёт очков навыков с учётом множителя ×2</li>
-                        <li><strong>🎨 Стили:</strong> Киберпанк-тема, улучшенный внешний вид карточек</li>
-                        <li><strong>Добавлены новые баги, ну и старые часть поправил</strong></strong></li>
-                    </ul>
+    <div id="changelogRoot">
+        <div id="changelogModal" class="changelog-overlay" style="display: none;">
+            <div class="changelog-container">
+                <div class="changelog-header">
+                    <span class="changelog-title">📋 История изменений</span>
+                    <button class="changelog-close" id="changelogCloseBtn">&times;</button>
                 </div>
-                <div class="changelog-version">
-                    <h3>Версия 0.0.0.1_alpha</h3>
-                    <ul>
-                        <li>Базовая генерация персонажа (11 шагов)</li>
-                        <li>Таблицы снаряжения, оружия, брони, имплантов</li>
-                        <li>GM-инструменты: NPC, контракты, трекер группы, встречи</li>
-                        <li>Калькуляторы боя (ПЗ, урон, инициатива, криты)</li>
-                        <li>Ночной рынок, генератор трофеев</li>
-                        <li>Экспорт/импорт данных</li>
-                    </ul>
+                <div class="changelog-body" id="changelogBody">
+                    <div class="changelog-version">
+                        <h3>Версия 0.0.0.3_alpha</h3>
+                        <ul>
+                            <li><strong>➕ Добавлен:</strong> Сюжетный конструктор (ветвистость, связи с описанием)</li>
+                            <li><strong>➕ Добавлен:</strong> Планировщик игр для мастера</li>
+                            <li><strong>➕ Добавлен:</strong> Интерактивный терминал с анимацией и командами</li>
+                            <li><strong>➕ Добавлен:</strong> Калькулятор урона с автоматическим определением крита (две
+                                шестёрки)</li>
+                            <li><strong>✨ Улучшен:</strong> Конструктор персонажа – выбор роли с описанием, рангами,
+                                примером</li>
+                            <li><strong>✨ Улучшен:</strong> Генератор "Пушечного мяса". Посмотрите сами</li>
+                            <li><strong>✨ Улучшен:</strong> Интерфейс навыков и имплантов – группировка, поиск</li>
+                            <li><strong>✨ Улучшен:</strong> Общий бюджет для снаряжения + импланты (2550 eb)</li>
+                            <li><strong>🐛 Исправлено:</strong> Сброс чекбоксов при выборе предметов</li>
+                            <li><strong>🐛 Исправлено:</strong> Подсчёт очков навыков с учётом множителя ×2</li>
+                            <li><strong>🎨 Стили:</strong> Киберпанк-тема, улучшенный внешний вид карточек</li>
+                            <li><strong>🐛 Добавлены новые</strong> баги, ну и старые часть поправил</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-version">
+                        <h3>Версия 0.0.0.1_alpha</h3>
+                        <ul>
+                            <li>Базовая генерация персонажа (11 шагов)</li>
+                            <li>Таблицы снаряжения, оружия, брони, имплантов</li>
+                            <li>GM-инструменты: NPC, контракты, трекер группы, встречи</li>
+                            <li>Калькуляторы боя (ПЗ, урон, инициатива, криты)</li>
+                            <li>Ночной рынок, генератор трофеев</li>
+                            <li>Экспорт/импорт данных</li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-            <div class="changelog-footer">
-                <button class="changelog-close-btn" id="changelogCloseBtn2">Закрыть</button>
+                <div class="changelog-footer">
+                    <button class="changelog-close-btn" id="changelogCloseBtn2">Закрыть</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <div class="scanline"></div>
 
@@ -78,25 +81,25 @@
         <!-- КИБЕРПАНК-ТЕРМИНАЛ -->
         <!-- Киберпанк-терминал -->
         <div class="terminal-container">
-    <div class="terminal-header" id="terminalHeader">
-        <span class="terminal-title">⚡ NETRUNNER INTERFACE v.0.0.0.2_alpha ⚡</span>
-        <button class="terminal-toggle" id="terminalToggle">−</button>
-    </div>
-    <div class="terminal-body" id="terminalBody">
-        <div class="terminal-output" id="terminalOutput">
-            <div class="terminal-line">> Инициализация Cyberpunk RED Companion...</div>
-            <div class="terminal-line">> Загрузка модулей: ХАР, Навыки, Снаряжение...</div>
-            <div class="terminal-line">> Подключение к базе данных киберимплантов...</div>
-            <div class="terminal-line">> Калибровка генератора случайных встреч...</div>
-            <div class="terminal-line">> Система готова. Добро пожаловать, эджраннер!</div>
-            <div class="terminal-line">> Введите "help" для списка команд.</div>
+            <div class="terminal-header" id="terminalHeader">
+                <span class="terminal-title">⚡ NETRUNNER INTERFACE v.0.0.0.2_alpha ⚡</span>
+                <button class="terminal-toggle" id="terminalToggle">−</button>
+            </div>
+            <div class="terminal-body" id="terminalBody">
+                <div class="terminal-output" id="terminalOutput">
+                    <div class="terminal-line">> Инициализация Cyberpunk RED Companion...</div>
+                    <div class="terminal-line">> Загрузка модулей: ХАР, Навыки, Снаряжение...</div>
+                    <div class="terminal-line">> Подключение к базе данных киберимплантов...</div>
+                    <div class="terminal-line">> Калибровка генератора случайных встреч...</div>
+                    <div class="terminal-line">> Система готова. Добро пожаловать, эджраннер!</div>
+                    <div class="terminal-line">> Введите "help" для списка команд.</div>
+                </div>
+                <div class="terminal-input-line">
+                    <span class="terminal-prompt">></span>
+                    <input type="text" id="terminalInput" class="terminal-input" autofocus>
+                </div>
+            </div>
         </div>
-        <div class="terminal-input-line">
-            <span class="terminal-prompt">></span>
-            <input type="text" id="terminalInput" class="terminal-input" autofocus>
-        </div>
-    </div>
-</div>
 
         <div class="main-tabs">
             <button class="tab-btn active" data-tab="tab-character">Персонаж</button>
@@ -372,23 +375,23 @@
                         <div id="calcResult"></div>
                     </div>
                     <div class="card">
-    <h3>Урон и броня</h3>
-    <label>Тип урона: 
-        <select id="damageDice">
-            <option value="1d6">1d6</option>
-            <option value="2d6" selected>2d6</option>
-            <option value="3d6">3d6</option>
-            <option value="4d6">4d6</option>
-            <option value="5d6">5d6</option>
-            <option value="6d6">6d6</option>
-            <option value="8d6">8d6</option>
-        </select>
-    </label>
-    <label>Броня (ОС): <input id="armorInput" type="number" value="0"></label>
-    <label><input type="checkbox" id="coldWeaponCheck"> Холодное (½ ОС)</label>
-    <button id="rollDamageBtn" class="cyber-btn">🎲 Бросить урон</button>
-    <div id="damageResult"></div>
-</div>
+                        <h3>Урон и броня</h3>
+                        <label>Тип урона:
+                            <select id="damageDice">
+                                <option value="1d6">1d6</option>
+                                <option value="2d6" selected>2d6</option>
+                                <option value="3d6">3d6</option>
+                                <option value="4d6">4d6</option>
+                                <option value="5d6">5d6</option>
+                                <option value="6d6">6d6</option>
+                                <option value="8d6">8d6</option>
+                            </select>
+                        </label>
+                        <label>Броня (ОС): <input id="armorInput" type="number" value="0"></label>
+                        <label><input type="checkbox" id="coldWeaponCheck"> Холодное (½ ОС)</label>
+                        <button id="rollDamageBtn" class="cyber-btn">🎲 Бросить урон</button>
+                        <div id="damageResult"></div>
+                    </div>
                     <div class="card">
                         <h3>Таран</h3><label>Скорость: <input id="ramSpeed" type="number"
                                 value="60"></label><label>Масса: <input id="ramWeight" type="number"
@@ -599,18 +602,41 @@
                 </div>
             </div>
             <div id="gm-mooks" class="sub-pane">
-                <div class="card">
-                    <h3>Генератор врагов</h3>
-                    <div class="form-row"><label>Игроков: <input type="number" id="playerCount" value="4"
-                                min="1"></label><label>Сложность: <select id="encounterDifficulty">
-                                <option value="easy">Лёгкая</option>
-                                <option value="normal">Средняя</option>
-                                <option value="hard">Тяжёлая</option>
-                                <option value="deadly">Смертельная</option>
-                            </select></label><button id="generateMooksBtn">🎲 Создать</button></div>
-                    <div id="mookResult"></div>
-                </div>
-            </div>
+    <div class="card">
+        <h3>Пушечное мясо</h3>
+        <div class="form-row">
+            <label>Игроков: <input type="number" id="playerCount" value="4" min="1"></label>
+            <label>Сложность:
+                <select id="encounterDifficulty">
+                    <option value="easy">Лёгкая</option>
+                    <option value="normal" selected>Средняя</option>
+                    <option value="hard">Тяжёлая</option>
+                    <option value="deadly">Смертельная</option>
+                </select>
+            </label>
+            <label>Тип врага:
+                <select id="enemyTypeFilter">
+                    <option value="all">Авто (по сложности)</option>
+                    <option value="mook">Только пешки</option>
+                    <option value="lieutenant">Только лейтенанты</option>
+                    <option value="miniboss">Только мини-боссы</option>
+                    <option value="boss">Только босс</option>
+                </select>
+            </label>
+            <label>Категория:
+                <select id="enemyCategoryFilter">
+                    <option value="all">Все категории</option>
+                    <option value="Mook">Пешки</option>
+                    <option value="Lieutenant">Лейтенанты</option>
+                    <option value="Mini-Boss">Мини-боссы</option>
+                    <option value="Boss">Боссы</option>
+                </select>
+            </label>
+            <button id="generateMooksBtn" class="cyber-btn">🎲 Создать врагов</button>
+        </div>
+        <div id="mookResult" class="mook-grid-container"></div>
+    </div>
+</div>
             <div id="gm-encounters" class="sub-pane">
                 <div class="card">
                     <h3>Случайные встречи</h3>
@@ -713,7 +739,7 @@
     </div>
     <div class="footer-bottom">
         <p>Cyberpunk RED Companion. 2026. | <a href="#" id="toggleThemeBtn" style="color:#ff9a3c;">Версия
-                0.0.0.2_alpha</a></p>
+                0.0.0.3_alpha</a></p>
     </div>
 </footer>
 

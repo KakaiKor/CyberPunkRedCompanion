@@ -2853,6 +2853,77 @@ body.cyberpunk-theme .changelog-close-btn {
     background: #f9f002;
     color: #000;
 }
+
+/* Для <details> внутри карточек врагов */
+.mook-stats details {
+    margin-top: 8px;
+    background: #0a0c12;
+    border-radius: 8px;
+    padding: 4px 8px;
+}
+.mook-stats details summary {
+    cursor: pointer;
+    color: #ff9a3c;
+    font-weight: bold;
+}
+.mook-stats details pre {
+    margin: 8px 0 0 0;
+    font-size: 0.7rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+/* Компактная сетка для характеристик врагов */
+.stats-grid-compact {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px 8px;
+    font-size: 0.8rem;
+    margin-top: 6px;
+}
+.stats-grid-compact span {
+    background: #1e2530;
+    padding: 2px 4px;
+    border-radius: 12px;
+    text-align: center;
+}
+.skills-list-compact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+.skills-list-compact span {
+    background: #1e2530;
+    padding: 2px 8px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+}
+.mook-hp-armor {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+    background: #0a0c12;
+    padding: 8px;
+    border-radius: 16px;
+}
+.mook-hp-armor label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    margin: 0;
+}
+.mook-hp-armor input {
+    width: auto;
+    padding: 4px;
+}
+/* Чтобы карточки не разрывались при маленькой ширине */
+.mook-card {
+    min-width: 280px;
+    overflow-x: auto;
+}
+
 @keyframes pulse {
     0% { box-shadow: 0 0 0 0 rgba(255,60,95,0.5); }
     70% { box-shadow: 0 0 0 6px rgba(255,60,95,0); }

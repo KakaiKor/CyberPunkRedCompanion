@@ -54,4 +54,18 @@ export function initGM() {
         });
     }
     PlotBuilder.render();
+    const mookBtn = document.getElementById('generateMooksBtn');
+if (mookBtn) {
+    mookBtn.addEventListener('click', () => {
+        // Создаём контейнер, если его нет
+        let container = document.getElementById('mookResult');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'mookResult';
+            const pane = document.getElementById('gm-mooks');
+            if (pane) pane.querySelector('.card').appendChild(container);
+        }
+        MookGenerator.generate();
+    });
+}
 }
