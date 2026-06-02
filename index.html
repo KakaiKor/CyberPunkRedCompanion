@@ -316,27 +316,23 @@
                         <div id="calcResult"></div>
                     </div>
                     <div class="card">
-                        <h3>Урон и броня</h3>
-                        <label>Тип урона:
-                            <select id="damageDice">
-                                <option value="1d6">1d6</option>
-                                <option value="2d6" selected>2d6</option>
-                                <option value="3d6">3d6</option>
-                                <option value="4d6">4d6</option>
-                                <option value="5d6">5d6</option>
-                                <option value="6d6">6d6</option>
-                                <option value="8d6">8d6</option>
-                            </select>
-                        </label>
-                        <label>Броня (ОС): <input id="armorInput" type="number"></label>
-                        <label><input type="checkbox" id="coldWeaponCheck"> Холодное (½ ОС)</label>
-                        <div class="button-group">
-                            <button id="rollDamageBtn" class="cyber-btn">🎲 Бросить урон</button>
-                            <button id="calcDamageBtn" class="cyber-btn">🧮 Рассчитать по введённому</button>
-                        </div>
-                        <label>Или введите урон вручную: <input id="damageInput" type="number"></label>
-                        <div id="damageResult"></div>
-                    </div>
+    <h3>Урон и броня</h3>
+    <label>Тип урона: 
+        <select id="damageDice">
+            <option value="1d6">1d6</option>
+            <option value="2d6" selected>2d6</option>
+            <option value="3d6">3d6</option>
+            <option value="4d6">4d6</option>
+            <option value="5d6">5d6</option>
+            <option value="6d6">6d6</option>
+            <option value="8d6">8d6</option>
+        </select>
+    </label>
+    <label>Броня (ОС): <input id="armorInput" type="number" value="0"></label>
+    <label><input type="checkbox" id="coldWeaponCheck"> Холодное (½ ОС)</label>
+    <button id="rollDamageBtn" class="cyber-btn">🎲 Бросить урон</button>
+    <div id="damageResult"></div>
+</div>
                     <div class="card">
                         <h3>Таран</h3><label>Скорость: <input id="ramSpeed" type="number"
                                 value="60"></label><label>Масса: <input id="ramWeight" type="number"

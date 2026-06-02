@@ -13,54 +13,42 @@ export class CombatCalculatorUI {
             document.getElementById('calcResult').innerHTML = `<strong>ПЗ = ${hp}</strong><br>Тяжёлое ≤ ${severe}<br>Спасбросок = ${b}`;
         });
 
-        // НОВЫЙ КАЛЬКУЛЯТОР УРОНА С БРОСКОМ КУБИКОВ
+        // Калькулятор урона с броском кубиков
         const rollDamageBtn = document.getElementById('rollDamageBtn');
         const damageDiceSelect = document.getElementById('damageDice');
-        const damageInput = document.getElementById('damageInput');
         const armorInput = document.getElementById('armorInput');
         const coldCheck = document.getElementById('coldWeaponCheck');
         const damageResultDiv = document.getElementById('damageResult');
 
-        // Функция броска кубиков
         function rollDice(diceString) {
             const [count, sides] = diceString.split('d').map(Number);
             let total = 0;
+            let rolls = [];
             let sixes = 0;
             for (let i = 0; i < count; i++) {
                 const roll = Math.floor(Math.random() * sides) + 1;
+                rolls.push(roll);
                 total += roll;
                 if (roll === 6) sixes++;
             }
-            return { total, sixes };
+            return { total, rolls, sixes };
         }
 
-        // Обработчик кнопки "Бросить урон"
         if (rollDamageBtn) {
             rollDamageBtn.addEventListener('click', () => {
                 const diceString = damageDiceSelect.value;
-                const { total, sixes } = rollDice(diceString);
-                damageInput.value = total; // показать выпавший урон в поле ввода
+                const { total, rolls, sixes } = rollDice(diceString);
                 let armor = parseInt(armorInput.value) || 0;
                 const cold = coldCheck.checked;
                 if (cold) armor = Math.ceil(armor / 2);
                 const finalDamage = Math.max(0, total - armor);
                 let critMessage = '';
                 if (sixes >= 2) {
-                    critMessage = `<br><span style="color:#ff3c5f;">💥 КРИТИЧЕСКАЯ ТРАВМА! (${sixes} шестёрки)</span>`;
+                    critMessage = `<br><span style="color:#ff3c5f;">💥 КРИТИЧЕСКАЯ ТРАВМА! (${sixes} шестёрки)<br>Перейдите в таблицу "Критов"</br></span>`;
                 }
-                damageResultDiv.innerHTML = `<strong>Бросок: ${diceString} → ${total} урона</strong><br>Броня: ${armorInput.value} (${cold ? 'холодное, половина' : 'стандартно'}) → ${finalDamage} ПЗ${critMessage}`;
+                damageResultDiv.innerHTML = `<strong>Бросок: ${diceString} → [${rolls.join(', ')}] = ${total} урона</strong><br>Броня: ${armorInput.value} (${cold ? 'холодное, половина' : 'стандартно'}) → <strong>${finalDamage} ПЗ</strong>${critMessage}`;
             });
         }
-
-        // Обработчик ручного ввода (оставляем как есть)
-        document.getElementById('calcDamageBtn')?.addEventListener('click', () => {
-            let dmg = parseInt(damageInput.value);
-            let armor = parseInt(armorInput.value);
-            const cold = coldCheck.checked;
-            if (cold) armor = Math.ceil(armor / 2);
-            const final = Math.max(0, dmg - armor);
-            damageResultDiv.innerHTML = `<strong>Прошедший урон = ${final} ПЗ</strong><br><span class="note">(ручной ввод, крит не определяется)</span>`;
-        });
 
         // Критические травмы (без изменений)
         document.getElementById('rollCritBtn')?.addEventListener('click', () => {
