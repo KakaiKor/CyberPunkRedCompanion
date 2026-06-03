@@ -41,27 +41,7 @@ export class CharacterWizard {
             totalSpentOnGearAndCyber: 0,
         };
     }
-    jumpToStep(targetStep) {
-    if (targetStep === this.currentStep) return;
-    // Проверяем, что все шаги от 0 до targetStep-1 валидны
-    for (let i = 0; i < targetStep; i++) {
-        // временно меняем currentStep, вызываем валидацию для шага i
-        const oldStep = this.currentStep;
-        this.currentStep = i;
-        const isValid = this.validateStep();
-        this.currentStep = oldStep;
-        if (!isValid) {
-            alert(`Сначала завершите шаг ${this.getStepName(i)}`);
-            return;
-        }
-    }
-    this.currentStep = targetStep;
-    this.renderStep();
-}
-getStepName(step) {
-    const names = ["Имя", "Роль", "ХАР", "Снаряжение", "Навыки", "Импланты", "Стиль", "Человечность", "Расходы", "Заметки", "Итог"];
-    return names[step] || "Шаг";
-}
+
     loadProgress() {
         const saved = localStorage.getItem('wizard_progress');
         return saved ? JSON.parse(saved) : null;
@@ -83,90 +63,16 @@ getStepName(step) {
         document.getElementById('wizardSaveBtn').addEventListener('click', () => this.saveCharacter());
     }
 
-    // ========== ГРУППИРОВКА (сохранение состояний сворачивания) ==========
-    saveGroupStates() {
-        this.groupStates = {};
-        document.querySelectorAll('.skills-category-table').forEach(cat => {
-            const categoryName = cat.querySelector('h4')?.innerText || '';
-            const wrapper = cat.querySelector('.table-wrapper');
-            if (wrapper) this.groupStates[`skills_${categoryName}`] = wrapper.style.display !== 'none';
-        });
-        document.querySelectorAll('.cyber-group-table').forEach(group => {
-            const groupName = group.querySelector('h4')?.innerText || '';
-            const wrapper = group.querySelector('.table-wrapper');
-            if (wrapper) this.groupStates[`cyber_${groupName}`] = wrapper.style.display !== 'none';
-        });
-    }
-
-    restoreGroupStates() {
-        if (!this.groupStates) return;
-        document.querySelectorAll('.skills-category-table').forEach(cat => {
-            const categoryName = cat.querySelector('h4')?.innerText || '';
-            const wrapper = cat.querySelector('.table-wrapper');
-            if (wrapper && this.groupStates[`skills_${categoryName}`] !== undefined) {
-                wrapper.style.display = this.groupStates[`skills_${categoryName}`] ? 'block' : 'none';
-            }
-        });
-        document.querySelectorAll('.cyber-group-table').forEach(group => {
-            const groupName = group.querySelector('h4')?.innerText || '';
-            const wrapper = group.querySelector('.table-wrapper');
-            if (wrapper && this.groupStates[`cyber_${groupName}`] !== undefined) {
-                wrapper.style.display = this.groupStates[`cyber_${groupName}`] ? 'block' : 'none';
-            }
-        });
-    }
-
-    // ========== ОБЩИЙ БЮДЖЕТ ==========
-    updateTotalSpent() {
-        let total = 0;
-        for (let w of this.data.gear.weapons) total += this.getItemCost(w);
-        if (this.data.gear.armor.body) total += this.getItemCost(this.data.gear.armor.body);
-        if (this.data.gear.armor.head) total += this.getItemCost(this.data.gear.armor.head);
-        for (let i of this.data.gear.items) total += this.getItemCost(i);
-        for (let c of this.data.cyberware) total += this.getItemCost(c);
-        this.data.totalSpentOnGearAndCyber = total;
-        this.saveProgress();
-        return total;
-    }
-
-    updateGearBudgetDisplay() {
-        const remaining = 2550 - this.data.totalSpentOnGearAndCyber;
-        const budgetSpan = document.querySelector('.gear-budget strong');
-        if (budgetSpan) {
-            budgetSpan.innerText = remaining;
-            budgetSpan.className = remaining < 0 ? 'over' : 'ok';
-        }
-    }
-
-    updateCyberBudgetDisplay() {
-        const remaining = 2550 - this.data.totalSpentOnGearAndCyber;
-        const budgetSpan = document.querySelector('.cyber-budget-info strong');
-        if (budgetSpan) {
-            budgetSpan.innerText = remaining;
-            budgetSpan.className = remaining < 0 ? 'over' : 'ok';
-        }
-    }
-
-    // ========== ВСПОМОГАТЕЛЬНЫЕ ==========
-    getItemCost(name) {
-        const all = [...rangedWeapons, ...meleeWeapons, ...armors, ...gearItems];
-        const found = all.find(i => i.name === name);
-        return found ? found.cost : 0;
-    }
-
-    getAllSkillsList() {
-        return allSkills;
-    }
-
-    // ========== ОТРИСОВКА ШАГА ==========
     renderStep() {
         const container = document.getElementById('wizardContent');
+        // Обновляем индикатор шагов
         const steps = document.querySelectorAll('.wizard-steps .step');
         steps.forEach((step, idx) => {
             if (idx === this.currentStep) step.classList.add('active');
             else step.classList.remove('active');
         });
 
+        // Управление кнопками
         const nextBtn = document.getElementById('wizardNextBtn');
         const prevBtn = document.getElementById('wizardPrevBtn');
         const saveBtn = document.getElementById('wizardSaveBtn');
@@ -179,8 +85,7 @@ getStepName(step) {
         }
         prevBtn.disabled = (this.currentStep === 0);
 
-        if (this.currentStep === 4 || this.currentStep === 5) this.saveGroupStates();
-
+        // Рендеринг HTML текущего шага
         let html = '';
         switch (this.currentStep) {
             case 0: html = renderIdentityStep(this.data); break;
@@ -197,17 +102,45 @@ getStepName(step) {
             default: html = '<p>Ошибка: шаг не найден</p>';
         }
         container.innerHTML = html;
-        const stepElements = document.querySelectorAll('.wizard-steps .step');
-stepElements.forEach((el, idx) => {
-    el.style.cursor = 'pointer';
-    el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.jumpToStep(idx);
-    });
-});
-        if (this.currentStep === 4 || this.currentStep === 5) this.restoreGroupStates();
 
+        // Привязываем обработчики событий для текущего шага
         this.attachStepEvents();
+
+        // Делаем шаги в индикаторе кликабельными (для перехода)
+        document.querySelectorAll('.wizard-steps .step').forEach((el, idx) => {
+            el.style.cursor = 'pointer';
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (this.canJumpToStep(idx)) {
+                    this.currentStep = idx;
+                    this.renderStep();
+                } else {
+                    alert(`Сначала завершите шаг ${this.getStepName(idx-1)}`);
+                }
+            });
+        });
+    }
+
+    getStepName(step) {
+        const names = ["Имя", "Роль", "ХАР", "Снаряжение", "Навыки", "Импланты", "Стиль", "Человечность", "Расходы", "Заметки", "Итог"];
+        return names[step] || "Шаг";
+    }
+
+    canJumpToStep(targetStep) {
+        // Можно перейти к шагу, если все предыдущие шаги валидны
+        for (let i = 0; i < targetStep; i++) {
+            if (!this.validateStepForIndex(i)) return false;
+        }
+        return true;
+    }
+
+    validateStepForIndex(stepIndex) {
+        // Временно сохраняем текущий шаг, проверяем, восстанавливаем
+        const oldStep = this.currentStep;
+        this.currentStep = stepIndex;
+        const isValid = this.validateStep();
+        this.currentStep = oldStep;
+        return isValid;
     }
 
     attachStepEvents() {
@@ -224,7 +157,7 @@ stepElements.forEach((el, idx) => {
         if (this.currentStep === 10) this.attachSummaryEvents();
     }
 
-    // ========== ОБРАБОТЧИКИ ШАГОВ ==========
+    // ----- Обработчики шагов -----
     attachIdentityEvents() {
         const nameInput = document.getElementById('charNameInput');
         const cultureSelect = document.getElementById('charCulture');
@@ -241,22 +174,16 @@ stepElements.forEach((el, idx) => {
         const roleRadios = document.querySelectorAll('input[name="role"]');
         roleRadios.forEach(radio => {
             radio.addEventListener('change', () => {
-                this.updateRole();
-                this.renderStep(); // обновить отображение ролевого навыка
+                this.data.role = radio.value;
+                this.saveProgress();
+                this.renderStep(); // чтобы обновить описание ролевого навыка
             });
         });
         const rankInput = document.getElementById('roleRank');
-        if (rankInput) rankInput.addEventListener('change', () => this.updateRoleRank());
-    }
-    updateRoleRank() {
-        const rank = parseInt(document.getElementById('roleRank')?.value);
-        if (!isNaN(rank)) this.data.roleRank = rank;
-        this.saveProgress();
-    }
-    updateRole() {
-        const selected = document.querySelector('input[name="role"]:checked');
-        if (selected) this.data.role = selected.value;
-        this.saveProgress();
+        if (rankInput) rankInput.addEventListener('change', () => {
+            this.data.roleRank = parseInt(rankInput.value) || 4;
+            this.saveProgress();
+        });
     }
 
     attachStatsEvents() {
@@ -272,17 +199,36 @@ stepElements.forEach((el, idx) => {
             this.data.stats[stat] = parseInt(inp.value) || 2;
         });
         this.saveProgress();
-        this.renderStep();
+        // обновляем отображение оставшихся очков (без перерисовки шага)
+        this.updateStatsPointsDisplay();
+    }
+    updateStatsPointsDisplay() {
+        let total = 0;
+        for (let s in this.data.stats) total += this.data.stats[s];
+        const remaining = 62 - total;
+        const pointsSpan = document.querySelector('.points-counter strong');
+        if (pointsSpan) {
+            pointsSpan.innerText = remaining;
+            pointsSpan.className = remaining < 0 ? 'over' : 'ok';
+        }
     }
     randomizeStats() {
         const stats = ['INT', 'REF', 'DEX', 'TECH', 'COOL', 'WILL', 'LUCK', 'MOVE', 'BODY', 'EMP'];
         stats.forEach(s => this.data.stats[s] = Math.floor(Math.random() * 7) + 2);
         this.saveProgress();
-        this.renderStep();
+        this.renderStep(); // перерисовываем шаг для обновления полей ввода
     }
 
     attachGearEvents() {
-        // Переключение вкладок
+        // Обработка изменения чекбоксов – без перерисовки
+        const handleGearChange = () => {
+            this.updateGearFromDOM();
+            this.updateGearBudgetDisplay();
+        };
+        // Навешиваем на все чекбоксы
+        const allCheckboxes = document.querySelectorAll('#weaponsSection input[type="checkbox"], #armorSection input[type="checkbox"], #itemsSection input[type="checkbox"]');
+        allCheckboxes.forEach(cb => cb.addEventListener('change', handleGearChange));
+        // Фильтр вкладок и поиск – без изменений
         const filterSelect = document.getElementById('gearCategoryFilter');
         const weaponsSection = document.getElementById('weaponsSection');
         const armorSection = document.getElementById('armorSection');
@@ -290,153 +236,124 @@ stepElements.forEach((el, idx) => {
         if (filterSelect) {
             filterSelect.addEventListener('change', (e) => {
                 const val = e.target.value;
-                if (weaponsSection) weaponsSection.style.display = (val === 'weapons') ? 'block' : 'none';
-                if (armorSection) armorSection.style.display = (val === 'armor') ? 'block' : 'none';
-                if (itemsSection) itemsSection.style.display = (val === 'items') ? 'block' : 'none';
+                if (weaponsSection) weaponsSection.style.display = (val === 'all' || val === 'weapons') ? 'block' : 'none';
+                if (armorSection) armorSection.style.display = (val === 'all' || val === 'armor') ? 'block' : 'none';
+                if (itemsSection) itemsSection.style.display = (val === 'all' || val === 'items') ? 'block' : 'none';
             });
         }
-
-        // Поиск
         const searchInput = document.getElementById('gearSearch');
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase();
-                document.querySelectorAll('#weaponsSection .cyber-table tbody tr, #armorSection .cyber-table tbody tr, #itemsSection .cyber-table tbody tr').forEach(row => {
+                document.querySelectorAll('.cyber-table tbody tr').forEach(row => {
                     row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none';
                 });
             });
         }
-
-        // Обработка чекбоксов – делегирование на весь документ
-        if (this._gearHandler) document.removeEventListener('change', this._gearHandler);
-        this._gearHandler = (e) => {
-            const target = e.target;
-            if (target && target.type === 'checkbox') {
-                // Собираем данные
-                const weaponCheckboxes = document.querySelectorAll('#weaponsSection input[type="checkbox"]:checked');
-                this.data.gear.weapons = Array.from(weaponCheckboxes).map(cb => cb.value);
-                const armorBody = document.querySelector('#armorSection input[data-slot="body"]:checked');
-                const armorHead = document.querySelector('#armorSection input[data-slot="head"]:checked');
-                this.data.gear.armor.body = armorBody ? armorBody.value : '';
-                this.data.gear.armor.head = armorHead ? armorHead.value : '';
-                const itemCheckboxes = document.querySelectorAll('#itemsSection input[type="checkbox"]:checked');
-                this.data.gear.items = Array.from(itemCheckboxes).map(cb => cb.value);
-                this.updateTotalSpent();
-                this.updateGearBudgetDisplay();
-                this.saveProgress();
-            }
-        };
-        document.addEventListener('change', this._gearHandler);
+    }
+    updateGearFromDOM() {
+        const weaponCheckboxes = document.querySelectorAll('#weaponsSection input[type="checkbox"]:checked');
+        this.data.gear.weapons = Array.from(weaponCheckboxes).map(cb => cb.value);
+        const armorBody = document.querySelector('#armorSection input[data-slot="body"]:checked');
+        this.data.gear.armor.body = armorBody ? armorBody.value : '';
+        const armorHead = document.querySelector('#armorSection input[data-slot="head"]:checked');
+        this.data.gear.armor.head = armorHead ? armorHead.value : '';
+        const itemCheckboxes = document.querySelectorAll('#itemsSection input[type="checkbox"]:checked');
+        this.data.gear.items = Array.from(itemCheckboxes).map(cb => cb.value);
+        this.saveProgress();
+        this.updateTotalSpent();
+    }
+    updateGearBudgetDisplay() {
+        const remaining = 2550 - this.data.totalSpentOnGearAndCyber;
+        const budgetSpan = document.querySelector('.gear-budget strong');
+        if (budgetSpan) {
+            budgetSpan.innerText = remaining;
+            budgetSpan.className = remaining < 0 ? 'over' : 'ok';
+        }
     }
 
     attachSkillsEvents() {
-        // Поля ввода уровня
-        const handleSkillInput = (e) => {
-            if (e.target && e.target.classList.contains('skill-level-table')) {
-                this.updateSkills();
-            }
+        const handleSkillChange = () => {
+            this.updateSkillsFromDOM();
+            this.updateSkillsBudgetDisplay();
         };
-        if (this._skillHandler) {
-            document.removeEventListener('input', this._skillHandler);
-            document.removeEventListener('change', this._skillHandler);
+        const inputs = document.querySelectorAll('.skill-level-table');
+        inputs.forEach(inp => inp.addEventListener('input', handleSkillChange));
+        const searchInput = document.getElementById('skillsSearchTable');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                document.querySelectorAll('.skills-category-table tbody tr').forEach(row => {
+                    const skillName = row.querySelector('td:first-child')?.innerText.toLowerCase() || '';
+                    row.style.display = skillName.includes(term) ? '' : 'none';
+                });
+            });
         }
-        this._skillHandler = handleSkillInput;
-        document.addEventListener('input', this._skillHandler);
-        document.addEventListener('change', this._skillHandler);
-
-        // Сворачивание категорий
-        document.querySelectorAll('.skills-category-table h4').forEach(header => {
-            header.style.cursor = 'pointer';
-            header.removeEventListener('click', this._skillsCollapseHandler);
-            this._skillsCollapseHandler = (e) => {
-                e.stopPropagation();
-                const cat = header.closest('.skills-category-table');
-                const wrapper = cat.querySelector('.table-wrapper');
-                if (wrapper) {
-                    const isVisible = wrapper.style.display !== 'none';
-                    wrapper.style.display = isVisible ? 'none' : 'block';
-                    const icon = header.querySelector('.collapse-icon');
-                    if (icon) icon.textContent = isVisible ? '▶' : '▼';
-                    const categoryName = header.innerText.replace(/[▼▶]/g, '').trim();
-                    this.groupStates[`skills_${categoryName}`] = !isVisible;
-                }
-            };
-            header.addEventListener('click', this._skillsCollapseHandler);
-        });
+        // Сворачивание категорий – если нужно
     }
-
-    updateSkills() {
+    updateSkillsFromDOM() {
         const inputs = document.querySelectorAll('.skill-level-table');
         inputs.forEach(inp => {
             const skill = inp.dataset.skill;
             this.data.skills[skill] = parseInt(inp.value) || 0;
         });
         this.saveProgress();
-        this.renderStep(); // обновить отображение остатка очков
+        this.updateTotalSpent(); // потому что навыки не влияют на бюджет, но на всякий случай
+    }
+    updateSkillsBudgetDisplay() {
+        let total = 0;
+        const skillsList = this.getAllSkillsList();
+        for (let skill of skillsList) {
+            const level = this.data.skills[skill.name] ?? (skill.base ? 2 : 0);
+            total += level * (skill.costMult || 1);
+        }
+        const remaining = 86 - total;
+        const budgetSpan = document.querySelector('.skills-budget strong');
+        if (budgetSpan) {
+            budgetSpan.innerText = remaining;
+            budgetSpan.className = remaining < 0 ? 'over' : 'ok';
+        }
     }
 
     attachCyberwareEvents() {
-        // Чекбоксы имплантов – делегирование
-        if (this._cyberHandler) document.removeEventListener('change', this._cyberHandler);
-        this._cyberHandler = (e) => {
-            if (e.target && e.target.classList.contains('cyber-checkbox-table')) {
-                this.updateCyberware();
-            }
+        const handleCyberChange = () => {
+            this.updateCyberwareFromDOM();
+            this.updateCyberBudgetDisplay();
         };
-        document.addEventListener('change', this._cyberHandler);
-
-        // Сворачивание групп
-        document.querySelectorAll('.cyber-group-table h4').forEach(header => {
-            header.style.cursor = 'pointer';
-            header.removeEventListener('click', this._cyberCollapseHandler);
-            this._cyberCollapseHandler = (e) => {
-                e.stopPropagation();
-                const group = header.closest('.cyber-group-table');
-                const wrapper = group.querySelector('.table-wrapper');
-                if (wrapper) {
-                    const isVisible = wrapper.style.display !== 'none';
-                    wrapper.style.display = isVisible ? 'none' : 'block';
-                    const icon = header.querySelector('.collapse-icon');
-                    if (icon) icon.textContent = isVisible ? '▶' : '▼';
-                    const groupName = header.innerText.replace(/[▼▶]/g, '').trim();
-                    this.groupStates[`cyber_${groupName}`] = !isVisible;
-                }
-            };
-            header.addEventListener('click', this._cyberCollapseHandler);
-        });
-
-        // Поиск
+        const checkboxes = document.querySelectorAll('.cyber-checkbox-table');
+        checkboxes.forEach(cb => cb.addEventListener('change', handleCyberChange));
         const searchInput = document.getElementById('cyberSearchTable');
         if (searchInput) {
-            searchInput.removeEventListener('input', this._cyberSearchHandler);
-            this._cyberSearchHandler = (e) => {
+            searchInput.addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase();
                 document.querySelectorAll('.cyber-group-table tbody tr').forEach(row => {
                     row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none';
                 });
-            };
-            searchInput.addEventListener('input', this._cyberSearchHandler);
+            });
+        }
+    }
+    updateCyberwareFromDOM() {
+        const checkboxes = document.querySelectorAll('.cyber-checkbox-table:checked');
+        this.data.cyberware = Array.from(checkboxes).map(cb => cb.value);
+        this.saveProgress();
+        this.updateTotalSpent();
+    }
+    updateCyberBudgetDisplay() {
+        const remaining = 2550 - this.data.totalSpentOnGearAndCyber;
+        const budgetSpan = document.querySelector('.cyber-budget-info strong');
+        if (budgetSpan) {
+            budgetSpan.innerText = remaining;
+            budgetSpan.className = remaining < 0 ? 'over' : 'ok';
         }
     }
 
-    updateCyberware() {
-        const checkboxes = document.querySelectorAll('.cyber-checkbox-table:checked');
-        this.data.cyberware = Array.from(checkboxes).map(cb => cb.value);
-        this.updateTotalSpent();
-        this.updateCyberBudgetDisplay();
-        this.saveProgress();
-        // Не вызываем renderStep(), чтобы не сбросить состояние групп
-    }
-
     attachStyleEvents() {
-        if (this._styleHandler) document.removeEventListener('change', this._styleHandler);
-        this._styleHandler = (e) => {
-            if (e.target && e.target.classList.contains('style-checkbox')) {
-                this.updateStyle();
-            }
+        const handleStyleChange = () => {
+            this.updateStyleFromDOM();
+            this.updateStyleBudgetDisplay();
         };
-        document.addEventListener('change', this._styleHandler);
-
+        const checkboxes = document.querySelectorAll('.style-checkbox');
+        checkboxes.forEach(cb => cb.addEventListener('change', handleStyleChange));
         const searchInput = document.getElementById('styleSearch');
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
@@ -448,41 +365,47 @@ stepElements.forEach((el, idx) => {
             });
         }
     }
-
-    updateStyle() {
+    updateStyleFromDOM() {
         const checkboxes = document.querySelectorAll('.style-checkbox:checked');
         this.data.styleItems = Array.from(checkboxes).map(cb => cb.value);
         this.saveProgress();
-        this.renderStep(); // обновить бюджет
+    }
+    updateStyleBudgetDisplay() {
+        let total = 0;
+        for (let s of this.data.styleItems) total += this.getItemCost(s);
+        const remaining = 800 - total;
+        const budgetSpan = document.querySelector('.style-budget strong');
+        if (budgetSpan) {
+            budgetSpan.innerText = remaining;
+            budgetSpan.className = remaining < 0 ? 'over' : 'ok';
+        }
     }
 
     attachHumanityEvents() {}
-
     attachExpensesEvents() {
         const lifestyleSelect = document.getElementById('expensesLifestyle');
         const housingSelect = document.getElementById('expensesHousing');
         if (lifestyleSelect) lifestyleSelect.addEventListener('change', () => this.updateExpenses());
         if (housingSelect) housingSelect.addEventListener('change', () => this.updateExpenses());
     }
-
     updateExpenses() {
         this.data.lifestyle = document.getElementById('expensesLifestyle')?.value || '100';
         this.data.housing = document.getElementById('expensesHousing')?.value || '500';
         this.saveProgress();
-        this.renderStep();
+        this.renderStep(); // обновить отображение суммы
     }
 
     attachNotesEvents() {
         const notesText = document.getElementById('charNotes');
         if (notesText) notesText.addEventListener('input', () => this.updateNotes());
     }
-
     updateNotes() {
         this.data.notes = document.getElementById('charNotes')?.value || '';
         this.saveProgress();
     }
 
     attachSummaryEvents() {
+        // Кнопки лечения/урона и PNG – уже есть
         const healBtn = document.querySelector('.heal-btn');
         const damageBtn = document.querySelector('.damage-btn');
         const exportBtn = document.getElementById('exportPngBtn');
@@ -497,21 +420,22 @@ stepElements.forEach((el, idx) => {
                         link.click();
                     });
                 } else {
-                    alert('Библиотека html2canvas не загружена. Добавьте скрипт в index.html');
+                    alert('Библиотека html2canvas не загружена.');
                 }
             });
         }
         if (healBtn) {
             healBtn.addEventListener('click', () => {
                 const hpDiv = document.querySelector('.derived-stats div:first-child');
-                if (!hpDiv) return;
-                const match = hpDiv.innerText.match(/ПЗ:\s*(\d+)\s*\/\s*(\d+)/);
-                if (match) {
-                    let current = parseInt(match[1]);
-                    const max = parseInt(match[2]);
-                    const body = this.data.stats?.BODY || 6;
-                    const newHp = Math.min(current + body, max);
-                    hpDiv.innerText = hpDiv.innerText.replace(/\d+/, newHp);
+                if (hpDiv) {
+                    const match = hpDiv.innerText.match(/ПЗ:\s*(\d+)\s*\/\s*(\d+)/);
+                    if (match) {
+                        let current = parseInt(match[1]);
+                        const max = parseInt(match[2]);
+                        const body = this.data.stats?.BODY || 6;
+                        const newHp = Math.min(current + body, max);
+                        hpDiv.innerText = hpDiv.innerText.replace(/\d+/, newHp);
+                    }
                 }
             });
         }
@@ -520,23 +444,47 @@ stepElements.forEach((el, idx) => {
                 const dmg = prompt('Введите урон:');
                 if (dmg !== null) {
                     const hpDiv = document.querySelector('.derived-stats div:first-child');
-                    if (!hpDiv) return;
-                    const match = hpDiv.innerText.match(/ПЗ:\s*(\d+)\s*\/\s*(\d+)/);
-                    if (match) {
-                        let current = parseInt(match[1]);
-                        const max = parseInt(match[2]);
-                        let newHp = Math.max(0, current - parseInt(dmg));
-                        hpDiv.innerText = hpDiv.innerText.replace(/\d+/, newHp);
-                        const severe = Math.ceil(max / 2);
-                        if (newHp <= severe && newHp > 0) alert('⚠️ Тяжёлое ранение! Штраф -2 ко всем действиям.');
-                        if (newHp <= 0) alert('💀 Смертельное ранение! Требуется спасбросок.');
+                    if (hpDiv) {
+                        const match = hpDiv.innerText.match(/ПЗ:\s*(\d+)\s*\/\s*(\d+)/);
+                        if (match) {
+                            let current = parseInt(match[1]);
+                            const max = parseInt(match[2]);
+                            let newHp = Math.max(0, current - parseInt(dmg));
+                            hpDiv.innerText = hpDiv.innerText.replace(/\d+/, newHp);
+                            const severe = Math.ceil(max / 2);
+                            if (newHp <= severe && newHp > 0) alert('⚠️ Тяжёлое ранение! Штраф -2.');
+                            if (newHp <= 0) alert('💀 Смертельное ранение!');
+                        }
                     }
                 }
             });
         }
     }
 
-    // ========== НАВИГАЦИЯ И ВАЛИДАЦИЯ ==========
+    // Вспомогательные методы
+    getItemCost(name) {
+        const all = [...rangedWeapons, ...meleeWeapons, ...armors, ...gearItems];
+        const found = all.find(i => i.name === name);
+        return found ? found.cost : 0;
+    }
+
+    getAllSkillsList() {
+        return allSkills;
+    }
+
+    updateTotalSpent() {
+        let total = 0;
+        for (let w of this.data.gear.weapons) total += this.getItemCost(w);
+        if (this.data.gear.armor.body) total += this.getItemCost(this.data.gear.armor.body);
+        if (this.data.gear.armor.head) total += this.getItemCost(this.data.gear.armor.head);
+        for (let i of this.data.gear.items) total += this.getItemCost(i);
+        for (let c of this.data.cyberware) total += this.getItemCost(c);
+        this.data.totalSpentOnGearAndCyber = total;
+        this.saveProgress();
+        return total;
+    }
+
+    // Навигация
     prevStep() {
         if (this.currentStep > 0) {
             this.currentStep--;
@@ -553,7 +501,7 @@ stepElements.forEach((el, idx) => {
     }
 
     validateStep() {
-        if (this.currentStep === 2) {
+        if (this.currentStep === 2) { // ХАР
             let total = 0;
             for (let s in this.data.stats) total += this.data.stats[s];
             if (total !== 62) {
@@ -561,18 +509,18 @@ stepElements.forEach((el, idx) => {
                 return false;
             }
         }
-        if (this.currentStep === 4) {
-    let total = 0;
-    const skillsList = this.getAllSkillsList();
-    for (let skill of skillsList) {
-        const level = this.data.skills[skill.name] ?? (skill.base ? 2 : 0);
-        total += level * (skill.costMult || 1);
-    }
-    if (total > 86) {
-        alert("Превышение очков навыков (максимум 86 с учётом ×2)");
-        return false;
-    }
-}
+        if (this.currentStep === 4) { // Навыки
+            let total = 0;
+            const skillsList = this.getAllSkillsList();
+            for (let skill of skillsList) {
+                const level = this.data.skills[skill.name] ?? (skill.base ? 2 : 0);
+                total += level * (skill.costMult || 1);
+            }
+            if (total > 86) {
+                alert("Превышение очков навыков (максимум 86 с учётом ×2)");
+                return false;
+            }
+        }
         if (this.currentStep === 3 || this.currentStep === 5) {
             this.updateTotalSpent();
             if (this.data.totalSpentOnGearAndCyber > 2550) {
@@ -592,6 +540,7 @@ stepElements.forEach((el, idx) => {
     }
 
     saveCharacter() {
+        // НЕ вызываем updateGearFromDOM() – данные уже актуальны
         const char = {
             name: this.data.name || "Безымянный",
             culture: this.data.culture,

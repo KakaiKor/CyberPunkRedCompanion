@@ -12,6 +12,7 @@ export function renderGearStep(data, getItemCost) {
         <div class="gear-filter">
             <label>Показать:
                 <select id="gearCategoryFilter">
+                    <option value="all">Всё</option>
                     <option value="weapons">Оружие</option>
                     <option value="armor">Броня</option>
                     <option value="items">Снаряжение</option>
@@ -27,15 +28,15 @@ export function renderGearStep(data, getItemCost) {
             ${renderTable(meleeWeapons, 'weapon', gear.weapons, ['Название', 'Тип', 'Урон', 'СКОР'])}
         </div>
 
-        <div id="armorSection" class="gear-section" style="display: none;">
+        <div id="armorSection" class="gear-section">
             <h4>🛡️ Броня (тело)</h4>
-            ${renderTable(armors, 'armorBody', [gear.armor.body], ['Название', 'ОС', 'Штраф'])}
+            ${renderArmorTable(armors, 'body', gear.armor.body, ['Название', 'ОС', 'Штраф'])}
             <h4>🛡️ Броня (голова)</h4>
-            ${renderTable(armors, 'armorHead', [gear.armor.head], ['Название', 'ОС', 'Штраф'])}
+            ${renderArmorTable(armors, 'head', gear.armor.head, ['Название', 'ОС', 'Штраф'])}
             <p class="note">Выберите броню для тела и головы отдельно.</p>
         </div>
 
-        <div id="itemsSection" class="gear-section" style="display: none;">
+        <div id="itemsSection" class="gear-section">
             <h4>🎒 Снаряжение</h4>
             ${renderTable(gearItems, 'item', gear.items, ['Название', 'Категория'])}
         </div>
@@ -68,6 +69,32 @@ export function renderGearStep(data, getItemCost) {
                                     if (col === 'Категория') return `<td>${item.category || ''}</td>`;
                                     return `<td></td>`;
                                 }).join('')}
+                                <td>${item.cost} eb</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    function renderArmorTable(items, slot, selectedName, columns) {
+        if (!items.length) return '<p>Нет предметов</p>';
+        return `
+            <div class="table-wrapper">
+                <table class="cyber-table">
+                    <thead>
+                        <tr><th style="width:30px">✓</th>${columns.map(col => `<th>${col}</th>`).join('')}<th>Цена</th></tr>
+                    </thead>
+                    <tbody>
+                        ${items.map(item => `
+                            <tr>
+                                <td style="text-align:center">
+                                    <input type="checkbox" data-type="armor" data-slot="${slot}" value="${item.name}" data-cost="${item.cost}" ${selectedName === item.name ? 'checked' : ''}>
+                                 </td>
+                                <td><strong>${item.name}</strong></td>
+                                <td>${item.sp || ''}</td>
+                                <td>${item.penalty || ''}</td>
                                 <td>${item.cost} eb</td>
                             </tr>
                         `).join('')}
