@@ -1,6 +1,7 @@
 // modules/character-helper.js
 import { getHP } from '../utils.js';
 import { saveCharacter, loadCharacter } from '../storage.js';
+import { detailedCyberware } from '../data.js';
 
 export class CharacterHelper {
     constructor() {
@@ -11,7 +12,7 @@ export class CharacterHelper {
         document.getElementById('loadCharBtn')?.addEventListener('click', () => this.load());
         document.getElementById('buildCharCardBtn')?.addEventListener('click', () => this.generateStreetRatCharacter());
     }
-    
+
     buildStatsGrid() {
         const container = document.getElementById('statsGrid');
         if (!container) return;
@@ -23,13 +24,13 @@ export class CharacterHelper {
         }
         container.innerHTML = html;
     }
-    
+
     randomStats() {
         const ids = ['statINT','statREF','statDEX','statTECH','statCOOL','statWILL','statLUCK','statMOVE','statBODY','statEMP'];
         ids.forEach(id => document.getElementById(id).value = Math.floor(Math.random() * 7) + 2);
         this.calcDerived();
     }
-    
+
     calcDerived() {
         const body = parseInt(document.getElementById('statBODY').value);
         const will = parseInt(document.getElementById('statWILL').value);
@@ -40,7 +41,7 @@ export class CharacterHelper {
         const empFrom = Math.floor(humanity / 10);
         document.getElementById('charDerived').innerHTML = `<strong>ПЗ = ${hp}</strong> (тяж. ≤ ${severe})<br>Спасбросок = ${body}<br>Человечность = ${humanity} (ЭМП = ${empFrom})`;
     }
-    
+
     save() {
         const char = { name: document.getElementById('charName').value, role: document.getElementById('genRole').value };
         const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
@@ -48,7 +49,7 @@ export class CharacterHelper {
         saveCharacter(char);
         document.getElementById('charSaveStatus').innerText = 'Сохранено!';
     }
-    
+
     load() {
         const char = loadCharacter();
         if (char) {
@@ -74,25 +75,77 @@ export class CharacterHelper {
         const humanity = stats.EMP * 10;
         const empFrom = Math.floor(humanity / 10);
         const deathSave = stats.BODY;
-        this.buildCharacterCard(name, role, stats, skills, gear, hp, severe, humanity, empFrom, deathSave);
+        this.buildCharacterCard({
+    name, role, stats, skills, gear, hp, severe, humanity, empFrom, deathSave, notes: ''
+});
         const charData = { name, role, ...stats };
         saveCharacter(charData);
         document.getElementById('charSaveStatus').innerText = 'Персонаж сгенерирован!';
     }
-    
+
     generateStatsForRole(role) {
         const roll = Math.floor(Math.random() * 10) + 1;
         const templates = {
-            "Рокербой": [[7,6,5,6,8,7,7,3,8,2], [7,7,7,7,6,7,7,5,8,3], [8,5,7,7,6,7,7,5,8,4], [5,7,7,6,8,7,7,5,8,3], [7,7,6,8,7,6,5,5,8,3], [8,7,5,7,7,6,5,6,8,4], [7,5,7,7,8,6,7,6,8,3], [6,5,7,7,7,8,7,6,8,4], [8,9,3,5,5,6,7,8,7,5], [4,5,6,5,8,8,7,6,4,7]],
-            "Соло": [[6,7,7,3,8,6,5,5,6,5], [7,8,6,3,6,6,7,5,6,6], [8,7,4,7,7,6,7,8,5,4], [6,4,6,4,7,6,5,7,6,5], [7,6,5,7,6,7,6,5,6,7], [6,7,7,6,8,4,6,7,6,7], [7,7,6,5,7,6,6,7,7,6], [7,7,8,7,8,7,5,6,6,5], [4,9,7,7,6,4,6,6,6,5], [6,6,8,5,6,6,5,6,6,5]],
-            "Нетраннер": [[5,8,7,7,4,8,7,7,4,2], [5,6,7,5,8,3,8,7,5,5], [6,8,6,6,4,7,6,7,4,4], [7,7,7,5,8,5,5,5,5,5], [5,5,7,8,7,3,7,5,6,6], [6,6,7,7,5,5,5,6,6,6], [7,6,7,7,6,5,7,7,6,6], [5,7,7,7,6,5,7,6,5,5], [7,7,6,7,6,3,6,5,6,5], [7,8,6,6,4,7,7,5,6,6]],
-            "Техник": [[6,7,7,8,4,4,5,7,6,2], [7,6,7,7,5,5,3,7,5,3], [6,5,7,5,7,4,7,7,4,7], [7,4,7,7,5,5,6,7,4,6], [6,6,7,7,7,4,5,6,7,5], [5,6,4,7,6,7,5,5,5,5], [6,7,5,7,7,7,4,6,7,5], [7,5,5,7,7,5,6,7,6,5], [6,6,7,7,5,4,6,5,4,6], [7,5,6,7,5,5,7,6,5,5]],
-            "Медтех": [[7,5,6,7,5,3,8,5,5,2], [7,7,7,4,6,7,7,3,6,5], [5,5,8,5,3,8,5,7,8,4], [8,6,8,6,5,6,7,5,7,4], [7,6,7,5,8,5,6,6,5,6], [7,5,7,5,8,5,6,7,5,6], [7,5,5,6,7,6,5,6,5,6], [6,7,6,5,6,6,5,6,5,6], [7,6,6,5,6,6,5,5,5,6], [5,6,6,5,6,6,5,5,5,6]],
-            "Медиа": [[6,6,5,5,8,7,5,7,5,2], [8,7,7,3,6,6,5,6,5,6], [6,7,5,5,6,8,5,5,7,4], [7,5,6,5,7,6,5,6,5,5], [6,6,7,5,6,7,6,6,5,6], [7,5,6,5,7,6,6,6,5,6], [8,5,5,6,7,6,7,6,5,6], [7,5,6,6,7,6,6,6,5,6], [7,6,6,6,7,6,5,6,5,6], [5,6,6,6,7,6,5,6,5,6]],
-            "Законник": [[5,6,7,5,7,8,5,6,5,6], [6,6,6,5,6,8,5,7,5,5], [7,7,7,5,6,7,5,6,5,5], [6,6,6,5,8,5,7,6,5,6], [6,6,6,5,7,6,7,6,5,6], [6,6,6,5,8,7,6,6,5,5], [8,7,5,6,7,6,5,6,5,6], [5,6,5,6,7,6,6,6,5,6], [5,6,6,6,7,6,6,5,5,6], [6,6,6,5,7,6,5,6,5,5]],
-            "Менеджер": [[8,5,5,3,8,6,6,5,5,2], [8,6,6,4,7,7,5,7,5,3], [7,6,3,8,6,4,5,8,5,4], [8,5,6,4,7,5,6,5,5,4], [7,5,6,5,7,7,5,7,5,3], [6,5,7,6,7,5,7,6,5,4], [7,6,5,7,7,5,6,6,5,4], [6,7,5,5,6,6,6,5,5,5], [7,6,5,6,7,6,7,5,5,5], [5,5,6,6,7,6,5,6,5,5]],
-            "Фиксер": [[8,5,7,4,6,5,8,5,5,2], [8,5,5,6,7,8,7,5,5,3], [7,6,6,5,4,6,6,5,5,4], [6,8,5,6,5,7,6,6,5,5], [7,6,6,6,6,7,6,5,5,5], [5,6,6,6,6,6,6,5,5,5], [7,6,6,6,7,5,6,5,5,5], [6,6,5,5,7,6,6,5,5,5], [7,6,5,6,7,6,6,5,5,5], [5,6,5,6,6,5,6,5,5,5]],
-            "Кочевник": [[6,6,8,3,6,7,6,6,4,2], [5,7,6,8,8,8,7,5,4,3], [8,6,3,8,6,5,6,5,4,4], [8,7,4,8,7,6,7,5,5,4], [5,8,6,6,7,5,6,6,5,4], [6,7,8,6,7,5,7,6,5,4], [8,7,6,5,7,5,7,6,5,4], [5,5,7,6,6,6,6,5,5,4], [7,6,5,6,7,5,6,5,5,5], [5,6,7,4,7,8,7,7,4,4]]
+            "Рокербой": [
+                [7,6,5,6,8,7,7,3,8,2], [7,7,7,7,6,7,7,5,8,3], [8,5,7,7,6,7,7,5,8,4],
+                [5,7,7,6,8,7,7,5,8,3], [7,7,6,8,7,6,5,5,8,3], [8,7,5,7,7,6,5,6,8,4],
+                [7,5,7,7,8,6,7,6,8,3], [6,5,7,7,7,8,7,6,8,4], [8,9,3,5,5,6,7,8,7,5],
+                [4,5,6,5,8,8,7,6,4,7]
+            ],
+            "Соло": [
+                [6,7,7,3,8,6,5,5,6,5], [7,8,6,3,6,6,7,5,6,6], [8,7,4,7,7,6,7,8,5,4],
+                [6,4,6,4,7,6,5,7,6,5], [7,6,5,7,6,7,6,5,6,7], [6,7,7,6,8,4,6,7,6,7],
+                [7,7,6,5,7,6,6,7,7,6], [7,7,8,7,8,7,5,6,6,5], [4,9,7,7,6,4,6,6,6,5],
+                [6,6,8,5,6,6,5,6,6,5]
+            ],
+            "Нетраннер": [
+                [5,8,7,7,4,8,7,7,4,2], [5,6,7,5,8,3,8,7,5,5], [6,8,6,6,4,7,6,7,4,4],
+                [7,7,7,5,8,5,5,5,5,5], [5,5,7,8,7,3,7,5,6,6], [6,6,7,7,5,5,5,6,6,6],
+                [7,6,7,7,6,5,7,7,6,6], [5,7,7,7,6,5,7,6,5,5], [7,7,6,7,6,3,6,5,6,5],
+                [7,8,6,6,4,7,7,5,6,6]
+            ],
+            "Техник": [
+                [6,7,7,8,4,4,5,7,6,2], [7,6,7,7,5,5,3,7,5,3], [6,5,7,5,7,4,7,7,4,7],
+                [7,4,7,7,5,5,6,7,4,6], [6,6,7,7,7,4,5,6,7,5], [5,6,4,7,6,7,5,5,5,5],
+                [6,7,5,7,7,7,4,6,7,5], [7,5,5,7,7,5,6,7,6,5], [6,6,7,7,5,4,6,5,4,6],
+                [7,5,6,7,5,5,7,6,5,5]
+            ],
+            "Медтех": [
+                [7,5,6,7,5,3,8,5,5,2], [7,7,7,4,6,7,7,3,6,5], [5,5,8,5,3,8,5,7,8,4],
+                [8,6,8,6,5,6,7,5,7,4], [7,6,7,5,8,5,6,6,5,6], [7,5,7,5,8,5,6,7,5,6],
+                [7,5,5,6,7,6,5,6,5,6], [6,7,6,5,6,6,5,6,5,6], [7,6,6,5,6,6,5,5,5,6],
+                [5,6,6,5,6,6,5,5,5,6]
+            ],
+            "Медиа": [
+                [6,6,5,5,8,7,5,7,5,2], [8,7,7,3,6,6,5,6,5,6], [6,7,5,5,6,8,5,5,7,4],
+                [7,5,6,5,7,6,5,6,5,5], [6,6,7,5,6,7,6,6,5,6], [7,5,6,5,7,6,6,6,5,6],
+                [8,5,5,6,7,6,7,6,5,6], [7,5,6,6,7,6,6,6,5,6], [7,6,6,6,7,6,5,6,5,6],
+                [5,6,6,6,7,6,5,6,5,6]
+            ],
+            "Законник": [
+                [5,6,7,5,7,8,5,6,5,6], [6,6,6,5,6,8,5,7,5,5], [7,7,7,5,6,7,5,6,5,5],
+                [6,6,6,5,8,5,7,6,5,6], [6,6,6,5,7,6,7,6,5,6], [6,6,6,5,8,7,6,6,5,5],
+                [8,7,5,6,7,6,5,6,5,6], [5,6,5,6,7,6,6,6,5,6], [5,6,6,6,7,6,6,5,5,6],
+                [6,6,6,5,7,6,5,6,5,5]
+            ],
+            "Менеджер": [
+                [8,5,5,3,8,6,6,5,5,2], [8,6,6,4,7,7,5,7,5,3], [7,6,3,8,6,4,5,8,5,4],
+                [8,5,6,4,7,5,6,5,5,4], [7,5,6,5,7,7,5,7,5,3], [6,5,7,6,7,5,7,6,5,4],
+                [7,6,5,7,7,5,6,6,5,4], [6,7,5,5,6,6,6,5,5,5], [7,6,5,6,7,6,7,5,5,5],
+                [5,5,6,6,7,6,5,6,5,5]
+            ],
+            "Фиксер": [
+                [8,5,7,4,6,5,8,5,5,2], [8,5,5,6,7,8,7,5,5,3], [7,6,6,5,4,6,6,5,5,4],
+                [6,8,5,6,5,7,6,6,5,5], [7,6,6,6,6,7,6,5,5,5], [5,6,6,6,6,6,6,5,5,5],
+                [7,6,6,6,7,5,6,5,5,5], [6,6,5,5,7,6,6,5,5,5], [7,6,5,6,7,6,6,5,5,5],
+                [5,6,5,6,6,5,6,5,5,5]
+            ],
+            "Кочевник": [
+                [6,6,8,3,6,7,6,6,4,2], [5,7,6,8,8,8,7,5,4,3], [8,6,3,8,6,5,6,5,4,4],
+                [8,7,4,8,7,6,7,5,5,4], [5,8,6,6,7,5,6,6,5,4], [6,7,8,6,7,5,7,6,5,4],
+                [8,7,6,5,7,5,7,6,5,4], [5,5,7,6,6,6,6,5,5,4], [7,6,5,6,7,5,6,5,5,5],
+                [5,6,7,4,7,8,7,7,4,4]
+            ]
         };
         const template = templates[role];
         if (!template) return {};
@@ -103,7 +156,7 @@ export class CharacterHelper {
             BODY: statsRow[8], EMP: statsRow[9]
         };
     }
-    
+
     generateSkillsForRole(role) {
         const templates = {
             "Рокербой": { "Атлетика":2, "Драка":6, "Концентрация":2, "Общение":2, "Образование":2, "Уклонение":6, "Первая помощь":6, "Проницательность":6, "Язык (Уличный сленг)":2, "Знание района (Твой дом)":4, "Восприятие":2, "Убеждение":6, "Скрытность":2, "Композиция":6, "Короткоствольное оружие":6, "Холодное оружие":6, "Уход за собой":4, "Опыт на улицах":6, "Гардероб и стиль":4 },
@@ -119,7 +172,7 @@ export class CharacterHelper {
         };
         return templates[role] || {};
     }
-    
+
     generateStartingGear(role) {
         const weapons = {
             "Рокербой": ["Очень тяжёлый пистолет", "Тяжёлое холодное оружие"],
@@ -153,80 +206,134 @@ export class CharacterHelper {
             gear: ["Агент", "Сумка медтеха", "Фонарь", "Набор личной гигиены"]
         };
     }
-    
-    buildCharacterCard(name, role, stats, skills, gear, hp, severe, humanity, empFrom, deathSave) {
-        const container = document.getElementById('characterCardContainer');
-        const cardHtml = this.buildCharacterCardHTML(name, role, stats, skills, gear, hp, severe, humanity, empFrom, deathSave);
-        container.innerHTML = cardHtml;
-        this.attachCardEventHandlers();
-        const editBtn = container.querySelector('.edit-card-btn');
-        const syncBtn = container.querySelector('.sync-card-btn');
-        if (editBtn) editBtn.addEventListener('click', () => this.enableEditMode(container.querySelector('.character-card')));
-        if (syncBtn) syncBtn.addEventListener('click', () => this.syncFromTabs());
-    }
-    
-    buildCharacterCardHTML(name, role, stats, skills, gear, hp, severe, humanity, empFrom, deathSave) {
-        const statsHtml = Object.entries(stats).map(([k,v]) => `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${v}</span></div>`).join('');
-        const skillsHtml = Object.entries(skills).map(([k,v]) => `<div class="skill-item" data-skill="${k}"><span class="skill-name">${this.escapeHtml(k)}</span><span class="skill-level">${v}</span></div>`).join('');
-        const weaponsHtml = gear.weapons.map((w, idx) => `<li data-weapon-idx="${idx}">🔫 ${this.escapeHtml(w)}</li>`).join('');
-        const cyberHtml = gear.cyberware.map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}</li>`).join('');
-        const gearHtmlItems = gear.gear.map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
-        const armorHtml = `<li data-armor-body>🛡️ Тело: ${this.escapeHtml(gear.armor.body)}</li><li data-armor-head>⛑️ Голова: ${this.escapeHtml(gear.armor.head)}</li>`;
-        return `
-            <div class="character-card" data-name="${name}" data-role="${role}">
-                <div class="character-card-header">
-                    <div class="character-name" data-field="name">${this.escapeHtml(name)}</div>
-                    <div class="character-role" data-field="role">${role}</div>
-                    <div class="card-actions">
-                        <button class="edit-card-btn" title="Редактировать">✏️</button>
-                        <button class="sync-card-btn" title="Синхронизировать с вкладками">🔄</button>
-                        <button class="close-card-btn" id="closeCardBtn">✖</button>
+
+    // ========== МЕТОДЫ ДЛЯ КАРТОЧКИ ПЕРСОНАЖА ==========
+    // Вместо старой сигнатуры - принимаем один объект
+buildCharacterCard(cardData) {
+    const { name, role, stats, skills, gear, hp, severe, humanity, empFrom, deathSave, notes = '' } = cardData;
+    const container = document.getElementById('characterCardContainer');
+    const cardHtml = this.buildCharacterCardHTML({ name, role, stats, skills, gear, hp, severe, humanity, empFrom, deathSave, notes });
+    container.innerHTML = cardHtml;
+    this.attachCardEventHandlers();
+    const editBtn = container.querySelector('.edit-card-btn');
+    const syncBtn = container.querySelector('.sync-card-btn');
+    if (editBtn) editBtn.addEventListener('click', () => this.enableEditMode(container.querySelector('.character-card')));
+    if (syncBtn) syncBtn.addEventListener('click', () => this.syncFromTabs());
+}
+
+buildCharacterCardHTML({ name, role, stats, skills, gear, hp, severe, humanity, empFrom, deathSave, notes }) {
+    // Если stats почему-то undefined, подстрахуемся
+    stats = stats || {};
+    skills = skills || {};
+    gear = gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
+    const statsHtml = Object.entries(stats).map(([k, v]) => `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${v}</span></div>`).join('');
+    const skillsHtml = Object.entries(skills).map(([k, v]) => `<div class="skill-item" data-skill="${k}"><span class="skill-name">${this.escapeHtml(k)}</span><span class="skill-level">${v}</span></div>`).join('');
+    const weaponsHtml = (gear.weapons || []).map((w, idx) => `<li data-weapon-idx="${idx}">🔫 ${this.escapeHtml(w)}</li>`).join('');
+    const cyberHtml = (gear.cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}</li>`).join('');
+    const gearHtmlItems = (gear.gear || []).map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
+    const armorHtml = `<li data-armor-body>🛡️ Тело: ${this.escapeHtml(gear.armor?.body || 'нет')}</li><li data-armor-head>⛑️ Голова: ${this.escapeHtml(gear.armor?.head || 'нет')}</li>`;
+    const notesHtml = `
+        <div class="char-section" data-section="notes">
+            <h4>📝 Заметки</h4>
+            <div class="notes-preview">${this.escapeHtml(notes) || '— нет —'}</div>
+        </div>
+    `;
+    return `
+        <div class="character-card" data-name="${this.escapeHtml(name)}" data-role="${role}">
+            <div class="character-card-header">
+                <div class="character-name" data-field="name">${this.escapeHtml(name)}</div>
+                <div class="character-role" data-field="role">${role}</div>
+                <div class="card-actions">
+                    <button class="edit-card-btn" title="Редактировать">✏️</button>
+                    <button class="sync-card-btn" title="Синхронизировать с вкладками">🔄</button>
+                    <button class="close-card-btn" id="closeCardBtn">✖</button>
+                </div>
+            </div>
+            <div class="character-card-body">
+                <div class="char-section" data-section="stats">
+                    <h4>📊 Характеристики</h4>
+                    <div class="stats-grid" data-stats-container>${statsHtml}</div>
+                </div>
+                <div class="char-section" data-section="derived">
+                    <h4>❤️ Состояние</h4>
+                    <div class="derived-stats">
+                        <div data-derived="hp">ПЗ: <span class="current-hp">${hp}</span> / ${hp} <span class="hp-threshold">(тяж. ≤ ${severe})</span></div>
+                        <div data-derived="deathSave">Спасбросок: ${deathSave}</div>
+                        <div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>
+                    </div>
+                    <div class="combat-buttons">
+                        <button class="heal-btn">💊 Лечение (+${stats.BODY || 6} ПЗ)</button>
+                        <button class="damage-btn">💥 Урон</button>
                     </div>
                 </div>
-                <div class="character-card-body">
-                    <div class="char-section" data-section="stats">
-                        <h4>📊 Характеристики</h4>
-                        <div class="stats-grid" data-stats-container>${statsHtml}</div>
+                <div class="char-section" data-section="skills">
+                    <h4>🎯 Навыки</h4>
+                    <div class="skills-grid" data-skills-container>${skillsHtml}</div>
+                </div>
+                ${notesHtml}
+                <div class="equipment-grid" data-equipment>
+                    <div class="equipment-card" data-type="armor">
+                        <h5>🛡️ Броня</h5>
+                        <ul class="compact" data-armor-list>${armorHtml}</ul>
                     </div>
-                    <div class="char-section" data-section="derived">
-                        <h4>❤️ Состояние</h4>
-                        <div class="derived-stats">
-                            <div data-derived="hp">ПЗ: <span class="current-hp">${hp}</span> / ${hp} <span class="hp-threshold">(тяж. ≤ ${severe})</span></div>
-                            <div data-derived="deathSave">Спасбросок: ${deathSave}</div>
-                            <div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>
-                        </div>
-                        <div class="combat-buttons">
-                            <button class="heal-btn">💊 Лечение (+${stats.BODY} ПЗ)</button>
-                            <button class="damage-btn">💥 Урон</button>
-                        </div>
+                    <div class="equipment-card" data-type="weapons">
+                        <h5>🔫 Оружие</h5>
+                        <ul class="compact" data-weapons-list>${weaponsHtml || '<li>— нет —</li>'}</ul>
                     </div>
-                    <div class="char-section" data-section="skills">
-                        <h4>🎯 Навыки</h4>
-                        <div class="skills-grid" data-skills-container>${skillsHtml}</div>
+                    <div class="equipment-card" data-type="cyberware">
+                        <h5>🦾 Киберимпланты</h5>
+                        <ul class="compact" data-cyber-list>${cyberHtml || '<li>— нет —</li>'}</ul>
                     </div>
-                    <div class="equipment-grid" data-equipment>
-                        <div class="equipment-card" data-type="armor">
-                            <h5>🛡️ Броня</h5>
-                            <ul class="compact" data-armor-list>${armorHtml || '<li>— нет —</li>'}</ul>
-                        </div>
-                        <div class="equipment-card" data-type="weapons">
-                            <h5>🔫 Оружие</h5>
-                            <ul class="compact" data-weapons-list>${weaponsHtml || '<li>— нет —</li>'}</ul>
-                        </div>
-                        <div class="equipment-card" data-type="cyberware">
-                            <h5>🦾 Киберимпланты</h5>
-                            <ul class="compact" data-cyber-list>${cyberHtml || '<li>— нет —</li>'}</ul>
-                        </div>
-                        <div class="equipment-card" data-type="gear">
-                            <h5>🎒 Снаряжение</h5>
-                            <ul class="compact" data-gear-list>${gearHtmlItems || '<li>— нет —</li>'}</ul>
-                        </div>
+                    <div class="equipment-card" data-type="gear">
+                        <h5>🎒 Снаряжение</h5>
+                        <ul class="compact" data-gear-list>${gearHtmlItems || '<li>— нет —</li>'}</ul>
                     </div>
                 </div>
             </div>
-        `;
+        </div>
+    `;
+}
+
+    displaySavedCharacterCard() {
+    const char = loadCharacter();
+    if (!char) {
+        console.warn('Нет сохранённого персонажа');
+        return;
     }
-    
+    const stats = {
+        INT: char.INT || 6, REF: char.REF || 6, DEX: char.DEX || 6,
+        TECH: char.TECH || 6, COOL: char.COOL || 6, WILL: char.WILL || 6,
+        LUCK: char.LUCK || 6, MOVE: char.MOVE || 6, BODY: char.BODY || 6, EMP: char.EMP || 6
+    };
+    const skills = char.skills || {};
+    const gear = char.gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
+    const body = stats.BODY, will = stats.WILL, emp = stats.EMP;
+    const hp = getHP(body, will);
+    const severe = Math.ceil(hp / 2);
+    let humanityLoss = 0;
+    for (const name of (char.cyberware || [])) {
+        const implant = detailedCyberware.find(i => i.name === name);
+        if (implant) humanityLoss += parseInt(implant.humanity) || 0;
+    }
+    const humanity = Math.max(0, emp * 10 - humanityLoss);
+    const empFrom = Math.floor(humanity / 10);
+    const deathSave = body;
+    this.buildCharacterCard({
+        name: char.name || 'Безымянный',
+        role: char.role || 'Без роли',
+        stats: stats,
+        skills: skills,
+        gear: gear,
+        hp: hp,
+        severe: severe,
+        humanity: humanity,
+        empFrom: empFrom,
+        deathSave: deathSave,
+        notes: char.notes || ''
+    });
+}
+
+    // ========== РЕДАКТИРОВАНИЕ КАРТОЧКИ ==========
     enableEditMode(card) {
         const nameSpan = card.querySelector('[data-field="name"]');
         const roleSpan = card.querySelector('[data-field="role"]');
@@ -255,12 +362,12 @@ export class CharacterHelper {
         editBtn.addEventListener('click', saveHandler);
         editBtn._clickHandler = saveHandler;
     }
-    
+
     getRoleOptions(selectedRole) {
         const roles = ["Рокербой","Соло","Нетраннер","Техник","Медтех","Медиа","Законник","Менеджер","Фиксер","Кочевник"];
         return roles.map(r => `<option value="${r}" ${r === selectedRole ? 'selected' : ''}>${r}</option>`).join('');
     }
-    
+
     makeEquipmentEditable(card) {
         const sections = ['weapons', 'cyber', 'gear', 'armor'];
         sections.forEach(section => {
@@ -300,14 +407,12 @@ export class CharacterHelper {
             });
         });
     }
-    
+
     attachRemoveListener(li) {
         const removeBtn = li.querySelector('.remove-item');
-        if (removeBtn) {
-            removeBtn.addEventListener('click', () => li.remove());
-        }
+        if (removeBtn) removeBtn.addEventListener('click', () => li.remove());
     }
-    
+
     disableEditMode(card) {
         const newName = card.querySelector('[data-field="name"] input').value;
         const newRole = card.querySelector('[data-field="role"] select').value;
@@ -357,9 +462,9 @@ export class CharacterHelper {
         const deathSave = body;
         const charData = { name: newName, role: newRole, ...newStats };
         saveCharacter(charData);
-        this.buildCharacterCard(newName, newRole, newStats, newSkills, newGear, hp, severe, humanity, empFrom, deathSave);
+        this.buildCharacterCard(newName, newRole, newStats, newSkills, newGear, hp, severe, humanity, empFrom, deathSave, '');
     }
-    
+
     syncFromTabs() {
         const name = document.getElementById('charName').value || 'Безымянный';
         const role = document.getElementById('genRole').value;
@@ -398,9 +503,9 @@ export class CharacterHelper {
         const humanity = stats.EMP * 10;
         const empFrom = Math.floor(humanity / 10);
         const deathSave = stats.BODY;
-        this.buildCharacterCard(name, role, stats, skills, gear, hp, severe, humanity, empFrom, deathSave);
+        this.buildCharacterCard(name, role, stats, skills, gear, hp, severe, humanity, empFrom, deathSave, '');
     }
-    
+
     attachCardEventHandlers() {
         const healBtn = document.querySelector('.heal-btn');
         const damageBtn = document.querySelector('.damage-btn');
@@ -422,8 +527,7 @@ export class CharacterHelper {
                     const hpSpan = document.querySelector('.current-hp');
                     let current = parseInt(hpSpan.innerText);
                     let maxHp = parseInt(hpSpan.innerText.split('/')[1].trim());
-                    let newHp = current - parseInt(dmg);
-                    if (newHp < 0) newHp = 0;
+                    let newHp = Math.max(0, current - parseInt(dmg));
                     hpSpan.innerText = `${newHp}`;
                     const severe = Math.ceil(maxHp / 2);
                     if (newHp <= severe && newHp > 0) alert(`⚠️ Тяжёлое ранение! Штраф -2 ко всем действиям.`);
@@ -437,14 +541,9 @@ export class CharacterHelper {
             });
         }
     }
-    
+
     escapeHtml(str) {
         if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
+        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
     }
 }

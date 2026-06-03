@@ -108,7 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
     fillIpTable();
 
     new TabManager();
-    new CharacterHelper();
     new NightMarket();
     window.groupTracker = new GroupTracker();
     new DistanceCalculator();
@@ -123,7 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.wizard = new CharacterWizard();
     renderRoles();
     new CombatFormulas();
-    new CharacterWizard();
+    window.characterHelper = new CharacterHelper();
+    // new CharacterWizard();
 
     document.getElementById('calcExpensesBtn')?.addEventListener('click', () => ExpensesCalc.calc());
     document.getElementById('generateTreasureBtn')?.addEventListener('click', () => TreasureGenerator.generate());

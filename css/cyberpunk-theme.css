@@ -474,7 +474,155 @@ body.cyberpunk-theme .changelog-close-btn {
     background: #f9f002;
     color: #000;
 }
-
+/* ========== КИБЕРПАНК-ТЕМА ДЛЯ ВИЗАРДА ========== */
+body.cyberpunk-theme .wizard-steps .step {
+    background: #000;
+    border: 1px solid #f9f002;
+    color: #f9f002;
+}
+body.cyberpunk-theme .wizard-steps .step.active {
+    background: #ff003c;
+    border-color: #f9f002;
+    color: #000;
+    text-shadow: 0 0 2px #f9f002;
+    box-shadow: 0 0 15px #ff003c;
+}
+body.cyberpunk-theme .wizard-steps .step.completed {
+    background: #2a5f3a;
+    border-color: #39ff14;
+    color: #000;
+}
+body.cyberpunk-theme .wizard-content {
+    background: #000;
+    border: 1px solid #f9f002;
+    box-shadow: 0 0 10px rgba(249, 240, 2, 0.3);
+}
+body.cyberpunk-theme .wizard-buttons .cyber-btn {
+    background: #000;
+    border: 1px solid #f9f002;
+    color: #f9f002;
+    clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
+}
+body.cyberpunk-theme .wizard-buttons .cyber-btn:hover {
+    background: #ff003c;
+    border-color: #fff;
+    color: #000;
+    box-shadow: 0 0 12px #ff003c;
+}
+body.cyberpunk-theme .stat-input,
+body.cyberpunk-theme .skill-level-table,
+body.cyberpunk-theme .cyber-checkbox-table,
+body.cyberpunk-theme .style-checkbox,
+body.cyberpunk-theme .gear-checkbox-list input {
+    background: #0a0c12;
+    border: 1px solid #f9f002;
+    color: #f9f002;
+}
+body.cyberpunk-theme .points-counter strong {
+    color: #39ff14;
+    text-shadow: 0 0 3px #39ff14;
+}
+body.cyberpunk-theme .gear-budget strong,
+body.cyberpunk-theme .cyber-budget-info strong,
+body.cyberpunk-theme .skills-budget strong,
+body.cyberpunk-theme .style-budget strong {
+    color: #39ff14;
+}
+body.cyberpunk-theme .gear-budget strong.over,
+body.cyberpunk-theme .cyber-budget-info strong.over,
+body.cyberpunk-theme .skills-budget strong.over,
+body.cyberpunk-theme .style-budget strong.over {
+    color: #ff003c;
+}
+body.cyberpunk-theme .role-skill-panel {
+    background: #000;
+    border-color: #f9f002;
+}
+body.cyberpunk-theme .role-skill-title {
+    color: #f9f002;
+}
+body.cyberpunk-theme .role-skill-description {
+    background: #0a0c12;
+    border-left-color: #f9f002;
+}
+body.cyberpunk-theme .role-ranks-details {
+    background: #0a0c12;
+}
+body.cyberpunk-theme .role-ranks-details summary {
+    color: #f9f002;
+}
+body.cyberpunk-theme .cyber-table {
+    background: #000;
+    color: #f9f002;
+}
+body.cyberpunk-theme .cyber-table th {
+    background: #f9f002;
+    color: #000;
+}
+body.cyberpunk-theme .cyber-table td {
+    border-color: #f9f002;
+}
+body.cyberpunk-theme .cyber-table tr:hover {
+    background: rgba(249, 240, 2, 0.1);
+}
+body.cyberpunk-theme .info-block {
+    background: #0a0c12;
+    border-left-color: #f9f002;
+}
+body.cyberpunk-theme .humanity-stats .risk-indicator {
+    background: #0a0c12;
+    border-left-color: #ff003c;
+}
+body.cyberpunk-theme .humanity-stats .risk-indicator.high-risk {
+    color: #ff003c;
+    text-shadow: 0 0 3px #ff003c;
+}
+body.cyberpunk-theme .notes-textarea,
+body.cyberpunk-theme .notes-container textarea {
+    background: #000;
+    border-color: #f9f002;
+    color: #f9f002;
+}
+body.cyberpunk-theme .notes-textarea:focus,
+body.cyberpunk-theme .notes-container textarea:focus {
+    border-color: #ff003c;
+    box-shadow: 0 0 8px #ff003c;
+}
+body.cyberpunk-theme .skills-category-table h4,
+body.cyberpunk-theme .cyber-group-table h4,
+body.cyberpunk-theme .gear-section h4 {
+    color: #f9f002;
+}
+body.cyberpunk-theme .collapsible-header {
+    background: #0a0c12;
+}
+body.cyberpunk-theme .collapsible-header .collapse-icon {
+    color: #f9f002;
+}
+/* ========== ИСПРАВЛЕНИЕ ЧИТАЕМОСТИ ЗАГОЛОВКОВ В ВИЗАРДЕ ========== */
+body.cyberpunk-theme .card h3,
+body.cyberpunk-theme .card h2,
+body.cyberpunk-theme .card h4 {
+    color: #f9f002 !important;
+    text-shadow: 0 0 2px #f9f002;
+}
+body.cyberpunk-theme .card h3 {
+    border-left-color: #ff003c;
+}
+body.cyberpunk-theme .card .note {
+    color: #9aa4bf;
+}
+body.cyberpunk-theme .wizard-steps .step span,
+body.cyberpunk-theme .wizard-steps .step i {
+    color: inherit;
+}
+body.cyberpunk-theme .role-skill-panel .role-skill-name,
+body.cyberpunk-theme .role-skill-panel .role-skill-description {
+    color: #e0e0e0;
+}
+body.cyberpunk-theme .role-skill-panel .role-skill-description strong {
+    color: #f9f002;
+}
 /* -------------------- АДАПТИВНОСТЬ -------------------- */
 @media (max-width: 700px) {
     body.cyberpunk-theme .plot-node-header {
