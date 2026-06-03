@@ -119,6 +119,7 @@ export class CharacterWizard {
                 }
             });
         });
+        
     }
 
     getStepName(step) {

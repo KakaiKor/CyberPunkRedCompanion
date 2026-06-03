@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.idealShop = new IdealShop();
     initTransport();
     initGM();   // ЕДИНСТВЕННЫЙ ВЫЗОВ (импортирован из gm.js)
-
+    window.wizard = new CharacterWizard();
     renderRoles();
     new CombatFormulas();
     new CharacterWizard();
@@ -153,7 +153,28 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleThemeBtn.textContent = isActive ? '🎨 Обычная тема' : '🎨 Cyberpunk Theme';
         });
     }
+    // Модальное окно конструктора
+const wizardModal = document.getElementById('wizardModal');
+const openModalBtn = document.getElementById('openWizardModalBtn');
+const closeModalBtns = document.querySelectorAll('#closeWizardModalBtn, #closeWizardModalFooterBtn');
 
+if (openModalBtn && wizardModal) {
+    openModalBtn.addEventListener('click', () => {
+        wizardModal.style.display = 'flex';
+        // Если конструктор уже инициализирован, обновляем отображение шага
+        if (window.wizard && window.wizard.renderStep) {
+            window.wizard.renderStep();
+        }
+    });
+    closeModalBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            wizardModal.style.display = 'none';
+        });
+    });
+    wizardModal.addEventListener('click', (e) => {
+        if (e.target === wizardModal) wizardModal.style.display = 'none';
+    });
+}
     const terminalCode = document.getElementById('terminalCode');
     if (terminalCode) {
         const messages = [
