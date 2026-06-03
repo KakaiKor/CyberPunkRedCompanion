@@ -541,7 +541,49 @@ buildCharacterCardHTML({ name, role, stats, skills, gear, hp, severe, humanity, 
             });
         }
     }
+    exportCharacterToJSON() {
+    const char = loadCharacter();
+    if (!char) {
+        alert('Нет сохранённого персонажа');
+        return;
+    }
+    const dataStr = JSON.stringify(char, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${char.name || 'character'}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
 
+importCharacterFromJSON(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const char = JSON.parse(e.target.result);
+            // Валидация минимальных полей
+            if (!char.name || !char.role) {
+                alert('Неверный формат JSON');
+                return;
+            }
+            saveCharacter(char);
+            // Обновляем форму
+            document.getElementById('charName').value = char.name || '';
+            document.getElementById('genRole').value = char.role || 'Соло';
+            const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
+            stats.forEach(s => {
+                if (char[s]) document.getElementById(`stat${s}`).value = char[s];
+            });
+            this.calcDerived();
+            this.displaySavedCharacterCard();
+            alert('Персонаж импортирован');
+        } catch (err) {
+            alert('Ошибка разбора JSON');
+        }
+    };
+    reader.readAsText(file);
+}
     escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));

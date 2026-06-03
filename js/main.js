@@ -472,4 +472,21 @@ if (changelogBtn && changelogModal) {
         if (e.target === changelogModal) closeModal();
     });
 }
+// Экспорт/импорт JSON
+const exportJsonBtn = document.getElementById('exportCharJsonBtn');
+const importJsonBtn = document.getElementById('importCharJsonBtn');
+const importJsonInput = document.getElementById('importCharJsonInput');
+
+if (exportJsonBtn && window.characterHelper) {
+    exportJsonBtn.addEventListener('click', () => window.characterHelper.exportCharacterToJSON());
+}
+if (importJsonBtn && importJsonInput && window.characterHelper) {
+    importJsonBtn.addEventListener('click', () => importJsonInput.click());
+    importJsonInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) {
+            window.characterHelper.importCharacterFromJSON(e.target.files[0]);
+            importJsonInput.value = '';
+        }
+    });
+}
 });

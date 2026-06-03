@@ -35,7 +35,7 @@
         <!-- Терминал -->
         <div class="terminal-container">
             <div class="terminal-header" id="terminalHeader">
-                <span class="terminal-title">⚡ NETRUNNER INTERFACE v.0.0.0.5_beta ⚡</span>
+                <span class="terminal-title">⚡ NETRUNNER INTERFACE v.0.0.0.6_beta ⚡</span>
                 <button class="terminal-toggle" id="terminalToggle">−</button>
             </div>
             <div class="terminal-body" id="terminalBody">
@@ -96,12 +96,18 @@
                         <div class="button-group">
                             <button id="calcCharBtn">📐 Рассчитать</button>
                             <button id="buildCharCardBtn">🃏 Создать карточку</button>
-                            <button id="saveCharBtn">💾 Сохранить</button>
-                            <button id="loadCharBtn">📂 Загрузить</button>
+                            <!-- <button id="saveCharBtn">💾 Сохранить</button>
+                            <button id="loadCharBtn">📂 Загрузить</button> -->
                         </div>
+                        <div class="button-group" style="margin-top: 10px;">
+    <button id="exportCharJsonBtn" class="cyber-btn">📤 Экспорт (JSON)</button>
+    <button id="importCharJsonBtn" class="cyber-btn">📥 Импорт (JSON)</button>
+    <input type="file" id="importCharJsonInput" accept=".json" style="display:none">
+</div>
                         <div id="charDerived" class="info-block"></div>
                         <div id="charSaveStatus"></div>
                     </div>
+                    
                     <div class="card">
                         <h3>Человечность</h3>
                         <label>Текущая ЧЕЛ: <input type="number" id="currentHumanity" value="60"></label>
@@ -624,6 +630,12 @@
             </div>
             <div class="modal-body" id="changelogBody">
                 <div class="changelog-version">
+                        <h3>Версия 0.0.0.6_beta</h3>
+                        <ul>
+                            <li><strong>✨ Улучшен:</strong>Конструктор Персонажа - теперь можно экспортировать JSON</li>
+                        </ul>
+                    </div>
+                <div class="changelog-version">
                         <h3>Версия 0.0.0.5_beta</h3>
                         <ul>
                             <li><strong>✨ Обновлен:</strong>Конструктор Персонажа</li>
@@ -672,7 +684,7 @@
     </div>
     <div class="footer-bottom">
         <p>Cyberpunk RED Companion. 2026. | <a href="#" id="toggleThemeBtn" style="color:#ff9a3c;">Версия
-                0.0.0.5_beta</a></p>
+                0.0.0.6_beta</a></p>
     </div>
 </footer>
 
