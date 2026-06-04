@@ -4533,6 +4533,24 @@ body.cyberpunk-theme .copy-sheet-btn {
     font-size: 0.85rem;
     border-left: 3px solid #ff9a3c;
 }
+/* ========== ФИКСАЦИЯ ФУТЕРА ВНИЗУ ========== */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.app-container {
+    flex: 1 0 auto; /* контент занимает всё доступное пространство */
+}
+.cyber-footer {
+    flex-shrink: 0; /* футер не сжимается */
+    margin-top: auto; /* прижимает футер к низу */
+}
 /* Адаптация для мобильных */
 @media (max-width: 700px) {
     .wizard-steps {
