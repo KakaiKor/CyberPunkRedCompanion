@@ -4392,7 +4392,147 @@ body.cyberpunk-theme .copy-sheet-btn {
     cursor: not-allowed;
     transform: none;
 }
-
+/* ========== УЛУЧШЕННАЯ КАРТОЧКА ПЕРСОНАЖА ========== */
+.character-card {
+    background: linear-gradient(145deg, #1a1e2a, #0f1219);
+    border: 1px solid #2a3342;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.character-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 32px rgba(0,0,0,0.5);
+}
+.character-card-header {
+    background: linear-gradient(90deg, #0f1219, #1a1e2a);
+    padding: 16px 24px;
+    border-bottom: 2px solid #ff3c5f;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.character-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #ff9a3c;
+    text-shadow: 0 0 4px rgba(255,154,60,0.5);
+}
+.character-role {
+    background: #ff3c5f;
+    padding: 6px 16px;
+    border-radius: 40px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #0a0c12;
+}
+/* Сетка характеристик */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+.stat-item {
+    background: #1a1e2a;
+    border-radius: 20px;
+    padding: 8px 4px;
+    text-align: center;
+    transition: 0.1s;
+}
+.stat-name {
+    font-size: 0.7rem;
+    color: #9aa4bf;
+    display: block;
+}
+.stat-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ff9a3c;
+}
+/* Прогресс-бар здоровья */
+.derived-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+.hp-bar-container {
+    background: #2a3342;
+    border-radius: 20px;
+    height: 10px;
+    width: 100%;
+    margin-top: 8px;
+    overflow: hidden;
+}
+.hp-bar {
+    background: #ff3c5f;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.3s;
+}
+/* Сетка навыков */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+}
+.skill-item {
+    background: #1a1e2a;
+    border-radius: 30px;
+    padding: 4px 12px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+}
+.skill-level {
+    color: #ff9a3c;
+    font-weight: bold;
+}
+/* Сетка снаряжения */
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+.equipment-card {
+    background: #0a0c12;
+    border-radius: 20px;
+    padding: 12px;
+    border-left: 4px solid;
+    transition: 0.1s;
+}
+.equipment-card[data-type="armor"] { border-left-color: #39ff14; }
+.equipment-card[data-type="weapons"] { border-left-color: #ff3c5f; }
+.equipment-card[data-type="cyberware"] { border-left-color: #ff9a3c; }
+.equipment-card[data-type="gear"] { border-left-color: #0099ff; }
+.equipment-card h5 {
+    margin: 0 0 8px 0;
+    color: #ff9a3c;
+    font-size: 0.9rem;
+}
+.compact li {
+    padding: 4px 0;
+    border-bottom: 1px dashed #2a3342;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+/* Заметки */
+.notes-preview {
+    background: #0a0c12;
+    padding: 12px;
+    border-radius: 16px;
+    max-height: 120px;
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: 0.85rem;
+    border-left: 3px solid #ff9a3c;
+}
 /* Адаптация для мобильных */
 @media (max-width: 700px) {
     .wizard-steps {

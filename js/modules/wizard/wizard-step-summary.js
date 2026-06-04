@@ -1,5 +1,7 @@
 import { getHP } from '../../utils.js';
 import { detailedCyberware } from '../../data.js';
+import { armors } from '../../data.js';
+
 
 export function renderSummaryStep(data) {
     // Прямое чтение из DOM (самый свежий вариант)
