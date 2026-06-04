@@ -148,20 +148,21 @@ export class CharacterWizard {
     }
 
     attachRoleEvents() {
-        const roleRadios = document.querySelectorAll('input[name="role"]');
-        roleRadios.forEach(radio => {
-            radio.addEventListener('change', () => {
-                this.data.role = radio.value;
+    // Обработка кликов по карточкам
+    const roleCards = document.querySelectorAll('.role-card-v2');
+    roleCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const newRole = card.dataset.role;
+            if (newRole && this.data.role !== newRole) {
+                this.data.role = newRole;
                 this.saveProgress();
-                this.renderStep();
-            });
+                this.renderStep(); // перерисуем шаг для обновления детальной панели
+            }
         });
-        const rankInput = document.getElementById('roleRank');
-        if (rankInput) rankInput.addEventListener('change', () => {
-            this.data.roleRank = parseInt(rankInput.value) || 4;
-            this.saveProgress();
-        });
-    }
+    });
+    const rankInput = document.getElementById('roleRank');
+    if (rankInput) rankInput.addEventListener('change', () => this.updateRoleRank());
+}
 
     attachStatsEvents() {
         const inputs = document.querySelectorAll('.stat-input');
