@@ -16,8 +16,8 @@ export class CharacterHelper {
     buildStatsGrid() {
         const container = document.getElementById('statsGrid');
         if (!container) return;
-        const ids = ['statINT','statREF','statDEX','statTECH','statCOOL','statWILL','statLUCK','statMOVE','statBODY','statEMP'];
-        const names = ['ИНТ','РЕФ','ЛВК','ТЕХ','КРУТ','ВОЛЯ','УДЧ','СКО','ТЕЛО','ЭМП'];
+        const ids = ['statINT', 'statREF', 'statDEX', 'statTECH', 'statCOOL', 'statWILL', 'statLUCK', 'statMOVE', 'statBODY', 'statEMP'];
+        const names = ['ИНТ', 'РЕФ', 'ЛВК', 'ТЕХ', 'КРУТ', 'ВОЛЯ', 'УДЧ', 'СКО', 'ТЕЛО', 'ЭМП'];
         let html = '';
         for (let i = 0; i < ids.length; i++) {
             html += `<label>${names[i]}<br><input type="number" id="${ids[i]}" min="2" max="8" value="6"></label>`;
@@ -26,7 +26,7 @@ export class CharacterHelper {
     }
 
     randomStats() {
-        const ids = ['statINT','statREF','statDEX','statTECH','statCOOL','statWILL','statLUCK','statMOVE','statBODY','statEMP'];
+        const ids = ['statINT', 'statREF', 'statDEX', 'statTECH', 'statCOOL', 'statWILL', 'statLUCK', 'statMOVE', 'statBODY', 'statEMP'];
         ids.forEach(id => document.getElementById(id).value = Math.floor(Math.random() * 7) + 2);
         this.calcDerived();
     }
@@ -44,7 +44,7 @@ export class CharacterHelper {
 
     save() {
         const char = { name: document.getElementById('charName').value, role: document.getElementById('genRole').value };
-        const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
+        const stats = ['INT', 'REF', 'DEX', 'TECH', 'COOL', 'WILL', 'LUCK', 'MOVE', 'BODY', 'EMP'];
         stats.forEach(s => char[s] = document.getElementById(`stat${s}`).value);
         saveCharacter(char);
         document.getElementById('charSaveStatus').innerText = 'Сохранено!';
@@ -55,7 +55,7 @@ export class CharacterHelper {
         if (char) {
             document.getElementById('charName').value = char.name || '';
             document.getElementById('genRole').value = char.role || 'Соло';
-            const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
+            const stats = ['INT', 'REF', 'DEX', 'TECH', 'COOL', 'WILL', 'LUCK', 'MOVE', 'BODY', 'EMP'];
             stats.forEach(s => { if (char[s]) document.getElementById(`stat${s}`).value = char[s]; });
             this.calcDerived();
             document.getElementById('charSaveStatus').innerText = 'Загружено!';
@@ -87,20 +87,20 @@ export class CharacterHelper {
     generateStatsForRole(role) {
         const roll = Math.floor(Math.random() * 10) + 1;
         const templates = {
-            "Рокербой": [[7,6,5,6,8,7,7,3,8,2],[7,7,7,7,6,7,7,5,8,3],[8,5,7,7,6,7,7,5,8,4],[5,7,7,6,8,7,7,5,8,3],[7,7,6,8,7,6,5,5,8,3],[8,7,5,7,7,6,5,6,8,4],[7,5,7,7,8,6,7,6,8,3],[6,5,7,7,7,8,7,6,8,4],[8,9,3,5,5,6,7,8,7,5],[4,5,6,5,8,8,7,6,4,7]],
-            "Соло": [[6,7,7,3,8,6,5,5,6,5],[7,8,6,3,6,6,7,5,6,6],[8,7,4,7,7,6,7,8,5,4],[6,4,6,4,7,6,5,7,6,5],[7,6,5,7,6,7,6,5,6,7],[6,7,7,6,8,4,6,7,6,7],[7,7,6,5,7,6,6,7,7,6],[7,7,8,7,8,7,5,6,6,5],[4,9,7,7,6,4,6,6,6,5],[6,6,8,5,6,6,5,6,6,5]],
-            "Нетраннер": [[5,8,7,7,4,8,7,7,4,2],[5,6,7,5,8,3,8,7,5,5],[6,8,6,6,4,7,6,7,4,4],[7,7,7,5,8,5,5,5,5,5],[5,5,7,8,7,3,7,5,6,6],[6,6,7,7,5,5,5,6,6,6],[7,6,7,7,6,5,7,7,6,6],[5,7,7,7,6,5,7,6,5,5],[7,7,6,7,6,3,6,5,6,5],[7,8,6,6,4,7,7,5,6,6]],
-            "Техник": [[6,7,7,8,4,4,5,7,6,2],[7,6,7,7,5,5,3,7,5,3],[6,5,7,5,7,4,7,7,4,7],[7,4,7,7,5,5,6,7,4,6],[6,6,7,7,7,4,5,6,7,5],[5,6,4,7,6,7,5,5,5,5],[6,7,5,7,7,7,4,6,7,5],[7,5,5,7,7,5,6,7,6,5],[6,6,7,7,5,4,6,5,4,6],[7,5,6,7,5,5,7,6,5,5]],
-            "Медтех": [[7,5,6,7,5,3,8,5,5,2],[7,7,7,4,6,7,7,3,6,5],[5,5,8,5,3,8,5,7,8,4],[8,6,8,6,5,6,7,5,7,4],[7,6,7,5,8,5,6,6,5,6],[7,5,7,5,8,5,6,7,5,6],[7,5,5,6,7,6,5,6,5,6],[6,7,6,5,6,6,5,6,5,6],[7,6,6,5,6,6,5,5,5,6],[5,6,6,5,6,6,5,5,5,6]],
-            "Медиа": [[6,6,5,5,8,7,5,7,5,2],[8,7,7,3,6,6,5,6,5,6],[6,7,5,5,6,8,5,5,7,4],[7,5,6,5,7,6,5,6,5,5],[6,6,7,5,6,7,6,6,5,6],[7,5,6,5,7,6,6,6,5,6],[8,5,5,6,7,6,7,6,5,6],[7,5,6,6,7,6,6,6,5,6],[7,6,6,6,7,6,5,6,5,6],[5,6,6,6,7,6,5,6,5,6]],
-            "Законник": [[5,6,7,5,7,8,5,6,5,6],[6,6,6,5,6,8,5,7,5,5],[7,7,7,5,6,7,5,6,5,5],[6,6,6,5,8,5,7,6,5,6],[6,6,6,5,7,6,7,6,5,6],[6,6,6,5,8,7,6,6,5,5],[8,7,5,6,7,6,5,6,5,6],[5,6,5,6,7,6,6,6,5,6],[5,6,6,6,7,6,6,5,5,6],[6,6,6,5,7,6,5,6,5,5]],
-            "Менеджер": [[8,5,5,3,8,6,6,5,5,2],[8,6,6,4,7,7,5,7,5,3],[7,6,3,8,6,4,5,8,5,4],[8,5,6,4,7,5,6,5,5,4],[7,5,6,5,7,7,5,7,5,3],[6,5,7,6,7,5,7,6,5,4],[7,6,5,7,7,5,6,6,5,4],[6,7,5,5,6,6,6,5,5,5],[7,6,5,6,7,6,7,5,5,5],[5,5,6,6,7,6,5,6,5,5]],
-            "Фиксер": [[8,5,7,4,6,5,8,5,5,2],[8,5,5,6,7,8,7,5,5,3],[7,6,6,5,4,6,6,5,5,4],[6,8,5,6,5,7,6,6,5,5],[7,6,6,6,6,7,6,5,5,5],[5,6,6,6,6,6,6,5,5,5],[7,6,6,6,7,5,6,5,5,5],[6,6,5,5,7,6,6,5,5,5],[7,6,5,6,7,6,6,5,5,5],[5,6,5,6,6,5,6,5,5,5]],
-            "Кочевник": [[6,6,8,3,6,7,6,6,4,2],[5,7,6,8,8,8,7,5,4,3],[8,6,3,8,6,5,6,5,4,4],[8,7,4,8,7,6,7,5,5,4],[5,8,6,6,7,5,6,6,5,4],[6,7,8,6,7,5,7,6,5,4],[8,7,6,5,7,5,7,6,5,4],[5,5,7,6,6,6,6,5,5,4],[7,6,5,6,7,5,6,5,5,5],[5,6,7,4,7,8,7,7,4,4]]
+            "Рокербой": [[7, 6, 5, 6, 8, 7, 7, 3, 8, 2], [7, 7, 7, 7, 6, 7, 7, 5, 8, 3], [8, 5, 7, 7, 6, 7, 7, 5, 8, 4], [5, 7, 7, 6, 8, 7, 7, 5, 8, 3], [7, 7, 6, 8, 7, 6, 5, 5, 8, 3], [8, 7, 5, 7, 7, 6, 5, 6, 8, 4], [7, 5, 7, 7, 8, 6, 7, 6, 8, 3], [6, 5, 7, 7, 7, 8, 7, 6, 8, 4], [8, 9, 3, 5, 5, 6, 7, 8, 7, 5], [4, 5, 6, 5, 8, 8, 7, 6, 4, 7]],
+            "Соло": [[6, 7, 7, 3, 8, 6, 5, 5, 6, 5], [7, 8, 6, 3, 6, 6, 7, 5, 6, 6], [8, 7, 4, 7, 7, 6, 7, 8, 5, 4], [6, 4, 6, 4, 7, 6, 5, 7, 6, 5], [7, 6, 5, 7, 6, 7, 6, 5, 6, 7], [6, 7, 7, 6, 8, 4, 6, 7, 6, 7], [7, 7, 6, 5, 7, 6, 6, 7, 7, 6], [7, 7, 8, 7, 8, 7, 5, 6, 6, 5], [4, 9, 7, 7, 6, 4, 6, 6, 6, 5], [6, 6, 8, 5, 6, 6, 5, 6, 6, 5]],
+            "Нетраннер": [[5, 8, 7, 7, 4, 8, 7, 7, 4, 2], [5, 6, 7, 5, 8, 3, 8, 7, 5, 5], [6, 8, 6, 6, 4, 7, 6, 7, 4, 4], [7, 7, 7, 5, 8, 5, 5, 5, 5, 5], [5, 5, 7, 8, 7, 3, 7, 5, 6, 6], [6, 6, 7, 7, 5, 5, 5, 6, 6, 6], [7, 6, 7, 7, 6, 5, 7, 7, 6, 6], [5, 7, 7, 7, 6, 5, 7, 6, 5, 5], [7, 7, 6, 7, 6, 3, 6, 5, 6, 5], [7, 8, 6, 6, 4, 7, 7, 5, 6, 6]],
+            "Техник": [[6, 7, 7, 8, 4, 4, 5, 7, 6, 2], [7, 6, 7, 7, 5, 5, 3, 7, 5, 3], [6, 5, 7, 5, 7, 4, 7, 7, 4, 7], [7, 4, 7, 7, 5, 5, 6, 7, 4, 6], [6, 6, 7, 7, 7, 4, 5, 6, 7, 5], [5, 6, 4, 7, 6, 7, 5, 5, 5, 5], [6, 7, 5, 7, 7, 7, 4, 6, 7, 5], [7, 5, 5, 7, 7, 5, 6, 7, 6, 5], [6, 6, 7, 7, 5, 4, 6, 5, 4, 6], [7, 5, 6, 7, 5, 5, 7, 6, 5, 5]],
+            "Медтех": [[7, 5, 6, 7, 5, 3, 8, 5, 5, 2], [7, 7, 7, 4, 6, 7, 7, 3, 6, 5], [5, 5, 8, 5, 3, 8, 5, 7, 8, 4], [8, 6, 8, 6, 5, 6, 7, 5, 7, 4], [7, 6, 7, 5, 8, 5, 6, 6, 5, 6], [7, 5, 7, 5, 8, 5, 6, 7, 5, 6], [7, 5, 5, 6, 7, 6, 5, 6, 5, 6], [6, 7, 6, 5, 6, 6, 5, 6, 5, 6], [7, 6, 6, 5, 6, 6, 5, 5, 5, 6], [5, 6, 6, 5, 6, 6, 5, 5, 5, 6]],
+            "Медиа": [[6, 6, 5, 5, 8, 7, 5, 7, 5, 2], [8, 7, 7, 3, 6, 6, 5, 6, 5, 6], [6, 7, 5, 5, 6, 8, 5, 5, 7, 4], [7, 5, 6, 5, 7, 6, 5, 6, 5, 5], [6, 6, 7, 5, 6, 7, 6, 6, 5, 6], [7, 5, 6, 5, 7, 6, 6, 6, 5, 6], [8, 5, 5, 6, 7, 6, 7, 6, 5, 6], [7, 5, 6, 6, 7, 6, 6, 6, 5, 6], [7, 6, 6, 6, 7, 6, 5, 6, 5, 6], [5, 6, 6, 6, 7, 6, 5, 6, 5, 6]],
+            "Законник": [[5, 6, 7, 5, 7, 8, 5, 6, 5, 6], [6, 6, 6, 5, 6, 8, 5, 7, 5, 5], [7, 7, 7, 5, 6, 7, 5, 6, 5, 5], [6, 6, 6, 5, 8, 5, 7, 6, 5, 6], [6, 6, 6, 5, 7, 6, 7, 6, 5, 6], [6, 6, 6, 5, 8, 7, 6, 6, 5, 5], [8, 7, 5, 6, 7, 6, 5, 6, 5, 6], [5, 6, 5, 6, 7, 6, 6, 6, 5, 6], [5, 6, 6, 6, 7, 6, 6, 5, 5, 6], [6, 6, 6, 5, 7, 6, 5, 6, 5, 5]],
+            "Менеджер": [[8, 5, 5, 3, 8, 6, 6, 5, 5, 2], [8, 6, 6, 4, 7, 7, 5, 7, 5, 3], [7, 6, 3, 8, 6, 4, 5, 8, 5, 4], [8, 5, 6, 4, 7, 5, 6, 5, 5, 4], [7, 5, 6, 5, 7, 7, 5, 7, 5, 3], [6, 5, 7, 6, 7, 5, 7, 6, 5, 4], [7, 6, 5, 7, 7, 5, 6, 6, 5, 4], [6, 7, 5, 5, 6, 6, 6, 5, 5, 5], [7, 6, 5, 6, 7, 6, 7, 5, 5, 5], [5, 5, 6, 6, 7, 6, 5, 6, 5, 5]],
+            "Фиксер": [[8, 5, 7, 4, 6, 5, 8, 5, 5, 2], [8, 5, 5, 6, 7, 8, 7, 5, 5, 3], [7, 6, 6, 5, 4, 6, 6, 5, 5, 4], [6, 8, 5, 6, 5, 7, 6, 6, 5, 5], [7, 6, 6, 6, 6, 7, 6, 5, 5, 5], [5, 6, 6, 6, 6, 6, 6, 5, 5, 5], [7, 6, 6, 6, 7, 5, 6, 5, 5, 5], [6, 6, 5, 5, 7, 6, 6, 5, 5, 5], [7, 6, 5, 6, 7, 6, 6, 5, 5, 5], [5, 6, 5, 6, 6, 5, 6, 5, 5, 5]],
+            "Кочевник": [[6, 6, 8, 3, 6, 7, 6, 6, 4, 2], [5, 7, 6, 8, 8, 8, 7, 5, 4, 3], [8, 6, 3, 8, 6, 5, 6, 5, 4, 4], [8, 7, 4, 8, 7, 6, 7, 5, 5, 4], [5, 8, 6, 6, 7, 5, 6, 6, 5, 4], [6, 7, 8, 6, 7, 5, 7, 6, 5, 4], [8, 7, 6, 5, 7, 5, 7, 6, 5, 4], [5, 5, 7, 6, 6, 6, 6, 5, 5, 4], [7, 6, 5, 6, 7, 5, 6, 5, 5, 5], [5, 6, 7, 4, 7, 8, 7, 7, 4, 4]]
         };
         const template = templates[role];
         if (!template) return {};
-        const statsRow = template[roll-1];
+        const statsRow = template[roll - 1];
         return {
             INT: statsRow[0], REF: statsRow[1], DEX: statsRow[2], TECH: statsRow[3],
             COOL: statsRow[4], WILL: statsRow[5], LUCK: statsRow[6], MOVE: statsRow[7],
@@ -110,16 +110,16 @@ export class CharacterHelper {
 
     generateSkillsForRole(role) {
         const templates = {
-            "Рокербой": { "Атлетика":2, "Драка":6, "Концентрация":2, "Общение":2, "Образование":2, "Уклонение":6, "Первая помощь":6, "Проницательность":6, "Язык (Уличный сленг)":2, "Знание района (Твой дом)":4, "Восприятие":2, "Убеждение":6, "Скрытность":2, "Композиция":6, "Короткоствольное оружие":6, "Холодное оружие":6, "Уход за собой":4, "Опыт на улицах":6, "Гардероб и стиль":4 },
-            "Соло": { "Атлетика":2, "Драка":2, "Концентрация":2, "Общение":2, "Образование":2, "Уклонение":6, "Первая помощь":6, "Проницательность":2, "Язык (Уличный сленг)":2, "Знание района (Твой дом)":2, "Восприятие":6, "Убеждение":2, "Скрытность":2, "Автоогонь":6, "Короткоствольное оружие":6, "Допрос":6, "Холодное оружие":6, "Сопротивление пыткам/наркотикам":6, "Длинноствольное оружие":6, "Тактика":6 },
-            "Нетраннер": { "Атлетика":2, "Драка":2, "Концентрация":2, "Общение":2, "Образование":6, "Уклонение":6, "Первая помощь":2, "Проницательность":2, "Язык (Уличный сленг)":2, "Знание района (Твой дом)":2, "Восприятие":2, "Убеждение":2, "Скрытность":6, "Основы техники":6, "Скрытие/обнаружение объекта":6, "Криптография":6, "Кибертехника":6, "Электроника/безопасность":6, "Поиск информации":6, "Наука (выбери 1)":6 },
-            "Техник": { "Атлетика":2, "Драка":2, "Концентрация":2, "Общение":2, "Образование":6, "Уклонение":6, "Первая помощь":6, "Проницательность":2, "Язык (Уличный сленг)":2, "Знание района (Твой дом)":2, "Восприятие":2, "Убеждение":2, "Скрытность":2, "Основы техники":6, "Кибертехника":6, "Электроника/безопасность":6, "Автомеханика":6, "Длинноствольное оружие":6, "Оружейная техника":6, "Наука (выбери 1)":6 },
-            "Медтех": { "Атлетика":2, "Драка":2, "Концентрация":2, "Общение":6, "Образование":6, "Уклонение":6, "Первая помощь":2, "Проницательность":6, "Язык (Уличный сленг)":2, "Знание района (Твой дом)":2, "Восприятие":2, "Убеждение":2, "Скрытность":2, "Основы техники":6, "Кибертехника":4, "Парамедицина":6, "Дедукция":6, "Сопротивление пыткам/наркотикам":4, "Наука (выбери 1)":6, "Длинноствольное оружие":6 },
-            "Медиа": { "Атлетика":2, "Драка":2, "Концентрация":2, "Общение":6, "Образование":2, "Уклонение":6, "Первая помощь":2, "Проницательность":6, "Язык (Уличный сленг)":2, "Знание района (Твой дом)":6, "Восприятие":6, "Убеждение":6, "Скрытность":2, "Взяточничество":6, "Композиция":6, "Дедукция":6, "Короткоствольное оружие":6, "Поиск информации":4, "Выслеживание":6, "Торговля":6 },
-            "Законник": { "Атлетика":2, "Драка":6, "Концентрация":2, "Общение":6, "Образование":2, "Уклонение":6, "Первая помощь":2, "Проницательность":2, "Язык (Уличный сленг)":2, "Знание района (Твой дом)":2, "Восприятие":2, "Убеждение":2, "Скрытность":2, "Автоогонь":6, "Криминология":6, "Дедукция":6, "Короткоствольное оружие":6, "Допрос":6, "Длинноствольное оружие":6, "Чтение по губам":4 },
-            "Менеджер": { "Атлетика":2, "Драка":2, "Концентрация":2, "Общение":6, "Образование":6, "Уклонение":6, "Первая помощь":2, "Проницательность":6, "Язык (Уличный сленг)":2, "Знание района (Твой дом)":2, "Восприятие":2, "Убеждение":6, "Скрытность":2, "Бухгалтерия":6, "Бюрократия":6, "Бизнес":6, "Дедукция":6, "Допрос":6, "Длинноствольное оружие":6, "Уход за собой":4 },
-            "Фиксер": { "Атлетика":2, "Драка":2, "Концентрация":2, "Общение":6, "Образование":2, "Уклонение":6, "Первая помощь":2, "Проницательность":6, "Язык (Уличный сленг)":4, "Знание района (Твой дом)":6, "Восприятие":2, "Убеждение":4, "Скрытность":2, "Взяточничество":6, "Бизнес":6, "Фальсификация":6, "Дедукция":6, "Короткоствольное оружие":6, "Чтение по губам":6, "Торговля":6 },
-            "Кочевник": { "Атлетика":2, "Драка":6, "Концентрация":2, "Общение":2, "Образование":2, "Уклонение":6, "Первая помощь":6, "Проницательность":2, "Язык (Уличный сленг)":2, "Знание района (Твой дом)":2, "Восприятие":4, "Убеждение":2, "Скрытность":6, "Обращение с животными":6, "Вождение":6, "Короткоствольное оружие":6, "Взлом замков":4, "Опыт на улицах":6, "Выживание в дикой местности":6, "Торговля":6 }
+            "Рокербой": { "Атлетика": 2, "Драка": 6, "Концентрация": 2, "Общение": 2, "Образование": 2, "Уклонение": 6, "Первая помощь": 6, "Проницательность": 6, "Язык (Уличный сленг)": 2, "Знание района (Твой дом)": 4, "Восприятие": 2, "Убеждение": 6, "Скрытность": 2, "Композиция": 6, "Короткоствольное оружие": 6, "Холодное оружие": 6, "Уход за собой": 4, "Опыт на улицах": 6, "Гардероб и стиль": 4 },
+            "Соло": { "Атлетика": 2, "Драка": 2, "Концентрация": 2, "Общение": 2, "Образование": 2, "Уклонение": 6, "Первая помощь": 6, "Проницательность": 2, "Язык (Уличный сленг)": 2, "Знание района (Твой дом)": 2, "Восприятие": 6, "Убеждение": 2, "Скрытность": 2, "Автоогонь": 6, "Короткоствольное оружие": 6, "Допрос": 6, "Холодное оружие": 6, "Сопротивление пыткам/наркотикам": 6, "Длинноствольное оружие": 6, "Тактика": 6 },
+            "Нетраннер": { "Атлетика": 2, "Драка": 2, "Концентрация": 2, "Общение": 2, "Образование": 6, "Уклонение": 6, "Первая помощь": 2, "Проницательность": 2, "Язык (Уличный сленг)": 2, "Знание района (Твой дом)": 2, "Восприятие": 2, "Убеждение": 2, "Скрытность": 6, "Основы техники": 6, "Скрытие/обнаружение объекта": 6, "Криптография": 6, "Кибертехника": 6, "Электроника/безопасность": 6, "Поиск информации": 6, "Наука (выбери 1)": 6 },
+            "Техник": { "Атлетика": 2, "Драка": 2, "Концентрация": 2, "Общение": 2, "Образование": 6, "Уклонение": 6, "Первая помощь": 6, "Проницательность": 2, "Язык (Уличный сленг)": 2, "Знание района (Твой дом)": 2, "Восприятие": 2, "Убеждение": 2, "Скрытность": 2, "Основы техники": 6, "Кибертехника": 6, "Электроника/безопасность": 6, "Автомеханика": 6, "Длинноствольное оружие": 6, "Оружейная техника": 6, "Наука (выбери 1)": 6 },
+            "Медтех": { "Атлетика": 2, "Драка": 2, "Концентрация": 2, "Общение": 6, "Образование": 6, "Уклонение": 6, "Первая помощь": 2, "Проницательность": 6, "Язык (Уличный сленг)": 2, "Знание района (Твой дом)": 2, "Восприятие": 2, "Убеждение": 2, "Скрытность": 2, "Основы техники": 6, "Кибертехника": 4, "Парамедицина": 6, "Дедукция": 6, "Сопротивление пыткам/наркотикам": 4, "Наука (выбери 1)": 6, "Длинноствольное оружие": 6 },
+            "Медиа": { "Атлетика": 2, "Драка": 2, "Концентрация": 2, "Общение": 6, "Образование": 2, "Уклонение": 6, "Первая помощь": 2, "Проницательность": 6, "Язык (Уличный сленг)": 2, "Знание района (Твой дом)": 6, "Восприятие": 6, "Убеждение": 6, "Скрытность": 2, "Взяточничество": 6, "Композиция": 6, "Дедукция": 6, "Короткоствольное оружие": 6, "Поиск информации": 4, "Выслеживание": 6, "Торговля": 6 },
+            "Законник": { "Атлетика": 2, "Драка": 6, "Концентрация": 2, "Общение": 6, "Образование": 2, "Уклонение": 6, "Первая помощь": 2, "Проницательность": 2, "Язык (Уличный сленг)": 2, "Знание района (Твой дом)": 2, "Восприятие": 2, "Убеждение": 2, "Скрытность": 2, "Автоогонь": 6, "Криминология": 6, "Дедукция": 6, "Короткоствольное оружие": 6, "Допрос": 6, "Длинноствольное оружие": 6, "Чтение по губам": 4 },
+            "Менеджер": { "Атлетика": 2, "Драка": 2, "Концентрация": 2, "Общение": 6, "Образование": 6, "Уклонение": 6, "Первая помощь": 2, "Проницательность": 6, "Язык (Уличный сленг)": 2, "Знание района (Твой дом)": 2, "Восприятие": 2, "Убеждение": 6, "Скрытность": 2, "Бухгалтерия": 6, "Бюрократия": 6, "Бизнес": 6, "Дедукция": 6, "Допрос": 6, "Длинноствольное оружие": 6, "Уход за собой": 4 },
+            "Фиксер": { "Атлетика": 2, "Драка": 2, "Концентрация": 2, "Общение": 6, "Образование": 2, "Уклонение": 6, "Первая помощь": 2, "Проницательность": 6, "Язык (Уличный сленг)": 4, "Знание района (Твой дом)": 6, "Восприятие": 2, "Убеждение": 4, "Скрытность": 2, "Взяточничество": 6, "Бизнес": 6, "Фальсификация": 6, "Дедукция": 6, "Короткоствольное оружие": 6, "Чтение по губам": 6, "Торговля": 6 },
+            "Кочевник": { "Атлетика": 2, "Драка": 6, "Концентрация": 2, "Общение": 2, "Образование": 2, "Уклонение": 6, "Первая помощь": 6, "Проницательность": 2, "Язык (Уличный сленг)": 2, "Знание района (Твой дом)": 2, "Восприятие": 4, "Убеждение": 2, "Скрытность": 6, "Обращение с животными": 6, "Вождение": 6, "Короткоствольное оружие": 6, "Взлом замков": 4, "Опыт на улицах": 6, "Выживание в дикой местности": 6, "Торговля": 6 }
         };
         return templates[role] || {};
     }
@@ -172,81 +172,84 @@ export class CharacterHelper {
     }
 
     buildCharacterCardHTML({ name, role, stats, skills, gear, cyberware = [], hp, severe, humanity, empFrom, deathSave, notes }) {
-        stats = stats || {};
-        skills = skills || {};
-        gear = gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
-        const statsHtml = Object.entries(stats).map(([k, v]) => `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${v}</span></div>`).join('');
-        const skillsHtml = Object.entries(skills).filter(([_, v]) => v > 0).map(([k, v]) => `<div class="skill-item" data-skill="${k}"><span class="skill-name">${this.escapeHtml(k)}</span><span class="skill-level">${v}</span></div>`).join('');
-        const weaponsHtml = (gear.weapons || []).map((w, idx) => `<li data-weapon-idx="${idx}">🔫 ${this.escapeHtml(w)}</li>`).join('');
-        const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}</li>`).join('');
-        const gearHtmlItems = (gear.items || []).map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
-        const bodyArmorInfo = armors.find(a => a.name === gear.armor?.body);
-        const headArmorInfo = armors.find(a => a.name === gear.armor?.head);
-        const armorHtml = `
-            <li>🛡️ Тело: ${this.escapeHtml(gear.armor?.body || 'нет')}${bodyArmorInfo ? ` (ОС ${bodyArmorInfo.sp}, штраф ${bodyArmorInfo.penalty})` : ''}</li>
-            <li>⛑️ Голова: ${this.escapeHtml(gear.armor?.head || 'нет')}${headArmorInfo ? ` (ОС ${headArmorInfo.sp}, штраф ${headArmorInfo.penalty})` : ''}</li>
-        `;
-        const notesHtml = `
-            <div class="char-section" data-section="notes">
-                <h4>📝 Заметки</h4>
-                <div class="notes-preview">${this.escapeHtml(notes) || '— нет —'}</div>
-            </div>
-        `;
-        return `
-            <div class="character-card" data-name="${this.escapeHtml(name)}" data-role="${role}">
-                <div class="character-card-header">
-<div class="character-name" data-field="name">${this.escapeHtml(name)}</div>
-<div class="character-role" data-field="role">${role}</div>
-                    <div class="card-actions">
-                        <button class="edit-card-btn" title="Редактировать">✏️</button>
-                        <button class="sync-card-btn" title="Синхронизировать с вкладками">🔄</button>
-                        <button class="close-card-btn" id="closeCardBtn">✖</button>
-                    </div>
-                </div>
-                <div class="character-card-body">
-                    <div class="char-section" data-section="stats">
-                        <h4>📊 Характеристики</h4>
-                        <div class="stats-grid" data-stats-container>${statsHtml}</div>
-                    </div>
-                    <div class="char-section" data-section="derived">
-                        <h4>❤️ Состояние</h4>
-                        <div class="derived-stats">
-                            <div data-derived="hp">ПЗ: <span class="current-hp">${hp}</span> / ${hp} <span class="hp-threshold">(тяж. ≤ ${severe})</span></div>
-                            <div data-derived="deathSave">Спасбросок: ${deathSave}</div>
-                            <div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>
-                        </div>
-                        <div class="combat-buttons">
-                            <button class="heal-btn">💊 Лечение (+${stats.BODY || 6} ПЗ)</button>
-                            <button class="damage-btn">💥 Урон</button>
-                        </div>
-                    </div>
-                    <div class="char-section" data-section="skills">
-                        <h4>🎯 Навыки</h4>
-                        <div class="skills-grid" data-skills-container>${skillsHtml || '<p>— нет —</p>'}</div>
-                    </div>
-                    ${notesHtml}
-                    <div class="equipment-grid" data-equipment>
-                        <div class="equipment-card" data-type="armor">
-                            <h5>🛡️ Броня</h5>
-                            <ul class="compact" data-armor-list>${armorHtml}</ul>
-                        </div>
-                        <div class="equipment-card" data-type="weapons">
-                            <h5>🔫 Оружие</h5>
-                            <ul class="compact" data-weapons-list>${weaponsHtml || '<li>— нет —</li>'}</ul>
-                        </div>
-                        <div class="equipment-card" data-type="cyberware">
-                            <h5>🦾 Киберимпланты</h5>
-                            <ul class="compact" data-cyber-list>${cyberHtml || '<li>— нет —</li>'}</ul>
-                        </div>
-                        <div class="equipment-card" data-type="gear">
-                            <h5>🎒 Снаряжение</h5>
-                            <ul class="compact" data-gear-list>${gearHtmlItems || '<li>— нет —</li>'}</ul>
-                        </div>
-                    </div>
+    stats = stats || {};
+    skills = skills || {};
+    gear = gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
+    const statsHtml = Object.entries(stats).map(([k, v]) => `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${v}</span></div>`).join('');
+    const skillsHtml = Object.entries(skills).filter(([_, v]) => v > 0).map(([k, v]) => `<div class="skill-item" data-skill="${k}"><span class="skill-name">${this.escapeHtml(k)}</span><span class="skill-level">${v}</span></div>`).join('');
+    const weaponsHtml = (gear.weapons || []).map((w, idx) => `<li data-weapon-idx="${idx}">🔫 ${this.escapeHtml(w)}</li>`).join('');
+    const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}</li>`).join('');
+    const gearHtmlItems = (gear.items || []).map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
+
+    // Исправленный блок брони
+    const bodyArmorInfo = armors.find(a => a.name === gear.armor?.body);
+    const headArmorInfo = armors.find(a => a.name === gear.armor?.head);
+    const armorHtml = `
+        <li>🛡️ Тело: ${this.escapeHtml(gear.armor?.body || 'нет')}${bodyArmorInfo ? ` (ОС ${bodyArmorInfo.sp}, штраф ${bodyArmorInfo.penalty})` : ''}</li>
+        <li>⛑️ Голова: ${this.escapeHtml(gear.armor?.head || 'нет')}${headArmorInfo ? ` (ОС ${headArmorInfo.sp}, штраф ${headArmorInfo.penalty})` : ''}</li>
+    `;
+
+    const notesHtml = `
+        <div class="char-section" data-section="notes">
+            <h4>📝 Заметки</h4>
+            <div class="notes-preview">${this.escapeHtml(notes) || '— нет —'}</div>
+        </div>
+    `;
+    return `
+        <div class="character-card" data-name="${this.escapeHtml(name)}" data-role="${role}">
+            <div class="character-card-header">
+                <div class="character-name" data-field="name">${this.escapeHtml(name)}</div>
+                <div class="character-role" data-field="role">${role}</div>
+                <div class="card-actions">
+                    <button class="edit-card-btn" title="Редактировать">✏️</button>
+                    <button class="sync-card-btn" title="Синхронизировать с вкладками">🔄</button>
+                    <button class="close-card-btn" id="closeCardBtn">✖</button>
                 </div>
             </div>
-        `;
-    }
+            <div class="character-card-body">
+                <div class="char-section" data-section="stats">
+                    <h4>📊 Характеристики</h4>
+                    <div class="stats-grid" data-stats-container>${statsHtml}</div>
+                </div>
+                <div class="char-section" data-section="derived">
+                    <h4>❤️ Состояние</h4>
+                    <div class="derived-stats">
+                        <div data-derived="hp">ПЗ: <span class="current-hp">${hp}</span> / ${hp} <span class="hp-threshold">(тяж. ≤ ${severe})</span></div>
+                        <div data-derived="deathSave">Спасбросок: ${deathSave}</div>
+                        <div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>
+                    </div>
+                    <div class="combat-buttons">
+                        <button class="heal-btn">💊 Лечение (+${stats.BODY || 6} ПЗ)</button>
+                        <button class="damage-btn">💥 Урон</button>
+                    </div>
+                </div>
+                <div class="char-section" data-section="skills">
+                    <h4>🎯 Навыки</h4>
+                    <div class="skills-grid" data-skills-container>${skillsHtml || '<p>— нет —</p>'}</div>
+                </div>
+                ${notesHtml}
+                <div class="equipment-grid" data-equipment>
+                    <div class="equipment-card" data-type="armor">
+                        <h5>🛡️ Броня</h5>
+                        <ul class="compact" data-armor-list>${armorHtml}</ul>
+                    </div>
+                    <div class="equipment-card" data-type="weapons">
+                        <h5>🔫 Оружие</h5>
+                        <ul class="compact" data-weapons-list>${weaponsHtml || '<li>— нет —</li>'}</ul>
+                    </div>
+                    <div class="equipment-card" data-type="cyberware">
+                        <h5>🦾 Киберимпланты</h5>
+                        <ul class="compact" data-cyber-list>${cyberHtml || '<li>— нет —</li>'}</ul>
+                    </div>
+                    <div class="equipment-card" data-type="gear">
+                        <h5>🎒 Снаряжение</h5>
+                        <ul class="compact" data-gear-list>${gearHtmlItems || '<li>— нет —</li>'}</ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
 
     displaySavedCharacterCard() {
         const char = loadCharacter();
@@ -318,7 +321,7 @@ export class CharacterHelper {
                 // Обновляем форму во вкладке "Основное"
                 document.getElementById('charName').value = char.name || '';
                 document.getElementById('genRole').value = char.role || 'Соло';
-                const statsFields = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
+                const statsFields = ['INT', 'REF', 'DEX', 'TECH', 'COOL', 'WILL', 'LUCK', 'MOVE', 'BODY', 'EMP'];
                 statsFields.forEach(s => {
                     if (char[s]) document.getElementById(`stat${s}`).value = char[s];
                 });
@@ -341,7 +344,7 @@ export class CharacterHelper {
         const currentRole = roleSpan.innerText;
         nameSpan.innerHTML = `<input type="text" class="edit-input" value="${this.escapeHtml(currentName)}">`;
         roleSpan.innerHTML = `<select class="edit-select">${this.getRoleOptions(currentRole)}</select>`;
-        
+
         card.querySelectorAll('.stat-item').forEach(item => {
             const statNameElem = item.querySelector('.stat-name');
             const statValueElem = item.querySelector('.stat-value');
@@ -351,7 +354,7 @@ export class CharacterHelper {
                 statValueElem.outerHTML = `<input type="number" class="edit-stat" data-stat="${statName}" value="${statValue}" min="2" max="8">`;
             }
         });
-        
+
         card.querySelectorAll('.skill-item').forEach(item => {
             const skillNameElem = item.querySelector('.skill-name');
             const skillLevelElem = item.querySelector('.skill-level');
@@ -361,7 +364,7 @@ export class CharacterHelper {
                 item.innerHTML = `<span class="skill-name">${skillName}</span><input type="number" class="edit-skill" data-skill="${skillName}" value="${skillLevel}" min="0" max="10">`;
             }
         });
-        
+
         this.makeEquipmentEditable(card);
         const editBtn = card.querySelector('.edit-card-btn');
         if (editBtn) {
@@ -377,7 +380,7 @@ export class CharacterHelper {
     }
 
     getRoleOptions(selectedRole) {
-        const roles = ["Рокербой","Соло","Нетраннер","Техник","Медтех","Медиа","Законник","Менеджер","Фиксер","Кочевник"];
+        const roles = ["Рокербой", "Соло", "Нетраннер", "Техник", "Медтех", "Медиа", "Законник", "Менеджер", "Фиксер", "Кочевник"];
         return roles.map(r => `<option value="${r}" ${r === selectedRole ? 'selected' : ''}>${r}</option>`).join('');
     }
 
@@ -427,97 +430,97 @@ export class CharacterHelper {
     }
 
     disableEditMode(card) {
-    // 1. Имя
-    const nameInput = card.querySelector('[data-field="name"] input');
-    if (!nameInput) return;
-    let newName = nameInput.value.trim();
-    if (newName === "") newName = "Безымянный";
-    console.log("Новое имя:", newName);
-    
-    // 2. Роль
-    const roleSelect = card.querySelector('[data-field="role"] select');
-    const newRole = roleSelect ? roleSelect.value : "Соло";
-    
-    // 3. Характеристики
-    const newStats = {};
-    card.querySelectorAll('.edit-stat').forEach(input => {
-        const statName = input.dataset.stat;
-        newStats[statName] = parseInt(input.value) || 6;
-    });
-    
-    // 4. Навыки
-    const newSkills = {};
-    card.querySelectorAll('.edit-skill').forEach(input => {
-        const skillName = input.dataset.skill;
-        newSkills[skillName] = parseInt(input.value) || 0;
-    });
-    
-    // 5. Снаряжение (оружие, импланты, вещи, броня)
-    const newGear = {
-        weapons: [],
-        cyberware: [],
-        gear: [],
-        armor: { body: '', head: '' }
-    };
-    card.querySelectorAll('[data-weapons-list] li').forEach(li => {
-        let text = li.innerText.replace('✖', '').trim();
-        if (text.startsWith('🔫')) text = text.substring(1).trim();
-        if (text) newGear.weapons.push(text);
-    });
-    card.querySelectorAll('[data-cyber-list] li').forEach(li => {
-        let text = li.innerText.replace('✖', '').trim();
-        if (text.startsWith('🦾')) text = text.substring(1).trim();
-        if (text) newGear.cyberware.push(text);
-    });
-    card.querySelectorAll('[data-gear-list] li').forEach(li => {
-        let text = li.innerText.replace('✖', '').trim();
-        if (text.startsWith('📦')) text = text.substring(1).trim();
-        if (text) newGear.gear.push(text);
-    });
-    card.querySelectorAll('[data-armor-list] li').forEach(li => {
-        let text = li.innerText.replace('✖', '').trim();
-        if (text.includes('Тело:')) newGear.armor.body = text.replace('🛡️', '').trim();
-        else if (text.includes('Голова:')) newGear.armor.head = text.replace('⛑️', '').trim();
-    });
-    
-    // 6. Производные (ПЗ, человечность)
-    const body = newStats.BODY || 6;
-    const will = newStats.WILL || 6;
-    const emp = newStats.EMP || 6;
-    const hp = getHP(body, will);
-    const severe = Math.ceil(hp / 2);
-    let humanityLoss = 0;
-    for (const name of newGear.cyberware) {
-        const implant = detailedCyberware.find(i => i.name === name);
-        if (implant) humanityLoss += parseInt(implant.humanity) || 0;
+        // 1. Имя
+        const nameInput = card.querySelector('[data-field="name"] input');
+        if (!nameInput) return;
+        let newName = nameInput.value.trim();
+        if (newName === "") newName = "Безымянный";
+        console.log("Новое имя:", newName);
+
+        // 2. Роль
+        const roleSelect = card.querySelector('[data-field="role"] select');
+        const newRole = roleSelect ? roleSelect.value : "Соло";
+
+        // 3. Характеристики
+        const newStats = {};
+        card.querySelectorAll('.edit-stat').forEach(input => {
+            const statName = input.dataset.stat;
+            newStats[statName] = parseInt(input.value) || 6;
+        });
+
+        // 4. Навыки
+        const newSkills = {};
+        card.querySelectorAll('.edit-skill').forEach(input => {
+            const skillName = input.dataset.skill;
+            newSkills[skillName] = parseInt(input.value) || 0;
+        });
+
+        // 5. Снаряжение (оружие, импланты, вещи, броня)
+        const newGear = {
+            weapons: [],
+            cyberware: [],
+            gear: [],
+            armor: { body: '', head: '' }
+        };
+        card.querySelectorAll('[data-weapons-list] li').forEach(li => {
+            let text = li.innerText.replace('✖', '').trim();
+            if (text.startsWith('🔫')) text = text.substring(1).trim();
+            if (text) newGear.weapons.push(text);
+        });
+        card.querySelectorAll('[data-cyber-list] li').forEach(li => {
+            let text = li.innerText.replace('✖', '').trim();
+            if (text.startsWith('🦾')) text = text.substring(1).trim();
+            if (text) newGear.cyberware.push(text);
+        });
+        card.querySelectorAll('[data-gear-list] li').forEach(li => {
+            let text = li.innerText.replace('✖', '').trim();
+            if (text.startsWith('📦')) text = text.substring(1).trim();
+            if (text) newGear.gear.push(text);
+        });
+        card.querySelectorAll('[data-armor-list] li').forEach(li => {
+            let text = li.innerText.replace('✖', '').trim();
+            if (text.includes('Тело:')) newGear.armor.body = text.replace('🛡️', '').trim();
+            else if (text.includes('Голова:')) newGear.armor.head = text.replace('⛑️', '').trim();
+        });
+
+        // 6. Производные (ПЗ, человечность)
+        const body = newStats.BODY || 6;
+        const will = newStats.WILL || 6;
+        const emp = newStats.EMP || 6;
+        const hp = getHP(body, will);
+        const severe = Math.ceil(hp / 2);
+        let humanityLoss = 0;
+        for (const name of newGear.cyberware) {
+            const implant = detailedCyberware.find(i => i.name === name);
+            if (implant) humanityLoss += parseInt(implant.humanity) || 0;
+        }
+        const humanity = Math.max(0, emp * 10 - humanityLoss);
+        const empFrom = Math.floor(humanity / 10);
+        const deathSave = body;
+
+        // 7. Заметки
+        const notesDiv = card.querySelector('.notes-preview');
+        const newNotes = notesDiv ? notesDiv.innerText : '';
+
+        // 8. Сохраняем в localStorage
+        const charData = {
+            name: newName,
+            role: newRole,
+            ...newStats,
+            skills: newSkills,
+            gear: newGear,
+            cyberware: newGear.cyberware,
+            style: [],
+            lifestyle: "100",
+            housing: "500",
+            notes: newNotes
+        };
+        console.log("Сохраняемые данные:", charData);
+        saveCharacter(charData);
+
+        // 9. Перезагружаем карточку из сохранённых данных
+        this.displaySavedCharacterCard();
     }
-    const humanity = Math.max(0, emp * 10 - humanityLoss);
-    const empFrom = Math.floor(humanity / 10);
-    const deathSave = body;
-    
-    // 7. Заметки
-    const notesDiv = card.querySelector('.notes-preview');
-    const newNotes = notesDiv ? notesDiv.innerText : '';
-    
-    // 8. Сохраняем в localStorage
-    const charData = {
-        name: newName,
-        role: newRole,
-        ...newStats,
-        skills: newSkills,
-        gear: newGear,
-        cyberware: newGear.cyberware,
-        style: [],
-        lifestyle: "100",
-        housing: "500",
-        notes: newNotes
-    };
-    console.log("Сохраняемые данные:", charData);
-    saveCharacter(charData);
-    
-    // 9. Перезагружаем карточку из сохранённых данных
-    this.displaySavedCharacterCard();
-}
 
     syncFromTabs() {
         const name = document.getElementById('charName').value || 'Безымянный';
@@ -538,7 +541,7 @@ export class CharacterHelper {
         if (window.idealBuilder && typeof window.idealBuilder.getCurrentSkills === 'function') {
             skills = window.idealBuilder.getCurrentSkills();
         } else {
-            skills = { "Атлетика":2, "Восприятие":2, "Драка":2, "Уклонение":2 };
+            skills = { "Атлетика": 2, "Восприятие": 2, "Драка": 2, "Уклонение": 2 };
         }
         let gear = { weapons: [], cyberware: [], gear: [], armor: { body: "Лёгкий арморджек", head: "Лёгкий арморджек" } };
         if (window.idealShop && window.idealShop.cart) {
@@ -598,7 +601,7 @@ export class CharacterHelper {
             });
         }
     }
-
+    
     escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
