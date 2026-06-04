@@ -523,7 +523,8 @@ updateSkillsBudgetDisplay() {
             style: this.data.styleItems,
             lifestyle: this.data.lifestyle,
             housing: this.data.housing,
-            notes: this.data.notes
+            notes: this.data.notes,
+            roleRank: this.data.roleRank,
         };
         saveCharacter(char);
         alert("Персонаж сохранён!");

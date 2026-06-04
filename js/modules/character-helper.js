@@ -2,6 +2,7 @@
 import { getHP } from '../utils.js';
 import { saveCharacter, loadCharacter } from '../storage.js';
 import { detailedCyberware, armors, rangedWeapons, meleeWeapons, gearItems } from '../data.js';
+import { rolesData } from '../data/roles-data.js';
 
 export class CharacterHelper {
     constructor() {
@@ -76,9 +77,9 @@ export class CharacterHelper {
         const empFrom = Math.floor(humanity / 10);
         const deathSave = stats.BODY;
         this.buildCharacterCard({
-            name, role, stats, skills, gear, cyberware: [],
-            hp, severe, humanity, empFrom, deathSave, notes: ''
-        });
+    name, role, roleRank: 4, stats, skills, gear, cyberware: [],
+    hp, severe, humanity, empFrom, deathSave, notes: ''
+});
         const charData = { name, role, ...stats };
         saveCharacter(charData);
         document.getElementById('charSaveStatus').innerText = 'Персонаж сгенерирован!';
@@ -160,21 +161,43 @@ export class CharacterHelper {
 
     // ========== ОСНОВНЫЕ МЕТОДЫ ДЛЯ КАРТОЧКИ ==========
     buildCharacterCard(cardData) {
-        const { name, role, stats, skills, gear, cyberware, hp, severe, humanity, empFrom, deathSave, notes = '' } = cardData;
+        const { name, role, roleRank = 4, stats, skills, gear, cyberware, hp, severe, humanity, empFrom, deathSave, notes = '' } = cardData;
         const container = document.getElementById('characterCardContainer');
-        const cardHtml = this.buildCharacterCardHTML({ name, role, stats, skills, gear, cyberware, hp, severe, humanity, empFrom, deathSave, notes });
+        const cardHtml = this.buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, hp, severe, humanity, empFrom, deathSave, notes });
         container.innerHTML = cardHtml;
         this.attachCardEventHandlers();
         const editBtn = container.querySelector('.edit-card-btn');
         const syncBtn = container.querySelector('.sync-card-btn');
         if (editBtn) editBtn.addEventListener('click', () => this.enableEditMode(container.querySelector('.character-card')));
         if (syncBtn) syncBtn.addEventListener('click', () => this.syncFromTabs());
+        const roleInfo = rolesData.find(r => r.name === role);
+const roleSkillName = roleInfo ? roleInfo.skill : '—';
+const roleRankDisplay = roleRank ? ` (ранг ${roleRank})` : '';
+
+const roleSkillHtml = `
+    <div class="role-skill-badge">
+        <span class="role-skill-name">${roleSkillName}</span>
+        <span class="role-skill-rank">${roleRankDisplay}</span>
+    </div>
+`;
     }
 
-    buildCharacterCardHTML({ name, role, stats, skills, gear, cyberware = [], hp, severe, humanity, empFrom, deathSave, notes }) {
+    buildCharacterCardHTML({ name, role, roleRank = 4, stats, skills, gear, cyberware = [], hp, severe, humanity, empFrom, deathSave, notes }) {
     stats = stats || {};
     skills = skills || {};
     gear = gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
+
+    // Добавляем информацию о ролевом навыке
+    const roleInfo = rolesData.find(r => r.name === role);
+    const roleSkillName = roleInfo ? roleInfo.skill : '—';
+    const roleRankDisplay = roleRank ? ` (ранг ${roleRank})` : '';
+    const roleSkillHtml = `
+        <div class="role-skill-badge">
+            <span class="role-skill-name">${roleSkillName}</span>
+            <span class="role-skill-rank">${roleRankDisplay}</span>
+        </div>
+    `;
+
     const statsHtml = Object.entries(stats).map(([k, v]) => `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${v}</span></div>`).join('');
     const skillsHtml = Object.entries(skills).filter(([_, v]) => v > 0).map(([k, v]) => `<div class="skill-item" data-skill="${k}"><span class="skill-name">${this.escapeHtml(k)}</span><span class="skill-level">${v}</span></div>`).join('');
     const weaponsHtml = (gear.weapons || []).map((w, idx) => `<li data-weapon-idx="${idx}">🔫 ${this.escapeHtml(w)}</li>`).join('');
@@ -198,14 +221,17 @@ export class CharacterHelper {
     return `
         <div class="character-card" data-name="${this.escapeHtml(name)}" data-role="${role}">
             <div class="character-card-header">
-                <div class="character-name" data-field="name">${this.escapeHtml(name)}</div>
-                <div class="character-role" data-field="role">${role}</div>
-                <div class="card-actions">
-                    <button class="edit-card-btn" title="Редактировать">✏️</button>
+    <div class="character-name" data-field="name">${this.escapeHtml(name)}</div>
+    <div class="character-role" data-field="role">${role}</div>
+    ${roleSkillHtml}
+    <div class="card-actions"><button class="edit-card-btn" title="Редактировать">✏️</button>
                     <button class="sync-card-btn" title="Синхронизировать с вкладками">🔄</button>
-                    <button class="close-card-btn" id="closeCardBtn">✖</button>
-                </div>
-            </div>
+                    <button class="close-card-btn" id="closeCardBtn">✖</button></div>
+</div>
+            
+
+
+
             <div class="character-card-body">
                 <div class="char-section" data-section="stats">
                     <h4>📊 Характеристики</h4>
@@ -277,19 +303,20 @@ export class CharacterHelper {
         const empFrom = Math.floor(humanity / 10);
         const deathSave = body;
         this.buildCharacterCard({
-            name: char.name || 'Безымянный',
-            role: char.role || 'Без роли',
-            stats: stats,
-            skills: skills,
-            gear: gear,
-            cyberware: cyberware,
-            hp: hp,
-            severe: severe,
-            humanity: humanity,
-            empFrom: empFrom,
-            deathSave: deathSave,
-            notes: char.notes || ''
-        });
+    name: char.name || 'Безымянный',
+    role: char.role || 'Без роли',
+    roleRank: char.roleRank || 4,   // добавить
+    stats: stats,
+    skills: skills,
+    gear: gear,
+    cyberware: cyberware,
+    hp: hp,
+    severe: severe,
+    humanity: humanity,
+    empFrom: empFrom,
+    deathSave: deathSave,
+    notes: char.notes || ''
+});
     }
 
     exportCharacterToJSON() {
@@ -520,6 +547,23 @@ export class CharacterHelper {
 
         // 9. Перезагружаем карточку из сохранённых данных
         this.displaySavedCharacterCard();
+        const newRoleRank = 4; // пока временно, можно позже добавить редактирование
+// или взять из charData, если добавили поле
+this.buildCharacterCard({
+    name: newName,
+    role: newRole,
+    roleRank: newRoleRank,
+    stats: newStats,
+    skills: newSkills,
+    gear: newGear,
+    cyberware: newGear.cyberware,
+    hp: hp,
+    severe: severe,
+    humanity: humanity,
+    empFrom: empFrom,
+    deathSave: deathSave,
+    notes: newNotes
+});
     }
 
     syncFromTabs() {
@@ -561,9 +605,9 @@ export class CharacterHelper {
         const empFrom = Math.floor(humanity / 10);
         const deathSave = stats.BODY;
         this.buildCharacterCard({
-            name, role, stats, skills, gear, cyberware: gear.cyberware,
-            hp, severe, humanity, empFrom, deathSave, notes: ''
-        });
+    name, role, roleRank: 4, stats, skills, gear, cyberware: gear.cyberware,
+    hp, severe, humanity, empFrom, deathSave, notes: ''
+});
     }
 
     attachCardEventHandlers() {
