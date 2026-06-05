@@ -28,20 +28,21 @@ export function renderGearStep(data, getItemCost) {
             ${renderTable(meleeWeapons, 'weapon', gear.weapons, ['Название', 'Тип', 'Урон', 'СКОР'])}
         </div>
 
-        <div id="armorSection" class="gear-section">
+        <div id="armorSection" class="gear-section" style="display: none;">
             <h4>🛡️ Броня (тело)</h4>
-            ${renderArmorTable(armors, 'body', gear.armor.body, ['Название', 'ОС', 'Штраф'])}
+            ${renderTable(armors, 'armorBody', [gear.armor.body], ['Название', 'ОС', 'Штраф'])}
             <h4>🛡️ Броня (голова)</h4>
-            ${renderArmorTable(armors, 'head', gear.armor.head, ['Название', 'ОС', 'Штраф'])}
+            ${renderTable(armors, 'armorHead', [gear.armor.head], ['Название', 'ОС', 'Штраф'])}
             <p class="note">Выберите броню для тела и головы отдельно.</p>
         </div>
 
-        <div id="itemsSection" class="gear-section">
+        <div id="itemsSection" class="gear-section" style="display: none;">
             <h4>🎒 Снаряжение</h4>
-            ${renderTable(gearItems, 'item', gear.items, ['Название', 'Категория'])}
+            ${renderGearTable(gearItems, 'item', gear.items, ['Название', 'Категория', 'Описание', 'Эффект'])}
         </div>
     `;
 
+    // Функция для простых таблиц (оружие, броня) – без описаний
     function renderTable(items, type, selectedNames, columns) {
         if (!items.length) return '<p>Нет предметов</p>';
         return `
@@ -66,7 +67,6 @@ export function renderGearStep(data, getItemCost) {
                                     if (col === 'Тип') return `<td>${item.type || ''}</td>`;
                                     if (col === 'ОС') return `<td>${item.sp || ''}</td>`;
                                     if (col === 'Штраф') return `<td>${item.penalty || ''}</td>`;
-                                    if (col === 'Категория') return `<td>${item.category || ''}</td>`;
                                     return `<td></td>`;
                                 }).join('')}
                                 <td>${item.cost} eb</td>
@@ -78,7 +78,8 @@ export function renderGearStep(data, getItemCost) {
         `;
     }
 
-    function renderArmorTable(items, slot, selectedName, columns) {
+    // Функция для снаряжения – с описанием и эффектом
+    function renderGearTable(items, type, selectedNames, columns) {
         if (!items.length) return '<p>Нет предметов</p>';
         return `
             <div class="table-wrapper">
@@ -90,11 +91,12 @@ export function renderGearStep(data, getItemCost) {
                         ${items.map(item => `
                             <tr>
                                 <td style="text-align:center">
-                                    <input type="checkbox" data-type="armor" data-slot="${slot}" value="${item.name}" data-cost="${item.cost}" ${selectedName === item.name ? 'checked' : ''}>
+                                    <input type="checkbox" data-type="${type}" value="${item.name}" data-cost="${item.cost}" ${selectedNames.includes(item.name) ? 'checked' : ''}>
                                  </td>
                                 <td><strong>${item.name}</strong></td>
-                                <td>${item.sp || ''}</td>
-                                <td>${item.penalty || ''}</td>
+                                <td>${item.category || ''}</td>
+                                <td>${item.description || '—'}</td>
+                                <td>${item.effect || '—'}</td>
                                 <td>${item.cost} eb</td>
                             </tr>
                         `).join('')}

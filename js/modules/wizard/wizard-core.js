@@ -21,6 +21,7 @@ export class CharacterWizard {
         this.currentStep = 0;
         this.totalSteps = 11;
         this.data = this.loadProgress() || this.getDefaultData();
+        this._validating = false;
         this.init();
     }
 
@@ -73,60 +74,56 @@ export class CharacterWizard {
     }
 
     renderStep() {
-        const container = document.getElementById('wizardContent');
-        const steps = document.querySelectorAll('.wizard-steps .step');
-        steps.forEach((step, idx) => {
-            if (idx === this.currentStep) step.classList.add('active');
-            else step.classList.remove('active');
-        });
+    const container = document.getElementById('wizardContent');
+    const steps = document.querySelectorAll('.wizard-steps .step');
+    steps.forEach((step, idx) => {
+        if (idx === this.currentStep) step.classList.add('active');
+        else step.classList.remove('active');
+    });
 
-        const nextBtn = document.getElementById('wizardNextBtn');
-        const prevBtn = document.getElementById('wizardPrevBtn');
-        const saveBtn = document.getElementById('wizardSaveBtn');
-        if (this.currentStep === this.totalSteps - 1) {
-            nextBtn.style.display = 'none';
-            saveBtn.style.display = 'inline-block';
-        } else {
-            nextBtn.style.display = 'inline-block';
-            saveBtn.style.display = 'none';
-        }
-        prevBtn.disabled = (this.currentStep === 0);
-
-        let html = '';
-        switch (this.currentStep) {
-            case 0: html = renderIdentityStep(this.data); break;
-            case 1: html = renderRoleStep(this.data); break;
-            case 2: html = renderStatsStep(this.data); break;
-            case 3: html = renderGearStep(this.data, (name) => this.getItemCost(name)); break;
-            case 4: html = renderSkillsStep(this.data, this.getAllSkillsList()); break;
-            case 5: html = renderCyberwareStep(this.data); break;
-            case 6: html = renderStyleStep(this.data, (name) => this.getItemCost(name)); break;
-            case 7: html = renderHumanityStep(this.data); break;
-            case 8: html = renderExpensesStep(this.data); break;
-            case 9: html = renderNotesStep(this.data); break;
-            case 10: html = renderSummaryStep(this.data); break;
-            default: html = '<p>Ошибка: шаг не найден</p>';
-        }
-        if (this.currentStep === 4 || this.currentStep === 5) {
-    this.saveGroupStates();
-}
-        container.innerHTML = html;
-        if (this.currentStep === 3) this.updateGearBudgetDisplay();
-        if (this.currentStep === 5) this.updateCyberBudgetDisplay();
-        if (this.currentStep === 4 || this.currentStep === 5) {
-        this.restoreGroupStates();
-}
-        document.querySelectorAll('.wizard-steps .step').forEach((el, idx) => {
-            el.style.cursor = 'pointer';
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.currentStep = idx;
-                this.renderStep();
-            });
-        });
-
-        this.attachStepEvents();
+    const nextBtn = document.getElementById('wizardNextBtn');
+    const prevBtn = document.getElementById('wizardPrevBtn');
+    const saveBtn = document.getElementById('wizardSaveBtn');
+    if (this.currentStep === this.totalSteps - 1) {
+        nextBtn.style.display = 'none';
+        saveBtn.style.display = 'inline-block';
+    } else {
+        nextBtn.style.display = 'inline-block';
+        saveBtn.style.display = 'none';
     }
+    prevBtn.disabled = (this.currentStep === 0);
+
+    let html = '';
+    switch (this.currentStep) {
+        case 0: html = renderIdentityStep(this.data); break;
+        case 1: html = renderRoleStep(this.data); break;
+        case 2: html = renderStatsStep(this.data); break;
+        case 3: html = renderGearStep(this.data, (name) => this.getItemCost(name)); break;
+        case 4: html = renderSkillsStep(this.data, this.getAllSkillsList()); break;
+        case 5: html = renderCyberwareStep(this.data); break;
+        case 6: html = renderStyleStep(this.data, (name) => this.getItemCost(name)); break;
+        case 7: html = renderHumanityStep(this.data); break;
+        case 8: html = renderExpensesStep(this.data); break;
+        case 9: html = renderNotesStep(this.data); break;
+        case 10: html = renderSummaryStep(this.data); break;
+        default: html = '<p>Ошибка: шаг не найден</p>';
+    }
+    container.innerHTML = html;
+
+    // ========== НАВИГАЦИЯ ПО ШАГАМ С ВАЛИДАЦИЕЙ ==========
+    document.querySelectorAll('.wizard-steps .step').forEach((el, idx) => {
+    el.style.cursor = 'pointer';
+    el.removeEventListener('click', this._stepHandler);
+    this._stepHandler = () => {
+        if (idx === this.currentStep) return;
+        this.currentStep = idx;
+        this.renderStep();
+    };
+    el.addEventListener('click', this._stepHandler);
+});
+
+    this.attachStepEvents();
+}
 
     attachStepEvents() {
         if (this.currentStep === 0) this.attachIdentityEvents();
@@ -142,6 +139,7 @@ export class CharacterWizard {
         if (this.currentStep === 10) this.attachSummaryEvents();
     }
 
+    // ========== ОБРАБОТЧИКИ ==========
     attachIdentityEvents() {
         const nameInput = document.getElementById('charNameInput');
         const cultureSelect = document.getElementById('charCulture');
@@ -155,21 +153,20 @@ export class CharacterWizard {
     }
 
     attachRoleEvents() {
-    // Обработка кликов по карточкам
-    const roleCards = document.querySelectorAll('.role-card-v2');
-    roleCards.forEach(card => {
-        card.addEventListener('click', () => {
-            const newRole = card.dataset.role;
-            if (newRole && this.data.role !== newRole) {
-                this.data.role = newRole;
+        const roleRadios = document.querySelectorAll('input[name="role"]');
+        roleRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                this.data.role = radio.value;
                 this.saveProgress();
-                this.renderStep(); // перерисуем шаг для обновления детальной панели
-            }
+                this.renderStep();
+            });
         });
-    });
-    const rankInput = document.getElementById('roleRank');
-    if (rankInput) rankInput.addEventListener('change', () => this.updateRoleRank());
-}
+        const rankInput = document.getElementById('roleRank');
+        if (rankInput) rankInput.addEventListener('change', () => {
+            this.data.roleRank = parseInt(rankInput.value) || 4;
+            this.saveProgress();
+        });
+    }
 
     attachStatsEvents() {
         const inputs = document.querySelectorAll('.stat-input');
@@ -188,7 +185,6 @@ export class CharacterWizard {
             this.data.stats[stat] = parseInt(inp.value) || 2;
         });
         this.saveProgress();
-        // Обновляем счётчик очков на странице
         let total = 0;
         for (let s in this.data.stats) total += this.data.stats[s];
         const remaining = 62 - total;
@@ -218,7 +214,6 @@ export class CharacterWizard {
                 if (itemsSection) itemsSection.style.display = (val === 'all' || val === 'items') ? 'block' : 'none';
             });
         }
-
         const searchInput = document.getElementById('gearSearch');
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
@@ -228,7 +223,6 @@ export class CharacterWizard {
                 });
             });
         }
-
         if (this._gearHandler) document.removeEventListener('change', this._gearHandler);
         this._gearHandler = (e) => {
             if (e.target && (e.target.type === 'checkbox' || e.target.type === 'radio')) {
@@ -249,30 +243,37 @@ export class CharacterWizard {
         const itemCheckboxes = document.querySelectorAll('#itemsSection input[type="checkbox"]:checked');
         this.data.gear.items = Array.from(itemCheckboxes).map(cb => cb.value);
         this.updateTotalSpent();
+        this.updateGearBudgetDisplay();
         this.saveProgress();
         this.saveGearBackup();
     }
 
     updateTotalSpent() {
-    let total = 0;
-    for (let w of this.data.gear.weapons) total += this.getItemCost(w);
-    if (this.data.gear.armor.body) total += this.getItemCost(this.data.gear.armor.body);
-    if (this.data.gear.armor.head) total += this.getItemCost(this.data.gear.armor.head);
-    for (let i of this.data.gear.items) total += this.getItemCost(i);
-    for (let c of this.data.cyberware) total += this.getItemCost(c);
-    this.data.totalSpentOnGearAndCyber = total;
-    this.saveProgress();
-
-    // Обновляем отображение бюджета на обоих возможных шагах
-    this.updateGearBudgetDisplay();
-    this.updateCyberBudgetDisplay();
-
-    return total;
-}
+        let total = 0;
+        for (let w of this.data.gear.weapons) total += this.getItemCost(w);
+        if (this.data.gear.armor.body) total += this.getItemCost(this.data.gear.armor.body);
+        if (this.data.gear.armor.head) total += this.getItemCost(this.data.gear.armor.head);
+        for (let i of this.data.gear.items) total += this.getItemCost(i);
+        for (let c of this.data.cyberware) total += this.getItemCost(c);
+        this.data.totalSpentOnGearAndCyber = total;
+        this.saveProgress();
+        this.updateGearBudgetDisplay();
+        this.updateCyberBudgetDisplay();
+        return total;
+    }
 
     updateGearBudgetDisplay() {
         const remaining = 2550 - this.data.totalSpentOnGearAndCyber;
         const budgetSpan = document.querySelector('.gear-budget strong');
+        if (budgetSpan) {
+            budgetSpan.innerText = remaining;
+            budgetSpan.className = remaining < 0 ? 'over' : 'ok';
+        }
+    }
+
+    updateCyberBudgetDisplay() {
+        const remaining = 2550 - this.data.totalSpentOnGearAndCyber;
+        const budgetSpan = document.querySelector('.cyber-budget-info strong');
         if (budgetSpan) {
             budgetSpan.innerText = remaining;
             budgetSpan.className = remaining < 0 ? 'over' : 'ok';
@@ -295,28 +296,33 @@ export class CharacterWizard {
     }
 
     updateSkills() {
-    const inputs = document.querySelectorAll('.skill-level-table');
-    inputs.forEach(inp => {
-        const skill = inp.dataset.skill;
-        this.data.skills[skill] = parseInt(inp.value) || 0;
-    });
-    this.saveProgress();
-    this.updateSkillsBudgetDisplay(); // обновляем счётчик очков без перерисовки
-}
-updateSkillsBudgetDisplay() {
-    let total = 0;
-    const skillsList = this.getAllSkillsList();
-    for (let skill of skillsList) {
-        const level = this.data.skills[skill.name] ?? (skill.base ? 2 : 0);
-        total += level * (skill.costMult || 1);
+        const inputs = document.querySelectorAll('.skill-level-table');
+        inputs.forEach(inp => {
+            const skill = inp.dataset.skill;
+            let val = parseInt(inp.value);
+            if (isNaN(val)) val = 0;
+            if (val > 6) val = 6;
+            inp.value = val;
+            this.data.skills[skill] = val;
+        });
+        this.saveProgress();
+        this.updateSkillsBudgetDisplay();
     }
-    const remaining = 86 - total;
-    const budgetSpan = document.querySelector('.skills-budget strong');
-    if (budgetSpan) {
-        budgetSpan.innerText = remaining;
-        budgetSpan.className = remaining < 0 ? 'over' : 'ok';
+
+    updateSkillsBudgetDisplay() {
+        let total = 0;
+        const skillsList = this.getAllSkillsList();
+        for (let skill of skillsList) {
+            const level = this.data.skills[skill.name] ?? (skill.base ? 2 : 0);
+            total += level * (skill.costMult || 1);
+        }
+        const remaining = 86 - total;
+        const budgetSpan = document.querySelector('.skills-budget strong');
+        if (budgetSpan) {
+            budgetSpan.innerText = remaining;
+            budgetSpan.className = remaining < 0 ? 'over' : 'ok';
+        }
     }
-}
 
     attachCyberwareEvents() {
         if (this._cyberHandler) document.removeEventListener('change', this._cyberHandler);
@@ -329,20 +335,10 @@ updateSkillsBudgetDisplay() {
     }
 
     updateCyberware() {
-    const checkboxes = document.querySelectorAll('.cyber-checkbox-table:checked');
-    this.data.cyberware = Array.from(checkboxes).map(cb => cb.value);
-    this.updateTotalSpent();    // пересчитывает стоимость
-    this.updateCyberBudgetDisplay();  // обновляет отображение на шаге 5
-    this.saveProgress();
-}
-
-    updateCyberBudgetDisplay() {
-        const remaining = 2550 - this.data.totalSpentOnGearAndCyber;
-        const budgetSpan = document.querySelector('.cyber-budget-info strong');
-        if (budgetSpan) {
-            budgetSpan.innerText = remaining;
-            budgetSpan.className = remaining < 0 ? 'over' : 'ok';
-        }
+        const checkboxes = document.querySelectorAll('.cyber-checkbox-table:checked');
+        this.data.cyberware = Array.from(checkboxes).map(cb => cb.value);
+        this.updateTotalSpent();
+        this.saveProgress();
     }
 
     attachStyleEvents() {
@@ -442,10 +438,10 @@ updateSkillsBudgetDisplay() {
     }
 
     getItemCost(name) {
-    const all = [...rangedWeapons, ...meleeWeapons, ...armors, ...gearItems, ...detailedCyberware];
-    const found = all.find(i => i.name === name);
-    return found ? found.cost : 0;
-}
+        const all = [...rangedWeapons, ...meleeWeapons, ...armors, ...gearItems, ...detailedCyberware];
+        const found = all.find(i => i.name === name);
+        return found ? found.cost : 0;
+    }
 
     getAllSkillsList() {
         return allSkills;
@@ -467,8 +463,14 @@ updateSkillsBudgetDisplay() {
     }
 
     validateStep() {
+    // Защита от рекурсивного вызова
+    if (this._validating) return true;
+    this._validating = true;
+    let valid = true;
+
+    try {
+        // Шаг 2: ХАР
         if (this.currentStep === 2) {
-            // Синхронизируем this.data.stats с DOM
             const inputs = document.querySelectorAll('.stat-input');
             inputs.forEach(inp => {
                 const stat = inp.dataset.stat;
@@ -478,46 +480,67 @@ updateSkillsBudgetDisplay() {
             for (let s in this.data.stats) total += this.data.stats[s];
             if (total !== 62) {
                 alert(`Сумма ХАР должна быть ровно 62! Сейчас ${total}. Осталось ${62 - total} очков.`);
-                return false;
+                valid = false;
             }
         }
-        if (this.currentStep === 4) {
-            let total = 0;
+        // Шаг 4: Навыки
+        else if (this.currentStep === 4) {
             const skillsList = this.getAllSkillsList();
+            const mandatorySkills = [
+                "Атлетика", "Драка", "Концентрация", "Общение", "Образование",
+                "Уклонение", "Первая помощь", "Проницательность", "Язык (родной)",
+                "Знание района", "Восприятие", "Убеждение", "Скрытность"
+            ];
+            let totalSpent = 0;
             for (let skill of skillsList) {
                 const level = this.data.skills[skill.name] ?? (skill.base ? 2 : 0);
-                total += level * (skill.costMult || 1);
+                if (level > 6) {
+                    alert(`Навык "${skill.name}" не может быть выше 6 уровня!`);
+                    valid = false;
+                    break;
+                }
+                if (mandatorySkills.includes(skill.name) && level < 2) {
+                    alert(`Обязательный навык "${skill.name}" должен быть минимум 2 уровня!`);
+                    valid = false;
+                    break;
+                }
+                totalSpent += level * (skill.costMult || 1);
             }
-            if (total > 86) {
-                alert("Превышение очков навыков (максимум 86 с учётом ×2)");
-                return false;
+            if (valid && totalSpent > 86) {
+                alert(`Превышение очков навыков! Максимум 86, потрачено ${totalSpent}.`);
+                valid = false;
             }
         }
-        if (this.currentStep === 3 || this.currentStep === 5) {
-            this.updateTotalSpent();
+        // Шаг 3 и 5: общий бюджет (снаряжение + импланты)
+        else if (this.currentStep === 3 || this.currentStep === 5) {
+            this.updateTotalSpent(); // пересчитывает totalSpentOnGearAndCyber, но не вызывает валидацию
             if (this.data.totalSpentOnGearAndCyber > 2550) {
                 alert("Превышен общий бюджет снаряжения и имплантов (2550 eb)");
-                return false;
+                valid = false;
             }
         }
-        if (this.currentStep === 6) {
+        // Шаг 6: стиль
+        else if (this.currentStep === 6) {
             let totalStyle = 0;
             for (let s of this.data.styleItems) totalStyle += this.getItemCost(s);
             if (totalStyle > 800) {
                 alert("Превышен бюджет стиля! Лимит: 800 eb");
-                return false;
+                valid = false;
             }
         }
-        return true;
+    } finally {
+        this._validating = false;
     }
+    return valid;
+}
 
     saveCharacter() {
-        // Принудительно обновляем снаряжение из DOM (на случай, если шаг 3)
         if (this.currentStep === 3) this.updateGearFromDOM();
         const char = {
             name: this.data.name || "Безымянный",
             culture: this.data.culture,
             role: this.data.role,
+            roleRank: this.data.roleRank,
             INT: this.data.stats.INT,
             REF: this.data.stats.REF,
             DEX: this.data.stats.DEX,
@@ -534,8 +557,7 @@ updateSkillsBudgetDisplay() {
             style: this.data.styleItems,
             lifestyle: this.data.lifestyle,
             housing: this.data.housing,
-            notes: this.data.notes,
-            roleRank: this.data.roleRank,
+            notes: this.data.notes
         };
         saveCharacter(char);
         alert("Персонаж сохранён!");
@@ -544,53 +566,14 @@ updateSkillsBudgetDisplay() {
         this.data = this.getDefaultData();
         this.renderStep();
 
-        // Отображаем карточку в "Основное"
         if (window.characterHelper) {
             window.characterHelper.displaySavedCharacterCard();
         }
-        // Закрываем модальное окно
         const modal = document.getElementById('wizardModal');
         if (modal) modal.style.display = 'none';
-        // Переключаемся на вкладку "Основное"
         const mainTab = document.querySelector('.main-tabs .tab-btn[data-tab="tab-character"]');
         if (mainTab && !mainTab.classList.contains('active')) mainTab.click();
         const subTab = document.querySelector('#tab-character .sub-tab-btn[data-sub="char-main"]');
         if (subTab && !subTab.classList.contains('active')) subTab.click();
     }
-
-    saveGroupStates() {
-    this.groupStates = {};
-    // Сохраняем состояние групп навыков (шаг 4)
-    document.querySelectorAll('.skills-category-table').forEach(cat => {
-        const categoryName = cat.querySelector('h4')?.innerText || '';
-        const wrapper = cat.querySelector('.table-wrapper');
-        if (wrapper) this.groupStates[`skills_${categoryName}`] = wrapper.style.display !== 'none';
-    });
-    // Сохраняем состояние групп имплантов (шаг 5)
-    document.querySelectorAll('.cyber-group-table').forEach(group => {
-        const groupName = group.querySelector('h4')?.innerText || '';
-        const wrapper = group.querySelector('.table-wrapper');
-        if (wrapper) this.groupStates[`cyber_${groupName}`] = wrapper.style.display !== 'none';
-    });
-}
-
-restoreGroupStates() {
-    if (!this.groupStates) return;
-    // Восстанавливаем навыки
-    document.querySelectorAll('.skills-category-table').forEach(cat => {
-        const categoryName = cat.querySelector('h4')?.innerText || '';
-        const wrapper = cat.querySelector('.table-wrapper');
-        if (wrapper && this.groupStates[`skills_${categoryName}`] !== undefined) {
-            wrapper.style.display = this.groupStates[`skills_${categoryName}`] ? 'block' : 'none';
-        }
-    });
-    // Восстанавливаем импланты
-    document.querySelectorAll('.cyber-group-table').forEach(group => {
-        const groupName = group.querySelector('h4')?.innerText || '';
-        const wrapper = group.querySelector('.table-wrapper');
-        if (wrapper && this.groupStates[`cyber_${groupName}`] !== undefined) {
-            wrapper.style.display = this.groupStates[`cyber_${groupName}`] ? 'block' : 'none';
-        }
-    });
-}
 }

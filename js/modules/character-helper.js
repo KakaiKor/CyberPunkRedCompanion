@@ -188,20 +188,37 @@ const roleSkillHtml = `
     gear = gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
     cyberware = cyberware || [];
 
-    // ---------- МОДИФИКАТОРЫ ОТ ИМПЛАНТОВ ----------
-    // Словарь эффектов (можно вынести в отдельный файл)
+    // ---------- МОДИФИКАТОРЫ ИМПЛАНТОВ (можно вынести в отдельный файл) ----------
     const implantModifiers = {
+        // Нейро
         "Керензиков": { initiative: 2, display: "+2 к инициативе" },
+        "Сандевистан": { initiativeTemporary: "Активация: +3 к инициативе на 1 минуту", display: "Временное ускорение" },
+        // Оптика
+        "Прицельный модуль": { perception: 1, display: "+1 к прицельным выстрелам" },
+        "Улучшение изображения": { perception: 2, display: "+2 к Восприятию, чтению по губам" },
+        // Аудио
+        "Усиленный слух": { perception: 2, display: "+2 к Восприятию (слух)" },
+        "Анализатор голосового напряжения": { perception: 2, display: "+2 к Проницательности и Допросу (детектор лжи)" },
+        // Внутренние
         "Искусственные мышцы и усиленные кости": { BODY: 2, maxBody: 10, display: "+2 к ТЕЛО (макс. 10)" },
-        "Усиленные антитела": { special: "Восстанавливает ТЕЛО×2 ПЗ в день", display: "Регенерация" },
+        "Усиленные антитела": { recovery: "ТЕЛО×2 ПЗ в день", display: "Регенерация (ТЕЛО×2 ПЗ/день)" },
+        "Связыватели токсинов": { resistance: 2, display: "+2 к Сопротивлению пыткам/наркотикам" },
         "Жабры": { special: "дыхание под водой", display: "Дыхание под водой" },
         "Назальные фильтры": { special: "иммунитет к газам", display: "Иммунитет к газам" },
-        "Связыватели токсинов": { resistance: 2, display: "+2 к Сопротивлению пыткам/наркотикам" }
-        // добавьте другие импланты по необходимости
+        // Боргирование
+        "Эндоскелет Сигма": { replaceBody: true, bodyValue: 12, display: "ТЕЛО = 12" },
+        "Эндоскелет Бета": { replaceBody: true, bodyValue: 14, display: "ТЕЛО = 14" },
+        // Внешние
+        "Подкожная броня": { armor: 11, display: "ОС 11 на тело и голову" },
+        "Плетёная кожа": { armor: 7, special: "Регенерирует 1 ОС в день", display: "ОС 7 + регенерация брони" },
+        // Конечности
+        "Роликовая стопа": { movement: 6, display: "+6 м к бегу" }
     };
 
+    // ---------- РАСЧЁТ БОНУСОВ И ЗАМЕН ----------
     let bonuses = { BODY: 0, initiative: 0, resistance: 0 };
     let extraEffects = [];
+    let replaceBody = null;  // { value: number, display: string }
 
     for (const implant of cyberware) {
         const mod = implantModifiers[implant];
@@ -209,25 +226,38 @@ const roleSkillHtml = `
             if (mod.BODY) bonuses.BODY += mod.BODY;
             if (mod.initiative) bonuses.initiative += mod.initiative;
             if (mod.resistance) bonuses.resistance += mod.resistance;
+            if (mod.replaceBody) {
+                // Приоритет у большего значения (Бета перебивает Сигму)
+                if (!replaceBody || mod.bodyValue > replaceBody.value) {
+                    replaceBody = { value: mod.bodyValue, display: mod.display };
+                }
+            }
             if (mod.display) extraEffects.push(mod.display);
         }
     }
 
-    // Применяем бонус к ТЕЛО (только для отображения, ПЗ не меняем)
     let bodyBase = stats.BODY || 6;
-    let bodyDisplay = bodyBase + bonuses.BODY;
-    const bodyMax = 10;
-    if (bodyDisplay > bodyMax) bodyDisplay = bodyMax;
-    const bodyBonusText = bonuses.BODY !== 0 ? ` (база ${bodyBase} +${bonuses.BODY} от имплантов)` : '';
+    let bodyDisplay, bodyBonusText;
+    if (replaceBody) {
+        bodyDisplay = replaceBody.value;
+        bodyBonusText = ` (замена: ${replaceBody.display})`;
+    } else {
+        bodyDisplay = bodyBase + bonuses.BODY;
+        const maxBody = 10;
+        if (bodyDisplay > maxBody) bodyDisplay = maxBody;
+        bodyBonusText = bonuses.BODY !== 0 ? ` (база ${bodyBase} +${bonuses.BODY} от имплантов)` : '';
+    }
 
     // ---------- ФОРМИРОВАНИЕ HTML ----------
+    // Характеристики
     const statsHtml = Object.entries(stats).map(([k, v]) => {
-        if (k === 'BODY' && bonuses.BODY !== 0) {
+        if (k === 'BODY' && (replaceBody || bonuses.BODY !== 0)) {
             return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${bodyDisplay}${bodyBonusText}</span></div>`;
         }
         return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${v}</span></div>`;
     }).join('');
 
+    // Навыки
     const skillsHtml = Object.entries(skills).filter(([_, v]) => v > 0).map(([k, v]) => `
         <div class="skill-item" data-skill="${k}">
             <span class="skill-name">${this.escapeHtml(k)}</span>
@@ -235,6 +265,7 @@ const roleSkillHtml = `
         </div>
     `).join('');
 
+    // Оружие, импланты, снаряжение, броня
     const weaponsHtml = (gear.weapons || []).map((w, idx) => `<li data-weapon-idx="${idx}">🔫 ${this.escapeHtml(w)}</li>`).join('');
     const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}</li>`).join('');
     const gearHtmlItems = (gear.items || []).map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
@@ -253,7 +284,7 @@ const roleSkillHtml = `
         </div>
     `;
 
-    // Блок derived-stats с добавлением инициативы от имплантов
+    // Блок производных параметров (с инициативой от имплантов)
     let derivedStatsHtml = `
         <div data-derived="hp">ПЗ: <span class="current-hp">${hp}</span> / ${hp} <span class="hp-threshold">(тяж. ≤ ${severe})</span></div>
         <div data-derived="deathSave">Спасбросок: ${deathSave}</div>
@@ -276,6 +307,7 @@ const roleSkillHtml = `
         </div>
     `;
 
+    // Основной HTML карточки
     return `
         <div class="character-card" data-name="${this.escapeHtml(name)}" data-role="${role}">
             <div class="character-card-header">

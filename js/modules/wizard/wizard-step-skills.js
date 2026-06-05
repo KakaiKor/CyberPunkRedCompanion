@@ -33,7 +33,7 @@ export function renderSkillsStep(data, skillsList) {
                                             <td>${skill.name}</td>
                                             <td>${skill.stat}</td>
                                             <td>${skill.costMult === 2 ? 'да' : ''}</td>
-                                            <td><input type="number" class="skill-level-table" data-skill="${skill.name}" data-cost="${skill.costMult}" min="0" max="10" value="${current}" step="1"></td>
+                                            <td><input type="number" class="skill-level-table" data-skill="${skill.name}" data-cost="${skill.costMult}" min="0" max="6" value="${current}" step="1"></td>
                                         </tr>
                                     `;
     }).join('')}

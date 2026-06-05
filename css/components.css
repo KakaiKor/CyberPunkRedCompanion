@@ -4679,6 +4679,40 @@ body {
 .role-skill-rank {
     color: #9aa4bf;
 }
+.wizard-buttons {
+    position: sticky;
+    bottom: 0;
+    background: #14181f;  /* такой же фон, как у карточки или модального окна */
+    padding: 12px 0;
+    margin-top: 20px;
+    z-index: 10;
+    border-top: 1px solid #2a3342;
+     background: rgba(20, 24, 31, 0.95);
+    backdrop-filter: blur(4px); /* опционально – разделитель */
+}
+/* Фиксация заголовков таблиц при прокрутке */
+.table-wrapper {
+    overflow-x: auto;
+    position: relative;
+    max-height: 60vh;        /* ограничиваем высоту для вертикальной прокрутки */
+    overflow-y: auto;
+}
+.table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.table-wrapper thead tr {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+.table-wrapper th {
+    background: #1e2530;     /* фон как у заголовков таблиц */
+    box-shadow: inset 0 1px 0 #2a3342, inset 0 -1px 0 #2a3342; /* опционально */
+}
+.wizard-modal .table-wrapper {
+    max-height: 50vh;
+}
 @media (max-width: 700px) {
     .role-grid-v2 {
         grid-template-columns: repeat(2, 1fr);
