@@ -186,25 +186,59 @@ const roleSkillHtml = `
     stats = stats || {};
     skills = skills || {};
     gear = gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
+    cyberware = cyberware || [];
 
-    // Добавляем информацию о ролевом навыке
-    const roleInfo = rolesData.find(r => r.name === role);
-    const roleSkillName = roleInfo ? roleInfo.skill : '—';
-    const roleRankDisplay = roleRank ? ` (ранг ${roleRank})` : '';
-    const roleSkillHtml = `
-        <div class="role-skill-badge">
-            <span class="role-skill-name">${roleSkillName}</span>
-            <span class="role-skill-rank">${roleRankDisplay}</span>
+    // ---------- МОДИФИКАТОРЫ ОТ ИМПЛАНТОВ ----------
+    // Словарь эффектов (можно вынести в отдельный файл)
+    const implantModifiers = {
+        "Керензиков": { initiative: 2, display: "+2 к инициативе" },
+        "Искусственные мышцы и усиленные кости": { BODY: 2, maxBody: 10, display: "+2 к ТЕЛО (макс. 10)" },
+        "Усиленные антитела": { special: "Восстанавливает ТЕЛО×2 ПЗ в день", display: "Регенерация" },
+        "Жабры": { special: "дыхание под водой", display: "Дыхание под водой" },
+        "Назальные фильтры": { special: "иммунитет к газам", display: "Иммунитет к газам" },
+        "Связыватели токсинов": { resistance: 2, display: "+2 к Сопротивлению пыткам/наркотикам" }
+        // добавьте другие импланты по необходимости
+    };
+
+    let bonuses = { BODY: 0, initiative: 0, resistance: 0 };
+    let extraEffects = [];
+
+    for (const implant of cyberware) {
+        const mod = implantModifiers[implant];
+        if (mod) {
+            if (mod.BODY) bonuses.BODY += mod.BODY;
+            if (mod.initiative) bonuses.initiative += mod.initiative;
+            if (mod.resistance) bonuses.resistance += mod.resistance;
+            if (mod.display) extraEffects.push(mod.display);
+        }
+    }
+
+    // Применяем бонус к ТЕЛО (только для отображения, ПЗ не меняем)
+    let bodyBase = stats.BODY || 6;
+    let bodyDisplay = bodyBase + bonuses.BODY;
+    const bodyMax = 10;
+    if (bodyDisplay > bodyMax) bodyDisplay = bodyMax;
+    const bodyBonusText = bonuses.BODY !== 0 ? ` (база ${bodyBase} +${bonuses.BODY} от имплантов)` : '';
+
+    // ---------- ФОРМИРОВАНИЕ HTML ----------
+    const statsHtml = Object.entries(stats).map(([k, v]) => {
+        if (k === 'BODY' && bonuses.BODY !== 0) {
+            return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${bodyDisplay}${bodyBonusText}</span></div>`;
+        }
+        return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${v}</span></div>`;
+    }).join('');
+
+    const skillsHtml = Object.entries(skills).filter(([_, v]) => v > 0).map(([k, v]) => `
+        <div class="skill-item" data-skill="${k}">
+            <span class="skill-name">${this.escapeHtml(k)}</span>
+            <span class="skill-level">${v}</span>
         </div>
-    `;
+    `).join('');
 
-    const statsHtml = Object.entries(stats).map(([k, v]) => `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${v}</span></div>`).join('');
-    const skillsHtml = Object.entries(skills).filter(([_, v]) => v > 0).map(([k, v]) => `<div class="skill-item" data-skill="${k}"><span class="skill-name">${this.escapeHtml(k)}</span><span class="skill-level">${v}</span></div>`).join('');
     const weaponsHtml = (gear.weapons || []).map((w, idx) => `<li data-weapon-idx="${idx}">🔫 ${this.escapeHtml(w)}</li>`).join('');
     const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}</li>`).join('');
     const gearHtmlItems = (gear.items || []).map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
 
-    // Исправленный блок брони
     const bodyArmorInfo = armors.find(a => a.name === gear.armor?.body);
     const headArmorInfo = armors.find(a => a.name === gear.armor?.head);
     const armorHtml = `
@@ -218,20 +252,42 @@ const roleSkillHtml = `
             <div class="notes-preview">${this.escapeHtml(notes) || '— нет —'}</div>
         </div>
     `;
+
+    // Блок derived-stats с добавлением инициативы от имплантов
+    let derivedStatsHtml = `
+        <div data-derived="hp">ПЗ: <span class="current-hp">${hp}</span> / ${hp} <span class="hp-threshold">(тяж. ≤ ${severe})</span></div>
+        <div data-derived="deathSave">Спасбросок: ${deathSave}</div>
+    `;
+    if (bonuses.initiative !== 0) {
+        derivedStatsHtml += `<div>Инициатива: ${stats.REF} + ${bonuses.initiative} (от имплантов)</div>`;
+    }
+    derivedStatsHtml += `<div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>`;
+    if (extraEffects.length) {
+        derivedStatsHtml += `<div class="implant-effects">✨ Эффекты имплантов: ${extraEffects.join(', ')}</div>`;
+    }
+
+    // Ролевой навык
+    const roleInfo = rolesData.find(r => r.name === role);
+    const roleSkillName = roleInfo ? roleInfo.skill : '—';
+    const roleSkillHtml = `
+        <div class="role-skill-badge">
+            <span class="role-skill-name">${roleSkillName}</span>
+            <span class="role-skill-rank">${roleRank ? ` (ранг ${roleRank})` : ''}</span>
+        </div>
+    `;
+
     return `
         <div class="character-card" data-name="${this.escapeHtml(name)}" data-role="${role}">
             <div class="character-card-header">
-    <div class="character-name" data-field="name">${this.escapeHtml(name)}</div>
-    <div class="character-role" data-field="role">${role}</div>
-    ${roleSkillHtml}
-    <div class="card-actions"><button class="edit-card-btn" title="Редактировать">✏️</button>
+                <div class="character-name" data-field="name">${this.escapeHtml(name)}</div>
+                <div class="character-role" data-field="role">${role}</div>
+                ${roleSkillHtml}
+                <div class="card-actions">
+                    <button class="edit-card-btn" title="Редактировать">✏️</button>
                     <button class="sync-card-btn" title="Синхронизировать с вкладками">🔄</button>
-                    <button class="close-card-btn" id="closeCardBtn">✖</button></div>
-</div>
-            
-
-
-
+                    <button class="close-card-btn" id="closeCardBtn">✖</button>
+                </div>
+            </div>
             <div class="character-card-body">
                 <div class="char-section" data-section="stats">
                     <h4>📊 Характеристики</h4>
@@ -239,11 +295,7 @@ const roleSkillHtml = `
                 </div>
                 <div class="char-section" data-section="derived">
                     <h4>❤️ Состояние</h4>
-                    <div class="derived-stats">
-                        <div data-derived="hp">ПЗ: <span class="current-hp">${hp}</span> / ${hp} <span class="hp-threshold">(тяж. ≤ ${severe})</span></div>
-                        <div data-derived="deathSave">Спасбросок: ${deathSave}</div>
-                        <div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>
-                    </div>
+                    <div class="derived-stats">${derivedStatsHtml}</div>
                     <div class="combat-buttons">
                         <button class="heal-btn">💊 Лечение (+${stats.BODY || 6} ПЗ)</button>
                         <button class="damage-btn">💥 Урон</button>
