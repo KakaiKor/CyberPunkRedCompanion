@@ -300,24 +300,24 @@ const getWeaponDetails = (name) => {
         return `<li data-weapon-idx="${idx}">🔫 ${this.escapeHtml(w)}</li>`;
     }
     let statsHtml = '';
-    if (details.type === 'ranged') {
-        statsHtml = `
-            <span class="weapon-stat">${details.skill}</span>
-            <span class="weapon-stat">${details.dmg}</span>
-            <span class="weapon-stat">${details.mag}</span>
-            <span class="weapon-stat">СКОР ${details.rof}</span>
-            <span class="weapon-stat">${details.hands}р</span>
-            <span class="weapon-stat">${details.conceal ? 'скрытно' : 'открыто'}</span>
-            ${details.notes ? `<span class="weapon-stat weapon-note">${details.notes}</span>` : ''}
-        `;
-    } else {
-        statsHtml = `
-            <span class="weapon-stat">${details.kind}</span>
-            <span class="weapon-stat">${details.dmg}</span>
-            <span class="weapon-stat">СКОР ${details.rof}</span>
-            <span class="weapon-stat">${details.conceal ? 'скрытно' : 'открыто'}</span>
-        `;
-    }
+if (details.type === 'ranged') {
+    statsHtml = `
+        <span class="weapon-stat">${details.skill}</span>
+        <span class="weapon-stat">${details.dmg}</span>
+        <span class="weapon-stat">Маг.: ${details.mag}</span>
+        <span class="weapon-stat">СКОР: ${details.rof}</span>
+        <span class="weapon-stat">Рук.: ${details.hands}</span>
+        <span class="weapon-stat">Скрыт.: ${details.conceal ? 'да' : 'нет'}</span>
+        ${details.notes ? `<span class="weapon-stat weapon-note">${details.notes}</span>` : ''}
+    `;
+} else {
+    statsHtml = `
+        <span class="weapon-stat">${details.kind}</span>
+        <span class="weapon-stat">${details.dmg}</span>
+        <span class="weapon-stat">СКОР: ${details.rof}</span>
+        <span class="weapon-stat">Скрыт.: ${details.conceal ? 'да' : 'нет'}</span>
+    `;
+}
     return `
         <li data-weapon-idx="${idx}" class="weapon-item">
             <div class="weapon-header">
@@ -327,19 +327,6 @@ const getWeaponDetails = (name) => {
         </li>
     `;
 }).join('');
-
-        // const weaponsHtml = (gear.weapons || []).map((w, idx) => {
-        //     const details = getWeaponDetails(w);
-        //     if (!details) return `<li data-weapon-idx="${idx}">🔫 ${this.escapeHtml(w)}</li>`;
-        //     let detailsHtml = '';
-        //     if (details.type === 'ranged') {
-        //         detailsHtml = ` (${details.skill}, ${details.dmg}, магазин ${details.mag}, СКОР ${details.rof}, рук ${details.hands}, скрытно ${details.conceal === 'да' ? '✅' : '❌'})`;
-        //         if (details.notes) detailsHtml += ` [${details.notes}]`;
-        //     } else { // melee
-        //         detailsHtml = ` (${details.typeMelee}, ${details.dmg}, СКОР ${details.rof}, скрытно ${details.conceal === 'да' ? '✅' : '❌'})`;
-        //     }
-        //     return `<li data-weapon-idx="${idx}">🔫 ${this.escapeHtml(w)}${detailsHtml}</li>`;
-        // }).join('');
         const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}</li>`).join('');
         const gearHtmlItems = (gear.items || []).map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
 
