@@ -262,6 +262,153 @@ if (openModalBtn && wizardModal) {
             });
         }
     }
+ // ========== РЕДАКТОР ХАРАКТЕРИСТИК И НАВЫКОВ (вкладка ХАР & Навыки) ==========
+const statsGrid = document.getElementById('statsGridEditor');
+const skillsContainer = document.getElementById('skillsListEditor');
+const saveStatsBtn = document.getElementById('saveStatsBtn');
+const randomStatsEditorBtn = document.getElementById('randomStatsEditorBtn');
+const saveSkillsBtn = document.getElementById('saveSkillsBtn');
+const resetSkillsBtn = document.getElementById('resetSkillsBtn');
+const skillsSearch = document.getElementById('skillsSearchEditor');
+const skillsPointsSpan = document.getElementById('skillsPointsRemaining');
+
+// Загрузка текущего персонажа
+let currentCharacter = loadCharacter();
+if (!currentCharacter) {
+    // Создаём заглушку, если нет персонажа
+    currentCharacter = { stats: { INT:6, REF:6, DEX:6, TECH:6, COOL:6, WILL:6, LUCK:6, MOVE:6, BODY:6, EMP:6 }, skills: {} };
+}
+
+// Функция обновления редактора характеристик
+function loadStatsEditor() {
+    if (!currentCharacter) return;
+    const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
+    let html = '';
+    stats.forEach(stat => {
+        const value = currentCharacter[stat] || 6;
+        html += `<label>${stat}: <input type="number" id="stat_${stat}" min="2" max="8" value="${value}"></label>`;
+    });
+    statsGrid.innerHTML = html;
+}
+loadStatsEditor();
+
+// Сохранение характеристик
+saveStatsBtn?.addEventListener('click', () => {
+    const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
+    stats.forEach(stat => {
+        const input = document.getElementById(`stat_${stat}`);
+        if (input) currentCharacter[stat] = parseInt(input.value) || 6;
+    });
+    saveCharacter(currentCharacter);
+    if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+    alert('Характеристики сохранены');
+});
+
+// Случайные характеристики
+randomStatsEditorBtn?.addEventListener('click', () => {
+    const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
+    stats.forEach(stat => {
+        const val = Math.floor(Math.random() * 7) + 2;
+        currentCharacter[stat] = val;
+        const input = document.getElementById(`stat_${stat}`);
+        if (input) input.value = val;
+    });
+    saveCharacter(currentCharacter);
+    if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+    alert('Случайные характеристики сохранены');
+});
+
+// Загрузка навыков в редактор
+function loadSkillsEditor() {
+    if (!currentCharacter) return;
+    const allSkillsList = allSkills; // из skills-data.js
+    const mandatorySkills = [
+        "Атлетика", "Драка", "Концентрация", "Общение", "Образование",
+        "Уклонение", "Первая помощь", "Проницательность", "Язык (родной)",
+        "Знание района", "Восприятие", "Убеждение", "Скрытность"
+    ];
+    const userSkills = currentCharacter.skills || {};
+    // Рассчитываем потраченные очки
+    let spent = 0;
+    for (let skill of allSkillsList) {
+        const level = userSkills[skill.name] ?? (skill.base ? 2 : 0);
+        spent += level * (skill.costMult || 1);
+    }
+    const remaining = 86 - spent;
+    if (skillsPointsSpan) skillsPointsSpan.innerText = remaining;
+
+    let html = '<div class="skills-grid-editor">';
+    for (let skill of allSkillsList) {
+        const level = userSkills[skill.name] ?? (skill.base ? 2 : 0);
+        const isMandatory = mandatorySkills.includes(skill.name);
+        const mandatoryMark = isMandatory ? ' *' : '';
+        html += `
+            <div class="skill-editor-item" data-skill="${skill.name}">
+                <span class="skill-editor-name">${skill.name}${mandatoryMark}</span>
+                <span class="skill-editor-stat">${skill.stat}</span>
+                <span class="skill-editor-cost">${skill.costMult === 2 ? '×2' : ''}</span>
+                <input type="number" class="skill-editor-level" data-skill="${skill.name}" data-cost="${skill.costMult}" min="0" max="6" value="${level}" step="1">
+            </div>
+        `;
+    }
+    html += '</div>';
+    skillsContainer.innerHTML = html;
+
+    // Привязываем события к полям ввода для пересчёта остатка
+    const inputs = document.querySelectorAll('.skill-editor-level');
+    inputs.forEach(inp => {
+        inp.addEventListener('input', () => {
+            let total = 0;
+            document.querySelectorAll('.skill-editor-level').forEach(input => {
+                const skillName = input.dataset.skill;
+                const val = parseInt(input.value) || 0;
+                const costMult = parseInt(input.dataset.cost) || 1;
+                total += val * costMult;
+            });
+            if (skillsPointsSpan) skillsPointsSpan.innerText = 86 - total;
+        });
+    });
+}
+loadSkillsEditor();
+
+// Сохранение навыков
+saveSkillsBtn?.addEventListener('click', () => {
+    const newSkills = {};
+    document.querySelectorAll('.skill-editor-level').forEach(inp => {
+        const skillName = inp.dataset.skill;
+        let val = parseInt(inp.value) || 0;
+        if (val < 0) val = 0;
+        if (val > 6) val = 6;
+        newSkills[skillName] = val;
+    });
+    currentCharacter.skills = newSkills;
+    saveCharacter(currentCharacter);
+    if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+    alert('Навыки сохранены');
+    loadSkillsEditor(); // обновить отображение остатка
+});
+
+// Сброс навыков до базовых (2 для базовых, 0 для остальных)
+resetSkillsBtn?.addEventListener('click', () => {
+    const defaultSkills = {};
+    for (let skill of allSkills) {
+        defaultSkills[skill.name] = skill.base ? 2 : 0;
+    }
+    currentCharacter.skills = defaultSkills;
+    saveCharacter(currentCharacter);
+    if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+    loadSkillsEditor();
+    alert('Навыки сброшены до базовых');
+});
+
+// Поиск по навыкам
+skillsSearch?.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    document.querySelectorAll('.skill-editor-item').forEach(item => {
+        const name = item.querySelector('.skill-editor-name')?.innerText.toLowerCase() || '';
+        item.style.display = name.includes(term) ? '' : 'none';
+    });
+});   
     // ========== ТЕРМИНАЛ: АНИМАЦИЯ С ВОЗМОЖНОСТЬЮ ПРОПУСКА ==========
 const terminalOutput = document.getElementById('terminalOutput');
 const terminalInput = document.getElementById('terminalInput');
@@ -284,7 +431,170 @@ if (terminalOutput && terminalInput) {
 
     // Очищаем вывод
     terminalOutput.innerHTML = '';
+// ========== РЕДАКТОР ХАРАКТЕРИСТИК И НАВЫКОВ (синхронизация) ==========
+let currentCharacter = loadCharacter();
+if (!currentCharacter) {
+    currentCharacter = { INT:6, REF:6, DEX:6, TECH:6, COOL:6, WILL:6, LUCK:6, MOVE:6, BODY:6, EMP:6, skills: {} };
+}
 
+function refreshStatsAndSkillsEditor() {
+    currentCharacter = loadCharacter();
+    if (!currentCharacter) {
+        currentCharacter = { INT:6, REF:6, DEX:6, TECH:6, COOL:6, WILL:6, LUCK:6, MOVE:6, BODY:6, EMP:6, skills: {} };
+    }
+    loadStatsEditor();
+    loadSkillsEditor();
+}
+
+function loadStatsEditor() {
+    const statsGrid = document.getElementById('statsGridEditor');
+    if (!statsGrid) return;
+    const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
+    let html = '';
+    stats.forEach(stat => {
+        const value = currentCharacter[stat] || 6;
+        html += `<label>${stat}: <input type="number" id="stat_${stat}" min="2" max="8" value="${value}"></label>`;
+    });
+    statsGrid.innerHTML = html;
+}
+
+function loadSkillsEditor() {
+    const container = document.getElementById('skillsListEditor');
+    if (!container) return;
+    const allSkillsList = allSkills; // из skills-data.js
+    const mandatorySkills = [
+        "Атлетика", "Драка", "Концентрация", "Общение", "Образование",
+        "Уклонение", "Первая помощь", "Проницательность", "Язык (родной)",
+        "Знание района", "Восприятие", "Убеждение", "Скрытность"
+    ];
+    const userSkills = currentCharacter.skills || {};
+    let spent = 0;
+    for (let skill of allSkillsList) {
+        const level = userSkills[skill.name] ?? (skill.base ? 2 : 0);
+        spent += level * (skill.costMult || 1);
+    }
+    const remaining = 86 - spent;
+    const remainingSpan = document.getElementById('skillsPointsRemaining');
+    if (remainingSpan) remainingSpan.innerText = remaining;
+
+    let html = '<div class="skills-grid-editor">';
+    for (let skill of allSkillsList) {
+        const level = userSkills[skill.name] ?? (skill.base ? 2 : 0);
+        const isMandatory = mandatorySkills.includes(skill.name);
+        const mandatoryMark = isMandatory ? ' *' : '';
+        html += `
+            <div class="skill-editor-item" data-skill="${skill.name}">
+                <span class="skill-editor-name">${skill.name}${mandatoryMark}</span>
+                <span class="skill-editor-stat">${skill.stat}</span>
+                <span class="skill-editor-cost">${skill.costMult === 2 ? '×2' : ''}</span>
+                <input type="number" class="skill-editor-level" data-skill="${skill.name}" data-cost="${skill.costMult}" min="0" max="6" value="${level}" step="1">
+            </div>
+        `;
+    }
+    html += '</div>';
+    container.innerHTML = html;
+
+    document.querySelectorAll('.skill-editor-level').forEach(inp => {
+        inp.addEventListener('input', () => {
+            let total = 0;
+            document.querySelectorAll('.skill-editor-level').forEach(input => {
+                const val = parseInt(input.value) || 0;
+                const cost = parseInt(input.dataset.cost) || 1;
+                total += val * cost;
+            });
+            if (remainingSpan) remainingSpan.innerText = 86 - total;
+        });
+    });
+}
+
+// При переключении на вкладку "ХАР & Навыки" обновляем
+const charStatsTab = document.querySelector('.sub-tab-btn[data-sub="char-stats"]');
+if (charStatsTab) {
+    charStatsTab.addEventListener('click', refreshStatsAndSkillsEditor);
+}
+
+// Сохранение характеристик
+document.getElementById('saveStatsBtn')?.addEventListener('click', () => {
+    const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
+    stats.forEach(stat => {
+        const input = document.getElementById(`stat_${stat}`);
+        if (input) currentCharacter[stat] = parseInt(input.value) || 6;
+    });
+    saveCharacter(currentCharacter);
+    if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+    refreshStatsAndSkillsEditor(); // синхронизация
+    alert('Характеристики сохранены');
+});
+
+// Случайные характеристики
+document.getElementById('randomStatsEditorBtn')?.addEventListener('click', () => {
+    const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
+    stats.forEach(stat => {
+        const val = Math.floor(Math.random() * 7) + 2;
+        currentCharacter[stat] = val;
+        const input = document.getElementById(`stat_${stat}`);
+        if (input) input.value = val;
+    });
+    saveCharacter(currentCharacter);
+    if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+    refreshStatsAndSkillsEditor();
+    alert('Случайные характеристики сохранены');
+});
+
+// Сохранение навыков
+document.getElementById('saveSkillsBtn')?.addEventListener('click', () => {
+    const newSkills = {};
+    document.querySelectorAll('.skill-editor-level').forEach(inp => {
+        const skillName = inp.dataset.skill;
+        let val = parseInt(inp.value) || 0;
+        if (val < 0) val = 0;
+        if (val > 6) val = 6;
+        newSkills[skillName] = val;
+    });
+    currentCharacter.skills = newSkills;
+    saveCharacter(currentCharacter);
+    if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+    refreshStatsAndSkillsEditor();
+    alert('Навыки сохранены');
+});
+
+// Сброс навыков до базовых
+document.getElementById('resetSkillsBtn')?.addEventListener('click', () => {
+    const defaultSkills = {};
+    for (let skill of allSkills) {
+        defaultSkills[skill.name] = skill.base ? 2 : 0;
+    }
+    currentCharacter.skills = defaultSkills;
+    saveCharacter(currentCharacter);
+    if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+    refreshStatsAndSkillsEditor();
+    alert('Навыки сброшены до базовых');
+});
+
+// Поиск по навыкам
+document.getElementById('skillsSearchEditor')?.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    document.querySelectorAll('.skill-editor-item').forEach(item => {
+        const name = item.querySelector('.skill-editor-name')?.innerText.toLowerCase() || '';
+        item.style.display = name.includes(term) ? '' : 'none';
+    });
+});
+
+// Дополнительная синхронизация: после сохранения персонажа из визарда (модалка закрывается)
+// Вызов refreshStatsAndSkillsEditor() нужно добавить туда, где вызывается window.characterHelper.displaySavedCharacterCard()
+// Например, в конце saveCharacter в wizard-core.js, или в main.js после открытия/закрытия модалки.
+// Для простоты, добавим observer на изменение localStorage (не рекомендуется, но можно)
+// Но лучше всего добавить вызов refreshStatsAndSkillsEditor() в обработчик закрытия модалки.
+
+// Уже в коде есть событие закрытия модального окна (closeWizardModalBtn и т.д.)
+// Добавим туда вызов refreshStatsAndSkillsEditor()
+const modalCloseBtns = document.querySelectorAll('#closeWizardModalBtn, #closeWizardModalFooterBtn');
+modalCloseBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        refreshStatsAndSkillsEditor();
+    });
+});
+// Также при открытии модалки (если нужно, можно обновить, но не обязательно)
     // Функция остановки анимации и показа финальной строки
     function skipAnimation() {
         if (!animationActive) return;

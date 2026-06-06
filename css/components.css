@@ -4922,6 +4922,127 @@ body {
     padding: 8px 12px;
     border-radius: 20px;
 }
+/* Редактор навыков */
+.skills-list-editor {
+    max-height: 500px;
+    overflow-y: auto;
+}
+.skills-grid-editor {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 8px;
+}
+.skill-editor-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1a1e2a;
+    padding: 6px 12px;
+    border-radius: 30px;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+.skill-editor-name {
+    flex: 2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.skill-editor-stat,
+.skill-editor-cost {
+    width: 36px;
+    text-align: center;
+    background: #0f1219;
+    border-radius: 20px;
+    padding: 2px 4px;
+}
+.skill-editor-level {
+    width: 65px;
+    text-align: center;
+    background: #1e2530;
+    border: 1px solid #2e3a48;
+    border-radius: 20px;
+    padding: 4px;
+}
+.skills-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+/* ========== КАРТОЧКА ХАРАКТЕРИСТИК (РЕДАКТОР) ========== */
+.stats-card .card {
+    overflow-x: auto;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(80px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.stats-grid label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #1e2530;
+    padding: 8px;
+    border-radius: 16px;
+    text-align: center;
+}
+.stats-grid input {
+    width: 70px;
+    text-align: center;
+    margin-top: 6px;
+}
+/* Планшеты (ширина ≤ 900px) */
+@media (max-width: 900px) {
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+    .stats-grid input {
+        width: 60px;
+    }
+}
+/* Мобильные телефоны (ширина ≤ 600px) */
+@media (max-width: 600px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .stats-grid input {
+        width: 55px;
+    }
+    .stats-grid label {
+        font-size: 0.8rem;
+    }
+}
+.stats-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.stats-card {
+    flex: 1;
+    min-width: 260px;
+    overflow-x: auto;
+}
+.skills-card {
+    flex: 2;
+    min-width: 300px;
+}
+/* Очень узкие экраны (≤ 400px) */
+@media (max-width: 400px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 700px) {
+    .skill-editor-name {
+        white-space: normal;
+    }
+}
 /* Анимация глитча */
 @keyframes glitch-anim {
     0% { clip: rect(10px, 9999px, 30px, 0); transform: skew(0.5deg); }
