@@ -40,6 +40,7 @@ export class CharacterWizard {
             housing: "500",
             notes: "",
             totalSpentOnGearAndCyber: 0,
+            avatar: "",
         };
     }
 
@@ -141,11 +142,52 @@ export class CharacterWizard {
 
     // ========== ОБРАБОТЧИКИ ==========
     attachIdentityEvents() {
-        const nameInput = document.getElementById('charNameInput');
-        const cultureSelect = document.getElementById('charCulture');
-        if (nameInput) nameInput.addEventListener('input', () => this.updateIdentity());
-        if (cultureSelect) cultureSelect.addEventListener('change', () => this.updateIdentity());
-    }
+    const nameInput = document.getElementById('charNameInput');
+    const cultureSelect = document.getElementById('charCulture');
+    const avatarInput = document.getElementById('avatarInput');
+    if (nameInput) nameInput.addEventListener('input', () => this.updateIdentity());
+    if (cultureSelect) cultureSelect.addEventListener('change', () => this.updateIdentity());
+    if (avatarInput) {
+    avatarInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            // Ограничение размера файла (2 МБ)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Изображение слишком большое! Максимум 2 МБ.');
+                avatarInput.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                // Сжимаем изображение через Image и canvas
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const maxSize = 300; // максимальная ширина/высота аватарки
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > maxSize || height > maxSize) {
+                        const ratio = Math.min(maxSize / width, maxSize / height);
+                        width *= ratio;
+                        height *= ratio;
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const compressed = canvas.toDataURL('image/jpeg', 0.7); // качество 70%
+                    this.data.avatar = compressed;
+                    this.saveProgress();
+                    const previewDiv = document.getElementById('avatarPreview');
+                    if (previewDiv) previewDiv.innerHTML = `<img src="${compressed}" style="width:80px; height:80px; border-radius:50%; object-fit:cover;">`;
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+}
     updateIdentity() {
         this.data.name = document.getElementById('charNameInput')?.value || '';
         this.data.culture = document.getElementById('charCulture')?.value || 'Европа';
@@ -580,7 +622,8 @@ export class CharacterWizard {
             style: this.data.styleItems,
             lifestyle: this.data.lifestyle,
             housing: this.data.housing,
-            notes: this.data.notes
+            notes: this.data.notes,
+            avatar: this.data.avatar || ''
         };
         saveCharacter(char);
         alert("Персонаж сохранён!");

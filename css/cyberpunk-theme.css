@@ -623,6 +623,30 @@ body.cyberpunk-theme .role-skill-panel .role-skill-description {
 body.cyberpunk-theme .role-skill-panel .role-skill-description strong {
     color: #f9f002;
 }
+/* Киберпанк-тема */
+body.cyberpunk-theme .character-card {
+    border-color: #f9f002;
+    background: #000;
+}
+body.cyberpunk-theme .character-card-header {
+    border-bottom-color: #f9f002;
+    background: #0a0c12;
+}
+body.cyberpunk-theme .character-name {
+    color: #f9f002;
+    text-shadow: 0 0 4px #f9f002;
+}
+body.cyberpunk-theme .character-role {
+    background: #f9f002;
+    color: #000;
+}
+body.cyberpunk-theme .stat-value,
+body.cyberpunk-theme .skill-level {
+    color: #f9f002;
+}
+body.cyberpunk-theme .hp-bar {
+    background: #39ff14;
+}
 /* -------------------- АДАПТИВНОСТЬ -------------------- */
 @media (max-width: 700px) {
     body.cyberpunk-theme .plot-node-header {

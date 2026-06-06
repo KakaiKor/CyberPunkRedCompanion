@@ -4894,7 +4894,23 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
-
+.character-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ff3c5f;
+    margin-right: 12px;
+    /* Временно */
+        display: block !important;
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    background: red !important; /* если картинка не загружена – будет видно красный квадрат */
+}
+.avatar-container {
+    flex-shrink: 0;
+}
 /* Анимация глитча */
 @keyframes glitch-anim {
     0% { clip: rect(10px, 9999px, 30px, 0); transform: skew(0.5deg); }

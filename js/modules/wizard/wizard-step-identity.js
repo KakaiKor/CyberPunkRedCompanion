@@ -2,6 +2,7 @@ export function renderIdentityStep(data) {
     const cultures = ["Европа", "Северная Америка", "Южная Америка", "Азия", "Африка", "Океания", "СССР/Россия", "Ближний Восток"];
     const safeName = data?.name || '';
     const safeCulture = data?.culture || 'Европа';
+    const avatarPreview = data.avatar ? `<img src="${data.avatar}" id="avatarPreviewImg" style="width:80px; height:80px; border-radius:50%; object-fit:cover;">` : '';
     return `
         <h3>📛 Имя и происхождение</h3>
         <div class="form-group">
@@ -14,10 +15,12 @@ export function renderIdentityStep(data) {
                 ${cultures.map(c => `<option value="${c}" ${safeCulture === c ? 'selected' : ''}>${c}</option>`).join('')}
             </select>
         </div>
-        <p class="note">Культурные корни влияют на знание языков и районов (опционально).</p>
+        <div class="form-group">
+            <label>Аватар персонажа:</label>
+            <input type="file" id="avatarInput" accept="image/*">
+            <div id="avatarPreview">${avatarPreview}</div>
+        </div>
+        <p class="note">Аватар будет отображаться в карточке.</p>
     `;
 }
-function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
-}
+function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
