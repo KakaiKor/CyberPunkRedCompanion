@@ -455,32 +455,50 @@ buildCharacterCardHTML({ name, role, roleRank = 4, stats, skills, gear, cyberwar
     }
 
     importCharacterFromJSON(file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const char = JSON.parse(e.target.result);
-                if (!char.name || !char.role) {
-                    alert('Неверный формат JSON');
-                    return;
-                }
-                saveCharacter(char);
-                // Обновляем форму во вкладке "Основное"
-                document.getElementById('charName').value = char.name || '';
-                document.getElementById('genRole').value = char.role || 'Соло';
-                const statsFields = ['INT', 'REF', 'DEX', 'TECH', 'COOL', 'WILL', 'LUCK', 'MOVE', 'BODY', 'EMP'];
-                statsFields.forEach(s => {
-                    if (char[s]) document.getElementById(`stat${s}`).value = char[s];
-                });
-                this.calcDerived();
-                this.displaySavedCharacterCard();
-                alert('Персонаж импортирован');
-            } catch (err) {
-                alert('Ошибка разбора JSON');
-            }
-        };
-        reader.readAsText(file);
-    }
-
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const raw = e.target.result;
+            const char = JSON.parse(raw);
+            
+            // === НОРМАЛИЗАЦИЯ ===
+            if (!char.name) char.name = 'Безымянный';
+            if (!char.role) char.role = 'Соло';
+            if (char.roleRank === undefined) char.roleRank = 4;
+            if (!char.skills) char.skills = {};
+            if (!char.cyberware) char.cyberware = [];
+            if (!char.gear) char.gear = { weapons: [], armor: { body: '', head: '' }, items: [] };
+            if (!char.style) char.style = [];
+            if (!char.lifestyle) char.lifestyle = "100";
+            if (!char.housing) char.housing = "500";
+            if (!char.notes) char.notes = "";
+            if (!char.avatar) char.avatar = "";
+            
+            const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
+            stats.forEach(s => { if (char[s] === undefined) char[s] = 6; });
+            
+            saveCharacter(char);
+            
+            // Обновляем форму во вкладке "Основное" (если элементы существуют)
+            const nameInput = document.getElementById('charName');
+            const roleSelect = document.getElementById('genRole');
+            if (nameInput) nameInput.value = char.name;
+            if (roleSelect) roleSelect.value = char.role;
+            stats.forEach(s => {
+                const input = document.getElementById(`stat${s}`);
+                if (input) input.value = char[s];
+            });
+            
+            // Не вызываем calcDerived(), так как displaySavedCharacterCard сама пересчитает всё
+            this.displaySavedCharacterCard();
+            alert('Персонаж импортирован!');
+        } catch (err) {
+            console.error('Ошибка разбора JSON:', err);
+            alert('Ошибка разбора JSON: ' + err.message);
+        }
+    };
+    reader.readAsText(file);
+}
     // ========== РЕДАКТИРОВАНИЕ КАРТОЧКИ ==========
     enableEditMode(card) {
         const nameSpan = card.querySelector('[data-field="name"]');
