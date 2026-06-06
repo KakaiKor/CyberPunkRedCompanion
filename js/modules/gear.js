@@ -54,6 +54,6 @@ export function filterTables(term) {
     if (document.getElementById('ammo-table')) document.getElementById('ammo-table').innerHTML = renderAmmo(flt(ammoTypes));
     if (document.getElementById('attachments-table')) document.getElementById('attachments-table').innerHTML = renderAttachments(flt(weaponAttachments));
     if (document.getElementById('gear-table')) document.getElementById('gear-table').innerHTML = renderGear(flt(gearItems));
-    if (document.getElementById('cyber-detailed-table')) document.getElementById('cyber-detailed-table').innerHTML = renderCyberware(flt(detailedCyberware));
     if (document.getElementById('cyber-detailed-table-gear')) document.getElementById('cyber-detailed-table-gear').innerHTML = renderCyberware(flt(detailedCyberware));
 }
+export { renderGear } from './gear/renderGear.js';

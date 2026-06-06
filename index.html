@@ -61,9 +61,6 @@
                 <!-- Вкладка char-wizard удалена, так как конструктор теперь в модалке -->
                 <button class="sub-tab-btn active" data-sub="char-main">Основное</button>
                 <button class="sub-tab-btn" data-sub="char-stats">ХАР & Навыки</button>
-                <button class="sub-tab-btn" data-sub="char-cyber">Киберимпланты</button>
-                <button class="sub-tab-btn" data-sub="char-shop">Идеал-шоп</button>
-                <button class="sub-tab-btn" data-sub="char-ideal">Идеал конструктор</button>
                 <button class="sub-tab-btn" data-sub="char-roles">Роли</button>
             </div>
 
@@ -160,60 +157,7 @@
                 </div>
             </div>
 
-            <div id="char-cyber" class="sub-pane">
-                <div class="card">
-                    <h3>🦾 Киберимпланты</h3>
-                    <label>Фильтр: <select id="cyberFilter">
-                            <option value="all">Все</option>
-                            <option value="стилевые">Стилевые</option>
-                            <option value="нейро">Нейро</option>
-                            <option value="оптика">Оптика</option>
-                            <option value="аудио">Аудио</option>
-                            <option value="внутренние">Внутренние</option>
-                            <option value="внешние">Внешние</option>
-                            <option value="конечности">Конечности</option>
-                            <option value="боргирование">Боргирование</option>
-                        </select></label>
-                    <div id="cyber-detailed-table"></div>
-                </div>
-            </div>
-
-            <div id="char-shop" class="sub-pane">
-                <div class="card">
-                    <h3>🛒 Идеал-шоп</h3>
-                    <div class="budget-row">Основной бюджет: <strong id="mainRemaining">2550</strong> eb</div>
-                    <div class="budget-row">Стиль бюджет: <strong id="styleRemaining">800</strong> eb</div>
-                    <div class="form-row">
-                        <label>Категория: <select id="shopCategory">
-                                <option value="ranged">Дальнобойное</option>
-                                <option value="melee">Холодное</option>
-                                <option value="armor">Броня</option>
-                                <option value="cyber">Киберимпланты</option>
-                                <option value="gear">Снаряжение</option>
-                                <option value="style">Стиль</option>
-                            </select></label>
-                        <div id="shopItemSelectContainer"></div>
-                        <label>Кол-во: <input type="number" id="shopQuantity" value="1" min="1"></label>
-                        <button id="addToCartBtn">➕ Добавить</button>
-                        <button id="resetCartBtn">🗑️ Очистить</button>
-                    </div>
-                    <h4>Корзина:</h4>
-                    <div id="cartList"></div>
-                </div>
-            </div>
-
-            <div id="char-ideal" class="sub-pane">
-                <div class="card">
-                    <h3>✨ Идеальный конструктор</h3>
-                    <div id="idealStatsGrid" class="stats-grid"></div>
-                    <button id="randomIdealStatsBtn" class="random-stats-btn">🎲 Случайные ХАР</button>
-                    <div>Очки ХАР осталось: <span id="idealStatsPoints">62</span></div>
-                    <div id="idealSkillsList"></div>
-                    <div>Очки навыков осталось: <span id="idealSkillPoints">86</span></div>
-                    <button id="calcIdealStatsBtn">📐 Рассчитать ПЗ / Человечность</button>
-                    <div id="idealDerived" class="info-block"></div>
-                </div>
-            </div>
+            
 
             <div id="char-roles" class="sub-pane">
                 <div class="card">
@@ -285,11 +229,15 @@
                 </div>
             </div>
             <div id="gear-gear" class="sub-pane">
-                <div class="card">
-                    <h3>Снаряжение</h3>
-                    <div id="gear-table"></div>
-                </div>
-            </div>
+    <div class="card">
+        <h3>Снаряжение</h3>
+        <div class="gear-filter-bar">
+            <input type="text" id="gearSearchInput" placeholder="🔍 Поиск по названию, категории, описанию...">
+            <button id="clearGearSearchBtn" class="reset-btn">✖ Очистить</button>
+        </div>
+        <div id="gear-table"></div>
+    </div>
+</div>
         </div>
 
         <!-- Панель БОЙ (оставлена без изменений) -->

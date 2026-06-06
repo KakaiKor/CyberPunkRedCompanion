@@ -4,7 +4,6 @@ import { TabManager } from './modules/tabs.js';
 import { CharacterHelper } from './modules/character-helper.js';
 import { HumanityCalculator } from './modules/humanity.js';
 import { ExpensesCalc } from './modules/expenses.js';
-import { IdealCharacterBuilder } from './modules/ideal-builder.js';
 import { CombatCalculatorUI, DistanceCalculator, InitiativeTracker, GroupInitiative, CombatFormulas } from './modules/combat.js';
 import { initTransport } from './modules/transport.js';
 import { NPCGenerator, GroupTracker, initGM, MookGenerator, EncounterGenerator, AdvancedContractGenerator, generateSimpleContract, generateNetArchitecture, ScreamSheetGenerator  } from './modules/gm.js';
@@ -18,6 +17,7 @@ import {
 import { saveCharacter, loadCharacter, saveGroup, loadGroup } from './storage.js';
 import { allSkills, roleTemplates } from './data/skills-data.js';
 import { NightMarket, TreasureGenerator, IdealShop } from './modules/market.js';
+import { renderGear } from './modules/gear.js';
 
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
@@ -115,8 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
     new CombatCalculatorUI();
     new HumanityCalculator();
     window.groupInitiative = new GroupInitiative();
-    window.idealBuilder = new IdealCharacterBuilder();
-    window.idealShop = new IdealShop();
     initTransport();
     initGM();   // ЕДИНСТВЕННЫЙ ВЫЗОВ (импортирован из gm.js)
     window.wizard = new CharacterWizard();
@@ -140,6 +138,43 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('addCyberBtn')?.addEventListener('click', addCyberware);
     document.getElementById('calculateIpBtn')?.addEventListener('click', calculateIp);
 
+
+// ========== ФИЛЬТРАЦИЯ СНАРЯЖЕНИЯ ==========
+const gearSearch = document.getElementById('gearSearchInput');
+const clearGearBtn = document.getElementById('clearGearSearchBtn');
+const gearContainer = document.getElementById('gear-table');
+
+console.log('gearSearch found:', gearSearch);
+console.log('gearContainer found:', gearContainer);
+console.log('renderGear:', renderGear);
+console.log('gearItems length:', gearItems?.length);
+
+if (gearSearch && gearContainer && renderGear && gearItems) {
+    const updateGearTable = () => {
+        const term = gearSearch.value.trim().toLowerCase();
+        if (term === "") {
+            gearContainer.innerHTML = renderGear(gearItems);
+        } else {
+            const filtered = gearItems.filter(item => {
+                return item.name.toLowerCase().includes(term) ||
+                       (item.category && item.category.toLowerCase().includes(term)) ||
+                       (item.description && item.description.toLowerCase().includes(term)) ||
+                       (item.effect && item.effect.toLowerCase().includes(term));
+            });
+            gearContainer.innerHTML = renderGear(filtered);
+        }
+    };
+    
+    gearContainer.innerHTML = renderGear(gearItems);
+    gearSearch.addEventListener('input', updateGearTable);
+    
+    if (clearGearBtn) {
+        clearGearBtn.addEventListener('click', () => {
+            gearSearch.value = '';
+            updateGearTable();
+        });
+    }
+}
     const toggleThemeBtn = document.getElementById('toggleThemeBtn');
     if (toggleThemeBtn) {
         if (localStorage.getItem('cyberpunkTheme') === 'true') {

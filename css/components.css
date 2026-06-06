@@ -4911,6 +4911,17 @@ body {
 .avatar-container {
     flex-shrink: 0;
 }
+.gear-filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+.gear-filter-bar input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 20px;
+}
 /* Анимация глитча */
 @keyframes glitch-anim {
     0% { clip: rect(10px, 9999px, 30px, 0); transform: skew(0.5deg); }
