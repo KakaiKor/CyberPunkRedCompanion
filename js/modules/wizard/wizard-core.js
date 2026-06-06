@@ -153,20 +153,43 @@ export class CharacterWizard {
     }
 
     attachRoleEvents() {
-        const roleRadios = document.querySelectorAll('input[name="role"]');
-        roleRadios.forEach(radio => {
-            radio.addEventListener('change', () => {
-                this.data.role = radio.value;
+    // Обработчики для карточек ролей (стильные)
+    const roleCards = document.querySelectorAll('.role-card-v2');
+    roleCards.forEach(card => {
+        card.removeEventListener('click', this._roleCardHandler);
+        this._roleCardHandler = () => {
+            const newRole = card.dataset.role;
+            if (newRole && this.data.role !== newRole) {
+                this.data.role = newRole;
                 this.saveProgress();
-                this.renderStep();
-            });
-        });
-        const rankInput = document.getElementById('roleRank');
-        if (rankInput) rankInput.addEventListener('change', () => {
+                this.renderStep(); // перерисовываем шаг
+            }
+        };
+        card.addEventListener('click', this._roleCardHandler);
+    });
+    
+    // Также старые радиокнопки (если они есть)
+    const roleRadios = document.querySelectorAll('input[name="role"]');
+    roleRadios.forEach(radio => {
+        radio.removeEventListener('change', this._roleRadioHandler);
+        this._roleRadioHandler = () => {
+            this.data.role = radio.value;
+            this.saveProgress();
+            this.renderStep();
+        };
+        radio.addEventListener('change', this._roleRadioHandler);
+    });
+
+    const rankInput = document.getElementById('roleRank');
+    if (rankInput) {
+        rankInput.removeEventListener('change', this._roleRankHandler);
+        this._roleRankHandler = () => {
             this.data.roleRank = parseInt(rankInput.value) || 4;
             this.saveProgress();
-        });
+        };
+        rankInput.addEventListener('change', this._roleRankHandler);
     }
+}
 
     attachStatsEvents() {
         const inputs = document.querySelectorAll('.stat-input');

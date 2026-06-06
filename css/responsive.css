@@ -1,73 +1,309 @@
-/* responsive.css – адаптивность для мобильных и планшетов */
-@media (max-width: 700px) {
-    body {
-        padding: 12px;
+/* responsive.css – адаптивность для мобильных, планшетов и визарда */
+/* Базовые настройки для всех экранов */
+
+/* Планшеты (до 1024px) */
+@media (max-width: 1024px) {
+    .app-container {
+        padding: 0 12px;
     }
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .main-tabs, .sub-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 5px;
+    }
+    .main-tabs::-webkit-scrollbar, .sub-tabs::-webkit-scrollbar {
+        height: 4px;
     }
     .tab-btn, .sub-tab-btn {
+        display: inline-block;
+        font-size: 0.85rem;
+        padding: 8px 14px;
+    }
+}
+
+/* Телефоны (до 700px) – общая адаптация */
+@media (max-width: 700px) {
+    body {
+        padding: 8px;
+        font-size: 14px;
+    }
+    header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    .search-bar {
+        max-width: 100%;
+    }
+    .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .tool-btn, .reset-btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    /* Главные вкладки – горизонтальный скролл */
+    .main-tabs, .sub-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+        margin-bottom: 15px;
+    }
+    .tab-btn, .sub-tab-btn {
+        display: inline-block;
+        font-size: 0.75rem;
         padding: 6px 12px;
-        font-size: 0.8rem;
+    }
+
+    /* Карточки (виджеты) – одна колонка */
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+    .card-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
     }
     .card {
         padding: 12px;
     }
-    .skills-grid-modern-inner {
-        grid-template-columns: 1fr !important;
+    .card h3 {
+        font-size: 1.1rem;
     }
-    .skill-card-modern {
-        flex-wrap: wrap;
+
+    /* Таблицы – уже есть обёртка с overflow, но уменьшим шрифт */
+    .cyber-table {
+        font-size: 0.7rem;
     }
-    .skill-name-modern {
-        white-space: normal;
-        flex: 1 1 100%;
+    .cyber-table th, .cyber-table td {
+        padding: 6px 4px;
     }
-    .character-name {
-        font-size: 1.2rem;
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .skills-grid {
+        grid-template-columns: 1fr;
     }
     .equipment-grid {
         grid-template-columns: 1fr;
     }
-    .derived-stats {
+
+    /* Модальные окна */
+    .modal-content {
+        width: 95%;
+        max-width: 95%;
+        padding: 12px;
+    }
+    .wizard-modal .modal-body {
+        padding: 8px;
+    }
+
+    /* Формы */
+    label {
+        display: block;
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+    input, select, textarea, button {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .button-group {
         flex-direction: column;
         gap: 8px;
     }
+    .button-group .cyber-btn {
+        width: 100%;
+    }
+    .form-row {
+        flex-direction: column;
+    }
+    .gear-filter {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .gear-filter select, .gear-filter input {
+        width: 100%;
+    }
+
+    /* Терминал */
+    .terminal-output {
+        max-height: 200px;
+    }
+    .terminal-input-line {
+        gap: 4px;
+    }
+    .terminal-input {
+        font-size: 0.75rem;
+    }
+
+    /* Скримлист */
+    .scream-sheet {
+        padding: 12px;
+    }
+    .sheet-headline {
+        font-size: 1.2rem;
+    }
+    .sheet-body {
+        columns: 1;
+    }
+
+    /* Трекер группы */
+    .member-card {
+        padding: 10px;
+    }
+    .member-stats {
+        flex-wrap: wrap;
+    }
+    .crits-chips-container {
+        max-height: 80px;
+        overflow-y: auto;
+    }
+    .wizard-steps {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px;
+}
+.wizard-steps .step {
+    flex: 0 0 auto;
+    min-width: 80px;
+}
 }
 
+/* ========== ВИЗАРД НА МОБИЛЬНЫХ (ОСОБЫЕ ПРАВИЛА) ========== */
+@media (max-width: 700px) {
+    /* Шаги визарда – в 2 колонки */
+    .wizard-steps {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    .wizard-steps .step {
+        flex: auto;
+        margin: 0;
+        padding: 6px 0;
+    }
+    .wizard-steps .step i {
+        font-size: 1rem;
+    }
+    .wizard-steps .step span {
+        font-size: 0.7rem;
+    }
+
+    /* Характеристики – сетка 2×5 */
+    .stats-wizard-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .stats-wizard-grid label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    /* Таблицы – принудительная прокрутка внутри */
+    .table-wrapper {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .cyber-table {
+        min-width: 100%;
+        width: 100%;
+        font-size: 0.7rem;
+    }
+    .cyber-table th, .cyber-table td {
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    /* Список навыков (вертикальный) */
+    .skills-wizard-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .skill-wizard-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .skill-wizard-item .skill-name {
+        flex: 1;
+        font-size: 0.8rem;
+    }
+    .skill-wizard-item input {
+        width: 70px;
+    }
+
+    /* Снаряжение – вкладки и таблицы */
+    .gear-wizard-tabs {
+        flex-wrap: wrap;
+    }
+    .gear-tab-btn {
+        flex: 1;
+        text-align: center;
+        padding: 6px 0;
+    }
+    .gear-checkbox-list {
+        max-height: 300px;
+    }
+    .weapon-categories {
+        flex-direction: column;
+    }
+
+    /* Бюджет и счётчики */
+    .gear-budget, .cyber-budget-info, .skills-budget, .style-budget {
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    /* Поля ввода */
+    .stat-input, .skill-level-table, .cyber-checkbox-table, .style-checkbox {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Заметки */
+    .notes-textarea {
+        min-height: 150px;
+    }
+}
+
+/* Очень маленькие экраны (≤ 480px) – ещё более компактно */
 @media (max-width: 480px) {
+    .wizard-steps {
+        grid-template-columns: 1fr; /* одна колонка */
+        gap: 6px;
+    }
+    .stats-wizard-grid {
+        grid-template-columns: 1fr;
+    }
+    .role-grid-v2 {
+        grid-template-columns: 1fr;
+    }
+    .cyber-table {
+        font-size: 0.65rem;
+    }
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    .tab-btn, .sub-tab-btn {
-        padding: 4px 8px;
-        font-size: 0.7rem;
+    .wizard-steps .step {
+        flex: 1 0 auto;
     }
-}
-/* Вертикальное меню для десктопа */
-@media (min-width: 701px) {
-    .main-tabs {
-        flex-direction: column;
-        width: 220px;
-        float: left;
-        border-right: 1px solid var(--border-color);
-        border-bottom: none;
-        margin-right: 20px;
-        padding-bottom: 0;
-    }
-    .main-pane {
-        margin-left: 240px;
-    }
-    .main-tabs .tab-btn {
-        width: 100%;
-        text-align: left;
-        margin-bottom: 5px;
-    }
-}
-/* Адаптивность */
-@media (max-width: 700px) {
-    .character-name { font-size: 1.2rem; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .skills-grid { grid-template-columns: 1fr; }
-    .equipment-grid { grid-template-columns: 1fr; }
 }

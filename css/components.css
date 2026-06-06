@@ -4713,48 +4713,206 @@ body {
 .wizard-modal .table-wrapper {
     max-height: 50vh;
 }
+/* Компактное отображение оружия */
+.weapon-item {
+    margin-bottom: 8px;
+    border-bottom: 1px dashed #2a3342;
+    padding-bottom: 6px;
+}
+.weapon-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.weapon-icon {
+    font-size: 1rem;
+}
+.weapon-name {
+    font-size: 0.9rem;
+    color: #ff9a3c;
+}
+.weapon-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-left: 24px;
+}
+.weapon-stat {
+    background: #1e2530;
+    padding: 2px 8px;
+    border-radius: 16px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    color: #e0e0e0;
+}
+.weapon-note {
+    background: rgba(255, 60, 95, 0.2);
+    color: #ff9a3c;
+}
+/* ========== КИБЕРПАНК-ГЛИТЧ-КАРТОЧКА ========== */
+.cyber-glitch-card {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    background: #111;
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+    cursor: pointer;
+    position: relative;
+    /* Скос углов (адаптируйте под свой дизайн) */
+    clip-path: polygon(0 0, 100% 0, 100% 95%, 95% 100%, 0 100%);
+}
+
+/* Аватарка – если добавите позже */
+.cyber-glitch-card .avatar-wrapper {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 15px;
+    border: 2px solid #00f3ff;
+    filter: grayscale(100%);
+    transition: 0.3s;
+}
+.cyber-glitch-card:hover .avatar-wrapper {
+    filter: grayscale(0);
+    border-color: #ff0055;
+}
+
+/* Глитч для имени */
+.cyber-glitch-card .character-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.8rem;
+    text-align: center;
+    color: #fff;
+    position: relative;
+    letter-spacing: 2px;
+}
+.cyber-glitch-card .character-name::before,
+.cyber-glitch-card .character-name::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #111;
+}
+.cyber-glitch-card .character-name::before {
+    left: 2px;
+    text-shadow: -1px 0 #ff0055;
+    clip: rect(24px, 550px, 90px, 0);
+    animation: glitch-anim-2 3s infinite linear alternate-reverse;
+}
+.cyber-glitch-card .character-name::after {
+    left: -2px;
+    text-shadow: -1px 0 #00f3ff;
+    clip: rect(85px, 550px, 140px, 0);
+    animation: glitch-anim 2.5s infinite linear alternate-reverse;
+}
+
+/* Роль – неоновым цветом */
+.cyber-glitch-card .character-role {
+    text-align: center;
+    color: #00f3ff;
+    font-size: 0.9rem;
+    font-family: 'Share Tech Mono', monospace;
+    margin-bottom: 20px;
+}
+
+/* Блоки (характеристики, состояние, навыки) – оставляем с существующим фоном, но добавляем границы */
+.cyber-glitch-card .char-section {
+    background: #0a0c12;
+    border-left: 3px solid #ff0055;
+    margin-bottom: 20px;
+}
+
+/* Статистики (как в примере) – можно адаптировать для характеристик */
+.cyber-glitch-card .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+.cyber-glitch-card .stat-item {
+    background: #1a1e2a;
+    border: none;
+    border-radius: 0;
+    text-align: center;
+    transition: 0.2s;
+}
+.cyber-glitch-card .stat-item:hover {
+    background: #ff0055;
+    color: #000;
+    box-shadow: 0 0 8px #ff0055;
+}
+
+/* Неоновые уголки */
+.cyber-glitch-card .corner {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #00f3ff;
+    transition: 0.3s;
+    pointer-events: none;
+}
+.cyber-glitch-card .top-left {
+    top: -2px;
+    left: -2px;
+    border-right: none;
+    border-bottom: none;
+}
+.cyber-glitch-card .top-right {
+    top: -2px;
+    right: -2px;
+    border-left: none;
+    border-bottom: none;
+}
+.cyber-glitch-card .bottom-left {
+    bottom: -2px;
+    left: -2px;
+    border-right: none;
+    border-top: none;
+}
+.cyber-glitch-card .bottom-right {
+    bottom: -2px;
+    right: -2px;
+    border-left: none;
+    border-top: none;
+    border-color: #ff0055;
+}
+.cyber-glitch-card:hover .corner {
+    width: 100%;
+    height: 100%;
+    opacity: 0.1;
+}
+/* Увеличиваем ширину карточки */
+.character-card,
+.cyber-glitch-card {
+    width: 100%;
+    max-width: 1200px;   /* вместо прежнего 800–900px */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Анимация глитча */
+@keyframes glitch-anim {
+    0% { clip: rect(10px, 9999px, 30px, 0); transform: skew(0.5deg); }
+    10% { clip: rect(50px, 9999px, 70px, 0); transform: skew(0.2deg); }
+    20% { clip: rect(20px, 9999px, 60px, 0); transform: skew(0.8deg); }
+    100% { clip: rect(80px, 9999px, 100px, 0); transform: skew(0.1deg); }
+}
+@keyframes glitch-anim-2 {
+    0% { clip: rect(60px, 9999px, 80px, 0); transform: skew(0.6deg); }
+    10% { clip: rect(10px, 9999px, 30px, 0); transform: skew(0.3deg); }
+    100% { clip: rect(90px, 9999px, 100px, 0); transform: skew(0.1deg); }
+}
 @media (max-width: 700px) {
-    .role-grid-v2 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .role-detail-header {
-        flex-direction: column;
-    }
-    .role-rank-control {
+    .weapon-stats {
         margin-left: 0;
     }
-}
-/* Адаптация для мобильных */
-@media (max-width: 700px) {
-    .wizard-steps {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-    }
-    .wizard-steps .step {
-        flex: auto;
-        padding: 6px 0;
-    }
-    .wizard-steps .step i {
-        font-size: 1rem;
-    }
-    .wizard-steps .step span {
-        font-size: 0.6rem;
-    }
-    .wizard-content {
-        padding: 12px;
-    }
-    .wizard-buttons .cyber-btn {
-        padding: 8px 16px;
-        font-size: 0.8rem;
-    }
-}
-@media (max-width: 700px) {
-    .sheet-body {
-        column-count: 1 !important;
-        column-rule: none;
-    }
-    .sheet-headline {
-        font-size: 1.3rem;
+    .weapon-stat {
+        font-size: 0.65rem;
+        white-space: normal;
     }
 }
