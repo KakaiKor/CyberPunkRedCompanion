@@ -447,60 +447,65 @@ export class CharacterWizard {
     }
 
     attachSummaryEvents() {
-        const healBtn = document.querySelector('.heal-btn');
-        const damageBtn = document.querySelector('.damage-btn');
-        const exportBtn = document.getElementById('exportPngBtn');
-        if (exportBtn) {
-            exportBtn.addEventListener('click', () => {
-                const card = document.querySelector('.character-card');
-                if (card && typeof html2canvas !== 'undefined') {
-                    html2canvas(card, { scale: 2, backgroundColor: null }).then(canvas => {
-                        const link = document.createElement('a');
-                        link.download = `${this.data.name || 'character'}.png`;
-                        link.href = canvas.toDataURL();
-                        link.click();
-                    });
-                } else {
-                    alert('Библиотека html2canvas не загружена.');
-                }
-            });
-        }
-        if (healBtn) {
-            healBtn.addEventListener('click', () => {
-                const hpDiv = document.querySelector('.derived-stats div:first-child');
-                if (hpDiv) {
-                    const match = hpDiv.innerText.match(/ПЗ:\s*(\d+)\s*\/\s*(\d+)/);
-                    if (match) {
-                        let current = parseInt(match[1]);
-                        const max = parseInt(match[2]);
-                        const body = this.data.stats?.BODY || 6;
-                        const newHp = Math.min(current + body, max);
-                        hpDiv.innerText = hpDiv.innerText.replace(/\d+/, newHp);
-                    }
-                }
-            });
-        }
-        if (damageBtn) {
-            damageBtn.addEventListener('click', () => {
-                const dmg = prompt('Введите урон:');
-                if (dmg !== null) {
-                    const hpDiv = document.querySelector('.derived-stats div:first-child');
-                    if (hpDiv) {
-                        const match = hpDiv.innerText.match(/ПЗ:\s*(\d+)\s*\/\s*(\d+)/);
-                        if (match) {
-                            let current = parseInt(match[1]);
-                            const max = parseInt(match[2]);
-                            let newHp = Math.max(0, current - parseInt(dmg));
-                            hpDiv.innerText = hpDiv.innerText.replace(/\d+/, newHp);
-                            const severe = Math.ceil(max / 2);
-                            if (newHp <= severe && newHp > 0) alert('⚠️ Тяжёлое ранение! Штраф -2.');
-                            if (newHp <= 0) alert('💀 Смертельное ранение!');
-                        }
-                    }
-                }
-            });
-        }
+    const healBtn = document.querySelector('.heal-btn');
+    const damageBtn = document.querySelector('.damage-btn');
+    const exportBtn = document.getElementById('exportPngBtn');
+
+    // Обработчик лечения
+    if (healBtn) {
+        healBtn.addEventListener('click', () => {
+            // Ищем элемент с текущим ПЗ в карточке
+            const hpSpan = document.querySelector('.current-hp');
+            if (!hpSpan) {
+                console.warn('Элемент .current-hp не найден');
+                return;
+            }
+            const current = parseInt(hpSpan.innerText);
+            const maxHp = parseInt(hpSpan.innerText.split('/')[1]?.trim() || hpSpan.innerText);
+            const body = this.data.stats?.BODY || 6;
+            const newHp = Math.min(current + body, maxHp);
+            hpSpan.innerText = newHp;
+            // Также обновим data (если нужно для сохранения)
+            this.data.currentHp = newHp;
+        });
     }
+
+    // Обработчик урона
+    if (damageBtn) {
+        damageBtn.addEventListener('click', () => {
+            const dmg = prompt('Введите урон:');
+            if (dmg !== null) {
+                const hpSpan = document.querySelector('.current-hp');
+                if (!hpSpan) return;
+                let current = parseInt(hpSpan.innerText);
+                const maxHp = parseInt(hpSpan.innerText.split('/')[1]?.trim() || hpSpan.innerText);
+                let newHp = Math.max(0, current - parseInt(dmg));
+                hpSpan.innerText = newHp;
+                const severe = Math.ceil(maxHp / 2);
+                if (newHp <= severe && newHp > 0) alert('⚠️ Тяжёлое ранение! Штраф -2 ко всем действиям.');
+                if (newHp <= 0) alert('💀 Смертельное ранение! Требуется спасбросок.');
+                this.data.currentHp = newHp;
+            }
+        });
+    }
+
+    // Кнопка PNG (уже есть)
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            const card = document.querySelector('.character-card');
+            if (card && typeof html2canvas !== 'undefined') {
+                html2canvas(card, { scale: 2, backgroundColor: null }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `${this.data.name || 'character'}.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                });
+            } else {
+                alert('Библиотека html2canvas не загружена.');
+            }
+        });
+    }
+}
 
     getItemCost(name) {
         const all = [...rangedWeapons, ...meleeWeapons, ...armors, ...gearItems, ...detailedCyberware];

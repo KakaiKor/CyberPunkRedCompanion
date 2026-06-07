@@ -92,6 +92,10 @@ export function renderSummaryStep(data) {
                     <h4>❤️ Состояние</h4>
                     <div class="derived-stats">
                         <div>ПЗ: ${hp} (тяж. ≤ ${severe})</div>
+                        <div data-derived="hp">ПЗ: 
+                            <span class="current-hp">${hp}</span> / ${hp}
+                            <span class="hp-threshold">(тяж. ≤ ${severe})</span>
+                        </div>
                         <div>Спасбросок: ${body}</div>
                         <div>Человечность: ${humanity} (ЭМП = ${empFrom})</div>
                     </div>
