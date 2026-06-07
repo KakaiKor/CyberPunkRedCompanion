@@ -1,6 +1,5 @@
 // modules/gm/gm-init.js
 import { NPCGenerator } from './npc-generator.js';
-import { generateSimpleContract } from './simple-contract.js';
 import { AdvancedContractGenerator } from './advanced-contract-generator.js';
 import { checkCyberpsychosis } from './cyberpsychosis.js';
 import { generateNetArchitecture } from './net-architecture.js';
@@ -13,8 +12,7 @@ import { PlotBuilder } from './plot-builder.js';
 export function initGM() {
     // NPC
     document.getElementById('generateNpcBtn')?.addEventListener('click', () => NPCGenerator.generate());
-    // Простой контракт
-    document.getElementById('genContractBtn')?.addEventListener('click', generateSimpleContract);
+
     // Продвинутый контракт
     document.getElementById('generateAdvancedContractBtn')?.addEventListener('click', () => AdvancedContractGenerator.generate());
     document.getElementById('copyContractBtn')?.addEventListener('click', () => AdvancedContractGenerator.copyToClipboard());

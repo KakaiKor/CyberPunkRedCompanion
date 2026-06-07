@@ -6,7 +6,7 @@ import { HumanityCalculator } from './modules/humanity.js';
 import { ExpensesCalc } from './modules/expenses.js';
 import { CombatCalculatorUI, DistanceCalculator, InitiativeTracker, GroupInitiative, CombatFormulas } from './modules/combat.js';
 import { initTransport } from './modules/transport.js';
-import { NPCGenerator, GroupTracker, initGM, MookGenerator, EncounterGenerator, AdvancedContractGenerator, generateSimpleContract, generateNetArchitecture, ScreamSheetGenerator  } from './modules/gm.js';
+import { NPCGenerator, GroupTracker, initGM, MookGenerator, EncounterGenerator, AdvancedContractGenerator, generateNetArchitecture, ScreamSheetGenerator  } from './modules/gm.js';
 import { updateAllTables, filterTables, renderFilteredCyberware } from './modules/gear.js';
 import { renderRoles } from './modules/roles.js';
 import {
