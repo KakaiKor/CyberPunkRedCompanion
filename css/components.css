@@ -5032,6 +5032,164 @@ body {
     flex: 2;
     min-width: 300px;
 }
+/* Магазин */
+.shop-header, .inventory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.shop-money {
+    background: #0f1219;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 1.1rem;
+}
+.shop-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+.shop-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+.shop-item {
+    background: #1a1e2a;
+    border: 1px solid #2a3342;
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.shop-item-name {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+.shop-item-price {
+    color: #39ff14;
+    margin-bottom: 8px;
+}
+.buy-btn {
+    background: #2a3342;
+    border: none;
+    padding: 6px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+.buy-btn:hover {
+    background: #ff3c5f;
+}
+.inventory-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.inventory-section {
+    background: #0f1219;
+    border-radius: 16px;
+    padding: 12px;
+}
+.inventory-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #2a3342;
+}
+.sell-btn {
+    background: #2a1a2a;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+.sell-btn:hover {
+    background: #ff3c5f;
+}
+/* Магазин и инвентарь */
+.shop-header, .inventory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.shop-money {
+    background: #0f1219;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 1.1rem;
+}
+.shop-category {
+    margin-bottom: 30px;
+}
+.shop-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+.shop-item {
+    background: #1a1e2a;
+    border: 1px solid #2a3342;
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.shop-item-name {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+.shop-item-price {
+    color: #39ff14;
+    margin-bottom: 8px;
+}
+.buy-btn {
+    background: #2a3342;
+    border: none;
+    padding: 6px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+.buy-btn:hover {
+    background: #ff3c5f;
+}
+.inventory-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.inventory-section {
+    background: #0f1219;
+    border-radius: 16px;
+    padding: 12px;
+}
+.inventory-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #2a3342;
+}
+.sell-btn {
+    background: #2a1a2a;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+.sell-btn:hover {
+    background: #ff3c5f;
+}
 /* Очень узкие экраны (≤ 400px) */
 @media (max-width: 400px) {
     .stats-grid {

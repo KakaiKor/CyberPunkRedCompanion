@@ -16,8 +16,10 @@ import {
 } from './data.js';
 import { saveCharacter, loadCharacter, saveGroup, loadGroup } from './storage.js';
 import { allSkills, roleTemplates } from './data/skills-data.js';
-import { NightMarket, TreasureGenerator, IdealShop } from './modules/market.js';
+// import { NightMarket, TreasureGenerator, IdealShop } from './modules/market.js';
 import { renderGear } from './modules/gear.js';
+import { ShopUI, InventoryUI } from './modules/market/shop.js';
+
 
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
@@ -108,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fillIpTable();
 
     new TabManager();
-    new NightMarket();
+    // new NightMarket();
     window.groupTracker = new GroupTracker();
     new DistanceCalculator();
     window.initTracker = new InitiativeTracker();
@@ -121,7 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
     renderRoles();
     new CombatFormulas();
     window.characterHelper = new CharacterHelper();
-    // new CharacterWizard();
+    window.shopUI = new ShopUI();
+window.inventoryUI = new InventoryUI();
 
     document.getElementById('calcExpensesBtn')?.addEventListener('click', () => ExpensesCalc.calc());
     document.getElementById('generateTreasureBtn')?.addEventListener('click', () => TreasureGenerator.generate());
