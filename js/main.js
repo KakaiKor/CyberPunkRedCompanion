@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new CombatFormulas();
     window.characterHelper = new CharacterHelper();
     window.shopUI = new ShopUI();
-window.inventoryUI = new InventoryUI();
+    window.inventoryUI = new InventoryUI();
 
     document.getElementById('calcExpensesBtn')?.addEventListener('click', () => ExpensesCalc.calc());
     document.getElementById('generateTreasureBtn')?.addEventListener('click', () => TreasureGenerator.generate());

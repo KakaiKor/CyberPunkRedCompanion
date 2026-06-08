@@ -267,44 +267,73 @@ export class CharacterWizard {
     }
 
     attachGearEvents() {
-        const filterSelect = document.getElementById('gearCategoryFilter');
-        const weaponsSection = document.getElementById('weaponsSection');
-        const armorSection = document.getElementById('armorSection');
-        const itemsSection = document.getElementById('itemsSection');
-        if (filterSelect) {
-            filterSelect.addEventListener('change', (e) => {
-                const val = e.target.value;
-                if (weaponsSection) weaponsSection.style.display = (val === 'all' || val === 'weapons') ? 'block' : 'none';
-                if (armorSection) armorSection.style.display = (val === 'all' || val === 'armor') ? 'block' : 'none';
-                if (itemsSection) itemsSection.style.display = (val === 'all' || val === 'items') ? 'block' : 'none';
-            });
-        }
-        const searchInput = document.getElementById('gearSearch');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
-                document.querySelectorAll('#weaponsSection .cyber-table tbody tr, #armorSection .cyber-table tbody tr, #itemsSection .cyber-table tbody tr').forEach(row => {
-                    row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none';
-                });
-            });
-        }
-        if (this._gearHandler) document.removeEventListener('change', this._gearHandler);
-        this._gearHandler = (e) => {
-            if (e.target && (e.target.type === 'checkbox' || e.target.type === 'radio')) {
-                this.updateGearFromDOM();
-            }
-        };
-        document.addEventListener('change', this._gearHandler);
+    const filterSelect = document.getElementById('gearCategoryFilter');
+    const weaponsSection = document.getElementById('weaponsSection');
+    const armorSection = document.getElementById('armorSection');
+    const itemsSection = document.getElementById('itemsSection');
+    
+    if (filterSelect) {
+        filterSelect.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (weaponsSection) weaponsSection.style.display = (val === 'all' || val === 'weapons') ? 'block' : 'none';
+            if (armorSection) armorSection.style.display = (val === 'all' || val === 'armor') ? 'block' : 'none';
+            if (itemsSection) itemsSection.style.display = (val === 'all' || val === 'items') ? 'block' : 'none';
+        });
     }
+    
+    const searchInput = document.getElementById('gearSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('#weaponsSection .cyber-table tbody tr, #armorSection .cyber-table tbody tr, #itemsSection .cyber-table tbody tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none';
+            });
+        });
+    }
+    
+    // Глобальный обработчик (ваш старый) – оставляем
+    if (this._gearHandler) document.removeEventListener('change', this._gearHandler);
+    this._gearHandler = (e) => {
+        if (e.target && (e.target.type === 'checkbox' || e.target.type === 'radio')) {
+            this.updateGearFromDOM();
+        }
+    };
+    document.addEventListener('change', this._gearHandler);
+    
+    // ========== ДОБАВЛЯЕМ СПЕЦИАЛЬНУЮ ОБРАБОТКУ ДЛЯ БРОНИ ==========
+    const armorBodyCheckboxes = document.querySelectorAll('#armorSection input[data-type="armorBody"]');
+    const armorHeadCheckboxes = document.querySelectorAll('#armorSection input[data-type="armorHead"]');
+    
+    // Функция, которая делает группу чекбоксов переключателями (выбор только одного)
+    const makeRadioLike = (group) => {
+        group.forEach(cb => {
+            cb.removeEventListener('change', this._armorToggleHandler);
+            this._armorToggleHandler = () => {
+                if (cb.checked) {
+                    group.forEach(other => {
+                        if (other !== cb && other.checked) other.checked = false;
+                    });
+                }
+                this.updateGearFromDOM(); // принудительно обновляем данные и бюджет
+            };
+            cb.addEventListener('change', this._armorToggleHandler);
+        });
+    };
+    
+    if (armorBodyCheckboxes.length) makeRadioLike(armorBodyCheckboxes);
+    if (armorHeadCheckboxes.length) makeRadioLike(armorHeadCheckboxes);
+}
 
     updateGearFromDOM() {
         if (this.currentStep !== 3) return;
         const weaponCheckboxes = document.querySelectorAll('#weaponsSection input[type="checkbox"]:checked');
         this.data.gear.weapons = Array.from(weaponCheckboxes).map(cb => cb.value);
-        const armorBody = document.querySelector('#armorSection input[data-slot="body"]:checked');
-        this.data.gear.armor.body = armorBody ? armorBody.value : '';
-        const armorHead = document.querySelector('#armorSection input[data-slot="head"]:checked');
-        this.data.gear.armor.head = armorHead ? armorHead.value : '';
+        // Для брони тела – ищем выбранный чекбокс с data-type="armorBody"
+const bodyCheckbox = document.querySelector('#armorSection input[data-type="armorBody"]:checked');
+this.data.gear.armor.body = bodyCheckbox ? bodyCheckbox.value : '';
+// Для брони головы – ищем выбранный чекбокс с data-type="armorHead"
+const headCheckbox = document.querySelector('#armorSection input[data-type="armorHead"]:checked');
+this.data.gear.armor.head = headCheckbox ? headCheckbox.value : '';
         const itemCheckboxes = document.querySelectorAll('#itemsSection input[type="checkbox"]:checked');
         this.data.gear.items = Array.from(itemCheckboxes).map(cb => cb.value);
         this.updateTotalSpent();

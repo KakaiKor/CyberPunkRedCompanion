@@ -1,43 +1,17 @@
+// wizard-step-summary.js (исправленная версия)
 import { getHP } from '../../utils.js';
 import { detailedCyberware } from '../../data.js';
-import { armors } from '../../data.js';
-
 
 export function renderSummaryStep(data) {
-    // Прямое чтение из DOM (самый свежий вариант)
-    let weapons = [];
-    let armorBody = 'нет';
-    let armorHead = 'нет';
-    let items = [];
+    // Читаем все данные о снаряжении из data.gear (который заполняется на шаге 3)
+    const weapons = data.gear?.weapons || [];
+    const armorBody = data.gear?.armor?.body || 'нет';
+    const armorHead = data.gear?.armor?.head || 'нет';
+    const items = data.gear?.items || [];
+    const cyberware = data.cyberware || [];
+    const styleItems = data.styleItems || [];
 
-    try {
-        weapons = Array.from(document.querySelectorAll('#weaponsSection input[type="checkbox"]:checked')).map(cb => cb.value);
-        armorBody = document.querySelector('#armorSection input[data-slot="body"]:checked')?.value || 'нет';
-        armorHead = document.querySelector('#armorSection input[data-slot="head"]:checked')?.value || 'нет';
-        items = Array.from(document.querySelectorAll('#itemsSection input[type="checkbox"]:checked')).map(cb => cb.value);
-        console.log('Снаряжение из DOM:', { weapons, armorBody, armorHead, items });
-    } catch(e) {
-        console.warn('Ошибка чтения из DOM', e);
-    }
-
-    // Если DOM не дал результатов (например, из-за ошибки), подхватываем из data.gear (резервная копия)
-    if ((!weapons || weapons.length === 0) && data.gear?.weapons?.length) {
-        weapons = data.gear.weapons;
-        console.log('Взяли оружие из data.gear');
-    }
-    if ((armorBody === 'нет' || !armorBody) && data.gear?.armor?.body) {
-        armorBody = data.gear.armor.body;
-        console.log('Взяли броню тела из data.gear');
-    }
-    if ((armorHead === 'нет' || !armorHead) && data.gear?.armor?.head) {
-        armorHead = data.gear.armor.head;
-        console.log('Взяли броню головы из data.gear');
-    }
-    if ((!items || items.length === 0) && data.gear?.items?.length) {
-        items = data.gear.items;
-        console.log('Взяли снаряжение из data.gear');
-    }
-
+    // Производные характеристики
     const body = data.stats?.BODY || 6;
     const will = data.stats?.WILL || 6;
     const emp = data.stats?.EMP || 6;
@@ -45,13 +19,14 @@ export function renderSummaryStep(data) {
     const severe = Math.ceil(hp / 2);
     const baseHumanity = emp * 10;
     let humanityLoss = 0;
-    for (const name of (data.cyberware || [])) {
+    for (const name of cyberware) {
         const implant = detailedCyberware.find(i => i.name === name);
         if (implant) humanityLoss += parseInt(implant.humanity) || 0;
     }
     const humanity = Math.max(0, baseHumanity - humanityLoss);
     const empFrom = Math.floor(humanity / 10);
 
+    // Рендер характеристик
     const statsHtml = Object.entries(data.stats).map(([k, v]) => `
         <div class="stat-item" data-stat="${k}">
             <span class="stat-name">${k}</span>
@@ -59,6 +34,7 @@ export function renderSummaryStep(data) {
         </div>
     `).join('');
 
+    // Рендер навыков
     const skillsEntries = Object.entries(data.skills || {}).filter(([_, v]) => v > 0);
     const skillsHtml = skillsEntries.map(([name, level]) => `
         <div class="skill-item">
@@ -67,10 +43,11 @@ export function renderSummaryStep(data) {
         </div>
     `).join('');
 
+    // Рендер снаряжения
     const weaponsHtml = weapons.map(w => `<li>🔫 ${escapeHtml(w)}</li>`).join('');
-    const cyberHtml = (data.cyberware || []).map(c => `<li>🦾 ${escapeHtml(c)}</li>`).join('');
+    const cyberHtml = cyberware.map(c => `<li>🦾 ${escapeHtml(c)}</li>`).join('');
     const gearHtml = items.map(i => `<li>📦 ${escapeHtml(i)}</li>`).join('');
-    const styleHtml = (data.styleItems || []).map(s => `<li>✨ ${escapeHtml(s)}</li>`).join('');
+    const styleHtml = styleItems.map(s => `<li>✨ ${escapeHtml(s)}</li>`).join('');
     const armorHtml = `
         <li>🛡️ Тело: ${escapeHtml(armorBody)}</li>
         <li>⛑️ Голова: ${escapeHtml(armorHead)}</li>
@@ -129,7 +106,7 @@ export function renderSummaryStep(data) {
                         <h5>🎒 Снаряжение</h5>
                         <ul class="compact">${gearHtml || '<li>— нет —</li>'}</ul>
                     </div>
-                    ${data.styleItems?.length ? `
+                    ${styleItems?.length ? `
                     <div class="equipment-card">
                         <h5>✨ Стиль</h5>
                         <ul class="compact">${styleHtml}</ul>

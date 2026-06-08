@@ -134,62 +134,210 @@ export class CharacterHelper {
     }
 
     buildCharacterCardHTML({ name, role, roleRank = 4, stats, skills, gear, cyberware = [], currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar = '', money = 0 }) {
-        stats = stats || {};
-        skills = skills || {};
-        gear = gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
-        cyberware = cyberware || [];
+    stats = stats || {};
+    skills = skills || {};
+    gear = gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
+    cyberware = cyberware || [];
 
-        // Характеристики (упрощённо, без модификаторов имплантов, для краткости)
-        const statsHtml = Object.entries(stats).map(([k, v]) => `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${v}</span></div>`).join('');
-        const skillsHtml = Object.entries(skills).filter(([_, v]) => v > 0).map(([k, v]) => `<div class="skill-item" data-skill="${k}"><span class="skill-name">${this.escapeHtml(k)}</span><span class="skill-level">${v}</span></div>`).join('');
-        const weaponsHtml = (gear.weapons || []).map(w => `<li>${this.escapeHtml(w)}</li>`).join('');
-        const cyberHtml = (cyberware || []).map(c => `<li>🦾 ${this.escapeHtml(c)}</li>`).join('');
-        const gearHtmlItems = (gear.items || []).map(g => `<li>📦 ${this.escapeHtml(g)}</li>`).join('');
-        const bodyArmorInfo = armors.find(a => a.name === gear.armor?.body);
-        const headArmorInfo = armors.find(a => a.name === gear.armor?.head);
-        const armorHtml = `<li>🛡️ Тело: ${this.escapeHtml(gear.armor?.body || 'нет')}${bodyArmorInfo ? ` (ОС ${bodyArmorInfo.sp}, штраф ${bodyArmorInfo.penalty})` : ''}</li><li>⛑️ Голова: ${this.escapeHtml(gear.armor?.head || 'нет')}${headArmorInfo ? ` (ОС ${headArmorInfo.sp}, штраф ${headArmorInfo.penalty})` : ''}</li>`;
-        const notesHtml = `<div class="char-section" data-section="notes"><h4>📝 Заметки</h4><div class="notes-preview">${this.escapeHtml(notes) || '— нет —'}</div></div>`;
+    // ---------- МОДИФИКАТОРЫ ИМПЛАНТОВ ----------
+    const implantModifiers = {
+        // Нейро
+        "Керензиков": { initiative: 2, display: "+2 к инициативе" },
+        "Сандевистан": { initiativeTemporary: "Активация: +3 к инициативе на 1 минуту", display: "Временное ускорение" },
+        // Оптика
+        "Прицельный модуль": { perception: 1, display: "+1 к прицельным выстрелам" },
+        "Улучшение изображения": { perception: 2, display: "+2 к Восприятию, чтению по губам" },
+        // Аудио
+        "Усиленный слух": { perception: 2, display: "+2 к Восприятию (слух)" },
+        "Анализатор голосового напряжения": { perception: 2, display: "+2 к Проницательности и Допросу (детектор лжи)" },
+        // Внутренние
+        "Искусственные мышцы и усиленные кости": { BODY: 2, maxBody: 10, display: "+2 к ТЕЛО (макс. 10)" },
+        "Усиленные антитела": { recovery: "ТЕЛО×2 ПЗ в день", display: "Регенерация (ТЕЛО×2 ПЗ/день)" },
+        "Связыватели токсинов": { resistance: 2, display: "+2 к Сопротивлению пыткам/наркотикам" },
+        "Жабры": { special: "дыхание под водой", display: "Дыхание под водой" },
+        "Назальные фильтры": { special: "иммунитет к газам", display: "Иммунитет к газам" },
+        // Боргирование
+        "Эндоскелет Сигма": { replaceBody: true, bodyValue: 12, display: "ТЕЛО = 12" },
+        "Эндоскелет Бета": { replaceBody: true, bodyValue: 14, display: "ТЕЛО = 14" },
+        // Внешние
+        "Подкожная броня": { armor: 11, display: "ОС 11 на тело и голову" },
+        "Плетёная кожа": { armor: 7, special: "Регенерирует 1 ОС в день", display: "ОС 7 + регенерация брони" },
+        // Конечности
+        "Роликовая стопа": { movement: 6, display: "+6 м к бегу" }
+    };
 
-        const derivedStatsHtml = `
-    <div data-derived="hp">ПЗ: <span class="current-hp">${currentHp}</span> / ${maxHp} <span class="hp-threshold">(тяж. ≤ ${severe})</span></div>
-    <div data-derived="deathSave">Спасбросок: ${deathSave}</div>
-    <div data-derived="money">💰 Деньги: <span class="char-money">${money}</span> eb</div>
-    <div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>
-`;
+    // ---------- РАСЧЁТ БОНУСОВ И ЗАМЕН ----------
+    let bonuses = { BODY: 0, initiative: 0, resistance: 0 };
+    let extraEffects = [];
+    let replaceBody = null;  // { value: number, display: string }
 
-        const roleInfo = rolesData.find(r => r.name === role);
-        const roleSkillHtml = `<div class="role-skill-badge"><span class="role-skill-name">${roleInfo ? roleInfo.skill : '—'}</span><span class="role-skill-rank">${roleRank ? ` (ранг ${roleRank})` : ''}</span></div>`;
-        const avatarHtml = avatar ? `<div class="avatar-container"><img src="${avatar}" class="character-avatar" alt="avatar"></div>` : '';
-
-        return `
-            <div class="character-card" data-name="${this.escapeHtml(name)}" data-role="${role}">
-                <div class="character-card-header">
-                    ${avatarHtml}
-                    <div class="character-name" data-field="name">${this.escapeHtml(name)}</div>
-                    <div class="character-role" data-field="role">${role}</div>
-                    ${roleSkillHtml}
-                    <div class="card-actions">
-                        <button class="edit-card-btn" title="Редактировать">✏️</button>
-                        <button class="sync-card-btn" title="Синхронизировать с вкладками">🔄</button>
-                        <button class="close-card-btn" id="closeCardBtn">✖</button>
-                    </div>
-                </div>
-                <div class="character-card-body">
-                    <div class="char-section" data-section="stats"><h4>📊 Характеристики</h4><div class="stats-grid">${statsHtml}</div></div>
-                    <div class="char-section" data-section="derived"><h4>❤️ Состояние</h4><div class="derived-stats">${derivedStatsHtml}</div><div class="combat-buttons"><button class="heal-btn">💊 Лечение (+${stats.BODY || 6} ПЗ)</button><button class="damage-btn">💥 Урон</button></div></div>
-                    <div class="char-section" data-section="skills"><h4>🎯 Навыки</h4><div class="skills-grid">${skillsHtml || '<p>— нет —</p>'}</div></div>
-                    ${notesHtml}
-                    <div class="equipment-grid">
-                        <div class="equipment-card"><h5>🛡️ Броня</h5><ul>${armorHtml}</ul></div>
-                        <div class="equipment-card"><h5>🔫 Оружие</h5><ul>${weaponsHtml || '<li>— нет —</li>'}</ul></div>
-                        <div class="equipment-card"><h5>🦾 Киберимпланты</h5><ul>${cyberHtml || '<li>— нет —</li>'}</ul></div>
-                        <div class="equipment-card"><h5>🎒 Снаряжение</h5><ul>${gearHtmlItems || '<li>— нет —</li>'}</ul></div>
-                    </div>
-                </div>
-                <div class="corner top-left"></div><div class="corner top-right"></div><div class="corner bottom-left"></div><div class="corner bottom-right"></div>
-            </div>
-        `;
+    for (const implant of cyberware) {
+        const mod = implantModifiers[implant];
+        if (mod) {
+            if (mod.BODY) bonuses.BODY += mod.BODY;
+            if (mod.initiative) bonuses.initiative += mod.initiative;
+            if (mod.resistance) bonuses.resistance += mod.resistance;
+            if (mod.replaceBody) {
+                // Приоритет у большего значения (Бета перебивает Сигму)
+                if (!replaceBody || mod.bodyValue > replaceBody.value) {
+                    replaceBody = { value: mod.bodyValue, display: mod.display };
+                }
+            }
+            if (mod.display) extraEffects.push(mod.display);
+        }
     }
+
+    let bodyBase = stats.BODY || 6;
+    let bodyDisplay, bodyBonusText;
+    if (replaceBody) {
+        bodyDisplay = replaceBody.value;
+        bodyBonusText = ` (замена: ${replaceBody.display})`;
+    } else {
+        bodyDisplay = bodyBase + bonuses.BODY;
+        const maxBody = 10;
+        if (bodyDisplay > maxBody) bodyDisplay = maxBody;
+        bodyBonusText = bonuses.BODY !== 0 ? ` (база ${bodyBase} +${bonuses.BODY} от имплантов)` : '';
+    }
+
+    // ---------- ХАРАКТЕРИСТИКИ ----------
+    const statsHtml = Object.entries(stats).map(([k, v]) => {
+        if (k === 'BODY' && (replaceBody || bonuses.BODY !== 0)) {
+            return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${bodyDisplay}${bodyBonusText}</span></div>`;
+        }
+        return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${v}</span></div>`;
+    }).join('');
+
+    // ---------- НАВЫКИ ----------
+    const skillsHtml = Object.entries(skills).filter(([_, v]) => v > 0).map(([k, v]) => `
+        <div class="skill-item" data-skill="${k}">
+            <span class="skill-name">${this.escapeHtml(k)}</span>
+            <span class="skill-level">${v}</span>
+        </div>
+    `).join('');
+
+    // ---------- ОРУЖИЕ ----------
+    const getWeaponDetails = (weaponName) => {
+        const ranged = rangedWeapons.find(w => w.name === weaponName);
+        if (ranged) {
+            return {
+                type: 'ranged',
+                skill: ranged.skill,
+                dmg: ranged.dmg,
+                mag: ranged.mag,
+                rof: ranged.rof,
+                hands: ranged.hands,
+                conceal: ranged.conceal === 'да',
+                notes: ranged.notes
+            };
+        }
+        const melee = meleeWeapons.find(w => w.name === weaponName);
+        if (melee) {
+            return {
+                type: 'melee',
+                kind: melee.type,
+                dmg: melee.dmg,
+                rof: melee.rof,
+                conceal: melee.conceal === 'да'
+            };
+        }
+        return null;
+    };
+
+    const weaponsHtml = (gear.weapons || []).map((w, idx) => {
+        const details = getWeaponDetails(w);
+        if (!details) return `<li data-weapon-idx="${idx}">${this.escapeHtml(w)}</li>`;
+        let statsWeapon = '';
+        if (details.type === 'ranged') {
+            statsWeapon = `<span class="weapon-stat">${details.skill}</span> <span class="weapon-stat">${details.dmg}</span> <span class="weapon-stat">Маг.: ${details.mag}</span> <span class="weapon-stat">СКОР: ${details.rof}</span> <span class="weapon-stat">Рук.: ${details.hands}</span> <span class="weapon-stat">Скрыт.: ${details.conceal ? 'да' : 'нет'}</span>${details.notes ? `<span class="weapon-stat">${details.notes}</span>` : ''}`;
+        } else {
+            statsWeapon = `<span class="weapon-stat">${details.kind}</span> <span class="weapon-stat">${details.dmg}</span> <span class="weapon-stat">СКОР: ${details.rof}</span> <span class="weapon-stat">Скрыт.: ${details.conceal ? 'да' : 'нет'}</span>`;
+        }
+        return `<li data-weapon-idx="${idx}" class="weapon-item"><div class="weapon-header"><strong class="weapon-name">${this.escapeHtml(w)}</strong></div><div class="weapon-stats">${statsWeapon}</div></li>`;
+    }).join('');
+
+    // ---------- ИМПЛАНТЫ, СНАРЯЖЕНИЕ, БРОНЯ ----------
+    const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}</li>`).join('');
+    const gearHtmlItems = (gear.items || []).map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
+    const bodyArmorInfo = armors.find(a => a.name === gear.armor?.body);
+    const headArmorInfo = armors.find(a => a.name === gear.armor?.head);
+    const armorHtml = `<li>🛡️ Тело: ${this.escapeHtml(gear.armor?.body || 'нет')}${bodyArmorInfo ? ` (ОС ${bodyArmorInfo.sp}, штраф ${bodyArmorInfo.penalty})` : ''}</li><li>⛑️ Голова: ${this.escapeHtml(gear.armor?.head || 'нет')}${headArmorInfo ? ` (ОС ${headArmorInfo.sp}, штраф ${headArmorInfo.penalty})` : ''}</li>`;
+    const notesHtml = `<div class="char-section" data-section="notes"><h4>📝 Заметки</h4><div class="notes-preview">${this.escapeHtml(notes) || '— нет —'}</div></div>`;
+
+    // ---------- ПРОИЗВОДНЫЕ (ПЗ, деньги, человечность, инициатива) ----------
+    let derivedStatsHtml = `
+        <div data-derived="hp">ПЗ: <span class="current-hp">${currentHp}</span> / ${maxHp} <span class="hp-threshold">(тяж. ≤ ${severe})</span></div>
+        <div data-derived="deathSave">Спасбросок: ${deathSave}</div>
+        <div data-derived="money">💰 Деньги: <span class="char-money">${money}</span> eb</div>
+    `;
+    if (bonuses.initiative !== 0) derivedStatsHtml += `<div>Инициатива: ${stats.REF} + ${bonuses.initiative} (от имплантов)</div>`;
+    derivedStatsHtml += `<div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>`;
+    if (extraEffects.length) derivedStatsHtml += `<div class="implant-effects">✨ Эффекты имплантов: ${extraEffects.join(', ')}</div>`;
+
+    // ---------- РОЛЕВОЙ НАВЫК ----------
+    const roleInfo = rolesData.find(r => r.name === role);
+    const roleSkillHtml = `<div class="role-skill-badge"><span class="role-skill-name">${roleInfo ? roleInfo.skill : '—'}</span><span class="role-skill-rank">${roleRank ? ` (ранг ${roleRank})` : ''}</span></div>`;
+
+    // ---------- АВАТАРКА ----------
+    const avatarHtml = avatar ? `<div class="avatar-container"><img src="${avatar}" class="character-avatar" alt="avatar"></div>` : '';
+
+    // ---------- ФИНАЛЬНЫЙ HTML ----------
+    return `
+        <div class="character-card" data-name="${this.escapeHtml(name)}" data-role="${role}">
+            <div class="character-card-header">
+                ${avatarHtml}
+                <div class="character-name" data-field="name">${this.escapeHtml(name)}</div>
+                <div class="character-role" data-field="role">${role}</div>
+                ${roleSkillHtml}
+                <div class="card-actions">
+                    <button class="edit-card-btn" title="Редактировать">✏️</button>
+                    <button class="sync-card-btn" title="Синхронизировать с вкладками">🔄</button>
+                    <button class="close-card-btn" id="closeCardBtn">✖</button>
+                </div>
+            </div>
+            <div class="character-card-body">
+                <div class="char-section" data-section="stats">
+                    <h4>📊 Характеристики</h4>
+                    <div class="stats-grid" data-stats-container>${statsHtml}</div>
+                </div>
+                <div class="char-section" data-section="derived">
+                    <h4>❤️ Состояние</h4>
+                    <div class="derived-stats">${derivedStatsHtml}</div>
+                    <div class="combat-buttons">
+                        <button class="heal-btn">💊 Лечение (+${stats.BODY || 6} ПЗ)</button>
+                        <button class="damage-btn">💥 Урон</button>
+                    </div>
+                </div>
+                <div class="char-section" data-section="skills">
+                    <h4>🎯 Навыки</h4>
+                    <div class="skills-grid" data-skills-container>${skillsHtml || '<p>— нет —</p>'}</div>
+                </div>
+                ${notesHtml}
+                <div class="equipment-grid" data-equipment>
+                    <div class="equipment-card" data-type="armor">
+                        <h5>🛡️ Броня</h5>
+                        <ul class="compact" data-armor-list>${armorHtml}</ul>
+                    </div>
+                    <div class="equipment-card" data-type="weapons">
+                        <h5>🔫 Оружие</h5>
+                        <ul class="compact" data-weapons-list>${weaponsHtml || '<li>— нет —</li>'}</ul>
+                    </div>
+                    <div class="equipment-card" data-type="cyberware">
+                        <h5>🦾 Киберимпланты</h5>
+                        <ul class="compact" data-cyber-list>${cyberHtml || '<li>— нет —</li>'}</ul>
+                    </div>
+                    <div class="equipment-card" data-type="gear">
+                        <h5>🎒 Снаряжение</h5>
+                        <ul class="compact" data-gear-list>${gearHtmlItems || '<li>— нет —</li>'}</ul>
+                    </div>
+                </div>
+            </div>
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+            <div class="corner bottom-left"></div>
+            <div class="corner bottom-right"></div>
+        </div>
+    `;
+}
 
     displaySavedCharacterCard() {
         const char = loadCharacter();

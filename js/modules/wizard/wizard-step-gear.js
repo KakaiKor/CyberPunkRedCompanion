@@ -105,4 +105,22 @@ export function renderGearStep(data, getItemCost) {
             </div>
         `;
     }
+    // После того как отрисованы радиокнопки брони
+const updateArmorData = () => {
+    const body = document.querySelector('#armorSection input[data-slot="body"]:checked')?.value || '';
+    const head = document.querySelector('#armorSection input[data-slot="head"]:checked')?.value || '';
+    data.gear.armor = { body, head };
+};
+// Навесить обработчики на все радиокнопки
+document.querySelectorAll('#armorSection input[data-slot="body"], #armorSection input[data-slot="head"]')
+    .forEach(radio => radio.addEventListener('change', updateArmorData));
+// Также при загрузке шага восстановить checked из data.gear.armor, если оно есть
+if (data.gear?.armor?.body) {
+    const radioToCheck = document.querySelector(`#armorSection input[data-slot="body"][value="${data.gear.armor.body}"]`);
+    if (radioToCheck) radioToCheck.checked = true;
+}
+if (data.gear?.armor?.head) {
+    const radioToCheck = document.querySelector(`#armorSection input[data-slot="head"][value="${data.gear.armor.head}"]`);
+    if (radioToCheck) radioToCheck.checked = true;
+}
 }
