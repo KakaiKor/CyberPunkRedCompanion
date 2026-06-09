@@ -155,3 +155,42 @@ body.cyberpunk-theme ::-webkit-scrollbar-thumb {
     border-bottom: 2px solid var(--yellow-color);
     border-right: 2px solid var(--yellow-color);
 }
+body.cyberpunk-theme .role-card {
+    background: var(--black-color);
+    border-color: var(--yellow-color);
+}
+body.cyberpunk-theme .role-card:hover {
+    border-color: var(--red-color);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.5);
+}
+body.cyberpunk-theme .role-name {
+    color: var(--yellow-color);
+}
+body.cyberpunk-theme .role-skill {
+    background: var(--yellow-color);
+    color: var(--black-color);
+}
+body.cyberpunk-theme .role-details-btn {
+    background: var(--red-color);
+    color: var(--black-color);
+}
+body.cyberpunk-theme .role-details-btn:hover {
+    background: var(--yellow-color);
+}
+body.cyberpunk-theme .role-card {
+    padding: 8px 12px;
+    gap: 6px;
+}
+body.cyberpunk-theme .role-name {
+    font-size: 1rem;
+}
+body.cyberpunk-theme .role-skill {
+    font-size: 0.65rem;
+}
+body.cyberpunk-theme .role-desc-preview {
+    font-size: 0.7rem;
+}
+body.cyberpunk-theme .role-details-btn {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+}
