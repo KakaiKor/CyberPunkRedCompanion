@@ -518,79 +518,108 @@ export class CharacterHelper {
     }
 
     enableEditMode(card) {
-        const char = loadCharacter();
-        if (!char) return;
-        let baseStats = char.baseStats;
-        const baseStatsAttr = card.getAttribute('data-base-stats');
-        if (baseStatsAttr && baseStatsAttr !== 'null') {
-            try {
-                baseStats = JSON.parse(baseStatsAttr);
-            } catch(e) {}
-        }
-        if (!baseStats) {
-            baseStats = { INT:6, REF:6, DEX:6, TECH:6, COOL:6, WILL:6, LUCK:6, MOVE:6, BODY:6, EMP:6 };
-        }
-        const nameSpan = card.querySelector('[data-field="name"]');
-        const roleSpan = card.querySelector('[data-field="role"]');
-        if (!nameSpan || !roleSpan) return;
-        const currentRole = roleSpan.innerText;
-        roleSpan.innerHTML = `<select class="edit-select">${this.getRoleOptions(currentRole)}</select>`;
-
-        card.querySelectorAll('.stat-item').forEach(item => {
-            const statNameElem = item.querySelector('.stat-name');
-            if (statNameElem) {
-                const statName = statNameElem.innerText;
-                const baseValue = baseStats[statName] || 6;
-                const valueSpan = item.querySelector('.stat-value');
-                if (valueSpan) {
-                    valueSpan.outerHTML = `<input type="number" class="edit-stat" data-stat="${statName}" value="${baseValue}" min="2" max="8">`;
-                }
-            }
-        });
-
-        card.querySelectorAll('.skill-item').forEach(item => {
-            const skillNameElem = item.querySelector('.skill-name');
-            const skillLevelElem = item.querySelector('.skill-level');
-            if (skillNameElem && skillLevelElem) {
-                const skillName = skillNameElem.innerText;
-                const skillLevel = skillLevelElem.innerText;
-                item.innerHTML = `<span class="skill-name">${skillName}</span><input type="number" class="edit-skill" data-skill="${skillName}" value="${skillLevel}" min="0" max="10">`;
-            }
-        });
-
-        const hpDiv = card.querySelector('.derived-stats div:first-child');
-        if (hpDiv) {
-            const match = hpDiv.innerText.match(/ПЗ:\s*(\d+)\s*\/\s*(\d+)/);
-            if (match) {
-                const current = match[1];
-                const max = match[2];
-                hpDiv.innerHTML = `<label>ПЗ: <input type="number" class="edit-hp" value="${current}" min="0" max="${max}" style="width:70px"> / ${max}</label>`;
-            }
-        }
-
-        const existingEditMoney = card.querySelector('.edit-money');
-        if (!existingEditMoney) {
-            const moneySpan = card.querySelector('.char-money');
-            if (moneySpan) {
-                let currentMoney = parseInt(moneySpan.innerText);
-                if (isNaN(currentMoney)) currentMoney = 0;
-                moneySpan.innerHTML = `<input type="number" class="edit-money" value="${currentMoney}" min="0" step="100" style="width:100px">`;
-            }
-        }
-
-        this.makeEquipmentEditable(card);
-        const editBtn = card.querySelector('.edit-card-btn');
-        if (editBtn) {
-            editBtn.textContent = '💾 Сохранить';
-            editBtn.classList.add('save-card-btn');
-            editBtn.classList.remove('edit-card-btn');
-            const oldHandler = editBtn._clickHandler;
-            if (oldHandler) editBtn.removeEventListener('click', oldHandler);
-            const saveHandler = () => this.disableEditMode(card);
-            editBtn.addEventListener('click', saveHandler);
-            editBtn._clickHandler = saveHandler;
+    const char = loadCharacter();
+    if (!char) return;
+    
+    // 1. Пытаемся получить baseStats из атрибута карточки
+    let baseStats = null;
+    const baseStatsAttr = card.getAttribute('data-base-stats');
+    if (baseStatsAttr && baseStatsAttr !== 'null') {
+        try {
+            baseStats = JSON.parse(baseStatsAttr);
+        } catch(e) {
+            console.warn('Ошибка парсинга baseStatsAttr', e);
         }
     }
+    // 2. Если не получилось – берём из сохранённого персонажа
+    if (!baseStats) {
+        baseStats = char.baseStats;
+    }
+    // 3. Если и там нет – создаём из текущих модифицированных характеристик (НЕПРАВИЛЬНО, но хоть что-то)
+    if (!baseStats) {
+        baseStats = {
+            INT: char.INT || 6, REF: char.REF || 6, DEX: char.DEX || 6,
+            TECH: char.TECH || 6, COOL: char.COOL || 6, WILL: char.WILL || 6,
+            LUCK: char.LUCK || 6, MOVE: char.MOVE || 6, BODY: char.BODY || 6, EMP: char.EMP || 6
+        };
+        // Корректируем BODY, если есть импланты (вычитаем бонус)
+        const cyberware = char.cyberware || [];
+        let bonusBody = 0;
+        for (const implant of cyberware) {
+            const name = implant.toLowerCase();
+            if (name.includes('искусственные мышцы') || name.includes('усиленные кости')) bonusBody += 2;
+            if (name.includes('эндоскелет')) bonusBody = 0; // эндоскелет заменяет, не суммируется
+        }
+        if (bonusBody > 0 && baseStats.BODY > (char.baseStats?.BODY || 6)) {
+            baseStats.BODY = Math.max(2, baseStats.BODY - bonusBody);
+        }
+    }
+
+    const nameSpan = card.querySelector('[data-field="name"]');
+    const roleSpan = card.querySelector('[data-field="role"]');
+    if (!nameSpan || !roleSpan) return;
+    const currentRole = roleSpan.innerText;
+    roleSpan.innerHTML = `<select class="edit-select">${this.getRoleOptions(currentRole)}</select>`;
+
+    // Характеристики – используем baseStats
+    card.querySelectorAll('.stat-item').forEach(item => {
+        const statNameElem = item.querySelector('.stat-name');
+        if (statNameElem) {
+            const statName = statNameElem.innerText;
+            const baseValue = baseStats[statName] || 6;
+            const valueSpan = item.querySelector('.stat-value');
+            if (valueSpan) {
+                valueSpan.outerHTML = `<input type="number" class="edit-stat" data-stat="${statName}" value="${baseValue}" min="2" max="8">`;
+            }
+        }
+    });
+
+    // Навыки (без изменений)
+    card.querySelectorAll('.skill-item').forEach(item => {
+        const skillNameElem = item.querySelector('.skill-name');
+        const skillLevelElem = item.querySelector('.skill-level');
+        if (skillNameElem && skillLevelElem) {
+            const skillName = skillNameElem.innerText;
+            const skillLevel = skillLevelElem.innerText;
+            item.innerHTML = `<span class="skill-name">${skillName}</span><input type="number" class="edit-skill" data-skill="${skillName}" value="${skillLevel}" min="0" max="10">`;
+        }
+    });
+
+    // ПЗ
+    const hpDiv = card.querySelector('.derived-stats div:first-child');
+    if (hpDiv) {
+        const match = hpDiv.innerText.match(/ПЗ:\s*(\d+)\s*\/\s*(\d+)/);
+        if (match) {
+            const current = match[1];
+            const max = match[2];
+            hpDiv.innerHTML = `<label>ПЗ: <input type="number" class="edit-hp" value="${current}" min="0" max="${max}" style="width:70px"> / ${max}</label>`;
+        }
+    }
+
+    // Деньги
+    const existingEditMoney = card.querySelector('.edit-money');
+    if (!existingEditMoney) {
+        const moneySpan = card.querySelector('.char-money');
+        if (moneySpan) {
+            let currentMoney = parseInt(moneySpan.innerText);
+            if (isNaN(currentMoney)) currentMoney = 0;
+            moneySpan.innerHTML = `<input type="number" class="edit-money" value="${currentMoney}" min="0" step="100" style="width:100px">`;
+        }
+    }
+
+    this.makeEquipmentEditable(card);
+    const editBtn = card.querySelector('.edit-card-btn');
+    if (editBtn) {
+        editBtn.textContent = '💾 Сохранить';
+        editBtn.classList.add('save-card-btn');
+        editBtn.classList.remove('edit-card-btn');
+        const oldHandler = editBtn._clickHandler;
+        if (oldHandler) editBtn.removeEventListener('click', oldHandler);
+        const saveHandler = () => this.disableEditMode(card);
+        editBtn.addEventListener('click', saveHandler);
+        editBtn._clickHandler = saveHandler;
+    }
+}
 
     getRoleOptions(selectedRole) {
         const roles = ["Рокербой","Соло","Нетраннер","Техник","Медтех","Медиа","Законник","Менеджер","Фиксер","Кочевник"];
