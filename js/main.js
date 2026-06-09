@@ -472,43 +472,16 @@ function refreshStatsAndSkillsEditor() {
 }
 
 function loadStatsEditor() {
-    const char = loadCharacter();
-    if (!char) return;
-    const baseStats = char.baseStats || {
-        INT: char.INT||6, REF: char.REF||6, DEX: char.DEX||6,
-        TECH: char.TECH||6, COOL: char.COOL||6, WILL: char.WILL||6,
-        LUCK: char.LUCK||6, MOVE: char.MOVE||6, BODY: char.BODY||6, EMP: char.EMP||6
-    };
+    const statsGrid = document.getElementById('statsGridEditor');
+    if (!statsGrid) return;
     const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
     let html = '';
     stats.forEach(stat => {
-        const value = baseStats[stat] || 6;
+        const value = currentCharacter[stat] || 6;
         html += `<label>${stat}: <input type="number" id="stat_${stat}" min="2" max="8" value="${value}"></label>`;
     });
-    document.getElementById('statsGridEditor').innerHTML = html;
+    statsGrid.innerHTML = html;
 }
-
-document.getElementById('saveStatsBtn')?.addEventListener('click', () => {
-    const char = loadCharacter();
-    if (!char) return;
-    if (!char.baseStats) {
-        char.baseStats = {
-            INT: char.INT||6, REF: char.REF||6, DEX: char.DEX||6,
-            TECH: char.TECH||6, COOL: char.COOL||6, WILL: char.WILL||6,
-            LUCK: char.LUCK||6, MOVE: char.MOVE||6, BODY: char.BODY||6, EMP: char.EMP||6
-        };
-    }
-    const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
-    stats.forEach(stat => {
-        const input = document.getElementById(`stat_${stat}`);
-        if (input) char.baseStats[stat] = parseInt(input.value) || 6;
-    });
-    const modified = window.characterHelper.applyCyberwareModifiers(char.baseStats, char.cyberware || []);
-    stats.forEach(stat => { char[stat] = modified[stat]; });
-    saveCharacter(char);
-    if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
-    alert('Характеристики сохранены');
-});
 
 function loadSkillsEditor() {
     const container = document.getElementById('skillsListEditor');
@@ -662,7 +635,7 @@ modalCloseBtns.forEach(btn => {
         readyLine.innerText = '> Система готова. Введите "help" для списка команд.';
         terminalOutput.appendChild(readyLine);
         terminalInput.disabled = false;
-        terminalInput.focus();
+        // terminalInput.focus();
     }
 
     // Функция анимации
@@ -675,7 +648,7 @@ modalCloseBtns.forEach(btn => {
             readyLine.innerText = '> Система готова. Введите "help" для списка команд.';
             terminalOutput.appendChild(readyLine);
             terminalInput.disabled = false;
-            terminalInput.focus();
+            // terminalInput.focus();
             animationActive = false;
             return;
         }
