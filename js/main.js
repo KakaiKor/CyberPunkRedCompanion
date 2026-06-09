@@ -472,16 +472,43 @@ function refreshStatsAndSkillsEditor() {
 }
 
 function loadStatsEditor() {
-    const statsGrid = document.getElementById('statsGridEditor');
-    if (!statsGrid) return;
+    const char = loadCharacter();
+    if (!char) return;
+    const baseStats = char.baseStats || {
+        INT: char.INT||6, REF: char.REF||6, DEX: char.DEX||6,
+        TECH: char.TECH||6, COOL: char.COOL||6, WILL: char.WILL||6,
+        LUCK: char.LUCK||6, MOVE: char.MOVE||6, BODY: char.BODY||6, EMP: char.EMP||6
+    };
     const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
     let html = '';
     stats.forEach(stat => {
-        const value = currentCharacter[stat] || 6;
+        const value = baseStats[stat] || 6;
         html += `<label>${stat}: <input type="number" id="stat_${stat}" min="2" max="8" value="${value}"></label>`;
     });
-    statsGrid.innerHTML = html;
+    document.getElementById('statsGridEditor').innerHTML = html;
 }
+
+document.getElementById('saveStatsBtn')?.addEventListener('click', () => {
+    const char = loadCharacter();
+    if (!char) return;
+    if (!char.baseStats) {
+        char.baseStats = {
+            INT: char.INT||6, REF: char.REF||6, DEX: char.DEX||6,
+            TECH: char.TECH||6, COOL: char.COOL||6, WILL: char.WILL||6,
+            LUCK: char.LUCK||6, MOVE: char.MOVE||6, BODY: char.BODY||6, EMP: char.EMP||6
+        };
+    }
+    const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
+    stats.forEach(stat => {
+        const input = document.getElementById(`stat_${stat}`);
+        if (input) char.baseStats[stat] = parseInt(input.value) || 6;
+    });
+    const modified = window.characterHelper.applyCyberwareModifiers(char.baseStats, char.cyberware || []);
+    stats.forEach(stat => { char[stat] = modified[stat]; });
+    saveCharacter(char);
+    if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+    alert('Характеристики сохранены');
+});
 
 function loadSkillsEditor() {
     const container = document.getElementById('skillsListEditor');

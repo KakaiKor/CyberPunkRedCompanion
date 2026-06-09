@@ -18,129 +18,36 @@ export class CharacterHelper {
     applyCyberwareModifiers(baseStats, cyberwareList) {
     if (!baseStats) return {};
     const result = { ...baseStats };
-    // Бонусы, которые суммируются
-    let bonuses = {
-        BODY: 0,
-        MOVE: 0,
-        REF: 0,
-        DEX: 0,
-        initiative: 0,
-        perception: 0,
-        resistance: 0
+    const implantModifiers = {
+        "Керензиков": { initiative: 2 },
+        "Искусственные мышцы и усиленные кости": { BODY: 2, maxBody: 10 },
+        "Эндоскелет Сигма": { replaceBody: true, bodyValue: 12 },
+        "Эндоскелет Бета": { replaceBody: true, bodyValue: 14 },
+        "Роликовая стопа": { movement: 6 },
+        // добавьте другие импланты по необходимости
     };
-    let replaceBody = null;      // для эндоскелетов
-    let extraEffects = [];       // для отображения в карточке (не обязательно)
-
+    let bonuses = { BODY: 0, MOVE: 0 };
+    let replaceBody = null;
     for (const implant of cyberwareList) {
-        const name = implant.toLowerCase();
-
-        // ---------- BODY ----------
-        if (name.includes('искусственные мышцы') || name.includes('усиленные кости')) {
-            bonuses.BODY += 2;
-            extraEffects.push('+2 к ТЕЛО');
+        const mod = implantModifiers[implant];
+        if (mod) {
+            if (mod.BODY) bonuses.BODY += mod.BODY;
+            if (mod.movement) bonuses.MOVE += mod.movement;
+            if (mod.replaceBody) replaceBody = mod;
         }
-        if (name.includes('эндоскелет сигма')) {
-            replaceBody = { value: 12, display: 'Эндоскелет Сигма (ТЕЛО=12)' };
-        }
-        if (name.includes('эндоскелет бета')) {
-            replaceBody = { value: 14, display: 'Эндоскелет Бета (ТЕЛО=14)' };
-        }
-
-        // ---------- MOVE ----------
-        if (name.includes('роликовая стопа')) {
-            bonuses.MOVE += 6;
-            extraEffects.push('+6 к Скорости');
-        }
-
-        // ---------- ИНИЦИАТИВА (REF) ----------
-        if (name.includes('керензиков')) {
-            bonuses.initiative += 2;
-            extraEffects.push('+2 к инициативе');
-        }
-        if (name.includes('сандевистан')) {
-            // временный бонус, сохраним как строку
-            extraEffects.push('Сандевистан: +3 к инициативе на 1 минуту (активация)');
-        }
-
-        // ---------- ВОСПРИЯТИЕ ----------
-        if (name.includes('прицельный модуль')) {
-            bonuses.perception += 1;
-            extraEffects.push('+1 к прицельным выстрелам');
-        }
-        if (name.includes('улучшение изображения')) {
-            bonuses.perception += 2;
-            extraEffects.push('+2 к Восприятию, чтению по губам');
-        }
-        if (name.includes('усиленный слух')) {
-            bonuses.perception += 2;
-            extraEffects.push('+2 к Восприятию (слух)');
-        }
-        if (name.includes('анализатор голосового напряжения')) {
-            bonuses.perception += 2;
-            extraEffects.push('+2 к Проницательности и Допросу (детектор лжи)');
-        }
-
-        // ---------- БРОНЯ ----------
-        if (name.includes('подкожная броня')) {
-            extraEffects.push('Подкожная броня: ОС 11 на тело и голову');
-        }
-        if (name.includes('плетёная кожа')) {
-            extraEffects.push('Плетёная кожа: ОС 7 + регенерация 1 ОС/день');
-        }
-
-        // ---------- СОПРОТИВЛЕНИЕ ----------
-        if (name.includes('связыватели токсинов')) {
-            bonuses.resistance += 2;
-            extraEffects.push('+2 к Сопротивлению пыткам/наркотикам');
-        }
-        if (name.includes('назальные фильтры')) {
-            extraEffects.push('Иммунитет к газам');
-        }
-        if (name.includes('жабры')) {
-            extraEffects.push('Дыхание под водой');
-        }
-
-        // ---------- РЕГЕНЕРАЦИЯ ----------
-        if (name.includes('усиленные антитела')) {
-            extraEffects.push('Регенерация: ТЕЛО×2 ПЗ в день');
-        }
-
-        // ---------- ДРУГИЕ (добавьте по необходимости) ----------
-        // Например: "Тензорные волокна" -> +2 DEX
-        // if (name.includes('тензорные волокна')) bonuses.DEX += 2;
     }
-
-    // Применяем замену BODY, если есть эндоскелет
     if (replaceBody) {
-        result.BODY = replaceBody.value;
+        result.BODY = replaceBody.bodyValue;
     } else {
         let newBody = (baseStats.BODY || 6) + bonuses.BODY;
         if (newBody > 10) newBody = 10;
         result.BODY = newBody;
     }
-
-    // Применяем бонусы к другим характеристикам
     let newMove = (baseStats.MOVE || 6) + bonuses.MOVE;
     if (newMove > 10) newMove = 10;
     result.MOVE = newMove;
-
-    let newRef = (baseStats.REF || 6) + bonuses.REF;
-    if (newRef > 10) newRef = 10;
-    result.REF = newRef;
-
-    let newDex = (baseStats.DEX || 6) + bonuses.DEX;
-    if (newDex > 10) newDex = 10;
-    result.DEX = newDex;
-
-    // Сохраняем не характеризующие бонусы в служебные поля для отображения в карточке
-    if (bonuses.initiative > 0) result._initiativeBonus = bonuses.initiative;
-    if (bonuses.perception > 0) result._perceptionBonus = bonuses.perception;
-    if (bonuses.resistance > 0) result._resistanceBonus = bonuses.resistance;
-    if (extraEffects.length) result._extraEffects = extraEffects;
-
     return result;
 }
-
     buildStatsGrid() {
         const container = document.getElementById('statsGrid');
         if (!container) return;
@@ -236,21 +143,20 @@ export class CharacterHelper {
 
     // ========== КАРТОЧКА ПЕРСОНАЖА ==========
     buildCharacterCard(cardData) {
-        const { name, role, roleRank = 4, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar = '', money = 0, baseStats = null } = cardData;
-        const container = document.getElementById('characterCardContainer');
-        if (!container) return;
-        const cardHtml = this.buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats });
-        container.innerHTML = cardHtml;
-        this.attachCardEventHandlers();
-        const editBtn = container.querySelector('.edit-card-btn');
-        const syncBtn = container.querySelector('.sync-card-btn');
-        if (editBtn) editBtn.addEventListener('click', () => this.enableEditMode(container.querySelector('.character-card')));
-        if (syncBtn) syncBtn.addEventListener('click', () => this.syncFromTabs());
-    }
+    const { name, role, roleRank = 4, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar = '', money = 0, baseStats = null } = cardData;
+    const container = document.getElementById('characterCardContainer');
+    if (!container) return;
+    const cardHtml = this.buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats });
+    container.innerHTML = cardHtml;
+    this.attachCardEventHandlers();
+    const editBtn = container.querySelector('.edit-card-btn');
+    const syncBtn = container.querySelector('.sync-card-btn');
+    if (editBtn) editBtn.addEventListener('click', () => this.enableEditMode(container.querySelector('.character-card')));
+    if (syncBtn) syncBtn.addEventListener('click', () => this.syncFromTabs());
+}
 
-    buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats }) {
-        // Добавляем атрибут с baseStats для редактирования
-        const baseStatsAttr = baseStats ? JSON.stringify(baseStats) : '';
+buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats }) {
+    const baseStatsAttr = baseStats ? JSON.stringify(baseStats) : '';
         stats = stats || {};
         skills = skills || {};
         gear = gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
@@ -420,48 +326,56 @@ export class CharacterHelper {
     }
 
     displaySavedCharacterCard() {
-        let char = loadCharacter();
-        if (!char) return;
-        if (!char.baseStats) {
-            char.baseStats = {
-                INT: char.INT || 6, REF: char.REF || 6, DEX: char.DEX || 6,
-                TECH: char.TECH || 6, COOL: char.COOL || 6, WILL: char.WILL || 6,
-                LUCK: char.LUCK || 6, MOVE: char.MOVE || 6, BODY: char.BODY || 6, EMP: char.EMP || 6
-            };
-            saveCharacter(char);
-        }
-        const baseStats = char.baseStats;
-        const cyberware = char.cyberware || [];
-        const modifiedStats = this.applyCyberwareModifiers(baseStats, cyberware);
-        const statsForDisplay = { ...modifiedStats };
-        delete statsForDisplay._initiativeBonus;
-        delete statsForDisplay._extraEffects;
-        const gear = char.gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
-        const skills = char.skills || {};
-        const body = modifiedStats.BODY, will = baseStats.WILL, emp = baseStats.EMP;
-        let maxHp = getHP(body, will);
-        let currentHp = char.currentHp || maxHp;
-        const severe = Math.ceil(maxHp / 2);
-        let humanityLoss = 0;
-        for (const name of cyberware) {
-            const implant = detailedCyberware.find(i => i.name === name);
-            if (implant) humanityLoss += parseInt(implant.humanity) || 0;
-        }
-        const humanity = Math.max(0, emp * 10 - humanityLoss);
-        const empFrom = Math.floor(humanity / 10);
-        const deathSave = body;
-        const money = char.money !== undefined ? char.money : 0;
-        this.buildCharacterCard({
-            name: char.name || 'Безымянный',
-            role: char.role || 'Без роли',
-            roleRank: char.roleRank || 4,
-            stats: statsForDisplay,
-            baseStats: baseStats,
-            skills, gear, cyberware, currentHp, maxHp, severe,
-            humanity, empFrom, deathSave,
-            notes: char.notes || '', avatar: char.avatar || '', money
-        });
+    let char = loadCharacter();
+    if (!char) return;
+    
+    // Если нет baseStats, создаём из текущих характеристик (предполагаем, что они базовые)
+    if (!char.baseStats) {
+        char.baseStats = {
+            INT: char.INT || 6, REF: char.REF || 6, DEX: char.DEX || 6,
+            TECH: char.TECH || 6, COOL: char.COOL || 6, WILL: char.WILL || 6,
+            LUCK: char.LUCK || 6, MOVE: char.MOVE || 6, BODY: char.BODY || 6, EMP: char.EMP || 6
+        };
+        saveCharacter(char);
     }
+    
+    const baseStats = char.baseStats;
+    const cyberware = char.cyberware || [];
+    const modifiedStats = this.applyCyberwareModifiers(baseStats, cyberware);
+    
+    // Объединяем: отображаем модифицированные, но для редактирования будем использовать baseStats
+    const statsForDisplay = { ...modifiedStats };
+    // Убираем служебные поля
+    delete statsForDisplay._initiativeBonus;
+    delete statsForDisplay._extraEffects;
+    
+    const gear = char.gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
+    const skills = char.skills || {};
+    const body = modifiedStats.BODY, will = baseStats.WILL, emp = baseStats.EMP;
+    let maxHp = getHP(body, will);
+    let currentHp = char.currentHp || maxHp;
+    const severe = Math.ceil(maxHp / 2);
+    let humanityLoss = 0;
+    for (const name of cyberware) {
+        const implant = detailedCyberware.find(i => i.name === name);
+        if (implant) humanityLoss += parseInt(implant.humanity) || 0;
+    }
+    const humanity = Math.max(0, emp * 10 - humanityLoss);
+    const empFrom = Math.floor(humanity / 10);
+    const deathSave = body;
+    const money = char.money !== undefined ? char.money : 0;
+    
+    this.buildCharacterCard({
+        name: char.name || 'Безымянный',
+        role: char.role || 'Без роли',
+        roleRank: char.roleRank || 4,
+        stats: statsForDisplay,     // модифицированные для отображения
+        baseStats: baseStats,       // передаём базовые для редактирования
+        skills, gear, cyberware, currentHp, maxHp, severe,
+        humanity, empFrom, deathSave,
+        notes: char.notes || '', avatar: char.avatar || '', money
+    });
+}
 
     exportCharacterToJSON() {
         const char = loadCharacter();
@@ -521,46 +435,19 @@ export class CharacterHelper {
     const char = loadCharacter();
     if (!char) return;
     
-    // 1. Пытаемся получить baseStats из атрибута карточки
-    let baseStats = null;
-    const baseStatsAttr = card.getAttribute('data-base-stats');
-    if (baseStatsAttr && baseStatsAttr !== 'null') {
-        try {
-            baseStats = JSON.parse(baseStatsAttr);
-        } catch(e) {
-            console.warn('Ошибка парсинга baseStatsAttr', e);
-        }
-    }
-    // 2. Если не получилось – берём из сохранённого персонажа
-    if (!baseStats) {
-        baseStats = char.baseStats;
-    }
-    // 3. Если и там нет – создаём из текущих модифицированных характеристик (НЕПРАВИЛЬНО, но хоть что-то)
-    if (!baseStats) {
-        baseStats = {
-            INT: char.INT || 6, REF: char.REF || 6, DEX: char.DEX || 6,
-            TECH: char.TECH || 6, COOL: char.COOL || 6, WILL: char.WILL || 6,
-            LUCK: char.LUCK || 6, MOVE: char.MOVE || 6, BODY: char.BODY || 6, EMP: char.EMP || 6
-        };
-        // Корректируем BODY, если есть импланты (вычитаем бонус)
-        const cyberware = char.cyberware || [];
-        let bonusBody = 0;
-        for (const implant of cyberware) {
-            const name = implant.toLowerCase();
-            if (name.includes('искусственные мышцы') || name.includes('усиленные кости')) bonusBody += 2;
-            if (name.includes('эндоскелет')) bonusBody = 0; // эндоскелет заменяет, не суммируется
-        }
-        if (bonusBody > 0 && baseStats.BODY > (char.baseStats?.BODY || 6)) {
-            baseStats.BODY = Math.max(2, baseStats.BODY - bonusBody);
-        }
-    }
-
+    // Базовые характеристики – берём из сохранённого персонажа
+    const baseStats = char.baseStats || {
+        INT: char.INT || 6, REF: char.REF || 6, DEX: char.DEX || 6,
+        TECH: char.TECH || 6, COOL: char.COOL || 6, WILL: char.WILL || 6,
+        LUCK: char.LUCK || 6, MOVE: char.MOVE || 6, BODY: char.BODY || 6, EMP: char.EMP || 6
+    };
+    
     const nameSpan = card.querySelector('[data-field="name"]');
     const roleSpan = card.querySelector('[data-field="role"]');
     if (!nameSpan || !roleSpan) return;
     const currentRole = roleSpan.innerText;
     roleSpan.innerHTML = `<select class="edit-select">${this.getRoleOptions(currentRole)}</select>`;
-
+    
     // Характеристики – используем baseStats
     card.querySelectorAll('.stat-item').forEach(item => {
         const statNameElem = item.querySelector('.stat-name');
@@ -573,7 +460,7 @@ export class CharacterHelper {
             }
         }
     });
-
+    
     // Навыки (без изменений)
     card.querySelectorAll('.skill-item').forEach(item => {
         const skillNameElem = item.querySelector('.skill-name');
@@ -584,7 +471,7 @@ export class CharacterHelper {
             item.innerHTML = `<span class="skill-name">${skillName}</span><input type="number" class="edit-skill" data-skill="${skillName}" value="${skillLevel}" min="0" max="10">`;
         }
     });
-
+    
     // ПЗ
     const hpDiv = card.querySelector('.derived-stats div:first-child');
     if (hpDiv) {
@@ -595,7 +482,7 @@ export class CharacterHelper {
             hpDiv.innerHTML = `<label>ПЗ: <input type="number" class="edit-hp" value="${current}" min="0" max="${max}" style="width:70px"> / ${max}</label>`;
         }
     }
-
+    
     // Деньги
     const existingEditMoney = card.querySelector('.edit-money');
     if (!existingEditMoney) {
@@ -606,7 +493,7 @@ export class CharacterHelper {
             moneySpan.innerHTML = `<input type="number" class="edit-money" value="${currentMoney}" min="0" step="100" style="width:100px">`;
         }
     }
-
+    
     this.makeEquipmentEditable(card);
     const editBtn = card.querySelector('.edit-card-btn');
     if (editBtn) {
@@ -672,100 +559,102 @@ export class CharacterHelper {
     }
 
     disableEditMode(card) {
-        const existingChar = loadCharacter() || {};
-        const newBaseStats = { ...(existingChar.baseStats || {}) };
-        card.querySelectorAll('.edit-stat').forEach(input => {
-            const statName = input.dataset.stat;
-            newBaseStats[statName] = parseInt(input.value) || 6;
-        });
-
-        const cardDiv = card.closest('.character-card');
-        let newName = cardDiv?.getAttribute('data-name') || 'Безымянный';
-        if (!newName || newName === 'Безымянный') {
-            newName = card.querySelector('.character-name')?.innerText || 'Безымянный';
-        }
-        const roleSelect = card.querySelector('[data-field="role"] select');
-        const newRole = roleSelect ? roleSelect.value : "Соло";
-
-        const newSkills = {};
-        card.querySelectorAll('.edit-skill').forEach(input => {
-            const skillName = input.dataset.skill;
-            newSkills[skillName] = parseInt(input.value) || 0;
-        });
-
-        const newGear = { weapons: [], cyberware: [], gear: [], armor: { body: '', head: '' } };
-        card.querySelectorAll('[data-weapons-list] li').forEach(li => {
-            let text = li.innerText.replace('✖', '').trim();
-            if (text.startsWith('🔫')) text = text.substring(1).trim();
-            if (text) newGear.weapons.push(text);
-        });
-        card.querySelectorAll('[data-cyber-list] li').forEach(li => {
-            let text = li.innerText.replace('✖', '').trim();
-            if (text.startsWith('🦾')) text = text.substring(1).trim();
-            if (text) newGear.cyberware.push(text);
-        });
-        card.querySelectorAll('[data-gear-list] li').forEach(li => {
-            let text = li.innerText.replace('✖', '').trim();
-            if (text.startsWith('📦')) text = text.substring(1).trim();
-            if (text) newGear.gear.push(text);
-        });
-        card.querySelectorAll('[data-armor-list] li').forEach(li => {
-            let text = li.innerText.replace('✖', '').trim();
-            if (text.includes('Тело:')) newGear.armor.body = text.replace('🛡️', '').trim();
-            else if (text.includes('Голова:')) newGear.armor.head = text.replace('⛑️', '').trim();
-        });
-
-        const editHp = card.querySelector('.edit-hp');
-        let newHp = null;
-        if (editHp) newHp = parseInt(editHp.value);
-
-        let newMoney = existingChar.money !== undefined ? existingChar.money : 0;
-        const editMoney = card.querySelector('.edit-money');
-        if (editMoney) {
-            const rawValue = editMoney.value.trim();
-            if (rawValue !== "") {
-                const val = parseInt(rawValue);
-                if (!isNaN(val) && val >= 0) newMoney = val;
-            }
-        }
-
-        const notesDiv = card.querySelector('.notes-preview');
-        const newNotes = notesDiv ? notesDiv.innerText : '';
-
-        const cyberwareList = newGear.cyberware;
-        const modifiedStats = this.applyCyberwareModifiers(newBaseStats, cyberwareList);
-
-        const charData = {
-            ...existingChar,
-            name: newName,
-            role: newRole,
-            roleRank: existingChar.roleRank || 4,
-            baseStats: newBaseStats,
-            INT: modifiedStats.INT,
-            REF: modifiedStats.REF,
-            DEX: modifiedStats.DEX,
-            TECH: modifiedStats.TECH,
-            COOL: modifiedStats.COOL,
-            WILL: modifiedStats.WILL,
-            LUCK: modifiedStats.LUCK,
-            MOVE: modifiedStats.MOVE,
-            BODY: modifiedStats.BODY,
-            EMP: modifiedStats.EMP,
-            skills: newSkills,
-            gear: newGear,
-            cyberware: cyberwareList,
-            style: existingChar.style || [],
-            lifestyle: existingChar.lifestyle || "100",
-            housing: existingChar.housing || "500",
-            notes: newNotes,
-            money: newMoney,
-            currentHp: newHp !== null ? newHp : (existingChar.currentHp || getHP(modifiedStats.BODY, modifiedStats.WILL))
-        };
-        saveCharacter(charData);
-        if (window.shopUI) window.shopUI.render();
-        if (window.inventoryUI) window.inventoryUI.render();
-        this.displaySavedCharacterCard();
+    const existingChar = loadCharacter() || {};
+    // Получаем новые базовые характеристики из полей ввода
+    const newBaseStats = { ...(existingChar.baseStats || {}) };
+    card.querySelectorAll('.edit-stat').forEach(input => {
+        const statName = input.dataset.stat;
+        newBaseStats[statName] = parseInt(input.value) || 6;
+    });
+    
+    // Получаем остальные данные из карточки
+    const cardDiv = card.closest('.character-card');
+    let newName = cardDiv?.getAttribute('data-name') || 'Безымянный';
+    if (!newName || newName === 'Безымянный') {
+        newName = card.querySelector('.character-name')?.innerText || 'Безымянный';
     }
+    const roleSelect = card.querySelector('[data-field="role"] select');
+    const newRole = roleSelect ? roleSelect.value : "Соло";
+    
+    const newSkills = {};
+    card.querySelectorAll('.edit-skill').forEach(input => {
+        const skillName = input.dataset.skill;
+        newSkills[skillName] = parseInt(input.value) || 0;
+    });
+    
+    // Снаряжение (кроме имплантов – их мы не трогаем, чтобы не потерять)
+    const newGear = { weapons: [], cyberware: [], gear: [], armor: { body: '', head: '' } };
+    card.querySelectorAll('[data-weapons-list] li').forEach(li => {
+        let text = li.innerText.replace('✖', '').trim();
+        if (text.startsWith('🔫')) text = text.substring(1).trim();
+        if (text) newGear.weapons.push(text);
+    });
+    // Импланты берём из existingChar, а не из карточки
+    newGear.cyberware = existingChar.cyberware || [];
+    card.querySelectorAll('[data-gear-list] li').forEach(li => {
+        let text = li.innerText.replace('✖', '').trim();
+        if (text.startsWith('📦')) text = text.substring(1).trim();
+        if (text) newGear.gear.push(text);
+    });
+    card.querySelectorAll('[data-armor-list] li').forEach(li => {
+        let text = li.innerText.replace('✖', '').trim();
+        if (text.includes('Тело:')) newGear.armor.body = text.replace('🛡️', '').trim();
+        else if (text.includes('Голова:')) newGear.armor.head = text.replace('⛑️', '').trim();
+    });
+    
+    const editHp = card.querySelector('.edit-hp');
+    let newHp = null;
+    if (editHp) newHp = parseInt(editHp.value);
+    
+    let newMoney = existingChar.money !== undefined ? existingChar.money : 0;
+    const editMoney = card.querySelector('.edit-money');
+    if (editMoney) {
+        const rawValue = editMoney.value.trim();
+        if (rawValue !== "") {
+            const val = parseInt(rawValue);
+            if (!isNaN(val) && val >= 0) newMoney = val;
+        }
+    }
+    
+    const notesDiv = card.querySelector('.notes-preview');
+    const newNotes = notesDiv ? notesDiv.innerText : '';
+    
+    // Используем старый список имплантов (existingChar.cyberware)
+    const cyberwareList = existingChar.cyberware || [];
+    const modifiedStats = this.applyCyberwareModifiers(newBaseStats, cyberwareList);
+    
+    const charData = {
+        ...existingChar,
+        name: newName,
+        role: newRole,
+        roleRank: existingChar.roleRank || 4,
+        baseStats: newBaseStats,
+        // Обновляем поля для обратной совместимости
+        INT: modifiedStats.INT,
+        REF: modifiedStats.REF,
+        DEX: modifiedStats.DEX,
+        TECH: modifiedStats.TECH,
+        COOL: modifiedStats.COOL,
+        WILL: modifiedStats.WILL,
+        LUCK: modifiedStats.LUCK,
+        MOVE: modifiedStats.MOVE,
+        BODY: modifiedStats.BODY,
+        EMP: modifiedStats.EMP,
+        skills: newSkills,
+        gear: newGear,
+        cyberware: cyberwareList,
+        style: existingChar.style || [],
+        lifestyle: existingChar.lifestyle || "100",
+        housing: existingChar.housing || "500",
+        notes: newNotes,
+        money: newMoney,
+        currentHp: newHp !== null ? newHp : (existingChar.currentHp || getHP(modifiedStats.BODY, modifiedStats.WILL))
+    };
+    saveCharacter(charData);
+    if (window.shopUI) window.shopUI.render();
+    if (window.inventoryUI) window.inventoryUI.render();
+    this.displaySavedCharacterCard();
+}
 
     syncFromTabs() {
         const name = document.getElementById('charName').value || 'Безымянный';
