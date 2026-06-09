@@ -16,31 +16,130 @@ export class CharacterHelper {
 
     // НОВЫЙ МЕТОД – применяет модификаторы имплантов к базовым характеристикам
     applyCyberwareModifiers(baseStats, cyberwareList) {
-        if (!baseStats) return {};
-        const result = { ...baseStats };
-        const implantModifiers = {
-            "Керензиков": { initiative: 2 },
-            "Искусственные мышцы и усиленные кости": { BODY: 2, maxBody: 10 },
-            "Эндоскелет Сигма": { replaceBody: true, bodyValue: 12 },
-            "Эндоскелет Бета": { replaceBody: true, bodyValue: 14 },
-            // добавьте другие импланты, влияющие на характеристики, при необходимости
-        };
-        let bonuses = { BODY: 0 };
-        let replaceBody = null;
-        for (const implant of cyberwareList) {
-            const mod = implantModifiers[implant];
-            if (mod) {
-                if (mod.BODY) bonuses.BODY += mod.BODY;
-                if (mod.replaceBody) replaceBody = mod;
-            }
+    if (!baseStats) return {};
+    const result = { ...baseStats };
+    // Бонусы, которые суммируются
+    let bonuses = {
+        BODY: 0,
+        MOVE: 0,
+        REF: 0,
+        DEX: 0,
+        initiative: 0,
+        perception: 0,
+        resistance: 0
+    };
+    let replaceBody = null;      // для эндоскелетов
+    let extraEffects = [];       // для отображения в карточке (не обязательно)
+
+    for (const implant of cyberwareList) {
+        const name = implant.toLowerCase();
+
+        // ---------- BODY ----------
+        if (name.includes('искусственные мышцы') || name.includes('усиленные кости')) {
+            bonuses.BODY += 2;
+            extraEffects.push('+2 к ТЕЛО');
         }
-        if (replaceBody) {
-            result.BODY = replaceBody.bodyValue;
-        } else {
-            result.BODY = Math.min((baseStats.BODY || 6) + bonuses.BODY, 10);
+        if (name.includes('эндоскелет сигма')) {
+            replaceBody = { value: 12, display: 'Эндоскелет Сигма (ТЕЛО=12)' };
         }
-        return result;
+        if (name.includes('эндоскелет бета')) {
+            replaceBody = { value: 14, display: 'Эндоскелет Бета (ТЕЛО=14)' };
+        }
+
+        // ---------- MOVE ----------
+        if (name.includes('роликовая стопа')) {
+            bonuses.MOVE += 6;
+            extraEffects.push('+6 к Скорости');
+        }
+
+        // ---------- ИНИЦИАТИВА (REF) ----------
+        if (name.includes('керензиков')) {
+            bonuses.initiative += 2;
+            extraEffects.push('+2 к инициативе');
+        }
+        if (name.includes('сандевистан')) {
+            // временный бонус, сохраним как строку
+            extraEffects.push('Сандевистан: +3 к инициативе на 1 минуту (активация)');
+        }
+
+        // ---------- ВОСПРИЯТИЕ ----------
+        if (name.includes('прицельный модуль')) {
+            bonuses.perception += 1;
+            extraEffects.push('+1 к прицельным выстрелам');
+        }
+        if (name.includes('улучшение изображения')) {
+            bonuses.perception += 2;
+            extraEffects.push('+2 к Восприятию, чтению по губам');
+        }
+        if (name.includes('усиленный слух')) {
+            bonuses.perception += 2;
+            extraEffects.push('+2 к Восприятию (слух)');
+        }
+        if (name.includes('анализатор голосового напряжения')) {
+            bonuses.perception += 2;
+            extraEffects.push('+2 к Проницательности и Допросу (детектор лжи)');
+        }
+
+        // ---------- БРОНЯ ----------
+        if (name.includes('подкожная броня')) {
+            extraEffects.push('Подкожная броня: ОС 11 на тело и голову');
+        }
+        if (name.includes('плетёная кожа')) {
+            extraEffects.push('Плетёная кожа: ОС 7 + регенерация 1 ОС/день');
+        }
+
+        // ---------- СОПРОТИВЛЕНИЕ ----------
+        if (name.includes('связыватели токсинов')) {
+            bonuses.resistance += 2;
+            extraEffects.push('+2 к Сопротивлению пыткам/наркотикам');
+        }
+        if (name.includes('назальные фильтры')) {
+            extraEffects.push('Иммунитет к газам');
+        }
+        if (name.includes('жабры')) {
+            extraEffects.push('Дыхание под водой');
+        }
+
+        // ---------- РЕГЕНЕРАЦИЯ ----------
+        if (name.includes('усиленные антитела')) {
+            extraEffects.push('Регенерация: ТЕЛО×2 ПЗ в день');
+        }
+
+        // ---------- ДРУГИЕ (добавьте по необходимости) ----------
+        // Например: "Тензорные волокна" -> +2 DEX
+        // if (name.includes('тензорные волокна')) bonuses.DEX += 2;
     }
+
+    // Применяем замену BODY, если есть эндоскелет
+    if (replaceBody) {
+        result.BODY = replaceBody.value;
+    } else {
+        let newBody = (baseStats.BODY || 6) + bonuses.BODY;
+        if (newBody > 10) newBody = 10;
+        result.BODY = newBody;
+    }
+
+    // Применяем бонусы к другим характеристикам
+    let newMove = (baseStats.MOVE || 6) + bonuses.MOVE;
+    if (newMove > 10) newMove = 10;
+    result.MOVE = newMove;
+
+    let newRef = (baseStats.REF || 6) + bonuses.REF;
+    if (newRef > 10) newRef = 10;
+    result.REF = newRef;
+
+    let newDex = (baseStats.DEX || 6) + bonuses.DEX;
+    if (newDex > 10) newDex = 10;
+    result.DEX = newDex;
+
+    // Сохраняем не характеризующие бонусы в служебные поля для отображения в карточке
+    if (bonuses.initiative > 0) result._initiativeBonus = bonuses.initiative;
+    if (bonuses.perception > 0) result._perceptionBonus = bonuses.perception;
+    if (bonuses.resistance > 0) result._resistanceBonus = bonuses.resistance;
+    if (extraEffects.length) result._extraEffects = extraEffects;
+
+    return result;
+}
 
     buildStatsGrid() {
         const container = document.getElementById('statsGrid');
