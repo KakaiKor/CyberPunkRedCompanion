@@ -634,46 +634,39 @@ this.data.gear.armor.head = headCheckbox ? headCheckbox.value : '';
 }
 
     saveCharacter() {
-        if (this.currentStep === 3) this.updateGearFromDOM();
-        const char = {
-            name: this.data.name || "Безымянный",
-            culture: this.data.culture,
-            role: this.data.role,
-            roleRank: this.data.roleRank,
-            INT: this.data.stats.INT,
-            REF: this.data.stats.REF,
-            DEX: this.data.stats.DEX,
-            TECH: this.data.stats.TECH,
-            COOL: this.data.stats.COOL,
-            WILL: this.data.stats.WILL,
-            LUCK: this.data.stats.LUCK,
-            MOVE: this.data.stats.MOVE,
-            BODY: this.data.stats.BODY,
-            EMP: this.data.stats.EMP,
-            skills: this.data.skills,
-            cyberware: this.data.cyberware,
-            gear: this.data.gear,
-            style: this.data.styleItems,
-            lifestyle: this.data.lifestyle,
-            housing: this.data.housing,
-            notes: this.data.notes,
-            avatar: this.data.avatar || ''
-        };
-        saveCharacter(char);
-        alert("Персонаж сохранён!");
-        localStorage.removeItem('wizard_progress');
-        this.currentStep = 0;
-        this.data = this.getDefaultData();
-        this.renderStep();
+    if (this.currentStep === 3) this.updateGearFromDOM();
+    const char = {
+        name: this.data.name || "Безымянный",
+        culture: this.data.culture,
+        role: this.data.role,
+        roleRank: this.data.roleRank,
+        baseStats: { ...this.data.stats },   // ← главное добавление
+        skills: this.data.skills,
+        cyberware: this.data.cyberware,
+        gear: this.data.gear,
+        style: this.data.styleItems,
+        lifestyle: this.data.lifestyle,
+        housing: this.data.housing,
+        notes: this.data.notes,
+        avatar: this.data.avatar || ''
+    };
+    // Добавляем также отдельные поля характеристик для обратной совместимости
+    Object.assign(char, this.data.stats);
+    saveCharacter(char);
+    alert("Персонаж сохранён!");
+    localStorage.removeItem('wizard_progress');
+    this.currentStep = 0;
+    this.data = this.getDefaultData();
+    this.renderStep();
 
-        if (window.characterHelper) {
-            window.characterHelper.displaySavedCharacterCard();
-        }
-        const modal = document.getElementById('wizardModal');
-        if (modal) modal.style.display = 'none';
-        const mainTab = document.querySelector('.main-tabs .tab-btn[data-tab="tab-character"]');
-        if (mainTab && !mainTab.classList.contains('active')) mainTab.click();
-        const subTab = document.querySelector('#tab-character .sub-tab-btn[data-sub="char-main"]');
-        if (subTab && !subTab.classList.contains('active')) subTab.click();
+    if (window.characterHelper) {
+        window.characterHelper.displaySavedCharacterCard();
     }
+    const modal = document.getElementById('wizardModal');
+    if (modal) modal.style.display = 'none';
+    const mainTab = document.querySelector('.main-tabs .tab-btn[data-tab="tab-character"]');
+    if (mainTab && !mainTab.classList.contains('active')) mainTab.click();
+    const subTab = document.querySelector('#tab-character .sub-tab-btn[data-sub="char-main"]');
+    if (subTab && !subTab.classList.contains('active')) subTab.click();
+}
 }

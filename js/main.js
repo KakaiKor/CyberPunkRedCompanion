@@ -278,45 +278,67 @@ const skillsPointsSpan = document.getElementById('skillsPointsRemaining');
 // Загрузка текущего персонажа
 let currentCharacter = loadCharacter();
 if (!currentCharacter) {
-    // Создаём заглушку, если нет персонажа
-    currentCharacter = { stats: { INT:6, REF:6, DEX:6, TECH:6, COOL:6, WILL:6, LUCK:6, MOVE:6, BODY:6, EMP:6 }, skills: {} };
+    currentCharacter = { baseStats: { INT:6, REF:6, DEX:6, TECH:6, COOL:6, WILL:6, LUCK:6, MOVE:6, BODY:6, EMP:6 }, skills: {} };
 }
-
 // Функция обновления редактора характеристик
 function loadStatsEditor() {
-    if (!currentCharacter) return;
+    const char = loadCharacter();
+    if (!char) return;
+    const baseStats = char.baseStats || {
+        INT: char.INT||6, REF: char.REF||6, DEX: char.DEX||6,
+        TECH: char.TECH||6, COOL: char.COOL||6, WILL: char.WILL||6,
+        LUCK: char.LUCK||6, MOVE: char.MOVE||6, BODY: char.BODY||6, EMP: char.EMP||6
+    };
     const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
     let html = '';
     stats.forEach(stat => {
-        const value = currentCharacter[stat] || 6;
+        const value = baseStats[stat] || 6;
         html += `<label>${stat}: <input type="number" id="stat_${stat}" min="2" max="8" value="${value}"></label>`;
     });
     statsGrid.innerHTML = html;
 }
 loadStatsEditor();
 
+
 // Сохранение характеристик
 saveStatsBtn?.addEventListener('click', () => {
+    const char = loadCharacter();
+    if (!char) return;
+    if (!char.baseStats) {
+        char.baseStats = {
+            INT: char.INT||6, REF: char.REF||6, DEX: char.DEX||6,
+            TECH: char.TECH||6, COOL: char.COOL||6, WILL: char.WILL||6,
+            LUCK: char.LUCK||6, MOVE: char.MOVE||6, BODY: char.BODY||6, EMP: char.EMP||6
+        };
+    }
     const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
     stats.forEach(stat => {
         const input = document.getElementById(`stat_${stat}`);
-        if (input) currentCharacter[stat] = parseInt(input.value) || 6;
+        if (input) char.baseStats[stat] = parseInt(input.value) || 6;
     });
-    saveCharacter(currentCharacter);
+    // Пересчитываем модифицированные для обратной совместимости
+    const modified = window.characterHelper.applyCyberwareModifiers(char.baseStats, char.cyberware || []);
+    stats.forEach(stat => { char[stat] = modified[stat]; });
+    saveCharacter(char);
     if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
     alert('Характеристики сохранены');
 });
 
 // Случайные характеристики
 randomStatsEditorBtn?.addEventListener('click', () => {
+    const char = loadCharacter();
+    if (!char) return;
+    if (!char.baseStats) char.baseStats = {};
     const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
     stats.forEach(stat => {
         const val = Math.floor(Math.random() * 7) + 2;
-        currentCharacter[stat] = val;
+        char.baseStats[stat] = val;
         const input = document.getElementById(`stat_${stat}`);
         if (input) input.value = val;
     });
-    saveCharacter(currentCharacter);
+    const modified = window.characterHelper.applyCyberwareModifiers(char.baseStats, char.cyberware || []);
+    stats.forEach(stat => { char[stat] = modified[stat]; });
+    saveCharacter(char);
     if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
     alert('Случайные характеристики сохранены');
 });
