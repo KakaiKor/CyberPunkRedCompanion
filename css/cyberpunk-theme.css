@@ -78,7 +78,9 @@ body.cyberpunk-theme .cyber-table th {
     color: var(--black-color);
 }
 body.cyberpunk-theme .cyber-table td {
-    border-color: var(--yellow-color);
+        border-color: var(--yellow-color);
+    color: var(--yellow-color);
+    text-shadow: 0 0 1px var(--yellow-color);
 }
 
 /* Вкладки */
