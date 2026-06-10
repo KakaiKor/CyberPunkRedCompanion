@@ -48,11 +48,12 @@
         </div>
 
         <div class="main-tabs">
-            <button class="tab-btn active" data-tab="tab-character">Персонаж</button>
-            <button class="tab-btn" data-tab="tab-gear">Снаряжение</button>
-            <button class="tab-btn" data-tab="tab-combat">Бой</button>
-            <button class="tab-btn" data-tab="tab-gm">GM инструменты</button>
-            <button class="tab-btn" data-tab="tab-market">Рынок & Трофеи</button>
+            <button class="tab-btn active" data-tab="tab-character"> Персонаж </button>
+            <button class="tab-btn" data-tab="tab-gear"> Снаряжение </button>
+            <button class="tab-btn" data-tab="tab-combat"> Бой </button>
+            <button class="tab-btn" data-tab="tab-netrunner"> Нетраннинг </button>
+            <button class="tab-btn" data-tab="tab-gm"> GM инструменты </button>
+            <button class="tab-btn" data-tab="tab-market"> Рынок & Трофеи </button>
         </div>
 
         <!-- ================= Панель ПЕРСОНАЖА ================= -->
@@ -361,7 +362,47 @@
                 </div>
             </div>
         </div>
-
+        <!-- Нетраннер -->
+<div id="tab-netrunner" class="main-pane">
+    <div class="sub-tabs">
+        <button class="sub-tab-btn active" data-sub="netrunner-cyberdeck">🖥️ Кибердека</button>
+        <button class="sub-tab-btn" data-sub="netrunner-architecture">🏛️ Архитектура сети</button>
+        <button class="sub-tab-btn" data-sub="netrunner-combat">⚔️ Сетевой бой</button>
+        <button class="sub-tab-btn" data-sub="netrunner-help">📖 Справка</button>
+    </div>
+    <div id="netrunner-cyberdeck" class="sub-pane active">
+        <div class="card">
+            <h3>🖥️ Кибердека и программы</h3>
+            <div id="netrunnerInterfaceContainer"></div>
+        </div>
+    </div>
+    <div id="netrunner-architecture" class="sub-pane">
+    <div class="card">
+        <h3> Архитектура сети </h3>
+        <p class="note">GM может загрузить архитектуру из JSON-файла. Вы можете проходить этажи, взламывать пароли, сражаться с чёрным льдом.</p>
+        <div class="architecture-controls">
+            <input type="file" id="netrunnerImportArchitectureInput" accept=".json" style="display:none">
+            <button id="netrunnerImportArchitectureBtn" class="cyber-btn">📥 Загрузить архитектуру от GM</button>
+            <button id="netrunnerResetArchitectureBtn" class="cyber-btn">🔄 Сбросить</button>
+        </div>
+        <div id="netrunnerArchitectureContainer" class="architecture-container">
+            <p>Нет загруженной архитектуры. Попросите GM экспортировать архитектуру и загрузите её.</p>
+        </div>
+    </div>
+</div>
+    <div id="netrunner-combat" class="sub-pane">
+        <div class="card">
+            <h3>⚔️ Сетевой бой</h3>
+            <p>Здесь будет симуляция сетевого боя.</p>
+        </div>
+    </div>
+    <div id="netrunner-help" class="sub-pane">
+        <div class="card">
+            <h3>📖 Краткое руководство по нетраннингу</h3>
+            <p>Здесь будет справка.</p>
+        </div>
+    </div>
+</div>
         <!-- Панель GM (оставлена без изменений, приведены основные блоки для краткости) -->
         <div id="tab-gm" class="main-pane">
             <div class="sub-tabs">
@@ -437,16 +478,49 @@
                 </div>
             </div>
             <div id="gm-net" class="sub-pane">
-                <div class="card">
-                    <h3>Архитектура сети</h3><label>Сложность: <select id="netComplexity">
-                            <option value="1">Низкая (СЛ6)</option>
-                            <option value="2">Средняя (СЛ8)</option>
-                            <option value="3">Высокая (СЛ10)</option>
-                            <option value="4">Очень высокая (СЛ12)</option>
-                        </select></label><button id="genNetArchBtn">🎲 Сгенерировать</button>
-                    <div id="netArchResult"></div>
-                </div>
+    <div class="card">
+        <h3>Архитектура сети</h3>
+        
+        <!-- ===== БЫСТРАЯ ТЕКСТОВАЯ ГЕНЕРАЦИЯ (старая) ===== -->
+        <details>
+            <summary>📄 Быстрая текстовая генерация</summary>
+            <label>Сложность: 
+                <select id="netComplexity">
+                    <option value="1">Низкая (СЛ6)</option>
+                    <option value="2">Средняя (СЛ8)</option>
+                    <option value="3">Высокая (СЛ10)</option>
+                    <option value="4">Очень высокая (СЛ12)</option>
+                </select>
+            </label>
+            <button id="genNetArchBtn">🎲 Сгенерировать</button>
+            <div id="netArchResult"></div>
+        </details>
+
+        <hr style="margin: 20px 0; border-color: #2a3342;">
+
+        <!-- ===== ВИЗУАЛЬНАЯ ИНТЕРАКТИВНАЯ АРХИТЕКТУРА (GM) ===== -->
+        <details open>
+            <summary>🏛️ Визуальная архитектура (GM)</summary>
+            <div class="architecture-controls">
+                <label>Сложность: 
+                    <select id="gmVisComplexity">
+                        <option value="easy">Лёгкая (СЛ6)</option>
+                        <option value="medium" selected>Средняя (СЛ8)</option>
+                        <option value="hard">Тяжёлая (СЛ10)</option>
+                    </select>
+                </label>
+                <button id="gmVisGenBtn" class="cyber-btn">🎲 Сгенерировать</button>
+                <button id="gmVisResetBtn" class="cyber-btn">🔄 Сбросить</button>
+                <button id="gmVisExportBtn" class="cyber-btn">💾 Экспорт JSON</button>
+                <input type="file" id="gmVisImportInput" accept=".json" style="display:none">
+                <button id="gmVisImportBtn" class="cyber-btn">📥 Импорт JSON</button>
             </div>
+            <div id="gmVisArchitectureContainer" class="architecture-container">
+                <p>Нажмите «Сгенерировать», чтобы создать архитектуру.</p>
+            </div>
+        </details>
+    </div>
+</div>
             <div id="gm-mooks" class="sub-pane">
                 <div class="card">
                     <h3>Генератор врагов</h3>

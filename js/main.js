@@ -19,7 +19,8 @@ import { allSkills, roleTemplates } from './data/skills-data.js';
 // import { NightMarket, TreasureGenerator, IdealShop } from './modules/market.js';
 import { renderGear } from './modules/gear.js';
 import { ShopUI, InventoryUI } from './modules/market/shop.js';
-
+import { NetrunnerInterface } from './modules/netrunner-interface.js';
+import { NetArchitectureUI } from './modules/net-architecture-ui.js';
 
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
@@ -123,8 +124,62 @@ document.addEventListener('DOMContentLoaded', () => {
     renderRoles();
     new CombatFormulas();
     window.characterHelper = new CharacterHelper();
+    // Нетраннер интерфейс
+    window.netrunnerInterface = new NetrunnerInterface('netrunnerInterfaceContainer');
+    window.netArchUI = new NetArchitectureUI('architectureContainer');
+    window.gmVisArchUI = new NetArchitectureUI('gmVisArchitectureContainer');
+    // Привязка кнопки генерации архитектуры (в новой вкладке)
+    // Привязка кнопок
+const gmVisGen = document.getElementById('gmVisGenBtn');
+if (gmVisGen) {
+    gmVisGen.addEventListener('click', () => {
+        const complexity = document.getElementById('gmVisComplexity')?.value || 'medium';
+        window.gmVisArchUI.generateWithComplexity(complexity);
+    });
+}
+const gmVisReset = document.getElementById('gmVisResetBtn');
+if (gmVisReset) {
+    gmVisReset.addEventListener('click', () => window.gmVisArchUI.reset());
+}
+const gmVisExport = document.getElementById('gmVisExportBtn');
+if (gmVisExport) {
+    gmVisExport.addEventListener('click', () => {
+        const json = window.gmVisArchUI.exportToJSON();
+        if (json) {
+            const blob = new Blob([json], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `gm_vis_architecture_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+    });
+}
+
+const gmVisImportBtn = document.getElementById('gmVisImportBtn');
+const gmVisImportInput = document.getElementById('gmVisImportInput');
+if (gmVisImportBtn && gmVisImportInput) {
+    gmVisImportBtn.addEventListener('click', () => gmVisImportInput.click());
+    gmVisImportInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                window.gmVisArchUI.importFromJSON(ev.target.result);
+                gmVisImportInput.value = '';
+            };
+            reader.readAsText(file);
+        }
+    });
+}
+    const genArchBtn = document.getElementById('genNetArchBtn');
+    if (genArchBtn) {
+    genArchBtn.addEventListener('click', () => generateNetArchitecture());
+    }
+
     window.shopUI = new ShopUI();
     window.inventoryUI = new InventoryUI();
+    window.playerNetArchUI = new NetArchitectureUI('netrunnerArchitectureContainer');
 
     document.getElementById('calcExpensesBtn')?.addEventListener('click', () => ExpensesCalc.calc());
     document.getElementById('generateTreasureBtn')?.addEventListener('click', () => TreasureGenerator.generate());
@@ -141,7 +196,36 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('addCyberBtn')?.addEventListener('click', addCyberware);
     document.getElementById('calculateIpBtn')?.addEventListener('click', calculateIp);
 
+// Привязываем кнопки импорта и сброса в разделе "Нетраннинг → Архитектура сети"
+const importArchBtn = document.getElementById('netrunnerImportArchitectureBtn');
+const importArchInput = document.getElementById('netrunnerImportArchitectureInput');
+const resetArchBtn = document.getElementById('netrunnerResetArchitectureBtn');
 
+if (importArchBtn && importArchInput) {
+    importArchBtn.addEventListener('click', () => importArchInput.click());
+    importArchInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const success = window.playerNetArchUI.importFromJSON(ev.target.result);
+                if (success) {
+                    alert('Архитектура загружена. Можно приступать к нетраннингу!');
+                } else {
+                    alert('Ошибка: неверный формат JSON.');
+                }
+                importArchInput.value = '';
+            };
+            reader.readAsText(file);
+        }
+    });
+}
+
+if (resetArchBtn) {
+    resetArchBtn.addEventListener('click', () => {
+        window.playerNetArchUI.reset();
+    });
+}
 // ========== ФИЛЬТРАЦИЯ СНАРЯЖЕНИЯ ==========
 const gearSearch = document.getElementById('gearSearchInput');
 const clearGearBtn = document.getElementById('clearGearSearchBtn');
