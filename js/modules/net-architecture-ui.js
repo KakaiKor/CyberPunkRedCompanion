@@ -165,7 +165,81 @@ export class NetArchitectureUI {
 
         window.addEventListener('characterUpdated', () => this.render());
     }
+    // Добавить в класс NetArchitectureUI
 
+renderMinimap() {
+    if (!this.architecture || !this.architecture.main) return '';
+    
+    const mainFloors = this.architecture.main;
+    const branches = this.architecture.branches || [];
+    
+    let html = `<div class="minimap">
+                    <h4>🗺️ Архитектура сети (схема)</h4>
+                    <div class="minimap-main">`;
+    
+    // Рендер основной ветки
+    for (let i = 0; i < mainFloors.length; i++) {
+        const floor = mainFloors[i];
+        const isCurrent = (this.currentBranch === null && this.currentFloorIndex === i);
+        const isResolved = floor.isResolved;
+        const isIce = floor.type === FLOOR_TYPES.ICE;
+        
+        let icon = '📄';
+        if (floor.type === FLOOR_TYPES.PASSWORD) icon = '🔒';
+        else if (floor.type === FLOOR_TYPES.CONTROL_NODE) icon = '🎮';
+        else if (floor.type === FLOOR_TYPES.ICE) icon = '💀';
+        
+        let statusClass = '';
+        if (isCurrent) statusClass = 'current';
+        else if (isResolved) statusClass = 'resolved';
+        else if (isIce && !isResolved) statusClass = 'ice';
+        
+        html += `<div class="minimap-node ${statusClass}" data-type="main" data-index="${i}" title="${floor.type}">
+                    <span class="minimap-icon">${icon}</span>
+                </div>`;
+        
+        // Разделитель между этажами (кроме последнего)
+        if (i < mainFloors.length - 1) html += `<div class="minimap-connector">│</div>`;
+    }
+    
+    html += `</div>`;
+    
+    // Рендер ответвлений (каждое в отдельном блоке)
+    for (const branch of branches) {
+        const attachFloor = mainFloors[branch.attachAt];
+        if (!attachFloor) continue;
+        
+        html += `<div class="minimap-branch" style="margin-left: 40px;">
+                    <div class="minimap-branch-label">↳ Ответвление от этажа ${branch.attachAt+1}</div>
+                    <div class="minimap-branch-floors">`;
+        
+        for (let i = 0; i < branch.floors.length; i++) {
+            const floor = branch.floors[i];
+            const isCurrent = (this.currentBranch === branch.id && this.currentFloorIndex === i);
+            const isResolved = floor.isResolved;
+            const isIce = floor.type === FLOOR_TYPES.ICE;
+            
+            let icon = '📄';
+            if (floor.type === FLOOR_TYPES.PASSWORD) icon = '🔒';
+            else if (floor.type === FLOOR_TYPES.CONTROL_NODE) icon = '🎮';
+            else if (floor.type === FLOOR_TYPES.ICE) icon = '💀';
+            
+            let statusClass = '';
+            if (isCurrent) statusClass = 'current';
+            else if (isResolved) statusClass = 'resolved';
+            else if (isIce && !isResolved) statusClass = 'ice';
+            
+            html += `<div class="minimap-node ${statusClass}" data-type="branch" data-branch="${branch.id}" data-index="${i}" title="${floor.type}">
+                        <span class="minimap-icon">${icon}</span>
+                    </div>`;
+            if (i < branch.floors.length - 1) html += `<div class="minimap-connector">│</div>`;
+        }
+        html += `</div></div>`;
+    }
+    
+    html += `</div>`;
+    return html;
+}
     init() {
         this.renderEmpty();
         document.getElementById('genArchitectureBtn')?.addEventListener('click', () => this.generateNew());
@@ -777,7 +851,7 @@ export class NetArchitectureUI {
                         <button class="nav-next" ${this.isLastFloor() ? 'disabled' : ''}>Вперёд ▶</button>
                     </div>`;
         html += this.renderFloorCard(currentFloor);
-        
+        html += this.renderMinimap();
         if (this.currentBranch === null) {
             const branchesHere = this.architecture.branches.filter(b => b.attachAt === this.currentFloorIndex);
             if (branchesHere.length) {
@@ -868,6 +942,23 @@ export class NetArchitectureUI {
                 this.useProgram(floorId, programName);
             });
         });
+        this.container.querySelectorAll('.minimap-node').forEach(node => {
+    node.addEventListener('click', () => {
+        const type = node.dataset.type;
+        const index = parseInt(node.dataset.index);
+        if (type === 'main') {
+            // Переключиться на основную ветку
+            this.currentBranch = null;
+            this.currentFloorIndex = index;
+            this.render();
+        } else if (type === 'branch') {
+            const branchId = parseInt(node.dataset.branch);
+            this.currentBranch = branchId;
+            this.currentFloorIndex = index;
+            this.render();
+        }
+    });
+});
     }
     
     exportToJSON() {

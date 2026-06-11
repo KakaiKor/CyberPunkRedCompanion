@@ -6015,6 +6015,81 @@ body {
     text-align: center;
     font-size: 0.8rem;
 }
+/* Миникарта */
+.minimap {
+    background: #0f1219;
+    border: 1px solid #2a3342;
+    border-radius: 16px;
+    padding: 12px;
+    margin-top: 20px;
+    font-family: monospace;
+}
+.minimap h4 {
+    margin: 0 0 12px 0;
+    font-size: 0.9rem;
+    color: #ff9a3c;
+}
+.minimap-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 16px;
+}
+.minimap-node {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: #1e2530;
+    border-radius: 8px;
+    border: 2px solid #2a3342;
+    cursor: pointer;
+    transition: 0.1s;
+}
+.minimap-node.current {
+    border-color: #ff9a3c;
+    background: #2a3342;
+    box-shadow: 0 0 6px #ff9a3c;
+}
+.minimap-node.resolved {
+    border-color: #39ff14;
+    background: #1e2530;
+    opacity: 0.7;
+}
+.minimap-node.ice {
+    border-color: #ff3c5f;
+}
+.minimap-node:hover {
+    transform: scale(1.05);
+    border-color: #ff9a3c;
+}
+.minimap-icon {
+    font-size: 1.2rem;
+}
+.minimap-connector {
+    color: #2a3342;
+    font-size: 0.8rem;
+    margin: 2px 0;
+}
+.minimap-branch {
+    margin-top: 12px;
+    border-left: 2px dashed #2a3342;
+    padding-left: 16px;
+}
+.minimap-branch-label {
+    font-size: 0.7rem;
+    color: #9aa4bf;
+    margin-bottom: 6px;
+}
+.minimap-branch-floors {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
 
 @media (max-width: 700px) {
     .programs-grid {
