@@ -61,14 +61,26 @@ function createIceData(iceName) {
     };
 }
 
+// Генерация архитектуры с ответвлениями
 export function generateRandomArchitecture(complexity = 'medium') {
-    const floorCount = Math.floor(Math.random() * 6) + 4;
-    const floors = [];
     const slBase = { easy: 6, medium: 8, hard: 10 }[complexity] || 8;
     
-    for (let i = 0; i < floorCount; i++) {
+    let totalFloors = 0;
+    for (let i = 0; i < 3; i++) totalFloors += Math.floor(Math.random() * 6) + 1;
+    totalFloors = Math.min(totalFloors, 18);
+    
+    let branchCount = 0;
+    while (Math.random() < 0.4 && branchCount < 5) branchCount++;
+    
+    let mainFloors = Math.max(2, Math.floor(totalFloors * 0.6));
+    let remaining = totalFloors - mainFloors;
+    const branchFloorCounts = new Array(branchCount).fill(1);
+    remaining -= branchCount;
+    for (let i = 0; i < remaining && branchCount > 0; i++) branchFloorCounts[i % branchCount]++;
+    
+    const generateFloor = (index, branchInfo = null) => {
         let type;
-        if (i < 2) {
+        if (index < 2 && !branchInfo) {
             type = Math.random() < 0.7 ? FLOOR_TYPES.PASSWORD : FLOOR_TYPES.FILE;
         } else {
             const r = Math.random();
@@ -101,17 +113,41 @@ export function generateRandomArchitecture(complexity = 'medium') {
                 break;
         }
         
-        floors.push({
-            index: i,
+        return {
+            id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36),
+            index,
             type,
             sl,
             content,
             isResolved: false,
-            isActive: (i === 0),
-            ice: iceData
+            ice: iceData,
+            branch: branchInfo
+        };
+    };
+    
+    const main = [];
+    for (let i = 0; i < mainFloors; i++) main.push(generateFloor(i));
+    
+    const branches = [];
+    let globalIndex = mainFloors;
+    for (let b = 0; b < branchCount; b++) {
+        const attachAt = Math.floor(Math.random() * (mainFloors - 1)) + 1;
+        const branchFloors = [];
+        for (let i = 0; i < branchFloorCounts[b]; i++) {
+            const floor = generateFloor(globalIndex + i, { branchId: b, attachAt });
+            floor.isActive = false;
+            floor.isResolved = false;
+            branchFloors.push(floor);
+        }
+        branches.push({
+            id: b,
+            attachAt: attachAt,
+            floors: branchFloors
         });
+        globalIndex += branchFloorCounts[b];
     }
-    return floors;
+    
+    return { main, branches, totalFloors, complexity };
 }
 
 export class NetArchitectureUI {
@@ -119,16 +155,15 @@ export class NetArchitectureUI {
         this.container = document.getElementById(containerId);
         if (!this.container) return;
         this.architecture = null;
-        this.currentFloor = 0;
+        this.currentBranch = null;      // null = основная ветка, иначе id ответвления
+        this.currentFloorIndex = 0;     // индекс внутри текущей ветки
         this.initiativeQueue = [];
         this.currentTurn = null;
         this.netActionsRemaining = 0;
         this.isCombat = false;
         this.init();
 
-        window.addEventListener('characterUpdated', () => {
-            this.render();
-        });
+        window.addEventListener('characterUpdated', () => this.render());
     }
 
     init() {
@@ -137,20 +172,7 @@ export class NetArchitectureUI {
         document.getElementById('resetArchitectureBtn')?.addEventListener('click', () => this.reset());
     }
 
-    // === Проверка: является ли персонаж нетраннером ===
-    checkIsNetrunner() {
-        const char = loadCharacter();
-        if (!char) {
-            alert("⚠️ Персонаж не найден. Создайте или загрузите персонажа.");
-            return false;
-        }
-        if (char.role !== "Нетраннер") {
-            alert("⚠️ Только персонаж-нетраннер может использовать архитектуру сети и сетевое взаимодействие. Создайте или переключитесь на нетраннера.");
-            return false;
-        }
-        return true;
-    }
-
+    // === Проверки ===
     checkCharacterExists() {
         const char = loadCharacter();
         if (!char || !char.name) {
@@ -160,11 +182,9 @@ export class NetArchitectureUI {
         return true;
     }
 
-    // === Получение ранга интерфейса (ролевого навыка) ===
     getInterfaceRank() {
         const char = loadCharacter();
-        if (!char) return 0;
-        if (char.role !== "Нетраннер") return 0;
+        if (!char) return 4;
         return char.interfaceRank || char.roleRank || 4;
     }
 
@@ -184,34 +204,26 @@ export class NetArchitectureUI {
     getCharacterHP() {
         const char = loadCharacter();
         if (!char) return { current: 0, max: 0, exists: false };
-        
         let maxHp = char.maxHp;
         let currentHp = char.currentHp;
-        
         if (maxHp === undefined) {
             const body = char.baseStats?.BODY ?? char.BODY ?? 6;
             const will = char.baseStats?.WILL ?? char.WILL ?? 6;
             maxHp = this.computeMaxHp(body, will);
         }
-        if (currentHp === undefined) {
-            currentHp = maxHp;
-        }
+        if (currentHp === undefined) currentHp = maxHp;
         return { current: currentHp, max: maxHp, exists: true };
     }
 
     applyDamageToCharacter(damage) {
         if (!this.checkCharacterExists()) return false;
-        
         const char = loadCharacter();
         const hp = this.getCharacterHP();
         let newCurrent = Math.max(0, hp.current - damage);
         char.currentHp = newCurrent;
-        if (char.maxHp === undefined) {
-            char.maxHp = hp.max;
-        }
+        if (char.maxHp === undefined) char.maxHp = hp.max;
         saveCharacter(char);
         this.render();
-        
         if (newCurrent <= 0) {
             alert("💀 Персонаж потерял сознание! Нетраннинг прерван.");
             this.reset();
@@ -235,24 +247,23 @@ export class NetArchitectureUI {
             const iceName = match[1].trim();
             floor.ice = createIceData(iceName);
         }
-        if (!floor.ice) {
-            floor.ice = createIceData("Адская гончая");
-        }
+        if (!floor.ice) floor.ice = createIceData("Адская гончая");
         floor.content = `${floor.ice.name} (ЦЕЛ ${floor.ice.hp})`;
     }
 
+    // === Генерация и сброс ===
     generateNew() {
-        if (!this.checkIsNetrunner()) return;
         this.architecture = generateRandomArchitecture('medium');
-        this.currentFloor = 0;
+        this.currentBranch = null;
+        this.currentFloorIndex = 0;
         this.resetCombatState();
         this.render();
     }
 
     generateWithComplexity(complexity = 'medium') {
-        if (!this.checkIsNetrunner()) return;
         this.architecture = generateRandomArchitecture(complexity);
-        this.currentFloor = 0;
+        this.currentBranch = null;
+        this.currentFloorIndex = 0;
         this.resetCombatState();
         this.render();
     }
@@ -271,130 +282,207 @@ export class NetArchitectureUI {
     }
 
     renderEmpty() {
-        this.container.innerHTML = '<p>Нажмите «Сгенерировать архитектуру», чтобы начать (только для нетраннера).</p>';
+        this.container.innerHTML = '<p>Нажмите «Сгенерировать архитектуру», чтобы начать.</p>';
     }
 
-    moveUp() {
-        if (!this.checkIsNetrunner()) return;
-        if (this.currentFloor > 0) {
-            this.currentFloor--;
+    // === Навигация по веткам ===
+    getCurrentFloors() {
+        if (this.currentBranch === null) return this.architecture?.main || [];
+        const branch = this.architecture?.branches?.find(b => b.id === this.currentBranch);
+        return branch?.floors || [];
+    }
+
+    getCurrentFloor() {
+        const floors = this.getCurrentFloors();
+        return floors[this.currentFloorIndex];
+    }
+
+    isFirstFloor() {
+        const idx = this.currentFloorIndex;
+        return idx === 0;
+    }
+
+    isLastFloor() {
+        const floors = this.getCurrentFloors();
+        return this.currentFloorIndex === floors.length - 1;
+    }
+
+    getLocationString() {
+        if (this.currentBranch === null) {
+            return `Основная ветка | Этаж ${this.currentFloorIndex+1} / ${this.architecture.main.length}`;
+        } else {
+            const branch = this.architecture.branches.find(b => b.id === this.currentBranch);
+            return `Ответвление (от этажа ${branch.attachAt+1}) | Этаж ${this.currentFloorIndex+1} / ${branch.floors.length}`;
+        }
+    }
+
+    moveNext() {
+        const floors = this.getCurrentFloors();
+        if (this.currentFloorIndex + 1 < floors.length) {
+            this.currentFloorIndex++;
             this.render();
         } else {
-            alert("Вы на первом этаже, выше нельзя.");
+            alert("Вы достигли конца ветки.");
         }
     }
 
-    moveDown() {
-        if (!this.checkIsNetrunner()) return;
-        if (this.currentFloor + 1 < this.architecture.length) {
-            const nextFloor = this.architecture[this.currentFloor + 1];
-            if (!nextFloor.isResolved) {
-                this.currentFloor++;
-                this.render();
-            } else {
-                alert("Этот этаж уже пройден, но вы можете вернуться на него.");
-                this.currentFloor++;
-                this.render();
-            }
+    movePrev() {
+        if (this.currentFloorIndex > 0) {
+            this.currentFloorIndex--;
+            this.render();
         } else {
-            alert("Вы на последнем этаже, ниже нельзя.");
+            alert("Вы в начале ветки.");
         }
     }
 
-    // === Программы и бонусы ===
-    getActivePrograms() {
-        const char = loadCharacter();
-        if (!char?.cyberdeck?.programs) return [];
-        return char.cyberdeck.programs.filter(p => p.active);
-    }
-
-    getActiveAttackPrograms() {
-        const programs = this.getActivePrograms().filter(p => p.type === 'атакующая');
-        if (programs.length === 0) {
-            return [{
-                name: "Меч (тестовая)",
-                type: "атакующая",
-                atk: 1,
-                damage: "3d6",
-                effect: "Тестовая программа, наносит 3d6 урона"
-            }];
-        }
-        return programs;
-    }
-
-    getActiveProgramBonuses() {
-        const active = this.getActivePrograms();
-        let bonuses = {
-            backdoor: 0,
-            pathfinder: 0,
-            cloak: 0,
-            reaction: 0,
-            damageReduction: 0,
-            shieldActive: false,
-            flakActive: false
-        };
-        for (let p of active) {
-            if (p.name === "Червь") bonuses.backdoor += 2;
-            if (p.name === "Увидимся") bonuses.pathfinder += 2;
-            if (p.name === "Ластик") bonuses.cloak += 2;
-            if (p.name === "Быстрый Гонзалес") bonuses.reaction += 2;
-            if (p.name === "Доспехи") bonuses.damageReduction = 4;
-            if (p.name === "Щит") bonuses.shieldActive = true;
-            if (p.name === "Зенитный огонь") bonuses.flakActive = true;
-        }
-        return bonuses;
-    }
-
-    deactivateShield() {
-        const char = loadCharacter();
-        if (!char?.cyberdeck?.programs) return;
-        const shieldProg = char.cyberdeck.programs.find(p => p.name === "Щит" && p.active);
-        if (shieldProg) {
-            shieldProg.active = false;
-            saveCharacter(char);
-            if (window.netrunnerInterface) window.netrunnerInterface.render();
-            window.dispatchEvent(new Event('characterUpdated'));
+    enterBranch(branchId) {
+        const branch = this.architecture.branches.find(b => b.id === branchId);
+        if (branch && branch.attachAt === this.currentFloorIndex && this.currentBranch === null) {
+            this.currentBranch = branchId;
+            this.currentFloorIndex = 0;
+            this.render();
         }
     }
 
-    // === Боевые механики ===
-    async iceAttack(floorIndex, isFreeAttack = false) {
-        const floor = this.architecture[floorIndex];
+    exitToMain() {
+        if (this.currentBranch !== null) {
+            const branch = this.architecture.branches.find(b => b.id === this.currentBranch);
+            this.currentBranch = null;
+            this.currentFloorIndex = branch.attachAt;
+            this.render();
+        }
+    }
+
+    // === Поиск этажа по ID ===
+    findFloorById(floorId) {
+        const allFloors = [...this.architecture.main];
+        for (const branch of this.architecture.branches) allFloors.push(...branch.floors);
+        return allFloors.find(f => f.id === floorId);
+    }
+
+    // === Взаимодействие с этажами ===
+    async resolvePassword(floorId) {
+        const floor = this.findFloorById(floorId);
+        if (!floor) return;
+        const interfaceRank = this.getInterfaceRank();
+        const bonuses = this.getActiveProgramBonuses();
+        const roll = this.rollDice(1,10);
+        const result = interfaceRank + roll + (bonuses.backdoor || 0);
+        const required = floor.sl || 8;
+        if (result >= required) {
+            floor.isResolved = true;
+            alert(`Успех! Интерфейс ${interfaceRank} + d10(${roll}) + бонус ${bonuses.backdoor} = ${result} >= ${required}. Пароль взломан.`);
+            this.checkAndAdvance(floorId);
+        } else {
+            alert(`Провал! Интерфейс ${interfaceRank} + d10(${roll}) + бонус ${bonuses.backdoor} = ${result} < ${required}.`);
+        }
+        this.render();
+    }
+    
+    readFile(floorId) {
+        const floor = this.findFloorById(floorId);
+        if (!floor) return;
+        alert(`Вы прочитали файл:\n${floor.content}`);
+        floor.isResolved = true;
+        this.checkAndAdvance(floorId);
+        this.render();
+    }
+    
+    controlNode(floorId) {
+        const floor = this.findFloorById(floorId);
+        if (!floor) return;
+        alert(`Вы взяли под контроль узел: ${floor.content}. Теперь вы можете управлять этой системой.`);
+        floor.isResolved = true;
+        this.checkAndAdvance(floorId);
+        this.render();
+    }
+    
+    fightIce(floorId) {
+        const floor = this.findFloorById(floorId);
+        if (!floor || floor.type !== FLOOR_TYPES.ICE) {
+            alert("Это не чёрный лёд.");
+            return;
+        }
+        if (floor.isResolved) {
+            alert("Этот лёд уже уничтожен.");
+            return;
+        }
+        this.ensureIceData(floor);
+        if (!floor.ice) {
+            alert("Не удалось создать данные о чёрном льде.");
+            return;
+        }
+        this.enterFloorWithIce(floorId);
+    }
+    
+    async enterFloorWithIce(floorId) {
+        const floor = this.findFloorById(floorId);
+        if (!floor || floor.type !== FLOOR_TYPES.ICE || floor.isResolved) return;
+        this.ensureIceData(floor);
+        const ice = floor.ice;
+        if (!ice) {
+            alert("Ошибка: не удалось создать данные о чёрном льде.");
+            return;
+        }
+        const interfaceRank = this.getInterfaceRank();
+        const bonuses = this.getActiveProgramBonuses();
+        if (ice.isLurking) {
+            const playerRoll = this.rollDice(1,10);
+            const iceRoll = this.rollDice(1,10);
+            const playerResult = interfaceRank + playerRoll + (bonuses.reaction || 0);
+            const iceReaction = ice.reaction + iceRoll;
+            if (iceReaction > playerResult) {
+                alert(`⚠️ ${ice.name} затаился и атакует первым!`);
+                await this.iceAttack(floorId, true);
+            } else {
+                alert(`Вы заметили ${ice.name} первым.`);
+            }
+        }
+        this.initiativeQueue = [];
+        this.initiativeQueue.unshift({ type: 'ice', floorId: floorId });
+        this.initiativeQueue.unshift({ type: 'player' });
+        this.isCombat = true;
+        this.currentTurn = this.initiativeQueue[0];
+        if (this.currentTurn.type === 'player') {
+            this.netActionsRemaining = this.getNetActionsPerTurn();
+        } else {
+            this.netActionsRemaining = 0;
+            await this.iceAttack(floorId, false);
+        }
+        this.render();
+    }
+
+    async iceAttack(floorId, isFreeAttack = false) {
+        const floor = this.findFloorById(floorId);
         if (!floor || floor.type !== FLOOR_TYPES.ICE) return;
         this.ensureIceData(floor);
         const ice = floor.ice;
         if (!ice) return;
-
         if (!this.checkCharacterExists()) return;
 
         const interfaceRank = this.getInterfaceRank();
         const bonuses = this.getActiveProgramBonuses();
-
-        const iceRoll = this.rollDice(1, 10);
-        const playerRoll = this.rollDice(1, 10);
+        const iceRoll = this.rollDice(1,10);
+        const playerRoll = this.rollDice(1,10);
         const iceResult = ice.attack + iceRoll;
         const playerResult = interfaceRank + playerRoll + (bonuses.reaction || 0);
 
         let damage = 0;
-        if (ice.effect.includes('2d6')) damage = this.rollDice(2, 6);
-        else if (ice.effect.includes('3d6')) damage = this.rollDice(3, 6);
-        else if (ice.effect.includes('1d6')) damage = this.rollDice(1, 6);
-        else damage = this.rollDice(2, 6);
+        if (ice.effect.includes('2d6')) damage = this.rollDice(2,6);
+        else if (ice.effect.includes('3d6')) damage = this.rollDice(3,6);
+        else if (ice.effect.includes('1d6')) damage = this.rollDice(1,6);
+        else damage = this.rollDice(2,6);
 
         if (bonuses.damageReduction) {
             const oldDamage = damage;
             damage = Math.max(1, damage - bonuses.damageReduction);
-            if (damage !== oldDamage) {
-                alert(`🛡️ Доспехи снизили урон с ${oldDamage} до ${damage}.`);
-            }
+            if (damage !== oldDamage) alert(`🛡️ Доспехи снизили урон с ${oldDamage} до ${damage}.`);
         }
 
         if (bonuses.shieldActive && iceResult > playerResult) {
             alert(`🛡️ Щит заблокировал урон от ${ice.name}!`);
             this.deactivateShield();
-            if (!isFreeAttack && this.isCombat) {
-                this.nextTurn();
-            }
+            if (!isFreeAttack && this.isCombat) this.nextTurn();
             return;
         }
 
@@ -404,19 +492,15 @@ export class NetArchitectureUI {
         } else {
             alert(`🛡️ Вы уклонились от атаки ${ice.name}.`);
         }
-
-        if (!isFreeAttack && this.isCombat) {
-            this.nextTurn();
-        }
+        if (!isFreeAttack && this.isCombat) this.nextTurn();
     }
 
-    async useDischarge(floorIndex) {
-        if (!this.checkIsNetrunner()) return;
+    async useDischarge(floorId) {
         if (this.netActionsRemaining < 1) {
             alert("Недостаточно сетевых действий!");
             return;
         }
-        const floor = this.architecture[floorIndex];
+        const floor = this.findFloorById(floorId);
         if (!floor || floor.type !== FLOOR_TYPES.ICE) return;
         this.ensureIceData(floor);
         const ice = floor.ice;
@@ -433,8 +517,8 @@ export class NetArchitectureUI {
             if (ice.hp <= 0) {
                 alert(`✅ ${ice.name} уничтожен!`);
                 floor.isResolved = true;
-                this.checkAndAdvance(floorIndex);
-                this.endCombatOnFloor(floorIndex);
+                this.checkAndAdvance(floorId);
+                this.endCombatOnFloor(floorId);
                 this.render();
                 return;
             }
@@ -446,13 +530,12 @@ export class NetArchitectureUI {
         if (this.netActionsRemaining === 0) this.nextTurn();
     }
 
-    async useEscape(floorIndex) {
-        if (!this.checkIsNetrunner()) return;
+    async useEscape(floorId) {
         if (this.netActionsRemaining < 1) {
             alert("Недостаточно сетевых действий!");
             return;
         }
-        const floor = this.architecture[floorIndex];
+        const floor = this.findFloorById(floorId);
         if (!floor || floor.type !== FLOOR_TYPES.ICE) return;
         this.ensureIceData(floor);
         const ice = floor.ice;
@@ -464,28 +547,23 @@ export class NetArchitectureUI {
         const icePerception = ice.perception + iceRoll;
         if (playerResult > icePerception) {
             alert(`🌀 Вы ускользнули от ${ice.name} на предыдущий этаж.`);
-            if (this.currentFloor > 0) {
-                this.currentFloor--;
-                this.architecture[this.currentFloor].isActive = true;
-                this.architecture[floorIndex].isActive = false;
-                this.endCombatOnFloor(floorIndex);
-                this.render();
-            }
+            this.movePrev();
+            this.endCombatOnFloor(floorId);
+            this.render();
         } else {
             alert(`❌ Не удалось ускользнуть. ${ice.name} атакует!`);
-            await this.iceAttack(floorIndex, false);
+            await this.iceAttack(floorId, false);
         }
         this.netActionsRemaining--;
         this.render();
     }
 
-    async useProgram(floorIndex, programName) {
-        if (!this.checkIsNetrunner()) return;
+    async useProgram(floorId, programName) {
         if (this.netActionsRemaining < 1) {
             alert("Недостаточно сетевых действий!");
             return;
         }
-        const floor = this.architecture[floorIndex];
+        const floor = this.findFloorById(floorId);
         if (!floor || floor.type !== FLOOR_TYPES.ICE) return;
         this.ensureIceData(floor);
         const ice = floor.ice;
@@ -513,8 +591,8 @@ export class NetArchitectureUI {
             if (ice.hp <= 0) {
                 alert(`✅ ${ice.name} уничтожен!`);
                 floor.isResolved = true;
-                this.endCombatOnFloor(floorIndex);
-                this.checkAndAdvance(floorIndex);
+                this.endCombatOnFloor(floorId);
+                this.checkAndAdvance(floorId);
                 this.render();
                 return;
             }
@@ -524,44 +602,6 @@ export class NetArchitectureUI {
         this.netActionsRemaining--;
         this.render();
         if (this.netActionsRemaining === 0) this.nextTurn();
-    }
-
-    async enterFloorWithIce(floorIndex) {
-        if (!this.checkIsNetrunner()) return;
-        const floor = this.architecture[floorIndex];
-        if (!floor || floor.type !== FLOOR_TYPES.ICE || floor.isResolved) return;
-        this.ensureIceData(floor);
-        const ice = floor.ice;
-        if (!ice) {
-            alert("Ошибка: не удалось создать данные о чёрном льде.");
-            return;
-        }
-        const interfaceRank = this.getInterfaceRank();
-        const bonuses = this.getActiveProgramBonuses();
-        if (ice.isLurking) {
-            const playerRoll = this.rollDice(1,10);
-            const iceRoll = this.rollDice(1,10);
-            const playerResult = interfaceRank + playerRoll + (bonuses.reaction || 0);
-            const iceReaction = ice.reaction + iceRoll;
-            if (iceReaction > playerResult) {
-                alert(`⚠️ ${ice.name} затаился и атакует первым!`);
-                await this.iceAttack(floorIndex, true);
-            } else {
-                alert(`Вы заметили ${ice.name} первым.`);
-            }
-        }
-        this.initiativeQueue = [];
-        this.initiativeQueue.unshift({ type: 'ice', floorIndex: floorIndex });
-        this.initiativeQueue.unshift({ type: 'player' });
-        this.isCombat = true;
-        this.currentTurn = this.initiativeQueue[0];
-        if (this.currentTurn.type === 'player') {
-            this.netActionsRemaining = this.getNetActionsPerTurn();
-        } else {
-            this.netActionsRemaining = 0;
-            await this.iceAttack(floorIndex, false);
-        }
-        this.render();
     }
 
     nextTurn() {
@@ -577,12 +617,12 @@ export class NetArchitectureUI {
             this.netActionsRemaining = 0;
             this.render();
             this.updateActionButtons(false);
-            this.iceAttack(this.currentTurn.floorIndex, false);
+            this.iceAttack(this.currentTurn.floorId, false);
         }
     }
 
-    endCombatOnFloor(floorIndex) {
-        this.initiativeQueue = this.initiativeQueue.filter(e => !(e.type === 'ice' && e.floorIndex === floorIndex));
+    endCombatOnFloor(floorId) {
+        this.initiativeQueue = this.initiativeQueue.filter(e => !(e.type === 'ice' && e.floorId === floorId));
         if (this.initiativeQueue.length === 0) {
             this.isCombat = false;
             this.currentTurn = null;
@@ -599,212 +639,233 @@ export class NetArchitectureUI {
         });
     }
 
-    async resolvePassword(idx) {
-        if (!this.checkIsNetrunner()) return;
-        const floor = this.architecture[idx];
-        const interfaceRank = this.getInterfaceRank();
-        const bonuses = this.getActiveProgramBonuses();
-        const roll = this.rollDice(1,10);
-        const result = interfaceRank + roll + (bonuses.backdoor || 0);
-        const required = floor.sl || 8;
-        if (result >= required) {
-            floor.isResolved = true;
-            alert(`Успех! Интерфейс ${interfaceRank} + d10(${roll}) + бонус ${bonuses.backdoor} = ${result} >= ${required}. Пароль взломан.`);
-            this.checkAndAdvance(idx);
-        } else {
-            alert(`Провал! Интерфейс ${interfaceRank} + d10(${roll}) + бонус ${bonuses.backdoor} = ${result} < ${required}.`);
-        }
-        this.render();
-    }
-    
-    readFile(idx) {
-        if (!this.checkIsNetrunner()) return;
-        const floor = this.architecture[idx];
-        alert(`Вы прочитали файл:\n${floor.content}`);
-        floor.isResolved = true;
-        this.checkAndAdvance(idx);
-        this.render();
-    }
-    
-    controlNode(idx) {
-        if (!this.checkIsNetrunner()) return;
-        const floor = this.architecture[idx];
-        alert(`Вы взяли под контроль узел: ${floor.content}. Теперь вы можете управлять этой системой.`);
-        floor.isResolved = true;
-        this.checkAndAdvance(idx);
-        this.render();
-    }
-    
-    fightIce(idx) {
-        if (!this.checkIsNetrunner()) return;
-        const floor = this.architecture[idx];
-        if (!floor || floor.type !== FLOOR_TYPES.ICE) {
-            alert("Это не чёрный лёд.");
-            return;
-        }
-        if (floor.isResolved) {
-            alert("Этот лёд уже уничтожен.");
-            return;
-        }
-        this.ensureIceData(floor);
-        if (!floor.ice) {
-            alert("Не удалось создать данные о чёрном льде.");
-            return;
-        }
-        if (this.isCombat && this.initiativeQueue.some(e => e.type === 'ice' && e.floorIndex === idx)) {
-            alert("Вы уже в бою с этим льдом!");
-            return;
-        }
-        this.enterFloorWithIce(idx);
-    }
-    
-    checkAndAdvance(idx) {
-        if (this.architecture[idx].isResolved && idx === this.currentFloor) {
-            if (idx + 1 < this.architecture.length) {
-                this.currentFloor++;
-                this.architecture[this.currentFloor].isActive = true;
-                alert(`Вы спускаетесь на этаж ${this.currentFloor + 1}`);
-                const nextFloor = this.architecture[this.currentFloor];
-                if (nextFloor.type === FLOOR_TYPES.ICE && !nextFloor.isResolved) {
-                    this.ensureIceData(nextFloor);
-                }
-                this.render();
+    checkAndAdvance(floorId) {
+        const currentFloor = this.getCurrentFloor();
+        if (currentFloor && currentFloor.id === floorId && currentFloor.isResolved) {
+            if (!this.isLastFloor()) {
+                this.moveNext();
             } else {
                 alert('🏆 Вы достигли дна архитектуры! Можете оставить вирус или отключиться.');
                 this.render();
             }
-        } else {
-            this.render();
         }
     }
 
-    render() {
-        if (!this.architecture || !this.architecture.length) {
-            this.renderEmpty();
-            return;
+    // === Программы ===
+    getActivePrograms() {
+        const char = loadCharacter();
+        if (!char?.cyberdeck?.programs) return [];
+        return char.cyberdeck.programs.filter(p => p.active);
+    }
+
+    getActiveAttackPrograms() {
+        const programs = this.getActivePrograms().filter(p => p.type === 'атакующая');
+        if (programs.length === 0) {
+            return [{
+                name: "Меч (тестовая)",
+                type: "атакующая",
+                atk: 1,
+                damage: "3d6",
+                effect: "Тестовая программа, наносит 3d6 урона"
+            }];
         }
-        const hpData = this.getCharacterHP();
-        const hasCharacter = hpData.exists;
-        const hpText = hasCharacter ? `${hpData.current} / ${hpData.max}` : "❌ Нет персонажа";
-        const interfaceRank = this.getInterfaceRank();
-        const netActions = this.getNetActionsPerTurn();
-        
-        let html = `<div class="architecture-nav">
-                        <button class="nav-up" ${this.currentFloor === 0 ? 'disabled' : ''}>▲ Вверх</button>
-                        <span>Этаж ${this.currentFloor+1} / ${this.architecture.length}</span>
-                        <button class="nav-down" ${this.currentFloor+1 >= this.architecture.length ? 'disabled' : ''}>▼ Вниз</button>
-                    </div>`;
-        html += `<div class="architecture-floors">`;
-        for (let i = 0; i < this.architecture.length; i++) {
-            const floor = this.architecture[i];
-            const isActive = (i === this.currentFloor);
-            const statusClass = floor.isResolved ? 'resolved' : (isActive ? 'active' : 'locked');
-            html += `<div class="floor-card ${statusClass}" data-index="${i}">
-                        <div class="floor-number">Этаж ${i+1}</div>
+        return programs;
+    }
+
+    getActiveProgramBonuses() {
+        const active = this.getActivePrograms();
+        let bonuses = { backdoor: 0, pathfinder: 0, cloak: 0, reaction: 0, damageReduction: 0, shieldActive: false, flakActive: false };
+        for (let p of active) {
+            if (p.name === "Червь") bonuses.backdoor += 2;
+            if (p.name === "Увидимся") bonuses.pathfinder += 2;
+            if (p.name === "Ластик") bonuses.cloak += 2;
+            if (p.name === "Быстрый Гонзалес") bonuses.reaction += 2;
+            if (p.name === "Доспехи") bonuses.damageReduction = 4;
+            if (p.name === "Щит") bonuses.shieldActive = true;
+            if (p.name === "Зенитный огонь") bonuses.flakActive = true;
+        }
+        return bonuses;
+    }
+
+    deactivateShield() {
+        const char = loadCharacter();
+        if (!char?.cyberdeck?.programs) return;
+        const shieldProg = char.cyberdeck.programs.find(p => p.name === "Щит" && p.active);
+        if (shieldProg) {
+            shieldProg.active = false;
+            saveCharacter(char);
+            if (window.netrunnerInterface) window.netrunnerInterface.render();
+            window.dispatchEvent(new Event('characterUpdated'));
+        }
+    }
+
+    // === Рендер ===
+    renderFloorCard(floor) {
+        if (!floor) return '<div class="floor-card error">Ошибка: этаж не найден</div>';
+        const statusClass = floor.isResolved ? 'resolved' : 'active';
+        let html = `<div class="floor-card ${statusClass}" data-id="${floor.id}">
+                        <div class="floor-number">Этаж ${(floor.index !== undefined ? floor.index+1 : '?')}</div>
                         <div class="floor-type">${TYPE_NAMES[floor.type]}</div>
                         <div class="floor-content">${this.escapeHtml(floor.content)}</div>`;
-            if (isActive && !floor.isResolved) {
-                if (floor.type === FLOOR_TYPES.ICE) {
-                    if (!this.isCombat || !this.initiativeQueue.some(e => e.type === 'ice' && e.floorIndex === i)) {
-                        html += `<div class="floor-actions"><button class="action-fight" data-index="${i}">⚔️ Вступить в бой</button></div>`;
-                    } else {
-                        const attackingPrograms = this.getActiveAttackPrograms();
-                        let programSelectHtml = '<select class="program-select" data-floor-index="' + i + '">';
-                        programSelectHtml += '<option value="">-- Выберите программу --</option>';
-                        attackingPrograms.forEach(p => {
-                            programSelectHtml += `<option value="${this.escapeHtml(p.name)}" data-atk="${p.atk || 0}">${this.escapeHtml(p.name)} (АТК ${p.atk || 0})</option>`;
-                        });
-                        programSelectHtml += '</select>';
-                        html += `<div class="floor-actions combat-actions">
-                                    <button class="action-discharge" data-index="${i}">⚡ Разряд (1 действие)</button>
-                                    <button class="action-escape" data-index="${i}">🌀 Подкат (1 действие)</button>
-                                    <div class="program-action">
-                                        ${programSelectHtml}
-                                        <button class="action-program-use" data-index="${i}">💾 Применить (1 дейст.)</button>
-                                    </div>
-                                </div>`;
-                    }
-                } else if (floor.type === FLOOR_TYPES.PASSWORD) {
-                    html += `<div class="floor-actions"><button class="action-backdoor" data-index="${i}">🔓 Взломать</button></div>`;
-                } else if (floor.type === FLOOR_TYPES.FILE) {
-                    html += `<div class="floor-actions"><button class="action-read" data-index="${i}">📖 Прочитать</button></div>`;
-                } else if (floor.type === FLOOR_TYPES.CONTROL_NODE) {
-                    html += `<div class="floor-actions"><button class="action-control" data-index="${i}">🎮 Захватить</button></div>`;
+        if (!floor.isResolved) {
+            if (floor.type === FLOOR_TYPES.ICE) {
+                if (!this.isCombat || !this.initiativeQueue.some(e => e.type === 'ice' && e.floorId === floor.id)) {
+                    html += `<div class="floor-actions"><button class="action-fight" data-id="${floor.id}">⚔️ Вступить в бой</button></div>`;
+                } else {
+                    const attackingPrograms = this.getActiveAttackPrograms();
+                    let programSelectHtml = '<select class="program-select" data-id="' + floor.id + '">';
+                    programSelectHtml += '<option value="">-- Выберите программу --</option>';
+                    attackingPrograms.forEach(p => {
+                        programSelectHtml += `<option value="${this.escapeHtml(p.name)}" data-atk="${p.atk || 0}">${this.escapeHtml(p.name)} (АТК ${p.atk || 0})</option>`;
+                    });
+                    programSelectHtml += '</select>';
+                    html += `<div class="floor-actions combat-actions">
+                                <button class="action-discharge" data-id="${floor.id}">⚡ Разряд (1 действие)</button>
+                                <button class="action-escape" data-id="${floor.id}">🌀 Подкат (1 действие)</button>
+                                <div class="program-action">
+                                    ${programSelectHtml}
+                                    <button class="action-program-use" data-id="${floor.id}">💾 Применить (1 дейст.)</button>
+                                </div>
+                            </div>`;
                 }
+            } else if (floor.type === FLOOR_TYPES.PASSWORD) {
+                html += `<div class="floor-actions"><button class="action-backdoor" data-id="${floor.id}">🔓 Взломать</button></div>`;
+            } else if (floor.type === FLOOR_TYPES.FILE) {
+                html += `<div class="floor-actions"><button class="action-read" data-id="${floor.id}">📖 Прочитать</button></div>`;
+            } else if (floor.type === FLOOR_TYPES.CONTROL_NODE) {
+                html += `<div class="floor-actions"><button class="action-control" data-id="${floor.id}">🎮 Захватить</button></div>`;
             }
-            if (floor.isResolved) html += `<div class="floor-resolved">✅ Преодолён</div>`;
-            html += `</div>`;
         }
+        if (floor.isResolved) html += `<div class="floor-resolved">✅ Преодолён</div>`;
         html += `</div>`;
+        return html;
+    }
+
+    renderCombatPanel(hpText, interfaceRank, netActions) {
         if (this.isCombat) {
-            html += `<div class="combat-panel">
+            return `<div class="combat-panel">
                         <h4>⚔️ Сетевой бой</h4>
                         <div>🎭 Интерфейс (ранг): ${interfaceRank} | Сетевых действий: ${netActions}</div>
                         <div>❤️ Здоровье: ${hpText}</div>
-                        <div>Очередь: ${this.initiativeQueue.map(e => e.type === 'player' ? 'Вы' : `Лёд (этаж ${e.floorIndex+1})`).join(' → ')}</div>
+                        <div>Очередь: ${this.initiativeQueue.map(e => e.type === 'player' ? 'Вы' : `Лёд`).join(' → ')}</div>
                         <div>Текущий ход: ${this.currentTurn?.type === 'player' ? 'Вы' : `Чёрный лёд`}</div>
                         <div>Сетевых действий осталось: ${this.netActionsRemaining}</div>
                     </div>`;
         } else {
-            html += `<div class="combat-panel"><div>🎭 Интерфейс (ранг): ${interfaceRank} | Сетевых действий: ${netActions}</div><div>❤️ Здоровье: ${hpText}</div></div>`;
+            return `<div class="combat-panel"><div>🎭 Интерфейс (ранг): ${interfaceRank} | Сетевых действий: ${netActions}</div><div>❤️ Здоровье: ${hpText}</div></div>`;
         }
+    }
+
+    render() {
+        if (!this.architecture || !this.architecture.main?.length) {
+            this.renderEmpty();
+            return;
+        }
+        const currentFloor = this.getCurrentFloor();
+        if (!currentFloor) {
+            this.renderEmpty();
+            return;
+        }
+        const hpData = this.getCharacterHP();
+        const hpText = hpData.exists ? `${hpData.current} / ${hpData.max}` : "❌ Нет персонажа";
+        const interfaceRank = this.getInterfaceRank();
+        const netActions = this.getNetActionsPerTurn();
+        
+        let html = `<div class="architecture-nav">
+                        <button class="nav-prev" ${this.isFirstFloor() ? 'disabled' : ''}>◀ Назад</button>
+                        <span>${this.getLocationString()}</span>
+                        <button class="nav-next" ${this.isLastFloor() ? 'disabled' : ''}>Вперёд ▶</button>
+                    </div>`;
+        html += this.renderFloorCard(currentFloor);
+        
+        if (this.currentBranch === null) {
+            const branchesHere = this.architecture.branches.filter(b => b.attachAt === this.currentFloorIndex);
+            if (branchesHere.length) {
+                html += `<div class="branches-section">
+                            <h4>🔀 Ответвления:</h4>
+                            <div class="branch-buttons">`;
+                for (const branch of branchesHere) {
+                    html += `<button class="enter-branch" data-branch="${branch.id}">📂 Войти в ответвление (${branch.floors.length} эт.)</button>`;
+                }
+                html += `</div></div>`;
+            }
+        }
+        
+        if (this.currentBranch !== null) {
+            html += `<div class="exit-branch-section">
+                        <button class="exit-branch">⬅ Вернуться на основной путь</button>
+                     </div>`;
+        }
+        
+        html += this.renderCombatPanel(hpText, interfaceRank, netActions);
         this.container.innerHTML = html;
         this.attachEvents();
     }
     
     attachEvents() {
-        const upBtn = this.container.querySelector('.nav-up');
-        const downBtn = this.container.querySelector('.nav-down');
-        if (upBtn) upBtn.addEventListener('click', () => this.moveUp());
-        if (downBtn) downBtn.addEventListener('click', () => this.moveDown());
-
-        document.querySelectorAll('.action-backdoor').forEach(btn => {
+        const prevBtn = this.container.querySelector('.nav-prev');
+        const nextBtn = this.container.querySelector('.nav-next');
+        if (prevBtn) prevBtn.addEventListener('click', () => this.movePrev());
+        if (nextBtn) nextBtn.addEventListener('click', () => this.moveNext());
+        
+        this.container.querySelectorAll('.enter-branch').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const idx = parseInt(btn.dataset.index);
-                this.resolvePassword(idx);
+                const branchId = parseInt(btn.dataset.branch);
+                this.enterBranch(branchId);
             });
         });
-        document.querySelectorAll('.action-read').forEach(btn => {
+        
+        const exitBtn = this.container.querySelector('.exit-branch');
+        if (exitBtn) exitBtn.addEventListener('click', () => this.exitToMain());
+        
+        // Обработчики действий с этажами (по id)
+        this.container.querySelectorAll('.action-backdoor').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const idx = parseInt(btn.dataset.index);
-                this.readFile(idx);
+                const floorId = btn.dataset.id;
+                this.resolvePassword(floorId);
             });
         });
-        document.querySelectorAll('.action-control').forEach(btn => {
+        this.container.querySelectorAll('.action-read').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const idx = parseInt(btn.dataset.index);
-                this.controlNode(idx);
+                const floorId = btn.dataset.id;
+                this.readFile(floorId);
             });
         });
-        document.querySelectorAll('.action-fight').forEach(btn => {
+        this.container.querySelectorAll('.action-control').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const idx = parseInt(btn.dataset.index);
-                this.fightIce(idx);
+                const floorId = btn.dataset.id;
+                this.controlNode(floorId);
             });
         });
-        document.querySelectorAll('.action-discharge').forEach(btn => {
+        this.container.querySelectorAll('.action-fight').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const idx = parseInt(btn.dataset.index);
-                this.useDischarge(idx);
+                const floorId = btn.dataset.id;
+                this.fightIce(floorId);
             });
         });
-        document.querySelectorAll('.action-escape').forEach(btn => {
+        this.container.querySelectorAll('.action-discharge').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const idx = parseInt(btn.dataset.index);
-                this.useEscape(idx);
+                const floorId = btn.dataset.id;
+                this.useDischarge(floorId);
             });
         });
-        document.querySelectorAll('.action-program-use').forEach(btn => {
+        this.container.querySelectorAll('.action-escape').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const idx = parseInt(btn.dataset.index);
-                const select = this.container.querySelector(`.program-select[data-floor-index="${idx}"]`);
+                const floorId = btn.dataset.id;
+                this.useEscape(floorId);
+            });
+        });
+        this.container.querySelectorAll('.action-program-use').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const floorId = btn.dataset.id;
+                const select = this.container.querySelector(`.program-select[data-id="${floorId}"]`);
                 if (!select) return;
                 const programName = select.value;
                 if (!programName) {
                     alert("Выберите программу.");
                     return;
                 }
-                this.useProgram(idx, programName);
+                this.useProgram(floorId, programName);
             });
         });
     }
@@ -813,7 +874,8 @@ export class NetArchitectureUI {
         if (!this.architecture) return null;
         const data = {
             architecture: this.architecture,
-            currentFloor: this.currentFloor,
+            currentBranch: this.currentBranch,
+            currentFloorIndex: this.currentFloorIndex,
             timestamp: Date.now()
         };
         return JSON.stringify(data, null, 2);
@@ -822,17 +884,11 @@ export class NetArchitectureUI {
     importFromJSON(jsonString) {
         try {
             const data = JSON.parse(jsonString);
-            if (data.architecture && Array.isArray(data.architecture)) {
+            if (data.architecture && data.architecture.main && Array.isArray(data.architecture.main)) {
                 this.architecture = data.architecture;
-                this.architecture.forEach((floor, idx) => {
-                    floor.isResolved = false;
-                    floor.isActive = false;
-                    if (floor.type === FLOOR_TYPES.ICE) {
-                        this.ensureIceData(floor);
-                    }
-                });
-                this.currentFloor = 0;
-                if (this.architecture.length > 0) this.architecture[0].isActive = true;
+                this.currentBranch = data.currentBranch !== undefined ? data.currentBranch : null;
+                this.currentFloorIndex = data.currentFloorIndex || 0;
+                // Сброс флагов боя
                 this.resetCombatState();
                 this.render();
                 return true;
