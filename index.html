@@ -652,49 +652,48 @@
         </div>
     </div>
 
-    <!-- Модальное окно Changelog -->
-    <div id="changelogModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content changelog-modal">
-            <div class="modal-header">
-                <span class="modal-title">📋 История изменений</span>
-                <button class="modal-close" id="changelogCloseBtn">&times;</button>
+<!-- Модальное окно Changelog -->
+<div id="changelogModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content changelog-modal">
+        <div class="modal-header">
+            <span class="modal-title">📋 История изменений</span>
+            <button class="modal-close" id="changelogCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body" id="changelogBody">
+            <div class="changelog-version">
+                <h3>Версия 0.0.0.11_beta</h3>
+                <ul>
+                    <li><strong>✨ Добавлена:</strong> Мини-карта при генерации архитектуры сети</li>
+                </ul>
             </div>
-            <div class="modal-body" id="changelogBody">
-                 <div class="changelog-version">
-                    <h3>Версия 0.0.0.11_beta</h3>
-                    <ul>
-                        <li><strong>✨ Добавлена:</strong> Мини-карта при генерации архитектуры сети </li>
-                    </ul>
-                </div>
-                <div class="changelog-version">
-                    <div class="changelog-version">
-                    <h3>Версия 0.0.0.10_beta</h3>
-                    <ul>
-                        <li><strong>✨ Добавлен:</strong> Нетраннинг и загрузка Архитектуры Сети от ГМ </li>
-                        <li><strong>✨ Добавлен:</strong> Синхронизация урона от боя в киберпространстве </li>
-                        <li><strong>✨ Добавлен:</strong> Нетраннинг: Справка  </li>
-                    </ul>
-                </div>
-                <div class="changelog-version">
-                    <div class="changelog-version">
-                    <h3>Версия 0.0.0.9_beta</h3>
-                    <ul>
-                        <li><strong>✨ Улучшен:</strong> Рынок снаряжения </li>
-                        <li><strong>✨ Улучшен:</strong> Импорт персонажа и редактирование карточки </li>
-                    </ul>
-                </div>
-                     <div class="changelog-version">
-                        <h3>Версия 0.0.0.8_beta</h3>
-                        <ul>
-                            <li><strong>✨ Исправено:</strong>Сохранение брони в карточку </li>
-                            <li><strong>✨ Добавлен:</strong>Рынок Снаряжения и Имплантов </li>
-                                карточке</li>
-                        </ul>
-                    </div>
-                </div>
-            <div class="modal-footer"><button class="modal-close-btn" id="changelogCloseBtn2">Закрыть</button></div>
+            <div class="changelog-version">
+                <h3>Версия 0.0.0.10_beta</h3>
+                <ul>
+                    <li><strong>✨ Добавлен:</strong> Нетраннинг и загрузка Архитектуры Сети от ГМ</li>
+                    <li><strong>✨ Добавлен:</strong> Синхронизация урона от боя в киберпространстве</li>
+                    <li><strong>✨ Добавлен:</strong> Нетраннинг: Справка</li>
+                </ul>
+            </div>
+            <div class="changelog-version">
+                <h3>Версия 0.0.0.9_beta</h3>
+                <ul>
+                    <li><strong>✨ Улучшен:</strong> Рынок снаряжения</li>
+                    <li><strong>✨ Улучшен:</strong> Импорт персонажа и редактирование карточки</li>
+                </ul>
+            </div>
+            <div class="changelog-version">
+                <h3>Версия 0.0.0.8_beta</h3>
+                <ul>
+                    <li><strong>✨ Исправлено:</strong> Сохранение брони в карточку</li>
+                    <li><strong>✨ Добавлен:</strong> Рынок Снаряжения и Имплантов</li>
+                </ul>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-close-btn" id="changelogCloseBtn2">Закрыть</button>
         </div>
     </div>
+</div>
 
     <script type="module" src="js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
