@@ -31,6 +31,7 @@ export function generateNetArchitecture() {
             refreshBtn.addEventListener('click', generateNetArchitecture);
         }
     }
+    
 }
 
 /**

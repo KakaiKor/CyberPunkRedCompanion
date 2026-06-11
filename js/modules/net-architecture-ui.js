@@ -137,38 +137,20 @@ export class NetArchitectureUI {
         document.getElementById('resetArchitectureBtn')?.addEventListener('click', () => this.reset());
     }
 
-    generateNew() {
-        this.architecture = generateRandomArchitecture('medium');
-        this.currentFloor = 0;
-        this.resetCombatState();
-        this.render();
+    // === Проверка: является ли персонаж нетраннером ===
+    checkIsNetrunner() {
+        const char = loadCharacter();
+        if (!char) {
+            alert("⚠️ Персонаж не найден. Создайте или загрузите персонажа.");
+            return false;
+        }
+        if (char.role !== "Нетраннер") {
+            alert("⚠️ Только персонаж-нетраннер может использовать архитектуру сети и сетевое взаимодействие. Создайте или переключитесь на нетраннера.");
+            return false;
+        }
+        return true;
     }
 
-    generateWithComplexity(complexity = 'medium') {
-        this.architecture = generateRandomArchitecture(complexity);
-        this.currentFloor = 0;
-        this.resetCombatState();
-        this.render();
-    }
-
-    reset() {
-        this.architecture = null;
-        this.resetCombatState();
-        this.renderEmpty();
-    }
-
-    resetCombatState() {
-        this.initiativeQueue = [];
-        this.currentTurn = null;
-        this.netActionsRemaining = 0;
-        this.isCombat = false;
-    }
-
-    renderEmpty() {
-        this.container.innerHTML = '<p>Нажмите «Сгенерировать архитектуру», чтобы начать.</p>';
-    }
-
-    // ---------- Работа с персонажем ----------
     checkCharacterExists() {
         const char = loadCharacter();
         if (!char || !char.name) {
@@ -178,14 +160,12 @@ export class NetArchitectureUI {
         return true;
     }
 
+    // === Получение ранга интерфейса (ролевого навыка) ===
     getInterfaceRank() {
         const char = loadCharacter();
-            if (!char) return 4;
-            // Для нетраннера – используем interfaceRank или roleRank
-            if (char.role === "Нетраннер") {
-                return char.interfaceRank || char.roleRank || 4;
-            }
-            return 0;
+        if (!char) return 0;
+        if (char.role !== "Нетраннер") return 0;
+        return char.interfaceRank || char.roleRank || 4;
     }
 
     getNetActionsPerTurn() {
@@ -261,7 +241,41 @@ export class NetArchitectureUI {
         floor.content = `${floor.ice.name} (ЦЕЛ ${floor.ice.hp})`;
     }
 
+    generateNew() {
+        if (!this.checkIsNetrunner()) return;
+        this.architecture = generateRandomArchitecture('medium');
+        this.currentFloor = 0;
+        this.resetCombatState();
+        this.render();
+    }
+
+    generateWithComplexity(complexity = 'medium') {
+        if (!this.checkIsNetrunner()) return;
+        this.architecture = generateRandomArchitecture(complexity);
+        this.currentFloor = 0;
+        this.resetCombatState();
+        this.render();
+    }
+
+    reset() {
+        this.architecture = null;
+        this.resetCombatState();
+        this.renderEmpty();
+    }
+
+    resetCombatState() {
+        this.initiativeQueue = [];
+        this.currentTurn = null;
+        this.netActionsRemaining = 0;
+        this.isCombat = false;
+    }
+
+    renderEmpty() {
+        this.container.innerHTML = '<p>Нажмите «Сгенерировать архитектуру», чтобы начать (только для нетраннера).</p>';
+    }
+
     moveUp() {
+        if (!this.checkIsNetrunner()) return;
         if (this.currentFloor > 0) {
             this.currentFloor--;
             this.render();
@@ -271,6 +285,7 @@ export class NetArchitectureUI {
     }
 
     moveDown() {
+        if (!this.checkIsNetrunner()) return;
         if (this.currentFloor + 1 < this.architecture.length) {
             const nextFloor = this.architecture[this.currentFloor + 1];
             if (!nextFloor.isResolved) {
@@ -286,7 +301,7 @@ export class NetArchitectureUI {
         }
     }
 
-    // ---------- Программы и бонусы ----------
+    // === Программы и бонусы ===
     getActivePrograms() {
         const char = loadCharacter();
         if (!char?.cyberdeck?.programs) return [];
@@ -294,7 +309,17 @@ export class NetArchitectureUI {
     }
 
     getActiveAttackPrograms() {
-        return this.getActivePrograms().filter(p => p.type === 'атакующая');
+        const programs = this.getActivePrograms().filter(p => p.type === 'атакующая');
+        if (programs.length === 0) {
+            return [{
+                name: "Меч (тестовая)",
+                type: "атакующая",
+                atk: 1,
+                damage: "3d6",
+                effect: "Тестовая программа, наносит 3d6 урона"
+            }];
+        }
+        return programs;
     }
 
     getActiveProgramBonuses() {
@@ -332,7 +357,7 @@ export class NetArchitectureUI {
         }
     }
 
-    // ---------- Бой ----------
+    // === Боевые механики ===
     async iceAttack(floorIndex, isFreeAttack = false) {
         const floor = this.architecture[floorIndex];
         if (!floor || floor.type !== FLOOR_TYPES.ICE) return;
@@ -386,7 +411,7 @@ export class NetArchitectureUI {
     }
 
     async useDischarge(floorIndex) {
-        if (!this.checkCharacterExists()) return;
+        if (!this.checkIsNetrunner()) return;
         if (this.netActionsRemaining < 1) {
             alert("Недостаточно сетевых действий!");
             return;
@@ -422,7 +447,7 @@ export class NetArchitectureUI {
     }
 
     async useEscape(floorIndex) {
-        if (!this.checkCharacterExists()) return;
+        if (!this.checkIsNetrunner()) return;
         if (this.netActionsRemaining < 1) {
             alert("Недостаточно сетевых действий!");
             return;
@@ -455,7 +480,7 @@ export class NetArchitectureUI {
     }
 
     async useProgram(floorIndex, programName) {
-        if (!this.checkCharacterExists()) return;
+        if (!this.checkIsNetrunner()) return;
         if (this.netActionsRemaining < 1) {
             alert("Недостаточно сетевых действий!");
             return;
@@ -502,7 +527,7 @@ export class NetArchitectureUI {
     }
 
     async enterFloorWithIce(floorIndex) {
-        if (!this.checkCharacterExists()) return;
+        if (!this.checkIsNetrunner()) return;
         const floor = this.architecture[floorIndex];
         if (!floor || floor.type !== FLOOR_TYPES.ICE || floor.isResolved) return;
         this.ensureIceData(floor);
@@ -574,9 +599,8 @@ export class NetArchitectureUI {
         });
     }
 
-    // ---------- Действия вне боя ----------
     async resolvePassword(idx) {
-        if (!this.checkCharacterExists()) return;
+        if (!this.checkIsNetrunner()) return;
         const floor = this.architecture[idx];
         const interfaceRank = this.getInterfaceRank();
         const bonuses = this.getActiveProgramBonuses();
@@ -594,6 +618,7 @@ export class NetArchitectureUI {
     }
     
     readFile(idx) {
+        if (!this.checkIsNetrunner()) return;
         const floor = this.architecture[idx];
         alert(`Вы прочитали файл:\n${floor.content}`);
         floor.isResolved = true;
@@ -602,6 +627,7 @@ export class NetArchitectureUI {
     }
     
     controlNode(idx) {
+        if (!this.checkIsNetrunner()) return;
         const floor = this.architecture[idx];
         alert(`Вы взяли под контроль узел: ${floor.content}. Теперь вы можете управлять этой системой.`);
         floor.isResolved = true;
@@ -610,7 +636,7 @@ export class NetArchitectureUI {
     }
     
     fightIce(idx) {
-        if (!this.checkCharacterExists()) return;
+        if (!this.checkIsNetrunner()) return;
         const floor = this.architecture[idx];
         if (!floor || floor.type !== FLOOR_TYPES.ICE) {
             alert("Это не чёрный лёд.");
@@ -652,7 +678,6 @@ export class NetArchitectureUI {
         }
     }
 
-    // ---------- Рендер ----------
     render() {
         if (!this.architecture || !this.architecture.length) {
             this.renderEmpty();
@@ -661,6 +686,8 @@ export class NetArchitectureUI {
         const hpData = this.getCharacterHP();
         const hasCharacter = hpData.exists;
         const hpText = hasCharacter ? `${hpData.current} / ${hpData.max}` : "❌ Нет персонажа";
+        const interfaceRank = this.getInterfaceRank();
+        const netActions = this.getNetActionsPerTurn();
         
         let html = `<div class="architecture-nav">
                         <button class="nav-up" ${this.currentFloor === 0 ? 'disabled' : ''}>▲ Вверх</button>
@@ -712,13 +739,14 @@ export class NetArchitectureUI {
         if (this.isCombat) {
             html += `<div class="combat-panel">
                         <h4>⚔️ Сетевой бой</h4>
+                        <div>🎭 Интерфейс (ранг): ${interfaceRank} | Сетевых действий: ${netActions}</div>
                         <div>❤️ Здоровье: ${hpText}</div>
                         <div>Очередь: ${this.initiativeQueue.map(e => e.type === 'player' ? 'Вы' : `Лёд (этаж ${e.floorIndex+1})`).join(' → ')}</div>
                         <div>Текущий ход: ${this.currentTurn?.type === 'player' ? 'Вы' : `Чёрный лёд`}</div>
                         <div>Сетевых действий осталось: ${this.netActionsRemaining}</div>
                     </div>`;
         } else {
-            html += `<div class="combat-panel"><div>❤️ Здоровье: ${hpText}</div></div>`;
+            html += `<div class="combat-panel"><div>🎭 Интерфейс (ранг): ${interfaceRank} | Сетевых действий: ${netActions}</div><div>❤️ Здоровье: ${hpText}</div></div>`;
         }
         this.container.innerHTML = html;
         this.attachEvents();
