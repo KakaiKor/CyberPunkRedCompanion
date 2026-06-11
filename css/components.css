@@ -5636,6 +5636,385 @@ body {
     color: #39ff14;
     font-weight: bold;
 }
+/* ==================== НЕТРАННИНГ – ПРИНУДИТЕЛЬНЫЙ СТИЛЬ ==================== */
+
+/* Базовый контейнер */
+#netrunner-help,
+.netrunner-panel {
+    color: #e0e0e0;
+}
+
+/* Справка – детали */
+#netrunner-help details {
+    background: #14181f !important;
+    border: 1px solid #2a3342 !important;
+    border-radius: 16px !important;
+    margin-bottom: 16px !important;
+    overflow: hidden !important;
+}
+#netrunner-help summary {
+    background: #1e2530 !important;
+    padding: 12px 16px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    list-style: none !important;
+}
+#netrunner-help summary::before {
+    content: "▶" !important;
+    margin-right: 10px !important;
+    color: #ff9a3c !important;
+}
+#netrunner-help details[open] summary::before {
+    content: "▼" !important;
+}
+#netrunner-help .help-section {
+    background: #0a0c12 !important;
+    padding: 12px 16px !important;
+    border-top: 1px solid #2a3342 !important;
+}
+#netrunner-help .help-footer {
+    background: #0f1219 !important;
+    padding: 12px !important;
+    text-align: center !important;
+    border-top: 1px solid #2a3342 !important;
+    font-size: 0.85rem !important;
+}
+
+/* Архитектура сети – навигация */
+.architecture-nav {
+    display: flex !important;
+    justify-content: space-between !important;
+    background: #0f1219 !important;
+    padding: 10px 16px !important;
+    border-radius: 40px !important;
+    margin-bottom: 20px !important;
+}
+.architecture-nav button {
+    background: #1e2530 !important;
+    border: none !important;
+    padding: 6px 16px !important;
+    border-radius: 30px !important;
+    cursor: pointer !important;
+    color: #fff !important;
+}
+.architecture-nav button:hover {
+    background: #ff3c5f !important;
+}
+.architecture-nav span {
+    color: #39ff14 !important;
+    font-family: monospace !important;
+}
+
+/* Карточки этажей */
+.floor-card {
+    background: #1a1e2a !important;
+    border: 1px solid #2a3342 !important;
+    border-radius: 16px !important;
+    padding: 12px !important;
+    margin-bottom: 12px !important;
+}
+.floor-card.active {
+    border-left: 4px solid #39ff14 !important;
+    background: #1e2530 !important;
+}
+.floor-number {
+    font-weight: bold !important;
+    color: #ff9a3c !important;
+    margin-bottom: 4px !important;
+}
+.floor-content {
+    margin: 8px 0 !important;
+    padding: 6px 10px !important;
+    background: #0a0c12 !important;
+    border-radius: 12px !important;
+}
+.floor-actions {
+    margin-top: 12px !important;
+    display: flex !important;
+    gap: 10px !important;
+    flex-wrap: wrap !important;
+}
+.floor-actions button, 
+.program-action button {
+    background: #2a3342 !important;
+    border: none !important;
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    cursor: pointer !important;
+}
+.floor-actions button:hover,
+.program-action button:hover {
+    background: #ff3c5f !important;
+}
+.program-action {
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+}
+.program-action select {
+    background: #1e2530 !important;
+    border: 1px solid #2a3342 !important;
+    border-radius: 20px !important;
+    padding: 6px !important;
+    color: #fff !important;
+}
+
+/* Панель боя */
+.combat-panel {
+    margin-top: 20px !important;
+    background: #0f1219 !important;
+    border: 1px solid #2a3342 !important;
+    border-radius: 16px !important;
+    padding: 16px !important;
+}
+.combat-panel h4 {
+    margin: 0 0 12px 0 !important;
+    color: #ff9a3c !important;
+}
+.health-bar-container {
+    background: #2a3342 !important;
+    border-radius: 10px !important;
+    height: 8px !important;
+    overflow: hidden !important;
+    margin: 10px 0 !important;
+}
+.health-fill {
+    background: #ff3c5f !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+.initiative-chip {
+    background: #1e2530 !important;
+    border-radius: 20px !important;
+    padding: 4px 12px !important;
+    display: inline-block !important;
+    margin: 4px !important;
+}
+.initiative-chip.active {
+    background: #ff3c5f !important;
+    color: #fff !important;
+}
+/* ========== УЛУЧШЕННАЯ СПРАВКА ПО ПРОГРАММАМ ========== */
+.program-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.program-type-card {
+    background: #0a0c12;
+    border-radius: 20px;
+    padding: 16px;
+    border-left: 4px solid;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.program-type-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+.program-type-card.attack { border-left-color: #ff3c5f; }
+.program-type-card.defense { border-left-color: #39ff14; }
+.program-type-card.boost { border-left-color: #ff9a3c; }
+.program-type-card.ice { border-left-color: #9b59b6; }
+
+.type-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+.type-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-family: 'Orbitron', monospace;
+}
+.type-desc {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #c0c0c0;
+}
+.type-desc strong {
+    color: #ff9a3c;
+}
+
+.how-to-use {
+    background: #0f1219;
+    border-radius: 20px;
+    padding: 16px 20px;
+    margin-top: 8px;
+}
+.how-to-use h4 {
+    margin: 0 0 12px 0;
+    color: #39ff14;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.how-to-use ol {
+    margin: 0;
+    padding-left: 24px;
+}
+.how-to-use li {
+    margin: 10px 0;
+    line-height: 1.4;
+}
+.how-to-use strong {
+    color: #ff9a3c;
+}
+
+/* ========== УЛУЧШЕННАЯ СПРАВКА ПО НЕТРАННИНГУ ========== */
+.netrunner-help-card .note {
+    font-size: 0.85rem;
+    color: #9aa4bf;
+    margin: 10px 0;
+}
+
+/* Концепты */
+.concept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+.concept-card {
+    background: #0a0c12;
+    border-radius: 20px;
+    padding: 16px;
+    border-left: 4px solid #39ff14;
+}
+.concept-icon { font-size: 2rem; margin-bottom: 8px; }
+.concept-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 8px; color: #ff9a3c; }
+.concept-desc { font-size: 0.85rem; line-height: 1.4; }
+.compact-list { margin: 8px 0 0 20px; }
+
+/* Способности */
+.abilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+.ability-card {
+    background: #0a0c12;
+    border-radius: 16px;
+    padding: 12px;
+    text-align: center;
+    transition: 0.2s;
+}
+.ability-card:hover { transform: translateY(-2px); background: #1a1e2a; }
+.ability-icon { font-size: 1.8rem; margin-bottom: 8px; }
+.ability-name { font-weight: bold; color: #ff9a3c; margin-bottom: 6px; }
+.ability-desc { font-size: 0.75rem; color: #c0c0c0; }
+
+/* Программы */
+.program-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.program-type-card {
+    background: #0a0c12;
+    border-radius: 20px;
+    padding: 16px;
+    border-left: 4px solid;
+}
+.program-type-card.attack { border-left-color: #ff3c5f; }
+.program-type-card.defense { border-left-color: #39ff14; }
+.program-type-card.boost { border-left-color: #ff9a3c; }
+.program-type-card.ice { border-left-color: #9b59b6; }
+.type-icon { font-size: 2rem; margin-bottom: 8px; }
+.type-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; }
+.type-desc { font-size: 0.85rem; }
+.how-to-use {
+    background: #0f1219;
+    border-radius: 20px;
+    padding: 16px;
+}
+.how-to-use h4 { margin: 0 0 12px 0; color: #39ff14; }
+.how-to-use ol { margin: 0; padding-left: 24px; }
+.how-to-use li { margin: 8px 0; }
+
+/* Бой */
+.combat-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.step-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: #0a0c12;
+    border-radius: 16px;
+    padding: 12px;
+}
+.step-number {
+    background: #ff3c5f;
+    color: #0a0c12;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+.step-title { font-weight: bold; color: #ff9a3c; margin-bottom: 4px; }
+.step-desc { font-size: 0.85rem; }
+.ice-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+.ice-card {
+    background: #0a0c12;
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+.ice-name { font-weight: bold; color: #39ff14; margin-bottom: 4px; }
+
+/* Советы */
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+}
+.tip-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #0a0c12;
+    border-radius: 40px;
+    padding: 8px 16px;
+}
+.tip-icon { font-size: 1.5rem; }
+.tip-text { font-size: 0.85rem; }
+
+/* Функционал */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 8px;
+}
+.feature-item {
+    background: #0f1219;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+}
+
+/* Футер */
+.help-footer {
+    margin-top: 20px;
+    padding: 12px;
+    background: #0f1219;
+    border-radius: 16px;
+    text-align: center;
+    font-size: 0.8rem;
+}
 
 @media (max-width: 700px) {
     .programs-grid {

@@ -194,3 +194,17 @@ body.cyberpunk-theme .role-details-btn {
     padding: 4px 10px;
     font-size: 0.7rem;
 }
+body.cyberpunk-theme .program-type-card {
+    background: #000;
+    border-left-width: 5px;
+}
+body.cyberpunk-theme .program-type-card.attack { border-left-color: #ff003c; }
+body.cyberpunk-theme .program-type-card.defense { border-left-color: #39ff14; }
+body.cyberpunk-theme .program-type-card.boost { border-left-color: #f9f002; }
+body.cyberpunk-theme .program-type-card.ice { border-left-color: #ff00ff; }
+body.cyberpunk-theme .type-name {
+    color: #f9f002;
+}
+body.cyberpunk-theme .how-to-use {
+    background: #111;
+}

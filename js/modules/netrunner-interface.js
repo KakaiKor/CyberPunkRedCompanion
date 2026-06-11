@@ -158,29 +158,30 @@ export class NetrunnerInterface {
     }
 
     installProgram() {
-        const select = document.getElementById('programSelect');
-        const programName = select.value;
-        if (!programName) return;
-        const program = this.getAvailablePrograms().find(p => p.name === programName);
-        if (!program) return;
-        if (this.cyberdeck.programs.length >= this.cyberdeck.slots) {
-            alert('Недостаточно свободных слотов в кибердеке!');
-            return;
-        }
-        // Добавляем программу, активность по умолчанию false
-        this.cyberdeck.programs.push({
-            name: program.name,
-            type: program.type,
-            effect: program.effect,
-            active: false,
-            cost: program.cost,
-            atk: program.atk,
-            def: program.def,
-            hp: program.hp
-        });
-        this.saveAndRender();
+    const select = document.getElementById('programSelect');
+    const programName = select.value;
+    if (!programName) return;
+    const program = this.getAvailablePrograms().find(p => p.name === programName);
+    if (!program) return;
+    if (this.cyberdeck.programs.length >= this.cyberdeck.slots) {
+        alert('Недостаточно свободных слотов в кибердеке!');
+        return;
     }
-
+    // Копируем ВСЕ поля программы, включая type, atk, damage
+    this.cyberdeck.programs.push({
+        name: program.name,
+        type: program.type,      // обязательно!
+        effect: program.effect,
+        active: false,
+        cost: program.cost,
+        atk: program.atk || 0,
+        def: program.def || 0,
+        hp: program.hp || 7,
+        damage: program.damage || '',
+        target: program.target || ''
+    });
+    this.saveAndRender();
+}
     saveAndRender() {
         const char = loadCharacter();
         if (char) {

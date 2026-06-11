@@ -226,6 +226,16 @@ if (resetArchBtn) {
         window.playerNetArchUI.reset();
     });
 }
+const savedArch = localStorage.getItem('player_net_architecture');
+if (savedArch && window.playerNetArchUI) {
+    window.playerNetArchUI.importFromJSON(savedArch);
+}
+// При изменении архитектуры сохранять в localStorage
+window.addEventListener('architectureUpdated', (e) => {
+    if (e.detail && e.detail.architecture) {
+        localStorage.setItem('player_net_architecture', JSON.stringify(e.detail));
+    }
+});
 // ========== ФИЛЬТРАЦИЯ СНАРЯЖЕНИЯ ==========
 const gearSearch = document.getElementById('gearSearchInput');
 const clearGearBtn = document.getElementById('clearGearSearchBtn');
@@ -943,4 +953,136 @@ if (importJsonBtn && importJsonInput && window.characterHelper) {
         }
     });
 }
+document.getElementById('netrunner-help').innerHTML = `
+<div class="card">
+     <h3>📖 Полное руководство по нетраннингу (Cyberpunk RED)</h3>
+            <p class="note">Этот раздел объясняет основы игры за нетраннера: кибердеку, программы, сетевые действия, бой с чёрным льдом и тактику.</p>
+            
+            <!-- 1. Основные понятия -->
+            <details open>
+                <summary>🎓 1. Основные понятия</summary>
+                <div class="help-section">
+                    <div class="concept-grid">
+                        <div class="concept-card">
+                            <div class="concept-icon">🖥️</div>
+                            <div class="concept-title">Кибердека</div>
+                            <div class="concept-desc">Твой главный инструмент. Имеет слоты для программ (обычно 7).<br><strong>Стандартная кибердека:</strong> 7 слотов, цена 500eb.</div>
+                        </div>
+                        <div class="concept-card">
+                            <div class="concept-icon">⚡</div>
+                            <div class="concept-title">Интерфейс (ролевой навык)</div>
+                            <div class="concept-desc">
+                                Определяет, сколько <strong>сетевых действий</strong> за ход:
+                                <ul class="compact-list">
+                                    <li>Ранг 1–3 → 2 действия</li>
+                                    <li>Ранг 4–6 → 3 действия</li>
+                                    <li>Ранг 7–9 → 4 действия</li>
+                                    <li>Ранг 10 → 5 действий</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="concept-card">
+                            <div class="concept-icon">🧠</div>
+                            <div class="concept-title">Архитектура сети</div>
+                            <div class="concept-desc">"Подземелье" из этажей: пароль, файл, узел управления или чёрный лёд. Цель — достичь дна.</div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+            
+            <!-- 2. Способности интерфейса -->
+            <details>
+                <summary>⚙️ 2. Способности интерфейса (сетевые действия)</summary>
+                <div class="help-section">
+                    <div class="abilities-grid">
+                        <div class="ability-card"><div class="ability-icon">🔓</div><div class="ability-name">Бэкдор</div><div class="ability-desc">Взлом пароля: Интерфейс + 1d10 против СЛ.</div></div>
+                        <div class="ability-card"><div class="ability-icon">🌀</div><div class="ability-name">Подкат</div><div class="ability-desc">Побег: Интерфейс + 1d10 против ВСП льда + 1d10.</div></div>
+                        <div class="ability-card"><div class="ability-icon">⚡</div><div class="ability-name">Разряд</div><div class="ability-desc">Атака 1d6: Интерфейс + 1d10 против ЗАЩ льда + 1d10.</div></div>
+                        <div class="ability-card"><div class="ability-icon">🗺️</div><div class="ability-name">Следопыт</div><div class="ability-desc">Раскрывает типы этажей впереди.</div></div>
+                        <div class="ability-card"><div class="ability-icon">🔍</div><div class="ability-name">Идентификация</div><div class="ability-desc">Определяет содержимое файла.</div></div>
+                        <div class="ability-card"><div class="ability-icon">🎮</div><div class="ability-name">Контроль</div><div class="ability-desc">Захват узла (камеры, турели).</div></div>
+                        <div class="ability-card"><div class="ability-icon">💾</div><div class="ability-name">Вирус</div><div class="ability-desc">Оставляет вирус на дне архитектуры.</div></div>
+                        <div class="ability-card"><div class="ability-icon">👻</div><div class="ability-name">Плащ</div><div class="ability-desc">Скрывает следы.</div></div>
+                        <div class="ability-card"><div class="ability-icon">📡</div><div class="ability-name">Сканер</div><div class="ability-desc">Находит точки доступа (мясное действие).</div></div>
+                    </div>
+                    <p class="note"><em>Реализовано:</em> Бэкдор, Разряд, Подкат, Контроль (заглушка), Чтение файла.</p>
+                </div>
+            </details>
+            
+            <!-- 3. Программы -->
+            <details>
+                <summary>💾 3. Программы</summary>
+                <div class="help-section">
+                    <div class="program-types-grid">
+                        <div class="program-type-card attack"><div class="type-icon">⚔️</div><div class="type-name">Атакующие</div><div class="type-desc">Бросок: <strong>Интерфейс + АТК + d10</strong> против ЗАЩ цели.</div></div>
+                        <div class="program-type-card defense"><div class="type-icon">🛡️</div><div class="type-name">Защитные</div><div class="type-desc">Снижают урон или блокируют эффекты (Доспехи, Щит).</div></div>
+                        <div class="program-type-card boost"><div class="type-icon">⚡</div><div class="type-name">Усиливающие</div><div class="type-desc">Пассивные бонусы: Червь (+2 к бэкдору), Быстрый Гонзалес (+2 к реакции).</div></div>
+                        <div class="program-type-card ice"><div class="type-icon">💀</div><div class="type-name">Чёрный лёд</div><div class="type-desc">Занимают 2 слота, могут быть запущены как атакующие или затаившиеся.</div></div>
+                    </div>
+                    <div class="how-to-use">
+                        <h4>🎮 Как использовать программы</h4>
+                        <ol><li>Установи в кибердеку (вкладка «Кибердека и программы»).</li><li>Активируй (зелёный индикатор).</li><li>В бою выбери атакующую программу из списка и нажми «Применить».</li><li>Защитные и усиливающие работают автоматически.</li></ol>
+                    </div>
+                </div>
+            </details>
+            
+            <!-- 4. Бой с чёрным льдом -->
+            <details>
+                <summary>⚔️ 4. Бой с чёрным льдом</summary>
+                <div class="help-section">
+                    <div class="combat-steps">
+                        <div class="step-card"><div class="step-number">1</div><div class="step-title">Вход на этаж</div><div class="step-desc">Проверка реакции: Интерфейс + 1d10 против РЕА льда + 1d10. Если лёд выигрывает – бесплатный удар.</div></div>
+                        <div class="step-card"><div class="step-number">2</div><div class="step-title">Очередь инициативы</div><div class="step-desc">Вы и лёд ходите по очереди. В твой ход – N сетевых действий (2–5).</div></div>
+                        <div class="step-card"><div class="step-number">3</div><div class="step-title">Твой ход</div><div class="step-desc">Разряд (1д6), атакующая программа (1 действие) или Подкат (побег на этаж выше).</div></div>
+                        <div class="step-card"><div class="step-number">4</div><div class="step-title">Ход льда</div><div class="step-desc">Автоматическая атака, урон от 1d6 до 3d6 напрямую по ПЗ (броня не помогает).</div></div>
+                        <div class="step-card"><div class="step-number">5</div><div class="step-title">Завершение</div><div class="step-desc">Бой до уничтожения льда (ЦЕЛ ≤ 0) или побега.</div></div>
+                    </div>
+                    <h4>📊 Примеры льда</h4>
+                    <div class="ice-stats-grid">
+                        <div class="ice-card"><span class="ice-name">Адская гончая</span> <span>РЕА 6, АТК 6, ЗАЩ 2, ЦЕЛ 20, 2d6</span></div>
+                        <div class="ice-card"><span class="ice-name">Аспид</span> <span>РЕА 6, АТК 2, ЗАЩ 2, ЦЕЛ 15, уничтожает программу</span></div>
+                        <div class="ice-card"><span class="ice-name">Кракен</span> <span>РЕА 2, АТК 8, ЗАЩ 4, ЦЕЛ 30, 3d6</span></div>
+                    </div>
+                </div>
+            </details>
+            
+            <!-- 5. Тактические советы -->
+            <details>
+                <summary>🎯 5. Тактические советы</summary>
+                <div class="help-section">
+                    <div class="tips-grid">
+                        <div class="tip-card"><div class="tip-icon">🛡️</div><div class="tip-text">Всегда имей активную «Доспехи» – урон -4.</div></div>
+                        <div class="tip-card"><div class="tip-icon">🔰</div><div class="tip-text">«Щит» спасёт от первого удара, но после срабатывания активируй заново.</div></div>
+                        <div class="tip-card"><div class="tip-icon">⚔️</div><div class="tip-text">Атакующие программы с высоким АТК (например, «Меч») надёжнее Разряда.</div></div>
+                        <div class="tip-card"><div class="tip-icon">🌀</div><div class="tip-text">При низком здоровье используй Подкат – вернёшься позже.</div></div>
+                        <div class="tip-card"><div class="tip-icon">💾</div><div class="tip-text">Перед входом в архитектуру сохрани персонажа.</div></div>
+                        <div class="tip-card"><div class="tip-icon">⏱️</div><div class="tip-text">Следи за сетевыми действиями – при 0 нельзя атаковать до следующего хода.</div></div>
+                    </div>
+                </div>
+            </details>
+            
+            <!-- 6. Что уже работает -->
+            <details>
+                <summary>🔧 6. Интерфейс помощника (готовый функционал)</summary>
+                <div class="help-section">
+                    <div class="features-grid">
+                        <div class="feature-item">✅ Генерация случайной архитектуры (GM и игрок)</div>
+                        <div class="feature-item">✅ Визуальное отображение этажей (пароль, файл, узел, лёд)</div>
+                        <div class="feature-item">✅ Бой с чёрным льдом (очередь, Разряд, Подкат)</div>
+                        <div class="feature-item">✅ Атакующие программы (выбор из списка, урон)</div>
+                        <div class="feature-item">✅ Защитные программы (Доспехи, Щит)</div>
+                        <div class="feature-item">✅ Усиливающие программы (бонус к бэкдору и реакции)</div>
+                        <div class="feature-item">✅ Экспорт/импорт архитектуры через JSON</div>
+                        <div class="feature-item">✅ Синхронизация здоровья с персонажем</div>
+                    </div>
+                    <p class="note">🔄 В разработке: Вирусы, Плащ, Следопыт, Идентификация, полноценные демоны, узлы с турелями.</p>
+                </div>
+            </details>
+            
+            <div class="help-footer">
+                <p>📖 <strong>Источник:</strong> Cyberpunk RED Core Rulebook, глава «Нетраннинг» (стр. 195–218).</p>
+                <p>💡 <strong>Совет:</strong> Экспериментируй с тестовой архитектурой – урон не сохраняется, если персонаж не сохранён.</p>
+            </div>
+        </div>
+    `;
 });

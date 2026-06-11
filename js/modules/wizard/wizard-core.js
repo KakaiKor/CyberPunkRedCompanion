@@ -640,7 +640,7 @@ this.data.gear.armor.head = headCheckbox ? headCheckbox.value : '';
         culture: this.data.culture,
         role: this.data.role,
         roleRank: this.data.roleRank,
-        baseStats: { ...this.data.stats },   // ← главное добавление
+        baseStats: { ...this.data.stats },
         skills: this.data.skills,
         cyberware: this.data.cyberware,
         gear: this.data.gear,
@@ -650,8 +650,31 @@ this.data.gear.armor.head = headCheckbox ? headCheckbox.value : '';
         notes: this.data.notes,
         avatar: this.data.avatar || ''
     };
-    // Добавляем также отдельные поля характеристик для обратной совместимости
+    // Добавляем отдельные поля характеристик для обратной совместимости
     Object.assign(char, this.data.stats);
+    
+    // === РАСЧЁТ ПЗ ===
+    const body = this.data.stats.BODY || 6;
+    const will = this.data.stats.WILL || 6;
+    const maxHp = getHP(body, will);
+    char.maxHp = maxHp;
+    char.currentHp = maxHp; // при создании – полное здоровье
+    
+    // === ДЛЯ НЕТРАННЕРА: кибердека и ранг интерфейса ===
+    if (this.data.role === "Нетраннер") {
+        if (!char.cyberdeck) {
+            char.cyberdeck = {
+                slots: 7,      // стандартная кибердека
+                programs: []
+            };
+        }
+        char.interfaceRank = this.data.roleRank || 4;
+    } else {
+        char.interfaceRank = 0;
+        char.cyberdeck = null;
+    }
+    // =================================================
+    
     saveCharacter(char);
     alert("Персонаж сохранён!");
     localStorage.removeItem('wizard_progress');

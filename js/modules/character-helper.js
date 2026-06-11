@@ -12,6 +12,8 @@ export class CharacterHelper {
         document.getElementById('saveCharBtn')?.addEventListener('click', () => this.save());
         document.getElementById('loadCharBtn')?.addEventListener('click', () => this.load());
         document.getElementById('buildCharCardBtn')?.addEventListener('click', () => this.generateStreetRatCharacter());
+
+        window.addEventListener('characterUpdated', () => this.displaySavedCharacterCard());
     }
 
     // НОВЫЙ МЕТОД – применяет модификаторы имплантов к базовым характеристикам
@@ -329,7 +331,7 @@ buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, c
     let char = loadCharacter();
     if (!char) return;
     
-    // Если нет baseStats, создаём из текущих характеристик (предполагаем, что они базовые)
+    // Если нет baseStats, создаём из текущих характеристик
     if (!char.baseStats) {
         char.baseStats = {
             INT: char.INT || 6, REF: char.REF || 6, DEX: char.DEX || 6,
@@ -339,21 +341,45 @@ buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, c
         saveCharacter(char);
     }
     
+    // === ГАРАНТИРУЕМ НАЛИЧИЕ ПЗ ===
+    if (!char.maxHp || !char.currentHp) {
+        const body = char.baseStats.BODY || 6;
+        const will = char.baseStats.WILL || 6;
+        const maxHp = getHP(body, will);
+        char.maxHp = maxHp;
+        char.currentHp = char.currentHp !== undefined ? char.currentHp : maxHp;
+        saveCharacter(char);
+    }
+    
+    // === ДЛЯ НЕТРАННЕРА: создаём кибердеку и интерфейс, если их нет ===
+    if (char.role === "Нетраннер") {
+        if (!char.cyberdeck) {
+            char.cyberdeck = { slots: 7, programs: [] };
+            saveCharacter(char);
+        }
+        if (char.interfaceRank === undefined) {
+            char.interfaceRank = char.roleRank || 4;
+            saveCharacter(char);
+        }
+    } else {
+        if (char.interfaceRank === undefined) char.interfaceRank = 0;
+    }
+    // ===============================================================
+    
     const baseStats = char.baseStats;
     const cyberware = char.cyberware || [];
     const modifiedStats = this.applyCyberwareModifiers(baseStats, cyberware);
     
     // Объединяем: отображаем модифицированные, но для редактирования будем использовать baseStats
     const statsForDisplay = { ...modifiedStats };
-    // Убираем служебные поля
     delete statsForDisplay._initiativeBonus;
     delete statsForDisplay._extraEffects;
     
     const gear = char.gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
     const skills = char.skills || {};
     const body = modifiedStats.BODY, will = baseStats.WILL, emp = baseStats.EMP;
-    let maxHp = getHP(body, will);
-    let currentHp = char.currentHp || maxHp;
+    const maxHp = char.maxHp;
+    let currentHp = char.currentHp;
     const severe = Math.ceil(maxHp / 2);
     let humanityLoss = 0;
     for (const name of cyberware) {
@@ -369,8 +395,8 @@ buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, c
         name: char.name || 'Безымянный',
         role: char.role || 'Без роли',
         roleRank: char.roleRank || 4,
-        stats: statsForDisplay,     // модифицированные для отображения
-        baseStats: baseStats,       // передаём базовые для редактирования
+        stats: statsForDisplay,
+        baseStats: baseStats,
         skills, gear, cyberware, currentHp, maxHp, severe,
         humanity, empFrom, deathSave,
         notes: char.notes || '', avatar: char.avatar || '', money
@@ -727,31 +753,34 @@ buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, c
                     char.currentHp = newHp;
                     saveCharacter(char);
                 }
+                window.dispatchEvent(new Event('characterUpdated'));
             });
         }
         if (damageBtn) {
-            damageBtn.addEventListener('click', () => {
-                const dmg = prompt('Введите урон:');
-                if (dmg === null) return;
-                const hpSpan = document.querySelector('.current-hp');
-                const maxHpSpan = document.querySelector('.derived-stats div:first-child');
-                if (!hpSpan || !maxHpSpan) return;
-                const match = maxHpSpan.innerText.match(/\d+\s*\/\s*(\d+)/);
-                if (!match) return;
-                const max = parseInt(match[1]);
-                let current = parseInt(hpSpan.innerText);
-                let newHp = Math.max(0, current - parseInt(dmg));
-                hpSpan.innerText = newHp;
-                const severe = Math.ceil(max / 2);
-                if (newHp <= severe && newHp > 0) alert('⚠️ Тяжёлое ранение! Штраф -2 ко всем действиям.');
-                if (newHp <= 0) alert('💀 Смертельное ранение! Требуется спасбросок.');
-                const char = loadCharacter();
-                if (char) {
-                    char.currentHp = newHp;
-                    saveCharacter(char);
-                }
-            });
+    damageBtn.addEventListener('click', () => {
+        const dmg = prompt('Введите урон:');
+        if (dmg === null) return;
+        const hpSpan = document.querySelector('.current-hp');
+        const maxHpSpan = document.querySelector('.derived-stats div:first-child');
+        if (!hpSpan || !maxHpSpan) return;
+        const match = maxHpSpan.innerText.match(/\d+\s*\/\s*(\d+)/);
+        if (!match) return;
+        const max = parseInt(match[1]);
+        let current = parseInt(hpSpan.innerText);
+        let newHp = Math.max(0, current - parseInt(dmg));
+        hpSpan.innerText = newHp;
+        const severe = Math.ceil(max / 2);
+        if (newHp <= severe && newHp > 0) alert('⚠️ Тяжёлое ранение! Штраф -2 ко всем действиям.');
+        if (newHp <= 0) alert('💀 Смертельное ранение! Требуется спасбросок.');
+        const char = loadCharacter();
+        if (char) {
+            char.currentHp = newHp;
+            saveCharacter(char);
         }
+        // 👇 ДОБАВЬТЕ ЭТУ СТРОКУ
+        window.dispatchEvent(new Event('characterUpdated'));
+    });
+}
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
                 document.getElementById('characterCardContainer').innerHTML = '';
