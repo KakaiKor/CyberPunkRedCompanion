@@ -180,7 +180,12 @@ export class NetArchitectureUI {
 
     getInterfaceRank() {
         const char = loadCharacter();
-        return char?.interfaceRank || 4;
+            if (!char) return 4;
+            // Для нетраннера – используем interfaceRank или roleRank
+            if (char.role === "Нетраннер") {
+                return char.interfaceRank || char.roleRank || 4;
+            }
+            return 0;
     }
 
     getNetActionsPerTurn() {

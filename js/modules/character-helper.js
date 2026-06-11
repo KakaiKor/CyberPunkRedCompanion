@@ -390,7 +390,14 @@ buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, c
     const empFrom = Math.floor(humanity / 10);
     const deathSave = body;
     const money = char.money !== undefined ? char.money : 0;
-    
+    if (char.role === "Нетраннер") {
+    if (char.interfaceRank === undefined) {
+        char.interfaceRank = char.roleRank || 4;
+        saveCharacter(char);
+    }
+} else {
+    char.interfaceRank = 0;
+}
     this.buildCharacterCard({
         name: char.name || 'Безымянный',
         role: char.role || 'Без роли',
