@@ -61,8 +61,8 @@ function createIceData(iceName) {
     };
 }
 
-// Генерация архитектуры с ответвлениями
-export function generateRandomArchitecture(complexity = 'medium') {
+// Генерация архитектуры с ответвлениями и полем revealed
+export function generateRandomArchitecture(complexity = 'medium', gmMode = false) {
     const slBase = { easy: 6, medium: 8, hard: 10 }[complexity] || 8;
     
     let totalFloors = 0;
@@ -120,13 +120,18 @@ export function generateRandomArchitecture(complexity = 'medium') {
             sl,
             content,
             isResolved: false,
+            revealed: false,
             ice: iceData,
             branch: branchInfo
         };
     };
     
     const main = [];
-    for (let i = 0; i < mainFloors; i++) main.push(generateFloor(i));
+    for (let i = 0; i < mainFloors; i++) {
+        const floor = generateFloor(i);
+        floor.revealed = (i === 0); // первый этаж открыт
+        main.push(floor);
+    }
     
     const branches = [];
     let globalIndex = mainFloors;
@@ -135,8 +140,8 @@ export function generateRandomArchitecture(complexity = 'medium') {
         const branchFloors = [];
         for (let i = 0; i < branchFloorCounts[b]; i++) {
             const floor = generateFloor(globalIndex + i, { branchId: b, attachAt });
-            floor.isActive = false;
             floor.isResolved = false;
+            floor.revealed = false;
             branchFloors.push(floor);
         }
         branches.push({
@@ -151,7 +156,7 @@ export function generateRandomArchitecture(complexity = 'medium') {
 }
 
 export class NetArchitectureUI {
-    constructor(containerId = 'architectureContainer') {
+    constructor(containerId = 'architectureContainer', gmMode = false) {
         this.container = document.getElementById(containerId);
         if (!this.container) return;
         this.architecture = null;
@@ -161,85 +166,12 @@ export class NetArchitectureUI {
         this.currentTurn = null;
         this.netActionsRemaining = 0;
         this.isCombat = false;
+        this.gmMode = gmMode;           // если true – отключаем скрытие этажей
         this.init();
 
         window.addEventListener('characterUpdated', () => this.render());
     }
-    // Добавить в класс NetArchitectureUI
 
-renderMinimap() {
-    if (!this.architecture || !this.architecture.main) return '';
-    
-    const mainFloors = this.architecture.main;
-    const branches = this.architecture.branches || [];
-    
-    let html = `<div class="minimap">
-                    <h4>🗺️ Архитектура сети (схема)</h4>
-                    <div class="minimap-main">`;
-    
-    // Рендер основной ветки
-    for (let i = 0; i < mainFloors.length; i++) {
-        const floor = mainFloors[i];
-        const isCurrent = (this.currentBranch === null && this.currentFloorIndex === i);
-        const isResolved = floor.isResolved;
-        const isIce = floor.type === FLOOR_TYPES.ICE;
-        
-        let icon = '📄';
-        if (floor.type === FLOOR_TYPES.PASSWORD) icon = '🔒';
-        else if (floor.type === FLOOR_TYPES.CONTROL_NODE) icon = '🎮';
-        else if (floor.type === FLOOR_TYPES.ICE) icon = '💀';
-        
-        let statusClass = '';
-        if (isCurrent) statusClass = 'current';
-        else if (isResolved) statusClass = 'resolved';
-        else if (isIce && !isResolved) statusClass = 'ice';
-        
-        html += `<div class="minimap-node ${statusClass}" data-type="main" data-index="${i}" title="${floor.type}">
-                    <span class="minimap-icon">${icon}</span>
-                </div>`;
-        
-        // Разделитель между этажами (кроме последнего)
-        if (i < mainFloors.length - 1) html += `<div class="minimap-connector">│</div>`;
-    }
-    
-    html += `</div>`;
-    
-    // Рендер ответвлений (каждое в отдельном блоке)
-    for (const branch of branches) {
-        const attachFloor = mainFloors[branch.attachAt];
-        if (!attachFloor) continue;
-        
-        html += `<div class="minimap-branch" style="margin-left: 40px;">
-                    <div class="minimap-branch-label">↳ Ответвление от этажа ${branch.attachAt+1}</div>
-                    <div class="minimap-branch-floors">`;
-        
-        for (let i = 0; i < branch.floors.length; i++) {
-            const floor = branch.floors[i];
-            const isCurrent = (this.currentBranch === branch.id && this.currentFloorIndex === i);
-            const isResolved = floor.isResolved;
-            const isIce = floor.type === FLOOR_TYPES.ICE;
-            
-            let icon = '📄';
-            if (floor.type === FLOOR_TYPES.PASSWORD) icon = '🔒';
-            else if (floor.type === FLOOR_TYPES.CONTROL_NODE) icon = '🎮';
-            else if (floor.type === FLOOR_TYPES.ICE) icon = '💀';
-            
-            let statusClass = '';
-            if (isCurrent) statusClass = 'current';
-            else if (isResolved) statusClass = 'resolved';
-            else if (isIce && !isResolved) statusClass = 'ice';
-            
-            html += `<div class="minimap-node ${statusClass}" data-type="branch" data-branch="${branch.id}" data-index="${i}" title="${floor.type}">
-                        <span class="minimap-icon">${icon}</span>
-                    </div>`;
-            if (i < branch.floors.length - 1) html += `<div class="minimap-connector">│</div>`;
-        }
-        html += `</div></div>`;
-    }
-    
-    html += `</div>`;
-    return html;
-}
     init() {
         this.renderEmpty();
         document.getElementById('genArchitectureBtn')?.addEventListener('click', () => this.generateNew());
@@ -327,7 +259,7 @@ renderMinimap() {
 
     // === Генерация и сброс ===
     generateNew() {
-        this.architecture = generateRandomArchitecture('medium');
+        this.architecture = generateRandomArchitecture('medium', this.gmMode);
         this.currentBranch = null;
         this.currentFloorIndex = 0;
         this.resetCombatState();
@@ -335,7 +267,7 @@ renderMinimap() {
     }
 
     generateWithComplexity(complexity = 'medium') {
-        this.architecture = generateRandomArchitecture(complexity);
+        this.architecture = generateRandomArchitecture(complexity, this.gmMode);
         this.currentBranch = null;
         this.currentFloorIndex = 0;
         this.resetCombatState();
@@ -390,11 +322,112 @@ renderMinimap() {
         }
     }
 
+    // Открывает следующий этаж в текущей ветке (если есть и он скрыт)
+    revealNextFloor() {
+        const floors = this.getCurrentFloors();
+        const idx = this.currentFloorIndex;
+        if (idx + 1 < floors.length && !floors[idx + 1].revealed) {
+            floors[idx + 1].revealed = true;
+            this.render();
+            return true;
+        }
+        return false;
+    }
+
+    // Открывает первый этаж ответвления при входе
+    revealBranchFirstFloor(branchId) {
+        const branch = this.architecture.branches.find(b => b.id === branchId);
+        if (branch && branch.floors.length && !branch.floors[0].revealed) {
+            branch.floors[0].revealed = true;
+            this.render();
+        }
+    }
+
+    // Временный следопыт (открывает все этажи)
+    // В классе NetArchitectureUI замените метод usePathfinder() на этот:
+
+// Следопыт – открывает несколько следующих этажей в текущей ветке
+async usePathfinder() {
+    if (!this.architecture) return;
+    if (!this.gmMode && !this.checkCharacterExists()) return;
+
+    // Если в бою – проверяем наличие сетевых действий
+    if (this.isCombat && this.netActionsRemaining < 1) {
+        alert("Недостаточно сетевых действий!");
+        return;
+    }
+
+    const floors = this.getCurrentFloors();
+    const currentIdx = this.currentFloorIndex;
+    const unrevealedCount = floors.slice(currentIdx + 1).filter(f => !f.revealed).length;
+    if (unrevealedCount === 0) {
+        alert("Нет скрытых этажей впереди.");
+        return;
+    }
+
+    const interfaceRank = this.getInterfaceRank();
+    const bonuses = this.getActiveProgramBonuses();
+    const roll = this.rollDice(1, 10);
+    const result = interfaceRank + roll + (bonuses.pathfinder || 0);
+    
+    // Сложность: базовая 8 + текущий этаж (0-индекс)
+    // Для ответвлений используем индекс внутри ответвления
+    let sl = 8 + currentIdx;
+    // Дополнительный модификатор от сложности архитектуры
+    const complexityMod = { easy: 0, medium: 2, hard: 4 }[this.architecture.complexity] || 2;
+    sl += complexityMod;
+    
+    if (result >= sl) {
+        // Сколько этажей открыть? 1d6, но не больше количества скрытых этажей впереди
+        let count = this.rollDice(1, 6);
+        count = Math.min(count, unrevealedCount);
+        if (count === 0) count = 1;
+        
+        const opened = this.revealNextFloors(count);
+        alert(`🔍 Успех! Интерфейс ${interfaceRank} + d10(${roll}) + бонус ${bonuses.pathfinder} = ${result} >= СЛ ${sl}. Вы заглянули на ${opened} этаж(ей) вперёд.`);
+        
+        if (this.isCombat) {
+            this.netActionsRemaining--;
+            this.render();
+            if (this.netActionsRemaining === 0) this.nextTurn();
+        } else {
+            this.render();
+        }
+    } else {
+        alert(`❌ Провал! Интерфейс ${interfaceRank} + d10(${roll}) + бонус ${bonuses.pathfinder} = ${result} < СЛ ${sl}. Ничего не удалось разглядеть.`);
+        if (this.isCombat) {
+            this.netActionsRemaining--;
+            this.render();
+            if (this.netActionsRemaining === 0) this.nextTurn();
+        }
+    }
+}
+
+// Открывает указанное количество следующих этажей в текущей ветке
+revealNextFloors(count) {
+    const floors = this.getCurrentFloors();
+    let opened = 0;
+    let idx = this.currentFloorIndex + 1;
+    while (opened < count && idx < floors.length) {
+        if (!floors[idx].revealed) {
+            floors[idx].revealed = true;
+            opened++;
+        }
+        idx++;
+    }
+    return opened;
+}
+
     moveNext() {
         const floors = this.getCurrentFloors();
         if (this.currentFloorIndex + 1 < floors.length) {
-            this.currentFloorIndex++;
-            this.render();
+            // Проверяем, что следующий этаж открыт (revealed). Если нет – не пускаем.
+            if (floors[this.currentFloorIndex + 1].revealed) {
+                this.currentFloorIndex++;
+                this.render();
+            } else {
+                alert("Следующий этаж ещё не открыт. Используйте Следопыт или пройдите текущий этаж.");
+            }
         } else {
             alert("Вы достигли конца ветки.");
         }
@@ -414,6 +447,7 @@ renderMinimap() {
         if (branch && branch.attachAt === this.currentFloorIndex && this.currentBranch === null) {
             this.currentBranch = branchId;
             this.currentFloorIndex = 0;
+            this.revealBranchFirstFloor(branchId); // открываем первый этаж ответвления
             this.render();
         }
     }
@@ -438,6 +472,10 @@ renderMinimap() {
     async resolvePassword(floorId) {
         const floor = this.findFloorById(floorId);
         if (!floor) return;
+        if (!floor.revealed) {
+            alert("Этот этаж ещё не открыт.");
+            return;
+        }
         const interfaceRank = this.getInterfaceRank();
         const bonuses = this.getActiveProgramBonuses();
         const roll = this.rollDice(1,10);
@@ -446,34 +484,47 @@ renderMinimap() {
         if (result >= required) {
             floor.isResolved = true;
             alert(`Успех! Интерфейс ${interfaceRank} + d10(${roll}) + бонус ${bonuses.backdoor} = ${result} >= ${required}. Пароль взломан.`);
-            this.checkAndAdvance(floorId);
+            this.revealNextFloor();
+            this.render();
         } else {
             alert(`Провал! Интерфейс ${interfaceRank} + d10(${roll}) + бонус ${bonuses.backdoor} = ${result} < ${required}.`);
         }
-        this.render();
     }
     
     readFile(floorId) {
         const floor = this.findFloorById(floorId);
         if (!floor) return;
+        if (!floor.revealed) {
+            alert("Этот этаж ещё не открыт.");
+            return;
+        }
         alert(`Вы прочитали файл:\n${floor.content}`);
         floor.isResolved = true;
-        this.checkAndAdvance(floorId);
+        this.revealNextFloor();
         this.render();
     }
     
     controlNode(floorId) {
         const floor = this.findFloorById(floorId);
         if (!floor) return;
+        if (!floor.revealed) {
+            alert("Этот этаж ещё не открыт.");
+            return;
+        }
         alert(`Вы взяли под контроль узел: ${floor.content}. Теперь вы можете управлять этой системой.`);
         floor.isResolved = true;
-        this.checkAndAdvance(floorId);
+        this.revealNextFloor();
         this.render();
     }
     
     fightIce(floorId) {
         const floor = this.findFloorById(floorId);
-        if (!floor || floor.type !== FLOOR_TYPES.ICE) {
+        if (!floor) return;
+        if (!floor.revealed) {
+            alert("Этот этаж ещё не открыт.");
+            return;
+        }
+        if (floor.type !== FLOOR_TYPES.ICE) {
             alert("Это не чёрный лёд.");
             return;
         }
@@ -486,12 +537,17 @@ renderMinimap() {
             alert("Не удалось создать данные о чёрном льде.");
             return;
         }
+        if (this.isCombat && this.initiativeQueue.some(e => e.type === 'ice' && e.floorId === floor.id)) {
+            alert("Вы уже в бою с этим льдом!");
+            return;
+        }
         this.enterFloorWithIce(floorId);
     }
     
     async enterFloorWithIce(floorId) {
         const floor = this.findFloorById(floorId);
         if (!floor || floor.type !== FLOOR_TYPES.ICE || floor.isResolved) return;
+        if (!floor.revealed) return;
         this.ensureIceData(floor);
         const ice = floor.ice;
         if (!ice) {
@@ -591,7 +647,7 @@ renderMinimap() {
             if (ice.hp <= 0) {
                 alert(`✅ ${ice.name} уничтожен!`);
                 floor.isResolved = true;
-                this.checkAndAdvance(floorId);
+                this.revealNextFloor();
                 this.endCombatOnFloor(floorId);
                 this.render();
                 return;
@@ -621,9 +677,11 @@ renderMinimap() {
         const icePerception = ice.perception + iceRoll;
         if (playerResult > icePerception) {
             alert(`🌀 Вы ускользнули от ${ice.name} на предыдущий этаж.`);
-            this.movePrev();
+            if (this.currentFloorIndex > 0) {
+                this.currentFloorIndex--;
+                this.render();
+            }
             this.endCombatOnFloor(floorId);
-            this.render();
         } else {
             alert(`❌ Не удалось ускользнуть. ${ice.name} атакует!`);
             await this.iceAttack(floorId, false);
@@ -665,8 +723,8 @@ renderMinimap() {
             if (ice.hp <= 0) {
                 alert(`✅ ${ice.name} уничтожен!`);
                 floor.isResolved = true;
+                this.revealNextFloor();
                 this.endCombatOnFloor(floorId);
-                this.checkAndAdvance(floorId);
                 this.render();
                 return;
             }
@@ -711,18 +769,6 @@ renderMinimap() {
             if (enable) btn.removeAttribute('disabled');
             else btn.setAttribute('disabled', 'disabled');
         });
-    }
-
-    checkAndAdvance(floorId) {
-        const currentFloor = this.getCurrentFloor();
-        if (currentFloor && currentFloor.id === floorId && currentFloor.isResolved) {
-            if (!this.isLastFloor()) {
-                this.moveNext();
-            } else {
-                alert('🏆 Вы достигли дна архитектуры! Можете оставить вирус или отключиться.');
-                this.render();
-            }
-        }
     }
 
     // === Программы ===
@@ -773,9 +819,23 @@ renderMinimap() {
         }
     }
 
-    // === Рендер ===
+    // === Иконка для этажа ===
+    getFloorIcon(type) {
+        if (type === FLOOR_TYPES.PASSWORD) return '🔒';
+        if (type === FLOOR_TYPES.CONTROL_NODE) return '🎮';
+        if (type === FLOOR_TYPES.ICE) return '💀';
+        return '📄';
+    }
+
+    // === Рендер текущего этажа (с учётом скрытия) ===
     renderFloorCard(floor) {
         if (!floor) return '<div class="floor-card error">Ошибка: этаж не найден</div>';
+        if (!this.gmMode && !floor.revealed) {
+            return `<div class="floor-card locked">
+                        <div class="floor-number">???</div>
+                        <div class="floor-content">🔒 Этаж скрыт. Используйте Следопыт или пройдите предыдущий этаж.</div>
+                    </div>`;
+        }
         const statusClass = floor.isResolved ? 'resolved' : 'active';
         let html = `<div class="floor-card ${statusClass}" data-id="${floor.id}">
                         <div class="floor-number">Этаж ${(floor.index !== undefined ? floor.index+1 : '?')}</div>
@@ -830,6 +890,88 @@ renderMinimap() {
         }
     }
 
+    renderMinimap() {
+        if (!this.architecture || !this.architecture.main) return '';
+        
+        const mainFloors = this.architecture.main;
+        const branches = this.architecture.branches || [];
+        
+        let html = `<div class="minimap-network">`;
+        html += `<div class="minimap-main-column">`;
+        
+        for (let i = 0; i < mainFloors.length; i++) {
+            const floor = mainFloors[i];
+            const isCurrent = (this.currentBranch === null && this.currentFloorIndex === i);
+            const isResolved = floor.isResolved;
+            const icon = this.getFloorIcon(floor.type);
+            let statusClass = '';
+            if (isCurrent) statusClass = 'current';
+            else if (isResolved) statusClass = 'resolved';
+            if (floor.type === FLOOR_TYPES.ICE && !isResolved) statusClass += ' ice';
+            
+            // Если этаж скрыт, показываем заглушку
+            let displayIcon = icon;
+            if (!this.gmMode && !floor.revealed) displayIcon = '?';
+            
+            html += `<div class="minimap-main-row">`;
+            html += `<div class="minimap-main-node">
+                        <div class="minimap-node-circle ${statusClass}" data-type="main" data-index="${i}" title="${floor.revealed ? floor.type : 'скрыто'}">
+                            <span class="minimap-node-icon">${displayIcon}</span>
+                        </div>
+                    </div>`;
+            
+            const attachedBranches = branches.filter(b => b.attachAt === i);
+            if (attachedBranches.length) {
+                html += `<div class="minimap-branches-side">`;
+                for (const branch of attachedBranches) {
+                    html += `<div class="minimap-branch-side">`;
+                    html += `<div class="minimap-branch-connector"></div>`;
+                    html += `<div class="minimap-branch-chain">`;
+                    for (let j = 0; j < branch.floors.length; j++) {
+                        const bFloor = branch.floors[j];
+                        const isCurrentBranch = (this.currentBranch === branch.id && this.currentFloorIndex === j);
+                        const isResolvedBranch = bFloor.isResolved;
+                        const bIcon = this.getFloorIcon(bFloor.type);
+                        let bStatus = '';
+                        if (isCurrentBranch) bStatus = 'current';
+                        else if (isResolvedBranch) bStatus = 'resolved';
+                        if (bFloor.type === FLOOR_TYPES.ICE && !isResolvedBranch) bStatus += ' ice';
+                        
+                        let displayBIcon = bIcon;
+                        if (!this.gmMode && !bFloor.revealed) displayBIcon = '?';
+                        
+                        html += `<div class="minimap-branch-node">
+                                    <div class="minimap-node-circle ${bStatus}" data-type="branch" data-branch="${branch.id}" data-index="${j}" title="${bFloor.revealed ? bFloor.type : 'скрыто'}">
+                                        <span class="minimap-node-icon">${displayBIcon}</span>
+                                    </div>
+                                </div>`;
+                        if (j < branch.floors.length - 1) {
+                            html += `<span class="minimap-branch-arrow">→</span>`;
+                        }
+                    }
+                    html += `</div></div>`;
+                }
+                html += `</div>`;
+            } else {
+                html += `<div class="minimap-branches-side-placeholder"></div>`;
+            }
+            html += `</div>`;
+            
+            if (i < mainFloors.length - 1) {
+                html += `<div class="minimap-vline"></div>`;
+            }
+        }
+        html += `</div>`;
+        
+        html += `<div class="minimap-legend">
+                    <div class="legend-item"><div class="legend-color current"></div><span>Текущий этаж</span></div>
+                    <div class="legend-item"><div class="legend-color resolved"></div><span>Пройден</span></div>
+                    <div class="legend-item"><div class="legend-color ice"></div><span>Чёрный лёд</span></div>
+                </div>`;
+        html += `</div>`;
+        return html;
+    }
+
     render() {
         if (!this.architecture || !this.architecture.main?.length) {
             this.renderEmpty();
@@ -849,9 +991,10 @@ renderMinimap() {
                         <button class="nav-prev" ${this.isFirstFloor() ? 'disabled' : ''}>◀ Назад</button>
                         <span>${this.getLocationString()}</span>
                         <button class="nav-next" ${this.isLastFloor() ? 'disabled' : ''}>Вперёд ▶</button>
+                        <button class="pathfinder-btn" ${this.gmMode ? '' : ''}>🔍 Следопыт</button>
                     </div>`;
         html += this.renderFloorCard(currentFloor);
-        html += this.renderMinimap();
+        
         if (this.currentBranch === null) {
             const branchesHere = this.architecture.branches.filter(b => b.attachAt === this.currentFloorIndex);
             if (branchesHere.length) {
@@ -872,6 +1015,8 @@ renderMinimap() {
         }
         
         html += this.renderCombatPanel(hpText, interfaceRank, netActions);
+        html += this.renderMinimap();
+        
         this.container.innerHTML = html;
         this.attachEvents();
     }
@@ -881,6 +1026,9 @@ renderMinimap() {
         const nextBtn = this.container.querySelector('.nav-next');
         if (prevBtn) prevBtn.addEventListener('click', () => this.movePrev());
         if (nextBtn) nextBtn.addEventListener('click', () => this.moveNext());
+        
+        const pathfinderBtn = this.container.querySelector('.pathfinder-btn');
+        if (pathfinderBtn) pathfinderBtn.addEventListener('click', () => this.usePathfinder());
         
         this.container.querySelectorAll('.enter-branch').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -942,23 +1090,34 @@ renderMinimap() {
                 this.useProgram(floorId, programName);
             });
         });
-        this.container.querySelectorAll('.minimap-node').forEach(node => {
-    node.addEventListener('click', () => {
-        const type = node.dataset.type;
-        const index = parseInt(node.dataset.index);
-        if (type === 'main') {
-            // Переключиться на основную ветку
-            this.currentBranch = null;
-            this.currentFloorIndex = index;
-            this.render();
-        } else if (type === 'branch') {
-            const branchId = parseInt(node.dataset.branch);
-            this.currentBranch = branchId;
-            this.currentFloorIndex = index;
-            this.render();
-        }
-    });
-});
+        
+        // Обработчики кликов по миникарте
+        this.container.querySelectorAll('.minimap-node-circle[data-type="main"]').forEach(node => {
+            node.addEventListener('click', () => {
+                const index = parseInt(node.dataset.index);
+                if (this.architecture.main[index] && this.architecture.main[index].revealed) {
+                    this.currentBranch = null;
+                    this.currentFloorIndex = index;
+                    this.render();
+                } else {
+                    alert("Этот этаж ещё не открыт.");
+                }
+            });
+        });
+        this.container.querySelectorAll('.minimap-node-circle[data-type="branch"]').forEach(node => {
+            node.addEventListener('click', () => {
+                const branchId = parseInt(node.dataset.branch);
+                const index = parseInt(node.dataset.index);
+                const branch = this.architecture.branches.find(b => b.id === branchId);
+                if (branch && branch.floors[index] && branch.floors[index].revealed) {
+                    this.currentBranch = branchId;
+                    this.currentFloorIndex = index;
+                    this.render();
+                } else {
+                    alert("Этот этаж ещё не открыт.");
+                }
+            });
+        });
     }
     
     exportToJSON() {
@@ -967,6 +1126,7 @@ renderMinimap() {
             architecture: this.architecture,
             currentBranch: this.currentBranch,
             currentFloorIndex: this.currentFloorIndex,
+            gmMode: this.gmMode,
             timestamp: Date.now()
         };
         return JSON.stringify(data, null, 2);
@@ -979,6 +1139,7 @@ renderMinimap() {
                 this.architecture = data.architecture;
                 this.currentBranch = data.currentBranch !== undefined ? data.currentBranch : null;
                 this.currentFloorIndex = data.currentFloorIndex || 0;
+                this.gmMode = data.gmMode || false;
                 // Сброс флагов боя
                 this.resetCombatState();
                 this.render();
@@ -994,91 +1155,4 @@ renderMinimap() {
         if (!str) return '';
         return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
     }
- // Вспомогательный метод для иконки этажа
-getFloorIcon(type) {
-    if (type === FLOOR_TYPES.PASSWORD) return '🔒';
-    if (type === FLOOR_TYPES.CONTROL_NODE) return '🎮';
-    if (type === FLOOR_TYPES.ICE) return '💀';
-    return '📄';
-}
-
-// Полностью обновлённый renderMinimap()
-renderMinimap() {
-    if (!this.architecture || !this.architecture.main) return '';
-    
-    const mainFloors = this.architecture.main;
-    const branches = this.architecture.branches || [];
-    
-    let html = `<div class="minimap-network">`;
-    html += `<div class="minimap-main-column">`;
-    
-    for (let i = 0; i < mainFloors.length; i++) {
-        const floor = mainFloors[i];
-        const isCurrent = (this.currentBranch === null && this.currentFloorIndex === i);
-        const isResolved = floor.isResolved;
-        const icon = this.getFloorIcon(floor.type);
-        
-        let statusClass = '';
-        if (isCurrent) statusClass = 'current';
-        else if (isResolved) statusClass = 'resolved';
-        if (floor.type === FLOOR_TYPES.ICE && !isResolved) statusClass += ' ice';
-        
-        html += `<div class="minimap-main-row">`;
-        html += `<div class="minimap-main-node">
-                    <div class="minimap-node-circle ${statusClass}" data-type="main" data-index="${i}" title="${floor.type}">
-                        <span class="minimap-node-icon">${icon}</span>
-                    </div>
-                </div>`;
-        
-        // Ответвления, прикреплённые к этому этажу
-        const attachedBranches = branches.filter(b => b.attachAt === i);
-        if (attachedBranches.length) {
-            html += `<div class="minimap-branches-side">`;
-            for (const branch of attachedBranches) {
-                html += `<div class="minimap-branch-side">`;
-                html += `<div class="minimap-branch-connector"></div>`;
-                html += `<div class="minimap-branch-chain">`;
-                for (let j = 0; j < branch.floors.length; j++) {
-                    const bFloor = branch.floors[j];
-                    const isCurrentBranch = (this.currentBranch === branch.id && this.currentFloorIndex === j);
-                    const isResolvedBranch = bFloor.isResolved;
-                    const bIcon = this.getFloorIcon(bFloor.type);
-                    let bStatus = '';
-                    if (isCurrentBranch) bStatus = 'current';
-                    else if (isResolvedBranch) bStatus = 'resolved';
-                    if (bFloor.type === FLOOR_TYPES.ICE && !isResolvedBranch) bStatus += ' ice';
-                    
-                    html += `<div class="minimap-branch-node">
-                                <div class="minimap-node-circle ${bStatus}" data-type="branch" data-branch="${branch.id}" data-index="${j}" title="${bFloor.type}">
-                                    <span class="minimap-node-icon">${bIcon}</span>
-                                </div>
-                            </div>`;
-                    if (j < branch.floors.length - 1) {
-                        html += `<span class="minimap-branch-arrow">→</span>`;
-                    }
-                }
-                html += `</div></div>`;
-            }
-            html += `</div>`;
-        } else {
-            html += `<div class="minimap-branches-side-placeholder"></div>`;
-        }
-        html += `</div>`;
-        
-        // Вертикальная линия между этажами (кроме последнего)
-        if (i < mainFloors.length - 1) {
-            html += `<div class="minimap-vline"></div>`;
-        }
-    }
-    html += `</div>`;
-    
-    // Легенда
-    html += `<div class="minimap-legend">
-                <div class="legend-item"><div class="legend-color current"></div><span>Текущий этаж</span></div>
-                <div class="legend-item"><div class="legend-color resolved"></div><span>Пройден</span></div>
-                <div class="legend-item"><div class="legend-color ice"></div><span>Чёрный лёд</span></div>
-            </div>`;
-    html += `</div>`;
-    return html;
-}
 }
