@@ -994,4 +994,91 @@ renderMinimap() {
         if (!str) return '';
         return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
     }
+ // Вспомогательный метод для иконки этажа
+getFloorIcon(type) {
+    if (type === FLOOR_TYPES.PASSWORD) return '🔒';
+    if (type === FLOOR_TYPES.CONTROL_NODE) return '🎮';
+    if (type === FLOOR_TYPES.ICE) return '💀';
+    return '📄';
+}
+
+// Полностью обновлённый renderMinimap()
+renderMinimap() {
+    if (!this.architecture || !this.architecture.main) return '';
+    
+    const mainFloors = this.architecture.main;
+    const branches = this.architecture.branches || [];
+    
+    let html = `<div class="minimap-network">`;
+    html += `<div class="minimap-main-column">`;
+    
+    for (let i = 0; i < mainFloors.length; i++) {
+        const floor = mainFloors[i];
+        const isCurrent = (this.currentBranch === null && this.currentFloorIndex === i);
+        const isResolved = floor.isResolved;
+        const icon = this.getFloorIcon(floor.type);
+        
+        let statusClass = '';
+        if (isCurrent) statusClass = 'current';
+        else if (isResolved) statusClass = 'resolved';
+        if (floor.type === FLOOR_TYPES.ICE && !isResolved) statusClass += ' ice';
+        
+        html += `<div class="minimap-main-row">`;
+        html += `<div class="minimap-main-node">
+                    <div class="minimap-node-circle ${statusClass}" data-type="main" data-index="${i}" title="${floor.type}">
+                        <span class="minimap-node-icon">${icon}</span>
+                    </div>
+                </div>`;
+        
+        // Ответвления, прикреплённые к этому этажу
+        const attachedBranches = branches.filter(b => b.attachAt === i);
+        if (attachedBranches.length) {
+            html += `<div class="minimap-branches-side">`;
+            for (const branch of attachedBranches) {
+                html += `<div class="minimap-branch-side">`;
+                html += `<div class="minimap-branch-connector"></div>`;
+                html += `<div class="minimap-branch-chain">`;
+                for (let j = 0; j < branch.floors.length; j++) {
+                    const bFloor = branch.floors[j];
+                    const isCurrentBranch = (this.currentBranch === branch.id && this.currentFloorIndex === j);
+                    const isResolvedBranch = bFloor.isResolved;
+                    const bIcon = this.getFloorIcon(bFloor.type);
+                    let bStatus = '';
+                    if (isCurrentBranch) bStatus = 'current';
+                    else if (isResolvedBranch) bStatus = 'resolved';
+                    if (bFloor.type === FLOOR_TYPES.ICE && !isResolvedBranch) bStatus += ' ice';
+                    
+                    html += `<div class="minimap-branch-node">
+                                <div class="minimap-node-circle ${bStatus}" data-type="branch" data-branch="${branch.id}" data-index="${j}" title="${bFloor.type}">
+                                    <span class="minimap-node-icon">${bIcon}</span>
+                                </div>
+                            </div>`;
+                    if (j < branch.floors.length - 1) {
+                        html += `<span class="minimap-branch-arrow">→</span>`;
+                    }
+                }
+                html += `</div></div>`;
+            }
+            html += `</div>`;
+        } else {
+            html += `<div class="minimap-branches-side-placeholder"></div>`;
+        }
+        html += `</div>`;
+        
+        // Вертикальная линия между этажами (кроме последнего)
+        if (i < mainFloors.length - 1) {
+            html += `<div class="minimap-vline"></div>`;
+        }
+    }
+    html += `</div>`;
+    
+    // Легенда
+    html += `<div class="minimap-legend">
+                <div class="legend-item"><div class="legend-color current"></div><span>Текущий этаж</span></div>
+                <div class="legend-item"><div class="legend-color resolved"></div><span>Пройден</span></div>
+                <div class="legend-item"><div class="legend-color ice"></div><span>Чёрный лёд</span></div>
+            </div>`;
+    html += `</div>`;
+    return html;
+}
 }

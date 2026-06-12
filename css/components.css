@@ -6015,82 +6015,590 @@ body {
     text-align: center;
     font-size: 0.8rem;
 }
-/* Миникарта */
-.minimap {
-    background: #0f1219;
-    border: 1px solid #2a3342;
-    border-radius: 16px;
-    padding: 12px;
-    margin-top: 20px;
+/* Вертикальная миникарта */
+.minimap-vertical {
+    background: #0a0c12;
+    border-radius: 8px;
+    padding: 8px 8px 8px 12px;
+    margin-top: 15px;
+    overflow-x: auto;
     font-family: monospace;
+    border: 1px solid #2a3342;
+    display: inline-block;
+    min-width: 200px;
 }
-.minimap h4 {
-    margin: 0 0 12px 0;
-    font-size: 0.9rem;
-    color: #ff9a3c;
-}
-.minimap-main {
+
+.minimap-row {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 4px;
-    margin-bottom: 16px;
+    gap: 12px;
+    margin-bottom: 2px;
 }
+
 .minimap-node {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     background: #1e2530;
-    border-radius: 8px;
-    border: 2px solid #2a3342;
+    border-radius: 6px;
+    border: 1px solid #2a3342;
     cursor: pointer;
+    font-size: 1rem;
     transition: 0.1s;
+    flex-shrink: 0;
 }
+
 .minimap-node.current {
     border-color: #ff9a3c;
     background: #2a3342;
-    box-shadow: 0 0 6px #ff9a3c;
+    box-shadow: 0 0 4px #ff9a3c;
 }
+
 .minimap-node.resolved {
     border-color: #39ff14;
-    background: #1e2530;
-    opacity: 0.7;
+    opacity: 0.6;
 }
+
 .minimap-node.ice {
     border-color: #ff3c5f;
 }
+
 .minimap-node:hover {
     transform: scale(1.05);
     border-color: #ff9a3c;
 }
-.minimap-icon {
-    font-size: 1.2rem;
-}
-.minimap-connector {
-    color: #2a3342;
-    font-size: 0.8rem;
-    margin: 2px 0;
-}
-.minimap-branch {
-    margin-top: 12px;
-    border-left: 2px dashed #2a3342;
-    padding-left: 16px;
-}
-.minimap-branch-label {
-    font-size: 0.7rem;
-    color: #9aa4bf;
-    margin-bottom: 6px;
-}
-.minimap-branch-floors {
+
+.minimap-branches {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     gap: 4px;
+    margin-left: 8px;
 }
 
+.minimap-branch {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
 
+.minimap-branches-placeholder {
+    width: 10px;
+    height: 32px;
+}
+
+.minimap-arrow {
+    color: #2a3342;
+    font-size: 0.7rem;
+    margin: 0 2px;
+}
+
+.minimap-vline {
+    color: #2a3342;
+    font-size: 0.7rem;
+    text-align: center;
+    margin-left: 14px;
+    margin-bottom: 2px;
+}
+/* ========== УЛУЧШЕННАЯ КАРТОЧКА ЭТАЖА ========== */
+.floor-card {
+    background: linear-gradient(145deg, #1a1e2a, #0f1219);
+    border: 1px solid #2a3342;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.floor-card.active {
+    border-left: 4px solid #39ff14;
+    background: linear-gradient(145deg, #1e2530, #14181f);
+    transform: translateX(6px);
+    box-shadow: 0 0 12px rgba(57,255,20,0.2);
+}
+.floor-card.resolved {
+    opacity: 0.7;
+    background: #0f1219;
+    filter: grayscale(0.2);
+}
+.floor-card.resolved::after {
+    content: "✓";
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 1.2rem;
+    color: #39ff14;
+    text-shadow: 0 0 4px #39ff14;
+}
+.floor-number {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    color: #ff9a3c;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+    display: inline-block;
+    background: rgba(255,154,60,0.15);
+    padding: 2px 10px;
+    border-radius: 20px;
+}
+.floor-type {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #9aa4bf;
+    margin-left: 8px;
+}
+.floor-content {
+    background: #0a0c12;
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin: 12px 0;
+    font-family: monospace;
+    font-size: 0.85rem;
+    border-left: 3px solid #ff9a3c;
+}
+.floor-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+.floor-actions button, .program-action button {
+    background: #1e2530;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    transition: all 0.15s;
+}
+.floor-actions button:hover, .program-action button:hover {
+    background: #ff3c5f;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(255,60,95,0.4);
+}
+.combat-actions {
+    background: #0a0c12;
+    border-radius: 16px;
+    padding: 10px;
+    margin-top: 8px;
+}
+.action-discharge {
+    background: #ff3c5f;
+    color: #0a0c12;
+}
+.action-escape {
+    background: #2a5f5f;
+}
+.program-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.program-select {
+    background: #1e2530;
+    border: 1px solid #2a3342;
+    border-radius: 30px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    color: #fff;
+}
+/* ========== ПАНЕЛЬ БОЯ ========== */
+.combat-panel {
+    background: linear-gradient(135deg, #0f1219, #0a0c12);
+    border: 1px solid #ff3c5f;
+    border-radius: 24px;
+    padding: 16px;
+    margin-top: 20px;
+    font-family: 'Orbitron', monospace;
+    backdrop-filter: blur(4px);
+    animation: panelPulse 1.5s infinite;
+}
+@keyframes panelPulse {
+    0% { box-shadow: 0 0 0 0 rgba(255,60,95,0.2); }
+    70% { box-shadow: 0 0 0 6px rgba(255,60,95,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,60,95,0); }
+}
+.health-section {
+    background: #0a0c12;
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 16px;
+    border-left: 4px solid #39ff14;
+}
+.health-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+.health-bar-container {
+    background: #2a3342;
+    border-radius: 20px;
+    height: 10px;
+    overflow: hidden;
+    width: 100%;
+}
+.health-fill {
+    background: linear-gradient(90deg, #39ff14, #ff9a3c);
+    width: 100%;
+    height: 100%;
+    transition: width 0.2s ease;
+}
+.initiative-queue {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 12px 0;
+}
+.initiative-chip {
+    background: #1e2530;
+    border-radius: 30px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #2a3342;
+}
+.initiative-chip.active {
+    background: #ff3c5f;
+    color: #0a0c12;
+    border-color: #ff9a3c;
+    box-shadow: 0 0 8px #ff3c5f;
+}
+.initiative-chip.player::before {
+    content: "👤";
+}
+.initiative-chip.ice::before {
+    content: "❄️";
+}
+.net-actions {
+    font-size: 0.85rem;
+    background: #0a0c12;
+    border-radius: 30px;
+    padding: 6px 12px;
+    text-align: center;
+    font-weight: bold;
+    color: #39ff14;
+    display: inline-block;
+}
+/* ========== СЕТЕВАЯ МИНИКАРТА (КИБЕРПАНК-СТИЛЬ) ========== */
+.minimap-network {
+    background: rgba(10, 12, 18, 0.8);
+    backdrop-filter: blur(4px);
+    border-radius: 20px;
+    padding: 16px;
+    margin-top: 20px;
+    border: 1px solid #39ff14;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+    font-family: 'Orbitron', monospace;
+}
+
+/* Основная ветка – вертикальный ряд */
+.minimap-main-chain {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    margin-bottom: 24px;
+}
+
+/* Каждый узел основной ветки */
+.minimap-main-node {
+    position: relative;
+    z-index: 2;
+    margin: 12px 0;
+}
+
+/* Круглый узел */
+.minimap-node-circle {
+    width: 44px;
+    height: 44px;
+    background: #0a0c12;
+    border: 2px solid #2a3342;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 0 rgba(57, 255, 20, 0);
+    position: relative;
+}
+.minimap-node-circle.current {
+    border-color: #39ff14;
+    background: #1a2a1a;
+    box-shadow: 0 0 12px #39ff14;
+    animation: pulse-glow 1.5s infinite;
+}
+.minimap-node-circle.resolved {
+    border-color: #39ff14;
+    opacity: 0.6;
+    filter: grayscale(0.2);
+}
+.minimap-node-circle.ice {
+    border-color: #ff3c5f;
+    box-shadow: 0 0 6px #ff3c5f;
+}
+.minimap-node-circle:hover {
+    transform: scale(1.1);
+    border-color: #ff9a3c;
+    box-shadow: 0 0 10px #ff9a3c;
+}
+
+/* Линия между узлами основной ветки (вертикальная) */
+.minimap-main-node:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(180deg, #2a3342, #39ff14);
+    opacity: 0.5;
+    z-index: 1;
+}
+
+/* Иконка типа узла (над кругом) */
+.minimap-node-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+/* Ответвления – контейнер */
+.minimap-branches-container {
+    margin-left: 28px;
+    padding-left: 16px;
+    border-left: 2px dashed #39ff14;
+}
+
+/* Каждое ответвление */
+.minimap-branch-item {
+    margin: 16px 0;
+    position: relative;
+}
+.minimap-branch-item::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 22px;
+    width: 20px;
+    height: 2px;
+    background: #39ff14;
+    opacity: 0.6;
+}
+
+/* Цепочка этажей внутри ответвления */
+.minimap-branch-chain {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+.minimap-branch-node {
+    position: relative;
+}
+.minimap-branch-node .minimap-node-circle {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+}
+.minimap-branch-node:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 2px;
+    background: #2a3342;
+}
+
+/* Анимация пульсации для текущего узла */
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(57, 255, 20, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0); }
+}
+
+/* Легенда (опционально) */
+.minimap-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #2a3342;
+    justify-content: center;
+    font-size: 0.7rem;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #2a3342;
+    border: 1px solid;
+}
+.legend-color.current { border-color: #39ff14; background: #1a2a1a; }
+.legend-color.resolved { border-color: #39ff14; opacity: 0.6; }
+.legend-color.ice { border-color: #ff3c5f; }
+/* ========== СЕТЕВАЯ МИНИКАРТА – ВЕРТИКАЛЬНАЯ С ПРИВЯЗКОЙ ОТВЕТВЛЕНИЙ ========== */
+.minimap-network {
+    background: rgba(10, 12, 18, 0.85);
+    backdrop-filter: blur(4px);
+    border-radius: 20px;
+    padding: 16px;
+    margin-top: 20px;
+    border: 1px solid #39ff14;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+    font-family: 'Orbitron', monospace;
+    overflow-x: auto;
+}
+
+.minimap-main-column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 200px;
+}
+
+.minimap-main-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+}
+
+.minimap-main-node {
+    flex-shrink: 0;
+}
+
+.minimap-node-circle {
+    width: 44px;
+    height: 44px;
+    background: #0a0c12;
+    border: 2px solid #2a3342;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.minimap-node-circle.current {
+    border-color: #39ff14;
+    background: #1a2a1a;
+    box-shadow: 0 0 12px #39ff14;
+    animation: pulse-glow 1.5s infinite;
+}
+.minimap-node-circle.resolved {
+    border-color: #39ff14;
+    opacity: 0.6;
+    filter: grayscale(0.2);
+}
+.minimap-node-circle.ice {
+    border-color: #ff3c5f;
+    box-shadow: 0 0 6px #ff3c5f;
+}
+.minimap-node-circle:hover {
+    transform: scale(1.1);
+    border-color: #ff9a3c;
+    box-shadow: 0 0 10px #ff9a3c;
+}
+
+.minimap-branches-side {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+}
+.minimap-branch-side {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+.minimap-branch-connector {
+    width: 24px;
+    height: 2px;
+    background: #39ff14;
+    opacity: 0.6;
+}
+.minimap-branch-chain {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.minimap-branch-node .minimap-node-circle {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+}
+.minimap-branch-arrow {
+    color: #2a3342;
+    font-size: 0.8rem;
+}
+.minimap-vline {
+    width: 2px;
+    height: 16px;
+    background: linear-gradient(180deg, #2a3342, #39ff14);
+    margin-left: 21px;
+    margin-bottom: 4px;
+    opacity: 0.5;
+}
+.minimap-branches-side-placeholder {
+    width: 10px;
+}
+
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(57, 255, 20, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0); }
+}
+
+.minimap-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #2a3342;
+    justify-content: center;
+    font-size: 0.7rem;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #2a3342;
+    border: 1px solid;
+}
+.legend-color.current { border-color: #39ff14; background: #1a2a1a; }
+.legend-color.resolved { border-color: #39ff14; opacity: 0.6; }
+.legend-color.ice { border-color: #ff3c5f; }
 @media (max-width: 700px) {
     .programs-grid {
         grid-template-columns: 1fr;
