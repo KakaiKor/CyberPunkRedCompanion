@@ -94,3 +94,17 @@ export class NPCGenerator {
         armorBody.addEventListener('change', (e) => { npc.currentArmor.body = parseInt(e.target.value) || 0; });
     }
 }
+export const STAT_RANGES = {
+    Mook: {
+        REF: [5, 7], BODY: [4, 6], стрельба: [7, 9], броня: [6, 8], урон: "2d6"
+    },
+    Lieutenant: {
+        REF: [7, 9], BODY: [6, 8], стрельба: [10, 12], броня: [10, 12], урон: "3d6"
+    },
+    'Mini-Boss': {
+        REF: [9, 11], BODY: [8, 10], стрельба: [12, 14], броня: [12, 15], урон: "4d6"
+    },
+    Boss: {
+        REF: [11, 13], BODY: [10, 12], стрельба: [14, 16], броня: [14, 18], урон: "4d6+"
+    }
+};

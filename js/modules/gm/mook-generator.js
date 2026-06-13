@@ -43,7 +43,6 @@ export class MookGenerator {
         const playerCount = parseInt(document.getElementById('playerCount')?.value) || 4;
         const difficulty = document.getElementById('encounterDifficulty')?.value || 'normal';
         let selectedType = document.getElementById('enemyTypeFilter')?.value || 'all';
-        const selectedCategory = document.getElementById('enemyCategoryFilter')?.value || 'all';
         const templates = this.getEnemyTemplates();
 
         if (selectedType !== 'all') selectedType = this.normalizeType(selectedType);
@@ -57,6 +56,7 @@ export class MookGenerator {
 
         const useSpecificType = (selectedType !== 'all' && templates[selectedType]);
 
+        // ========== 1. Выбран конкретный тип врага (mook, lieutenant, miniboss, boss) ==========
         if (useSpecificType) {
             let count = 0;
             if (selectedType === 'mook') count = playerCount;
@@ -65,61 +65,30 @@ export class MookGenerator {
             else if (selectedType === 'boss') count = 1;
             else count = Math.ceil(playerCount / 2);
             for (let i = 0; i < count; i++) enemies.push(createByType(selectedType));
-        } 
-        else if (selectedCategory !== 'all') {
-            const availableTypes = Object.keys(templates).filter(t => templates[t].threat === selectedCategory);
-            const threatGroups = {
-                mook: availableTypes.filter(t => templates[t].threat === 'Mook'),
-                lieutenant: availableTypes.filter(t => templates[t].threat === 'Lieutenant'),
-                miniboss: availableTypes.filter(t => templates[t].threat === 'Mini-Boss'),
-                boss: availableTypes.filter(t => templates[t].threat === 'Boss')
-            };
-            const createWithRole = (role) => {
-                const candidates = threatGroups[role];
-                if (candidates && candidates.length) {
-                    const type = candidates[Math.floor(Math.random() * candidates.length)];
-                    return createByType(type);
-                }
-                if (availableTypes.length) return createByType(availableTypes[0]);
-                return createByType('mook');
-            };
-
-            if (difficulty === 'easy') {
-                for (let i = 0; i < playerCount; i++) enemies.push(createWithRole('mook'));
-            } else if (difficulty === 'normal') {
-                const lieutenantCount = Math.floor(playerCount / 2);
-                for (let i = 0; i < lieutenantCount; i++) enemies.push(createWithRole('lieutenant'));
-                for (let i = 0; i < playerCount; i++) enemies.push(createWithRole('mook'));
-            } else if (difficulty === 'hard') {
-                const minibossCount = Math.floor(playerCount / 3);
-                for (let i = 0; i < minibossCount; i++) enemies.push(createWithRole('miniboss'));
-                const lieutenantCount = Math.floor(playerCount / 2);
-                for (let i = 0; i < lieutenantCount; i++) enemies.push(createWithRole('lieutenant'));
-                for (let i = 0; i < playerCount; i++) enemies.push(createWithRole('mook'));
-            } else if (difficulty === 'deadly') {
-                enemies.push(createWithRole('boss'));
-                const eliteCount = Math.floor(playerCount / 2) + 1;
-                for (let i = 0; i < eliteCount; i++) enemies.push(createWithRole('lieutenant'));
-            }
-        } 
+        }
+        // ========== 2. Стандартная генерация (Тип: Авто) – сбалансированные группы ==========
         else {
-            // Стандартная генерация (Тип: Авто, Категория: Все)
             if (difficulty === 'easy') {
+                // Только мобы: по одному на игрока
                 for (let i = 0; i < playerCount; i++) enemies.push(createByType('mook'));
-            } else if (difficulty === 'normal') {
+            }
+            else if (difficulty === 'normal') {
+                // Лейтенанты (половина игроков) + мобы (столько же, сколько игроков)
                 const lieutenantCount = Math.floor(playerCount / 2);
                 for (let i = 0; i < lieutenantCount; i++) enemies.push(createByType('lieutenant'));
                 for (let i = 0; i < playerCount; i++) enemies.push(createByType('mook'));
-            } else if (difficulty === 'hard') {
-                const minibossCount = Math.floor(playerCount / 3);
-                for (let i = 0; i < minibossCount; i++) enemies.push(createByType('miniboss'));
-                const lieutenantCount = Math.floor(playerCount / 2);
+            }
+            else if (difficulty === 'hard') {
+                // Один мини-босс + лейтенанты (половина игроков). Мобов нет – бой против сильных врагов
+                enemies.push(createByType('miniboss'));
+                const lieutenantCount = Math.max(1, Math.floor(playerCount / 2));
                 for (let i = 0; i < lieutenantCount; i++) enemies.push(createByType('lieutenant'));
-                for (let i = 0; i < playerCount; i++) enemies.push(createByType('mook'));
-            } else if (difficulty === 'deadly') {
+            }
+            else if (difficulty === 'deadly') {
+                // Босс + лейтенанты (количество = половина игроков + 1)
                 enemies.push(createByType('boss'));
-                const eliteCount = Math.floor(playerCount / 2) + 1;
-                for (let i = 0; i < eliteCount; i++) enemies.push(createByType('lieutenant'));
+                const lieutenantCount = Math.floor(playerCount / 2) + 1;
+                for (let i = 0; i < lieutenantCount; i++) enemies.push(createByType('lieutenant'));
             }
         }
 
@@ -204,3 +173,19 @@ export class MookGenerator {
         });
     }
 }
+
+// Диапазоны для будущей вариативности (пока не используются)
+export const STAT_RANGES = {
+    Mook: {
+        REF: [5, 7], BODY: [4, 6], стрельба: [7, 9], броня: [6, 8], урон: "2d6"
+    },
+    Lieutenant: {
+        REF: [7, 9], BODY: [6, 8], стрельба: [10, 12], броня: [10, 12], урон: "3d6"
+    },
+    'Mini-Boss': {
+        REF: [9, 11], BODY: [8, 10], стрельба: [12, 14], броня: [12, 15], урон: "4d6"
+    },
+    Boss: {
+        REF: [11, 13], BODY: [10, 12], стрельба: [14, 16], броня: [14, 18], урон: "4d6+"
+    }
+};
