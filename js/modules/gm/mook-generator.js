@@ -98,81 +98,97 @@ export class MookGenerator {
     }
 
     static render() {
-        const container = document.getElementById('mookResult');
-        if (!container) {
-            console.error('Контейнер mookResult не найден');
-            return;
-        }
-        if (!this.enemies || this.enemies.length === 0) {
-            container.innerHTML = '<p>У Меня нет врагов, но я всегда могу их <strong>создать</strong></p>';
-            return;
-        }
-        let html = '<div class="mook-grid">';
-        this.enemies.forEach((e, idx) => {
-            html += `
-                <div class="mook-card" data-idx="${idx}">
-                    <div class="mook-header">
-                        <strong>${e.name}</strong>
-                        <span class="mook-type">${e.threat}</span>
-                    </div>
-                    <div class="mook-stats">
-                        <div class="mook-hp-armor">
-                            <label>❤️ ПЗ: <input type="number" class="mook-hp" value="${e.currentHp}" step="1" style="width:70px"> / ${e.derived.hp}</label>
-                            <label>🛡️ ОС голова: <input type="number" class="mook-armor-head" value="${e.currentArmor.head}" step="1" style="width:60px"></label>
-                            <label>🛡️ ОС тело: <input type="number" class="mook-armor-body" value="${e.currentArmor.body}" step="1" style="width:60px"></label>
-                        </div>
-                        <details>
-                            <summary>📊 Характеристики</summary>
-                            <div class="stats-grid-compact">
-                                ${Object.entries(e.stats).map(([k, v]) => `<span><strong>${k}</strong> ${v}</span>`).join('')}
-                            </div>
-                        </details>
-                        <details>
-                            <summary>🎯 Навыки (Баз)</summary>
-                            <div class="skills-list-compact">
-                                ${Object.entries(e.skills).map(([k, v]) => `<span><strong>${k}</strong> +${v}</span>`).join('')}
-                            </div>
-                        </details>
-                        <div>🔫 Оружие: ${e.weapons.join(', ')}</div>
-                        <div>🎒 Снаряжение: ${e.gear.join(', ') || '—'}</div>
-                        ${e.cyberware.length ? `<div>🧠 Киберимпланты: ${e.cyberware.join(', ')}</div>` : ''}
-                    </div>
-                    <div class="mook-controls">
-                        <button class="remove-mook-btn" data-idx="${idx}">🗑️ Удалить</button>
-                    </div>
-                </div>
-            `;
-        });
-        html += '</div>';
-        container.innerHTML = html;
-
-        // Обработчики для редактирования ПЗ и ОС
-        document.querySelectorAll('.mook-hp').forEach((input, i) => {
-            input.addEventListener('change', (e) => {
-                const newHp = parseInt(e.target.value);
-                if (!isNaN(newHp) && this.enemies[i]) this.enemies[i].currentHp = newHp;
-            });
-        });
-        document.querySelectorAll('.mook-armor-head').forEach((input, i) => {
-            input.addEventListener('change', (e) => {
-                const newArmor = parseInt(e.target.value);
-                if (!isNaN(newArmor) && this.enemies[i]) this.enemies[i].currentArmor.head = newArmor;
-            });
-        });
-        document.querySelectorAll('.mook-armor-body').forEach((input, i) => {
-            input.addEventListener('change', (e) => {
-                const newArmor = parseInt(e.target.value);
-                if (!isNaN(newArmor) && this.enemies[i]) this.enemies[i].currentArmor.body = newArmor;
-            });
-        });
-        document.querySelectorAll('.remove-mook-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const idx = parseInt(btn.dataset.idx);
-                this.enemies.splice(idx, 1);
-                this.render();
-            });
-        });
+    const container = document.getElementById('mookResult');
+    if (!container) {
+        console.error('Контейнер mookResult не найден');
+        return;
     }
+    if (!this.enemies || this.enemies.length === 0) {
+        container.innerHTML = '<p>У Меня нет врагов, но я всегда могу их <strong>создать</strong></p>';
+        return;
+    }
+    let html = '<div class="mook-grid">';
+    this.enemies.forEach((e, idx) => {
+        const hpPercent = (e.currentHp / e.derived.hp) * 100;
+        html += `
+            <div class="mook-card" data-idx="${idx}" data-threat="${e.threat.toLowerCase()}">
+                <div class="mook-header">
+                    <span class="mook-name">${e.name}</span>
+                    <span class="mook-type">${e.threat}</span>
+                </div>
+                <div class="mook-stats">
+                    <div class="hp-text">
+                        <span>❤️ ПЗ</span>
+                        <span><input type="number" class="mook-hp" value="${e.currentHp}" step="1" style="width:70px"> / ${e.derived.hp}</span>
+                    </div>
+                    <div class="hp-progress-container">
+                        <div class="hp-progress-fill" style="width: ${hpPercent}%;"></div>
+                    </div>
+                    <div class="armor-info">
+                        <span class="armor-badge"><i class="fas fa-hard-hat"></i> Голова: <input type="number" class="mook-armor-head" value="${e.currentArmor.head}" step="1" style="width:60px"> ОС</span>
+                        <span class="armor-badge"><i class="fas fa-vest"></i> Тело: <input type="number" class="mook-armor-body" value="${e.currentArmor.body}" step="1" style="width:60px"> ОС</span>
+                    </div>
+                    <details>
+                        <summary>📊 Характеристики</summary>
+                        <div class="stats-grid-compact">
+                            ${Object.entries(e.stats).map(([k, v]) => `<span><strong>${k}</strong> ${v}</span>`).join('')}
+                        </div>
+                    </details>
+                    <details>
+                        <summary>🎯 Навыки (Баз)</summary>
+                        <div class="skills-list-compact">
+                            ${Object.entries(e.skills).map(([k, v]) => `<span><strong>${k}</strong> +${v}</span>`).join('')}
+                        </div>
+                    </details>
+                    <div class="equipment-list"><i class="fas fa-gun"></i> <strong>Оружие:</strong> ${e.weapons.join(', ')}</div>
+                    <div class="equipment-list"><i class="fas fa-box"></i> <strong>Снаряжение:</strong> ${e.gear.join(', ') || '—'}</div>
+                    ${e.cyberware.length ? `<div class="equipment-list"><i class="fas fa-microchip"></i> <strong>Импланты:</strong> ${e.cyberware.join(', ')}</div>` : ''}
+                </div>
+                <div class="mook-controls">
+                    <button class="remove-mook-btn" data-idx="${idx}">🗑️ Удалить</button>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+
+    // Обработчики для редактирования ПЗ и ОС
+    document.querySelectorAll('.mook-hp').forEach((input, i) => {
+        input.addEventListener('change', (e) => {
+            const newHp = parseInt(e.target.value);
+            if (!isNaN(newHp) && this.enemies[i]) {
+                this.enemies[i].currentHp = newHp;
+                // Обновляем прогресс-бар
+                const card = input.closest('.mook-card');
+                const fill = card.querySelector('.hp-progress-fill');
+                if (fill) {
+                    const percent = (newHp / this.enemies[i].derived.hp) * 100;
+                    fill.style.width = `${percent}%`;
+                }
+            }
+        });
+    });
+    document.querySelectorAll('.mook-armor-head').forEach((input, i) => {
+        input.addEventListener('change', (e) => {
+            const newArmor = parseInt(e.target.value);
+            if (!isNaN(newArmor) && this.enemies[i]) this.enemies[i].currentArmor.head = newArmor;
+        });
+    });
+    document.querySelectorAll('.mook-armor-body').forEach((input, i) => {
+        input.addEventListener('change', (e) => {
+            const newArmor = parseInt(e.target.value);
+            if (!isNaN(newArmor) && this.enemies[i]) this.enemies[i].currentArmor.body = newArmor;
+        });
+    });
+    document.querySelectorAll('.remove-mook-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const idx = parseInt(btn.dataset.idx);
+            this.enemies.splice(idx, 1);
+            this.render();
+        });
+    });
+}
 }
 // Диапазоны для будущей вариативности (пока не используются)
 export const STAT_RANGES = {

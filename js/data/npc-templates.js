@@ -64,7 +64,7 @@ export const NPC_TEMPLATES = {
     // НОВЫЙ: Адам Смэшер
    adam_smasher: {
     name: "Адам Смэшер",
-    threat: "legendary",
+    threat: "Legendary",
     stats: { INT:6, REF:8, DEX:7, TECH:4, COOL:8, WILL:8, LUCK:4, MOVE:6, BODY:14, EMP:0 },
     skills: {
         "Автоогонь": 10, "Тяжёлое оружие": 10, "Длинноствольное оружие": 10,

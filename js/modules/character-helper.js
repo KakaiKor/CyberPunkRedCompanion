@@ -292,14 +292,14 @@ export class CharacterHelper {
             <div data-derived="deathSave">Спасбросок: ${deathSave}</div>
             <div data-derived="money">💰 Деньги: <span class="char-money">${isNaN(money) ? 0 : money}</span> eb</div>
             <div data-derived="reputation">📢 Репутация: <span class="char-reputation">${reputation ?? 0}</span> 
-    ${reputation < 0 ? '<span style="color:#ff9a3c;"> (штраф к разборкам и реакциям)</span>' : ''}
-    <div style="display: inline-block; margin-left: 8px;">
-    <button class="reputation-inc-btn" style="background: none; border: none; color: #39ff14; cursor: pointer;">▲</button>
-    <button class="reputation-dec-btn" style="background: none; border: none; color: #ff3c5f; cursor: pointer;">▼</button>
-</div>
-    <button class="confrontation-btn" ...>⚔️ Разборка</button>
-    <button class="npc-reaction-btn" ...>👥 Реакция</button>
-</div>
+                ${reputation < 0 ? '<span style="color:#ff9a3c;"> (штраф к разборкам и реакциям)</span>' : ''}
+                <div style="display: inline-block; margin-left: 8px;">
+                <button class="reputation-inc-btn" style="background: none; border: none; color: #39ff14; cursor: pointer;">▲</button>
+                <button class="reputation-dec-btn" style="background: none; border: none; color: #ff3c5f; cursor: pointer;">▼</button>
+            </div>
+                <button class="confrontation-btn" ...>⚔️ Разборка</button>
+                <button class="npc-reaction-btn" ...>👥 Реакция</button>
+            </div>
         `;
         if (bonuses.initiative !== 0) derivedStatsHtml += `<div>Инициатива: ${stats.REF} + ${bonuses.initiative} (от имплантов)</div>`;
         derivedStatsHtml += `<div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>`;
