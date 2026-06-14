@@ -25,7 +25,8 @@ export class ShopUI {
             char = { money: 1000, gear: { weapons: [], armor: { body: '', head: '' }, items: [] }, cyberware: [] };
             saveCharacter(char);
         }
-        if (char.money === undefined) char.money = 1000;
+        if (char.money === undefined || isNaN(char.money)) char.money = 1000;
+        char.money = Number(char.money);
         return char;
     }
 
@@ -81,6 +82,12 @@ export class ShopUI {
 
     renderItemCard(item, categoryId) {
         let detailsHtml = '';
+        let priceValue = item.cost;
+        // Приводим цену к числу
+        if (typeof priceValue === 'string') {
+            const match = priceValue.match(/\d+/);
+            priceValue = match ? parseInt(match[0]) : 0;
+        }
         if (categoryId === 'weapons') {
             const isRanged = item.hasOwnProperty('skill');
             if (isRanged) {
@@ -98,28 +105,28 @@ export class ShopUI {
             if (item.effect) detailsHtml += `<div class="item-desc">🔹 ${item.effect}</div>`;
         } else if (categoryId === 'ammo') {
             detailsHtml = `<div class="item-details">${item.effect || ''}</div>`;
+            // Для боеприпасов цена указана за 10 штук
+            detailsHtml += `<div class="item-desc">💰 ${priceValue} eb за 10 шт.</div>`;
         } else if (categoryId === 'attachments') {
             detailsHtml = `<div class="item-details">${item.effect}</div>`;
         }
         return `
-            <div class="shop-item-card" data-item='${JSON.stringify({ name: item.name, cost: item.cost, type: categoryId })}'>
+            <div class="shop-item-card" data-item='${JSON.stringify({ name: item.name, cost: priceValue, type: categoryId })}'>
                 <div class="item-name">${item.name}</div>
-                <div class="item-price">${item.cost} eb</div>
+                <div class="item-price">${priceValue} eb</div>
                 ${detailsHtml}
-                <button class="buy-btn" data-item='${JSON.stringify({ name: item.name, cost: item.cost, type: categoryId })}'>Купить</button>
+                <button class="buy-btn" data-item='${JSON.stringify({ name: item.name, cost: priceValue, type: categoryId })}'>Купить</button>
             </div>
         `;
     }
 
     attachEvents() {
-        // Переключение категорий
         document.querySelectorAll('.shop-tab').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 this.activeCategory = btn.dataset.category;
                 this.render();
             });
         });
-        // Поиск
         const searchInput = document.getElementById('shopSearchInput');
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
@@ -144,86 +151,107 @@ export class ShopUI {
     }
 
     confirmBuy(item) {
-        const char = this.getCharacter();
-        if (char.money < item.cost) {
-            alert('Недостаточно средств!');
+        // Убедимся, что цена число
+        const cost = Number(item.cost);
+        if (isNaN(cost)) {
+            alert('Ошибка: неверная цена');
             return;
         }
-        if (confirm(`Купить ${item.name} за ${item.cost} eb?`)) {
-        this.buyItem(item);
-    }
+        if (confirm(`Купить ${item.name} за ${cost} eb?`)) {
+            this.buyItem(item);
+        }
     }
 
     buyItem(item) {
-    const char = this.getCharacter();
-    let cost = item.cost;
-    let itemName = item.name;
-    let quantity = 1;
-    let isAmmo = false;
-
-    // Особый случай: боеприпасы
-    if (item.type === 'ammo') {
-        isAmmo = true;
-        let qty = prompt(`Сколько единиц (штук) ${item.name} купить?\nЦена за 1 шт.: ${Math.floor(item.cost / 10)} eb\nОбычно продаётся пачками по 10 шт.`, "10");
-        if (qty === null) return;
-        quantity = parseInt(qty);
-        if (isNaN(quantity) || quantity <= 0) {
-            alert('Некорректное количество');
-            return;
-        }
-        // Стоимость: цена за 10 шт. / 10 * количество
-        const pricePerUnit = item.cost / 10;
-        cost = Math.ceil(pricePerUnit * quantity);
-        if (char.money < cost) {
-            alert(`Недостаточно средств! Нужно ${cost} eb, у вас ${char.money} eb`);
-            return;
-        }
-        itemName = `${item.name} x${quantity}`;
-    } else {
-        if (char.money < cost) {
-            alert(`Недостаточно средств! Нужно ${cost} eb, у вас ${char.money} eb`);
-            return;
-        }
-    }
-
-    char.money -= cost;
-
-    switch (item.type) {
-        case 'weapons':
-            if (!char.gear.weapons) char.gear.weapons = [];
-            char.gear.weapons.push(itemName);
-            break;
-        case 'armor':
-            if (!char.gear.armor) char.gear.armor = { body: '', head: '' };
-            if (!char.gear.armor.body) char.gear.armor.body = itemName;
-            else if (!char.gear.armor.head) char.gear.armor.head = itemName;
-            else {
-                alert('У вас уже есть броня на тело и голову. Сначала продайте старую.');
-                char.money += cost;
+        const char = this.getCharacter();
+        let cost = Number(item.cost);
+        let itemName = item.name;
+        let quantity = 1;
+        
+        if (item.type === 'ammo') {
+            let qty = prompt(`Сколько единиц (штук) ${item.name} купить?\nЦена за 1 шт.: ${Math.floor(cost / 10)} eb`, "10");
+            if (qty === null) return;
+            quantity = parseInt(qty);
+            if (isNaN(quantity) || quantity <= 0) {
+                alert('Некорректное количество');
                 return;
             }
-            break;
-        case 'gear':
-            if (!char.gear.items) char.gear.items = [];
-            char.gear.items.push(itemName);
-            break;
-        case 'cyberware':
-            if (!char.cyberware) char.cyberware = [];
-            char.cyberware.push(itemName);
-            break;
-        case 'ammo':
+            const pricePerUnit = cost / 10;
+            const totalCost = Math.ceil(pricePerUnit * quantity);
+            if (char.money < totalCost) {
+                alert(`Недостаточно средств! Нужно ${totalCost} eb, у вас ${char.money} eb`);
+                return;
+            }
+            char.money -= totalCost;
+            char.money = Number(char.money);
+            itemName = `${item.name} x${quantity}`;
+            
+            // Группировка: ищем существующую запись с таким же базовым именем
             if (!char.ammo) char.ammo = [];
-            char.ammo.push(itemName);
-            break;
-        case 'attachments':
-            if (!char.attachments) char.attachments = [];
-            char.attachments.push(itemName);
-            break;
+            const baseName = item.name;
+            const existingIndex = char.ammo.findIndex(entry => {
+                const entryBase = entry.replace(/\s*x\d+$/i, '').trim();
+                return entryBase === baseName;
+            });
+            if (existingIndex !== -1) {
+                const oldEntry = char.ammo[existingIndex];
+                const oldMatch = oldEntry.match(/x(\d+)$/i);
+                const oldQty = oldMatch ? parseInt(oldMatch[1]) : 0;
+                const newQty = oldQty + quantity;
+                char.ammo[existingIndex] = `${baseName} x${newQty}`;
+            } else {
+                char.ammo.push(itemName);
+            }
+            this.saveCharacter(char);
+            this.render();
+            alert(`${quantity} шт. ${item.name} куплено!`);
+            return;
+        }
+        
+        // Для не-боеприпасов
+        if (char.money < cost) {
+            alert(`Недостаточно средств! Нужно ${cost} eb, у вас ${char.money} eb`);
+            return;
+        }
+        char.money -= cost;
+        char.money = Number(char.money);
+        
+        switch (item.type) {
+            case 'weapons':
+                if (!char.gear.weapons) char.gear.weapons = [];
+                char.gear.weapons.push(itemName);
+                break;
+            case 'armor':
+                if (!char.gear.armor) char.gear.armor = { body: '', head: '' };
+                if (!char.gear.armor.body) char.gear.armor.body = itemName;
+                else if (!char.gear.armor.head) char.gear.armor.head = itemName;
+                else {
+                    char.money += cost;
+                    alert('У вас уже есть броня на тело и голову. Сначала продайте старую.');
+                    this.saveCharacter(char);
+                    this.render();
+                    return;
+                }
+                break;
+            case 'gear':
+                if (!char.gear.items) char.gear.items = [];
+                char.gear.items.push(itemName);
+                break;
+            case 'cyberware':
+                if (!char.cyberware) char.cyberware = [];
+                char.cyberware.push(itemName);
+                break;
+            case 'attachments':
+                if (!char.attachments) char.attachments = [];
+                char.attachments.push(itemName);
+                break;
+            default:
+                break;
+        }
+        this.saveCharacter(char);
+        this.render();
+        alert(`${itemName} куплен!`);
     }
-    this.saveCharacter(char);
-    this.render();
-    alert(`${itemName} куплен!`);
-}
 }
 
 export class InventoryUI {
@@ -239,14 +267,20 @@ export class InventoryUI {
             char = { money: 1000, gear: { weapons: [], armor: { body: '', head: '' }, items: [] }, cyberware: [] };
             saveCharacter(char);
         }
-        if (char.money === undefined) char.money = 1000;
+        if (char.money === undefined || isNaN(char.money)) char.money = 1000;
+        char.money = Number(char.money);
         return char;
     }
 
     getItemCost(name) {
         const all = [...rangedWeapons, ...meleeWeapons, ...armors, ...gearItems, ...ammoTypes, ...weaponAttachments, ...detailedCyberware];
         const found = all.find(i => i.name === name);
-        return found ? found.cost : 0;
+        let cost = found ? found.cost : 0;
+        if (typeof cost === 'string') {
+            const match = cost.match(/\d+/);
+            cost = match ? parseInt(match[0]) : 0;
+        }
+        return Number(cost);
     }
 
     render() {
@@ -292,7 +326,7 @@ export class InventoryUI {
                     ${renderSection('🛡️ Броня', [], null, true, true)}
                     ${renderSection('🦾 Киберимпланты', cyberware, 'cyberware')}
                     ${renderSection('🎒 Снаряжение', items, 'item')}
-                    ${renderSection('🔫 Боеприпасы', ammo, 'ammo')}
+                    ${renderSection('💣 Боеприпасы', ammo, 'ammo')}
                     ${renderSection('🔧 Приспособления', attachments, 'attachment')}
                 </div>
             </div>
@@ -308,7 +342,8 @@ export class InventoryUI {
                 const type = btn.dataset.type;
                 const name = btn.dataset.name;
                 const idx = parseInt(btn.dataset.idx);
-                if (confirm(`Продать ${name} за ${Math.floor(this.getItemCost(name) * 0.5)} eb?`)) {
+                const price = Math.floor(this.getItemCost(name) * 0.5);
+                if (confirm(`Продать ${name} за ${price} eb?`)) {
                     this.sellItem(type, name, idx);
                 }
             };
@@ -320,6 +355,7 @@ export class InventoryUI {
         const char = this.getCharacter();
         const price = Math.floor(this.getItemCost(name) * 0.5);
         char.money += price;
+        char.money = Number(char.money);
         switch (type) {
             case 'weapon': char.gear.weapons.splice(idx, 1); break;
             case 'armorBody': char.gear.armor.body = ''; break;

@@ -238,16 +238,19 @@ buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, c
             return null;
         };
         const weaponsHtml = (gear.weapons || []).map((w, idx) => {
-            const details = getWeaponDetails(w);
-            if (!details) return `<li data-weapon-idx="${idx}">${this.escapeHtml(w)}</li>`;
-            let statsWeapon = '';
-            if (details.type === 'ranged') {
-                statsWeapon = `<span class="weapon-stat">${details.skill}</span> <span class="weapon-stat">${details.dmg}</span> <span class="weapon-stat">Маг.: ${details.mag}</span> <span class="weapon-stat">СКОР: ${details.rof}</span> <span class="weapon-stat">Рук.: ${details.hands}</span> <span class="weapon-stat">Скрыт.: ${details.conceal ? 'да' : 'нет'}</span>${details.notes ? `<span class="weapon-stat">${details.notes}</span>` : ''}`;
-            } else {
-                statsWeapon = `<span class="weapon-stat">${details.kind}</span> <span class="weapon-stat">${details.dmg}</span> <span class="weapon-stat">СКОР: ${details.rof}</span> <span class="weapon-stat">Скрыт.: ${details.conceal ? 'да' : 'нет'}</span>`;
-            }
-            return `<li data-weapon-idx="${idx}" class="weapon-item"><div class="weapon-header"><strong class="weapon-name">${this.escapeHtml(w)}</strong></div><div class="weapon-stats">${statsWeapon}</div></li>`;
-        }).join('');
+    const details = getWeaponDetails(w);
+    let statsWeapon = '';
+    if (details) {
+        if (details.type === 'ranged') {
+            statsWeapon = `<span class="weapon-stat">${details.skill}</span> <span class="weapon-stat">${details.dmg}</span> <span class="weapon-stat">Маг.: ${details.mag}</span> <span class="weapon-stat">СКОР: ${details.rof}</span> <span class="weapon-stat">Рук.: ${details.hands}</span> <span class="weapon-stat">Скрыт.: ${details.conceal ? 'да' : 'нет'}</span>${details.notes ? `<span class="weapon-stat">${details.notes}</span>` : ''}`;
+        } else {
+            statsWeapon = `<span class="weapon-stat">${details.kind}</span> <span class="weapon-stat">${details.dmg}</span> <span class="weapon-stat">СКОР: ${details.rof}</span> <span class="weapon-stat">Скрыт.: ${details.conceal ? 'да' : 'нет'}</span>`;
+        }
+    } else {
+        statsWeapon = `<span class="weapon-stat">(данные не найдены)</span>`;
+    }
+    return `<li data-weapon-idx="${idx}" class="weapon-item"><div class="weapon-header"><strong class="weapon-name">${this.escapeHtml(w)}</strong></div><div class="weapon-stats">${statsWeapon}</div></li>`;
+}).join('');
 
         const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}</li>`).join('');
         const gearHtmlItems = (gear.items || []).map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
@@ -287,7 +290,7 @@ if (ammoList.length > 0) {
         let derivedStatsHtml = `
             <div data-derived="hp">ПЗ: <span class="current-hp">${currentHp}</span> / ${maxHp} <span class="hp-threshold">(тяж. ≤ ${severe})</span></div>
             <div data-derived="deathSave">Спасбросок: ${deathSave}</div>
-            <div data-derived="money">💰 Деньги: <span class="char-money">${money}</span> eb</div>
+            <div data-derived="money">💰 Деньги: <span class="char-money">${isNaN(money) ? 0 : money}</span> eb</div>
         `;
         if (bonuses.initiative !== 0) derivedStatsHtml += `<div>Инициатива: ${stats.REF} + ${bonuses.initiative} (от имплантов)</div>`;
         derivedStatsHtml += `<div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>`;
@@ -418,7 +421,7 @@ if (ammoList.length > 0) {
     const humanity = Math.max(0, emp * 10 - humanityLoss);
     const empFrom = Math.floor(humanity / 10);
     const deathSave = body;
-    const money = char.money !== undefined ? char.money : 0;
+    const money = char.money !== undefined && !isNaN(char.money) ? char.money : 0;
     if (char.role === "Нетраннер") {
     if (char.interfaceRank === undefined) {
         char.interfaceRank = char.roleRank || 4;
@@ -701,14 +704,14 @@ if (ammoContainer) {
         if (text) newGear.weapons.push(text);
     });
     // Собираем боеприпасы из редактируемой карточки
-const newAmmo = [];
-card.querySelectorAll('[data-ammo-list] li').forEach(li => {
-    const name = li.getAttribute('data-ammo-name');
-    const qty = li.getAttribute('data-ammo-qty');
-    if (name && qty) {
-        newAmmo.push(`${name} × ${qty}`);
-    }
-});
+    const newAmmo = [];
+    card.querySelectorAll('[data-ammo-list] li').forEach(li => {
+        const name = li.getAttribute('data-ammo-name');
+        const qty = li.getAttribute('data-ammo-qty');
+        if (name && qty) {
+            newAmmo.push(`${name} × ${qty}`);
+        }
+    });
     // Импланты берём из existingChar, а не из карточки
     newGear.cyberware = existingChar.cyberware || [];
     card.querySelectorAll('[data-gear-list] li').forEach(li => {
@@ -726,7 +729,7 @@ card.querySelectorAll('[data-ammo-list] li').forEach(li => {
     let newHp = null;
     if (editHp) newHp = parseInt(editHp.value);
     
-    let newMoney = existingChar.money !== undefined ? existingChar.money : 0;
+    let newMoney = existingChar.money !== undefined && !isNaN(existingChar.money) ? existingChar.money : 0;
     const editMoney = card.querySelector('.edit-money');
     if (editMoney) {
         const rawValue = editMoney.value.trim();
