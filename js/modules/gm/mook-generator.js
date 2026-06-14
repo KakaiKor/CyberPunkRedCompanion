@@ -56,39 +56,40 @@ export class MookGenerator {
 
         const useSpecificType = (selectedType !== 'all' && templates[selectedType]);
 
-        // ========== 1. Выбран конкретный тип врага (mook, lieutenant, miniboss, boss) ==========
+        // ========== 1. Выбран конкретный тип врага ==========
         if (useSpecificType) {
             let count = 0;
             if (selectedType === 'mook') count = playerCount;
             else if (selectedType === 'lieutenant') count = Math.max(1, Math.floor(playerCount / 2));
             else if (selectedType === 'miniboss') count = Math.max(1, Math.floor(playerCount / 3));
             else if (selectedType === 'boss') count = 1;
+            else if (selectedType === 'legendary') count = 1;  // <-- ДОБАВЛЕНО
             else count = Math.ceil(playerCount / 2);
             for (let i = 0; i < count; i++) enemies.push(createByType(selectedType));
         }
-        // ========== 2. Стандартная генерация (Тип: Авто) – сбалансированные группы ==========
+        // ========== 2. Стандартная генерация (Тип: Авто) ==========
         else {
             if (difficulty === 'easy') {
-                // Только мобы: по одному на игрока
                 for (let i = 0; i < playerCount; i++) enemies.push(createByType('mook'));
             }
             else if (difficulty === 'normal') {
-                // Лейтенанты (половина игроков) + мобы (столько же, сколько игроков)
                 const lieutenantCount = Math.floor(playerCount / 2);
                 for (let i = 0; i < lieutenantCount; i++) enemies.push(createByType('lieutenant'));
                 for (let i = 0; i < playerCount; i++) enemies.push(createByType('mook'));
             }
             else if (difficulty === 'hard') {
-                // Один мини-босс + лейтенанты (половина игроков). Мобов нет – бой против сильных врагов
                 enemies.push(createByType('miniboss'));
                 const lieutenantCount = Math.max(1, Math.floor(playerCount / 2));
                 for (let i = 0; i < lieutenantCount; i++) enemies.push(createByType('lieutenant'));
             }
             else if (difficulty === 'deadly') {
-                // Босс + лейтенанты (количество = половина игроков + 1)
                 enemies.push(createByType('boss'));
                 const lieutenantCount = Math.floor(playerCount / 2) + 1;
                 for (let i = 0; i < lieutenantCount; i++) enemies.push(createByType('lieutenant'));
+            }
+            else if (difficulty === 'legendary') {
+                // Создаём одного легендарного врага (Адам Смэшер)
+                enemies.push(createByType('adam_smasher'));
             }
         }
 
@@ -173,7 +174,6 @@ export class MookGenerator {
         });
     }
 }
-
 // Диапазоны для будущей вариативности (пока не используются)
 export const STAT_RANGES = {
     Mook: {
