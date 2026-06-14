@@ -35,7 +35,7 @@
         <!-- Терминал -->
         <div class="terminal-container">
             <div class="terminal-header" id="terminalHeader">
-                <span class="terminal-title">⚡ NETRUNNER INTERFACE v.0.0.0.11_beta ⚡</span>
+                <span class="terminal-title">⚡ EDGERUNNER INTERFACE v.0.0.0.12_beta ⚡</span>
                 <button class="terminal-toggle" id="terminalToggle">−</button>
             </div>
             <div class="terminal-body" id="terminalBody">
@@ -257,10 +257,11 @@
         <!-- Панель БОЙ (оставлена без изменений) -->
         <div id="tab-combat" class="main-pane">
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" data-sub="combat-calc">⚙️ Калькуляторы</button>
-                <button class="sub-tab-btn" data-sub="combat-init">⏱️ Инициатива</button>
-                <button class="sub-tab-btn" data-sub="combat-crit">💀 Криты</button>
-                <button class="sub-tab-btn" data-sub="combat-formulas">📐 Формулы боя</button>
+                <button class="sub-tab-btn active" data-sub="combat-calc"> Калькуляторы </button>
+                <button class="sub-tab-btn" data-sub="combat-init"> Инициатива </button>
+                <button class="sub-tab-btn" data-sub="combat-crit"> Криты </button>
+                <button class="sub-tab-btn" data-sub="combat-formulas"> Формулы боя </button>
+                <button class="sub-tab-btn" data-sub="combat-help"> Справка по бою </button>
             </div>
             <div id="combat-calc" class="sub-pane active">
                 <div class="card-grid">
@@ -296,6 +297,7 @@
                     </div>
                 </div>
             </div>
+            <div id="combat-help" class="sub-pane"></div>
             <div id="combat-init" class="sub-pane">
                 <div class="card-grid">
                     <div class="card">
@@ -661,9 +663,18 @@
         </div>
         <div class="modal-body" id="changelogBody">
             <div class="changelog-version">
+                <h3>Версия 0.0.0.12_beta</h3>
+                <ul>
+                    <li><strong>✨ Добавлен:</strong> Калькулятор Автоматического огня </li>
+                    <li><strong>✨ Добавлена:</strong> Справка по боевой системе  </li>
+                </ul>
+            </div>
+            <div class="changelog-version">
                 <h3>Версия 0.0.0.11_beta</h3>
                 <ul>
+                    <li><strong>✨ Улучшена:</strong> Скрытие архитектуры сети при загрузке </li>
                     <li><strong>✨ Добавлена:</strong> Мини-карта при генерации архитектуры сети</li>
+                    <li><strong>✨ Добавлена:</strong> Механика "Следопыт" </li>
                 </ul>
             </div>
             <div class="changelog-version">
@@ -718,7 +729,7 @@
     </div>
     <div class="footer-bottom">
         <p>Cyberpunk RED Companion. 2026. | <a href="#" id="toggleThemeBtn" style="color:#ff9a3c;">Версия
-                0.0.0.11_beta</a></p>
+                0.0.0.12_beta</a></p>
     </div>
 </footer>
 

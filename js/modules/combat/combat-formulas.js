@@ -40,7 +40,10 @@ export class CombatFormulas {
             w.values.forEach(v => html += `<td>${v}</td>`);
             html += `</tr>`;
         });
-        html += `</tbody></table></div><p class="note">* Автоогонь использует другие СЛ (см. книгу правил).</p>`;
+        html += `</tbody>
+        </table>
+        </div>
+        `;
         container.innerHTML = html;
     }
 

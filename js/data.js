@@ -15,7 +15,8 @@ export const rangedWeapons = [
     { name:"Лук", skill:"Луки и арбалеты", dmg:"4d6", mag:1, rof:1, hands:2, conceal:"нет", cost:100, notes:"Стрелы" },
     { name:"Арбалет", skill:"Луки и арбалеты", dmg:"4d6", mag:1, rof:1, hands:2, conceal:"нет", cost:100, notes:"Стрелы" },
     { name:"Гранатомёт", skill:"Тяжёлое оружие", dmg:"6d6", mag:2, rof:1, hands:2, conceal:"нет", cost:500, notes:"Взрыв" },
-    { name:"Ракетница", skill:"Тяжёлое оружие", dmg:"8d6", mag:1, rof:1, hands:2, conceal:"нет", cost:500, notes:"Взрыв" }
+    { name:"Ракетница", skill:"Тяжёлое оружие", dmg:"8d6", mag:1, rof:1, hands:2, conceal:"нет", cost:500, notes:"Взрыв" },
+    { name:"Tsunami Arms Helix", skill:"Автоогонь", dmg:"5d6", mag:40, rof:1, hands:2, conceal:"нет", cost:5000, notes:"Автоогонь(5), только автоогонь, требует ТЕЛО 11+" },
 ];
 
 // ---------- ХОЛОДНОЕ ОРУЖИЕ ----------

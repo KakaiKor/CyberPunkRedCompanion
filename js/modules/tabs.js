@@ -11,7 +11,8 @@ export class TabManager {
             btns.forEach(b => b.classList.remove('active'));
             panes.forEach(p => p.classList.remove('active'));
             btn.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+            const targetPane = document.getElementById(tabId);
+            if (targetPane) targetPane.classList.add('active');
         }));
     }
     initSubTabs() {
@@ -20,10 +21,15 @@ export class TabManager {
             const panes = container.querySelectorAll('.sub-pane');
             btns.forEach(btn => btn.addEventListener('click', () => {
                 const targetId = btn.dataset.sub;
+                const targetPane = container.querySelector(`#${targetId}`);
+                if (!targetPane) {
+                    console.warn(`Подпанель с id="${targetId}" не найдена в`, container);
+                    return;
+                }
                 btns.forEach(b => b.classList.remove('active'));
                 panes.forEach(p => p.classList.remove('active'));
                 btn.classList.add('active');
-                container.querySelector(`#${targetId}`).classList.add('active');
+                targetPane.classList.add('active');
             }));
         });
     }

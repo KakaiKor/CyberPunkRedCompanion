@@ -6599,6 +6599,184 @@ body {
 .legend-color.current { border-color: #39ff14; background: #1a2a1a; }
 .legend-color.resolved { border-color: #39ff14; opacity: 0.6; }
 .legend-color.ice { border-color: #ff3c5f; }
+.active-row {
+    background-color: rgba(255, 154, 60, 0.2);
+    border-left: 3px solid #ff9a3c;
+}
+/* ========== СПРАВКА ПО ФИЗИЧЕСКОМУ БОЮ (аналогично нетраннингу) ========== */
+#combat-help {
+    color: #e0e0e0;
+}
+
+#combat-help details {
+    background: #14181f !important;
+    border: 1px solid #2a3342 !important;
+    border-radius: 16px !important;
+    margin-bottom: 16px !important;
+    overflow: hidden !important;
+}
+
+#combat-help summary {
+    background: #1e2530 !important;
+    padding: 12px 16px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    list-style: none !important;
+}
+
+#combat-help summary::before {
+    content: "▶" !important;
+    margin-right: 10px !important;
+    color: #ff9a3c !important;
+}
+
+#combat-help details[open] summary::before {
+    content: "▼" !important;
+}
+
+#combat-help .help-section {
+    background: #0a0c12 !important;
+    padding: 16px !important;
+    border-top: 1px solid #2a3342 !important;
+}
+
+#combat-help .help-footer {
+    background: #0f1219 !important;
+    padding: 12px !important;
+    text-align: center !important;
+    border-top: 1px solid #2a3342 !important;
+    font-size: 0.85rem !important;
+}
+
+/* Концепты */
+#combat-help .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+}
+
+#combat-help .concept-card {
+    background: #0a0c12;
+    border-radius: 20px;
+    padding: 16px;
+    border-left: 4px solid #39ff14;
+}
+
+#combat-help .concept-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+#combat-help .concept-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #ff9a3c;
+}
+
+#combat-help .concept-desc {
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* Формулы */
+#combat-help .formula-card {
+    background: #0f1219;
+    border-radius: 16px;
+    padding: 12px 16px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    border-left: 4px solid #ff3c5f;
+    margin-bottom: 16px;
+}
+
+/* Типы атак (карточки) */
+#combat-help .combat-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+#combat-help .combat-type-card {
+    background: #0a0c12;
+    border-radius: 16px;
+    padding: 12px;
+    border-left: 3px solid #ff9a3c;
+    font-size: 0.85rem;
+}
+
+#combat-help .combat-type-card strong {
+    color: #ff9a3c;
+}
+
+/* Таблица состояний */
+#combat-help .status-table {
+    overflow-x: auto;
+    margin: 12px 0;
+}
+
+#combat-help .status-table .cyber-table {
+    min-width: 300px;
+}
+
+/* Тактические советы */
+#combat-help .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+}
+
+#combat-help .tip-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #0a0c12;
+    border-radius: 40px;
+    padding: 8px 16px;
+}
+
+#combat-help .tip-icon {
+    font-size: 1.5rem;
+}
+
+#combat-help .tip-text {
+    font-size: 0.85rem;
+}
+
+/* Список реализованных функций */
+#combat-help .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+}
+
+#combat-help .feature-item {
+    background: #0f1219;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+}
+
+/* Примечания */
+#combat-help .note {
+    font-size: 0.85rem;
+    color: #9aa4bf;
+    margin: 10px 0;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 700px) {
+    #combat-help .concept-grid,
+    #combat-help .combat-types,
+    #combat-help .tips-grid,
+    #combat-help .features-grid {
+        grid-template-columns: 1fr;
+    }
+}
 @media (max-width: 700px) {
     .programs-grid {
         grid-template-columns: 1fr;

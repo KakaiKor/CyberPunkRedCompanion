@@ -21,7 +21,7 @@ import { renderGear } from './modules/gear.js';
 import { ShopUI, InventoryUI } from './modules/market/shop.js';
 import { NetrunnerInterface } from './modules/netrunner-interface.js';
 import { NetArchitectureUI } from './modules/net-architecture-ui.js';
-
+import { AutoFireUI } from './modules/combat/auto-fire.js';
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
     const data = {
@@ -109,7 +109,7 @@ function calculateIp() {
 document.addEventListener('DOMContentLoaded', () => {
     updateAllTables();
     fillIpTable();
-
+    new AutoFireUI();
     new TabManager();
     // new NightMarket();
     window.groupTracker = new GroupTracker();
@@ -1085,4 +1085,150 @@ document.getElementById('netrunner-help').innerHTML = `
             </div>
         </div>
     `;
+    // ========== СПРАВКА ПО ФИЗИЧЕСКОМУ БОЮ ==========
+document.getElementById('combat-help').innerHTML = `
+<div class="card">
+    <h3>📖 Полное руководство по физическому бою (Cyberpunk RED)</h3>
+    <p class="note">В этом разделе собраны основные правила дальнего и рукопашного боя, укрытий, критических травм и тактики.</p>
+
+    <!-- 1. Основы боя -->
+    <details open>
+        <summary>⚔️ 1. Основы боя</summary>
+        <div class="help-section">
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="concept-icon">⏱️</div>
+                    <div class="concept-title">Инициатива</div>
+                    <div class="concept-desc">РЕФ + 1d10. Порядок действий от большего к меньшему. Переброс при равных значениях.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon">🏃</div>
+                    <div class="concept-title">Действие перемещения</div>
+                    <div class="concept-desc">За ход можно переместиться на <strong>СКО × 2 метра</strong> (или СКО клеток).</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon">⚡</div>
+                    <div class="concept-title">Действие атаки</div>
+                    <div class="concept-desc">Одно действие = одна атака. Оружие со СКОР 2 позволяет атаковать дважды.</div>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <!-- 2. Дальнобойный бой -->
+    <details>
+        <summary>🏹 2. Дальнобойный бой</summary>
+        <div class="help-section">
+            <div class="formula-card">
+                <strong>Проверка атаки:</strong> РЕФ + навык оружия + 1d10<br>
+                <strong>Сложность (СЛ):</strong> определяется по таблице дистанции для вашего оружия.<br>
+                <strong>Уклонение:</strong> если РЕФ цели ≥ 8, она может попытаться уклониться: ЛВК + Уклонение + 1d10. При успехе атака считается промахом.
+            </div>
+            <div class="combat-types">
+                <div class="combat-type-card"><strong>🎯 Прицельная атака</strong> – штраф –8 к проверке, но особый эффект (голова: урон ×2, нога: перелом, рука: роняет предмет).</div>
+                <div class="combat-type-card"><strong>🔥 Автоогонь</strong> – расход 10 патронов, проверка навыка «Автоогонь». Урон = 2d6 × (превышение СЛ), не более ×3 (ПП) или ×4 (винтовка).</div>
+                <div class="combat-type-card"><strong>💥 Взрывчатка</strong> – зона 10×10 м, все цели получают урон. Можно попытаться уклониться при РЕФ ≥ 8.</div>
+                <div class="combat-type-card"><strong>🔫 Подавляющий огонь</strong> – 10 патронов, все цели в пределах 25 м должны пройти ВОЛЯ+Концентрация против РЕФ+Автоогонь, иначе тратят действие на укрытие.</div>
+            </div>
+        </div>
+    </details>
+
+    <!-- 3. Рукопашный бой -->
+    <details>
+        <summary>👊 3. Рукопашный бой</summary>
+        <div class="help-section">
+            <div class="formula-card">
+                <strong>Проверка атаки:</strong> ЛВК + навык (Драка, Холодное оружие или Боевые искусства) + 1d10<br>
+                <strong>Защита:</strong> ЛВК + Уклонение + 1d10<br>
+                <strong>Особенность холодного оружия:</strong> игнорирует половину ОС брони цели (округляя вверх).
+            </div>
+            <div class="combat-types">
+                <div class="combat-type-card"><strong>🥊 Драка</strong> – урон зависит от ТЕЛО (1d6 при ТЕЛО≤4, 2d6 при 5‑6, 3d6 при 7‑10, 4d6 при 11+). Киберрука даёт минимум 2d6.</div>
+                <div class="combat-type-card"><strong>🤼 Захват</strong> – ЛВК+Драка против ЛВК+Драка. При успехе цель считается захваченной (штраф –2 ко всем действиям).</div>
+                <div class="combat-type-card"><strong>🫧 Удушение</strong> – действие в захвате, наносит урон, равный ТЕЛО, напрямую по ПЗ (броня игнорируется).</div>
+                <div class="combat-type-card"><strong>💪 Бросок</strong> – действие в захвате, цель падает ничком и получает урон, равный ТЕЛО.</div>
+                <div class="combat-type-card"><strong>🥋 Боевые искусства</strong> – специальные приёмы (айкидо, карате, дзюдо, тхэквондо). Пример: «Обезоруживание» или «Удар ломающий кости».</div>
+            </div>
+        </div>
+    </details>
+
+    <!-- 4. Укрытия и броня -->
+    <details>
+        <summary>🛡️ 4. Укрытия и броня</summary>
+        <div class="help-section">
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="concept-title">Типы укрытий</div>
+                    <div class="concept-desc">Сталь (50 ПЗ), камень (40), пулестекло (30), бетон (25), дерево (20).</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">Щиты</div>
+                    <div class="concept-desc">Пуленепробиваемый щит: 10 ПЗ, занимает руку. Живой щит – использует захваченного противника.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">Броня</div>
+                    <div class="concept-desc">Каждый раз при получении урона ОС брони снижается на 1 (пока не починят). Тяжёлая броня даёт штрафы к РЕФ, ЛВК, СКО.</div>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <!-- 5. Урон и состояния -->
+    <details>
+        <summary>💔 5. Урон и состояния ранений</summary>
+        <div class="help-section">
+            <div class="status-table">
+                <table class="cyber-table">
+                    <thead><tr><th>Состояние</th><th>Порог ПЗ</th><th>Эффект</th></tr></thead>
+                    <tbody>
+                        <tr><td>Лёгкое ранение</td><td>Меньше максимума</td><td>Нет штрафов</td></tr>
+                        <tr><td>Тяжёлое ранение</td><td>≤ половины ПЗ</td><td>–2 ко всем действиям</td></tr>
+                        <tr><td>Смертельное ранение</td><td>≤ 0 ПЗ</td><td>–4 ко всем действиям, –6 к СКО, спасбросок в начале каждого хода</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="formula-card">
+                <strong>Спасбросок от смерти:</strong> 1d10 < ТЕЛО. При выпадении 10 – провал. Каждый бросок увеличивает штраф на +1. После стабилизации сбрасывается.
+            </div>
+            <p class="note"><strong>Критические травмы:</strong> возникают, когда при броске урона выпало 2 или более шестёрок. Бросьте 2d6 по таблице «Тело» или «Голова» (в зависимости от зоны). Травма наносит дополнительные 5 урона напрямую по ПЗ.</p>
+        </div>
+    </details>
+
+    <!-- 6. Тактические советы -->
+    <details>
+        <summary>🎯 6. Тактические советы</summary>
+        <div class="help-section">
+            <div class="tips-grid">
+                <div class="tip-card"><div class="tip-icon">🛡️</div><div class="tip-text">Всегда ищите укрытие – оно может спасти жизнь.</div></div>
+                <div class="tip-card"><div class="tip-icon">🎲</div><div class="tip-text">Не забывайте о модификаторах: темнота, дым, укрытие дают штрафы.</div></div>
+                <div class="tip-card"><div class="tip-icon">⚔️</div><div class="tip-text">Используйте подавляющий огонь, чтобы заставить врагов спрятаться.</div></div>
+                <div class="tip-card"><div class="tip-icon">🧠</div><div class="tip-text">При низком здоровье лучше отступить и стабилизироваться.</div></div>
+                <div class="tip-card"><div class="tip-icon">🔫</div><div class="tip-text">Автоогонь эффективен на средней дистанции, где СЛ минимальна.</div></div>
+            </div>
+        </div>
+    </details>
+
+    <!-- 7. Что уже реализовано в помощнике -->
+    <details>
+        <summary>🔧 7. Реализованные функции в помощнике</summary>
+        <div class="help-section">
+            <div class="features-grid">
+                <div class="feature-item">✅ Калькулятор ПЗ, урона, критических травм</div>
+                <div class="feature-item">✅ Трекер инициативы (индивидуальной и групповой)</div>
+                <div class="feature-item">✅ Таблица дистанций для всех типов оружия</div>
+                <div class="feature-item">✅ Автоматический огонь с расчётом урона и критических травм</div>
+                <div class="feature-item">✅ Калькулятор атаки с возможностью учёта уклонения</div>
+                <div class="feature-item">✅ Таблицы критических травм (тело и голова)</div>
+                <div class="feature-item">✅ Генератор врагов (mooks, лейтенанты, боссы)</div>
+            </div>
+            <p class="note">🔄 В ближайших планах: автоматическое применение критических травм к цели, полноценная симуляция боя с очередью ходов.</p>
+        </div>
+    </details>
+
+    <div class="help-footer">
+        <p>📖 <strong>Источник:</strong> Cyberpunk RED Core Rulebook, глава «Перестрелка в пятницу вечером» (стр. 167–194).</p>
+        <p>💡 <strong>Совет:</strong> Используйте генератор врагов (GM → Пушечное мясо) для быстрого создания противников.</p>
+    </div>
+</div>
+`;
 });
