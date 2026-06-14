@@ -150,45 +150,80 @@ export class ShopUI {
             return;
         }
         if (confirm(`Купить ${item.name} за ${item.cost} eb?`)) {
-            this.buyItem(item);
-        }
+        this.buyItem(item);
+    }
     }
 
     buyItem(item) {
-        const char = this.getCharacter();
-        char.money -= item.cost;
-        switch (item.type) {
-            case 'weapons':
-                if (!char.gear.weapons) char.gear.weapons = [];
-                char.gear.weapons.push(item.name);
-                break;
-            case 'armor':
-                if (!char.gear.armor) char.gear.armor = { body: '', head: '' };
-                if (!char.gear.armor.body) char.gear.armor.body = item.name;
-                else if (!char.gear.armor.head) char.gear.armor.head = item.name;
-                else { alert('У вас уже есть броня на тело и голову. Сначала продайте старую.'); char.money += item.cost; return; }
-                break;
-            case 'gear':
-                if (!char.gear.items) char.gear.items = [];
-                char.gear.items.push(item.name);
-                break;
-            case 'cyberware':
-                if (!char.cyberware) char.cyberware = [];
-                char.cyberware.push(item.name);
-                break;
-            case 'ammo':
-                if (!char.ammo) char.ammo = [];
-                char.ammo.push(item.name);
-                break;
-            case 'attachments':
-                if (!char.attachments) char.attachments = [];
-                char.attachments.push(item.name);
-                break;
+    const char = this.getCharacter();
+    let cost = item.cost;
+    let itemName = item.name;
+    let quantity = 1;
+    let isAmmo = false;
+
+    // Особый случай: боеприпасы
+    if (item.type === 'ammo') {
+        isAmmo = true;
+        let qty = prompt(`Сколько единиц (штук) ${item.name} купить?\nЦена за 1 шт.: ${Math.floor(item.cost / 10)} eb\nОбычно продаётся пачками по 10 шт.`, "10");
+        if (qty === null) return;
+        quantity = parseInt(qty);
+        if (isNaN(quantity) || quantity <= 0) {
+            alert('Некорректное количество');
+            return;
         }
-        this.saveCharacter(char);
-        this.render(); // обновляем магазин и деньги
-        alert(`${item.name} куплен!`);
+        // Стоимость: цена за 10 шт. / 10 * количество
+        const pricePerUnit = item.cost / 10;
+        cost = Math.ceil(pricePerUnit * quantity);
+        if (char.money < cost) {
+            alert(`Недостаточно средств! Нужно ${cost} eb, у вас ${char.money} eb`);
+            return;
+        }
+        itemName = `${item.name} x${quantity}`;
+    } else {
+        if (char.money < cost) {
+            alert(`Недостаточно средств! Нужно ${cost} eb, у вас ${char.money} eb`);
+            return;
+        }
     }
+
+    char.money -= cost;
+
+    switch (item.type) {
+        case 'weapons':
+            if (!char.gear.weapons) char.gear.weapons = [];
+            char.gear.weapons.push(itemName);
+            break;
+        case 'armor':
+            if (!char.gear.armor) char.gear.armor = { body: '', head: '' };
+            if (!char.gear.armor.body) char.gear.armor.body = itemName;
+            else if (!char.gear.armor.head) char.gear.armor.head = itemName;
+            else {
+                alert('У вас уже есть броня на тело и голову. Сначала продайте старую.');
+                char.money += cost;
+                return;
+            }
+            break;
+        case 'gear':
+            if (!char.gear.items) char.gear.items = [];
+            char.gear.items.push(itemName);
+            break;
+        case 'cyberware':
+            if (!char.cyberware) char.cyberware = [];
+            char.cyberware.push(itemName);
+            break;
+        case 'ammo':
+            if (!char.ammo) char.ammo = [];
+            char.ammo.push(itemName);
+            break;
+        case 'attachments':
+            if (!char.attachments) char.attachments = [];
+            char.attachments.push(itemName);
+            break;
+    }
+    this.saveCharacter(char);
+    this.render();
+    alert(`${itemName} куплен!`);
+}
 }
 
 export class InventoryUI {

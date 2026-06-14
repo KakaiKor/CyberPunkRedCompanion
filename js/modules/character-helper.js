@@ -145,10 +145,10 @@ export class CharacterHelper {
 
     // ========== КАРТОЧКА ПЕРСОНАЖА ==========
     buildCharacterCard(cardData) {
-    const { name, role, roleRank = 4, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar = '', money = 0, baseStats = null } = cardData;
+    const { name, role, roleRank = 4, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar = '', money = 0, baseStats = null, ammo  } = cardData;
     const container = document.getElementById('characterCardContainer');
     if (!container) return;
-    const cardHtml = this.buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats });
+    const cardHtml = this.buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats, ammo });
     container.innerHTML = cardHtml;
     this.attachCardEventHandlers();
     const editBtn = container.querySelector('.edit-card-btn');
@@ -157,7 +157,7 @@ export class CharacterHelper {
     if (syncBtn) syncBtn.addEventListener('click', () => this.syncFromTabs());
 }
 
-buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats }) {
+buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats, ammo = [] }) {
     const baseStatsAttr = baseStats ? JSON.stringify(baseStats) : '';
         stats = stats || {};
         skills = skills || {};
@@ -251,6 +251,34 @@ buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, c
 
         const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}</li>`).join('');
         const gearHtmlItems = (gear.items || []).map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
+        // const ammo = cardData.ammo || [];
+        const ammoList = this.getAmmoFromChar(ammo);
+let ammoHtml = '';
+if (ammoList.length > 0) {
+    ammoHtml = `
+        <div class="equipment-card" data-type="ammo">
+            <h5>💣 Боеприпасы</h5>
+            <ul class="compact" data-ammo-list>
+                ${ammoList.map(a => {
+                    // Пытаемся определить тип патронов из названия
+                    let typeHint = '';
+                    if (a.name.toLowerCase().includes('пистолет')) typeHint = ' (пистолетные)';
+                    else if (a.name.toLowerCase().includes('винтовочн')) typeHint = ' (винтовочные)';
+                    else if (a.name.toLowerCase().includes('дробь')) typeHint = ' (дробь)';
+                    else if (a.name.toLowerCase().includes('средний пистолет')) typeHint = ' (средний)';
+                    else if (a.name.toLowerCase().includes('тяжёлый пистолет')) typeHint = ' (тяжёлый)';
+                    else if (a.name.toLowerCase().includes('очень тяжёлый')) typeHint = ' (оч. тяжёлый)';
+                    
+                    // Показываем количество с единицей измерения "шт."
+                    let qtyText = `${a.quantity} шт.`;
+                    if (a.quantity === 1) qtyText = '1 шт.';
+                    
+                    return `<li data-ammo-name="${this.escapeHtml(a.name)}" data-ammo-qty="${a.quantity}">🔸 ${this.escapeHtml(a.name)}${typeHint}: ${qtyText}</li>`;
+                }).join('')}
+            </ul>
+        </div>
+    `;
+}
         const bodyArmorInfo = armors.find(a => a.name === gear.armor?.body);
         const headArmorInfo = armors.find(a => a.name === gear.armor?.head);
         const armorHtml = `<li>🛡️ Тело: ${this.escapeHtml(gear.armor?.body || 'нет')}${bodyArmorInfo ? ` (ОС ${bodyArmorInfo.sp}, штраф ${bodyArmorInfo.penalty})` : ''}</li><li>⛑️ Голова: ${this.escapeHtml(gear.armor?.head || 'нет')}${headArmorInfo ? ` (ОС ${headArmorInfo.sp}, штраф ${headArmorInfo.penalty})` : ''}</li>`;
@@ -317,6 +345,7 @@ buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, c
                             <h5>🎒 Снаряжение</h5>
                             <ul class="compact" data-gear-list>${gearHtmlItems || '<li>— нет —</li>'}</ul>
                         </div>
+                        ${ammoHtml}
                     </div>
                 </div>
                 <div class="corner top-left"></div>
@@ -406,7 +435,8 @@ buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, c
         baseStats: baseStats,
         skills, gear, cyberware, currentHp, maxHp, severe,
         humanity, empFrom, deathSave,
-        notes: char.notes || '', avatar: char.avatar || '', money
+        notes: char.notes || '', avatar: char.avatar || '', money,
+        ammo: char.ammo || []
     });
 }
 
@@ -583,6 +613,54 @@ buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, c
                     this.attachRemoveListener(li);
                 }
             });
+            // Добавляем кнопку для боеприпасов
+const ammoContainer = card.querySelector('[data-ammo-list]');
+if (ammoContainer) {
+    const addAmmoBtn = document.createElement('button');
+    addAmmoBtn.textContent = '+ Добавить боеприпасы';
+    addAmmoBtn.className = 'add-item-btn';
+    addAmmoBtn.addEventListener('click', () => {
+        const newItem = prompt('Введите боеприпасы (например, "Базовые пистолетные патроны x50"):');
+        if (newItem) {
+            const char = loadCharacter();
+            if (char && char.ammo) {
+                char.ammo.push(newItem);
+                saveCharacter(char);
+                this.displaySavedCharacterCard();
+            }
+        }
+    });
+    ammoContainer.parentElement.appendChild(addAmmoBtn);
+
+    // Добавляем кнопки удаления для каждого боеприпаса
+    ammoContainer.querySelectorAll('li').forEach(li => {
+        if (!li.querySelector('.remove-ammo')) {
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = '✖';
+            removeBtn.className = 'remove-ammo';
+            removeBtn.style.marginLeft = '8px';
+            removeBtn.style.background = 'none';
+            removeBtn.style.border = 'none';
+            removeBtn.style.color = '#ff3c5f';
+            removeBtn.style.cursor = 'pointer';
+            removeBtn.addEventListener('click', () => {
+                const ammoName = li.getAttribute('data-ammo-name');
+                if (ammoName && confirm(`Удалить все боеприпасы типа "${ammoName}"?`)) {
+                    const char = loadCharacter();
+                    if (char && char.ammo) {
+                        char.ammo = char.ammo.filter(item => {
+                            const parsed = this.getAmmoFromChar([item])[0];
+                            return parsed.name !== ammoName;
+                        });
+                        saveCharacter(char);
+                        this.displaySavedCharacterCard();
+                    }
+                }
+            });
+            li.appendChild(removeBtn);
+        }
+    });
+}
         });
     }
 
@@ -622,6 +700,15 @@ buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, c
         if (text.startsWith('🔫')) text = text.substring(1).trim();
         if (text) newGear.weapons.push(text);
     });
+    // Собираем боеприпасы из редактируемой карточки
+const newAmmo = [];
+card.querySelectorAll('[data-ammo-list] li').forEach(li => {
+    const name = li.getAttribute('data-ammo-name');
+    const qty = li.getAttribute('data-ammo-qty');
+    if (name && qty) {
+        newAmmo.push(`${name} × ${qty}`);
+    }
+});
     // Импланты берём из existingChar, а не из карточки
     newGear.cyberware = existingChar.cyberware || [];
     card.querySelectorAll('[data-gear-list] li').forEach(li => {
@@ -681,7 +768,8 @@ buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, c
         housing: existingChar.housing || "500",
         notes: newNotes,
         money: newMoney,
-        currentHp: newHp !== null ? newHp : (existingChar.currentHp || getHP(modifiedStats.BODY, modifiedStats.WILL))
+        currentHp: newHp !== null ? newHp : (existingChar.currentHp || getHP(modifiedStats.BODY, modifiedStats.WILL)),
+        ammo: newAmmo
     };
     saveCharacter(charData);
     if (window.shopUI) window.shopUI.render();
@@ -799,4 +887,31 @@ buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, c
         if (!str) return '';
         return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
     }
+
+    // Возвращает массив объектов { name, quantity } из массива ammo
+getAmmoFromChar(ammoArray) {
+    if (!ammoArray || !ammoArray.length) return [];
+    const ammoMap = new Map();
+    for (const item of ammoArray) {
+        let name = item;
+        let quantity = 1;
+        // Парсим "Базовые пистолетные патроны x50" или "Базовые пистолетные патроны 50"
+        const match = item.match(/(.+)x(\d+)$/i) || item.match(/(.+)\s+(\d+)$/);
+        if (match) {
+            name = match[1].trim();
+            quantity = parseInt(match[2]);
+        } else {
+            // Если нет числа, считаем 1
+            name = item;
+            quantity = 1;
+        }
+        const key = name.toLowerCase();
+        if (ammoMap.has(key)) {
+            ammoMap.get(key).quantity += quantity;
+        } else {
+            ammoMap.set(key, { name: name, quantity: quantity });
+        }
+    }
+    return Array.from(ammoMap.values());
+}
 }
