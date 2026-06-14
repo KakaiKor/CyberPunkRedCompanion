@@ -137,6 +137,28 @@ if (gmVisGen) {
         window.gmVisArchUI.generateWithComplexity(complexity);
     });
 }
+// Разборка – закрытие модалки
+const closeConfrontationBtns = document.querySelectorAll('#closeConfrontationModalBtn, #closeConfrontationModalFooterBtn');
+closeConfrontationBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.getElementById('confrontationModal').style.display = 'none';
+    });
+});
+const rollBtn = document.getElementById('rollConfrontationBtn');
+if (rollBtn && window.characterHelper) {
+    rollBtn.addEventListener('click', () => window.characterHelper.performConfrontation());
+}
+// Реакция NPC – закрытие модалки
+const closeReactionBtns = document.querySelectorAll('#closeReactionModalBtn, #closeReactionModalFooterBtn');
+closeReactionBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.getElementById('reactionModal').style.display = 'none';
+    });
+});
+const rollReactionBtn = document.getElementById('rollReactionBtn');
+if (rollReactionBtn && window.characterHelper) {
+    rollReactionBtn.addEventListener('click', () => window.characterHelper.checkNPCReaction());
+}
 const gmVisReset = document.getElementById('gmVisResetBtn');
 if (gmVisReset) {
     gmVisReset.addEventListener('click', () => window.gmVisArchUI.reset());

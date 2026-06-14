@@ -6767,7 +6767,109 @@ body {
     color: #9aa4bf;
     margin: 10px 0;
 }
+/* ========== КАРТОЧКА РЕАКЦИИ NPC ========== */
+.reaction-card {
+    background: #0f1219;
+    border-radius: 20px;
+    padding: 16px;
+    margin-top: 16px;
+    border-left: 4px solid;
+    transition: all 0.2s;
+}
+.reaction-card.rep-positive {
+    border-left-color: #39ff14;
+    box-shadow: 0 0 12px rgba(57, 255, 20, 0.2);
+}
+.reaction-card.rep-negative {
+    border-left-color: #ff3c5f;
+    box-shadow: 0 0 12px rgba(255, 60, 95, 0.2);
+}
+.reaction-card.rep-neutral {
+    border-left-color: #ff9a3c;
+}
 
+.reaction-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #2a3342;
+}
+.reaction-icon {
+    font-size: 1.8rem;
+}
+.reaction-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    font-family: 'Orbitron', monospace;
+    flex: 1;
+    color: #e0e0e0;
+}
+.rep-badge {
+    background: #1e2530;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    font-family: monospace;
+}
+.rep-positive .rep-badge {
+    color: #39ff14;
+    border: 1px solid #39ff14;
+}
+.rep-negative .rep-badge {
+    color: #ff3c5f;
+    border: 1px solid #ff3c5f;
+}
+.rep-neutral .rep-badge {
+    color: #ff9a3c;
+    border: 1px solid #ff9a3c;
+}
+
+.reaction-stats {
+    background: #0a0c12;
+    border-radius: 16px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.stat-line {
+    font-size: 0.9rem;
+    color: #9aa4bf;
+}
+.stat-line strong {
+    color: #e0e0e0;
+}
+
+.reaction-message {
+    padding: 8px 12px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+.reaction-message.positive {
+    background: rgba(57, 255, 20, 0.15);
+    color: #39ff14;
+}
+.reaction-message.negative {
+    background: rgba(255, 60, 95, 0.15);
+    color: #ff9a3c;
+}
+.reaction-message.neutral {
+    background: rgba(255, 154, 60, 0.1);
+    color: #ff9a3c;
+}
+.reaction-detail {
+    background: #1a1e2a;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    display: inline-block;
+    margin-top: 4px;
+}
 /* Адаптивность для мобильных */
 @media (max-width: 700px) {
     #combat-help .concept-grid,
