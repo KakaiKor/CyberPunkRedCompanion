@@ -975,6 +975,7 @@ if (importJsonBtn && importJsonInput && window.characterHelper) {
         }
     });
 }
+// ========== СПРАВКА ПО НЕТРАННИНГУ ==========
 document.getElementById('netrunner-help').innerHTML = `
 <div class="card">
      <h3>📖 Полное руководство по нетраннингу (Cyberpunk RED)</h3>
@@ -1107,7 +1108,7 @@ document.getElementById('netrunner-help').innerHTML = `
             </div>
         </div>
     `;
-    // ========== СПРАВКА ПО ФИЗИЧЕСКОМУ БОЮ ==========
+// ========== СПРАВКА ПО ФИЗИЧЕСКОМУ БОЮ ==========
 document.getElementById('combat-help').innerHTML = `
 <div class="card">
     <h3>📖 Полное руководство по физическому бою (Cyberpunk RED)</h3>
@@ -1250,6 +1251,212 @@ document.getElementById('combat-help').innerHTML = `
     <div class="help-footer">
         <p>📖 <strong>Источник:</strong> Cyberpunk RED Core Rulebook, глава «Перестрелка в пятницу вечером» (стр. 167–194).</p>
         <p>💡 <strong>Совет:</strong> Используйте генератор врагов (GM → Пушечное мясо) для быстрого создания противников.</p>
+    </div>
+</div>
+`;
+// ========== СПРАВКА ПО ИГРОКУ ==========
+document.getElementById('char-help').innerHTML = `
+<div class="card">
+    <h3>📖 Справочник игрока — Cyberpunk RED</h3>
+    <p class="note">Краткие правила, полезные таблицы и советы. Полные руководства по <strong>Бою</strong> и <strong>Нетраннингу</strong> — в отдельных вкладках.</p>
+
+    <!-- 0. ЧАВО для новичков -->
+    <details open>
+        <summary>❓ Часто задаваемые вопросы</summary>
+        <div class="help-section">
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="concept-icon">🎲</div>
+                    <div class="concept-title">Как делать проверку?</div>
+                    <div class="concept-desc"><strong>ХАР + Навык + 1d10</strong> против Сложности (СЛ), которую называет Мастер. Пример: СЛ 13 — средне, 15 — сложно.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon">❤️</div>
+                    <div class="concept-title">Что такое человечность?</div>
+                    <div class="concept-desc">EMP × 10. Установка киберимплантов снижает её. Если упала до 0 или ниже — персонаж сходит с ума (киберпсихоз).</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon">💰</div>
+                    <div class="concept-title">Сколько нужно платить в месяц?</div>
+                    <div class="concept-desc">Минимум: 100eb (киббл) + 500eb (куб-отель) = 600eb. Неуплата → голод и выселение.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon">⚔️</div>
+                    <div class="concept-title">Что делать в бою?</div>
+                    <div class="concept-desc">Каждый ход: действие перемещения (MOVE×2 м) + одно действие (атака, бег, перезарядка). Атака — REF/DEX + навык + d10.</div>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <!-- 1. Характеристики (ХАР) -->
+    <details>
+        <summary>💪 Характеристики (ХАР) — стр. 72–81</summary>
+        <div class="help-section">
+            <div class="concept-grid">
+                <div class="concept-card"><div class="concept-icon">🧠</div><div class="concept-title">INT</div><div class="concept-desc">Интеллект. Образование, Поиск информации, Наука.</div></div>
+                <div class="concept-card"><div class="concept-icon">👁️</div><div class="concept-title">REF</div><div class="concept-desc">Рефлексы. Инициатива, дальнобойные атаки, вождение.</div></div>
+                <div class="concept-card"><div class="concept-icon">🤸</div><div class="concept-title">DEX</div><div class="concept-desc">Ловкость. Рукопашный бой, уклонение, акробатика, скрытность.</div></div>
+                <div class="concept-card"><div class="concept-icon">🔧</div><div class="concept-title">TECH</div><div class="concept-desc">Техника. Ремонт, взлом замков, электроника.</div></div>
+                <div class="concept-card"><div class="concept-icon">😎</div><div class="concept-title">COOL</div><div class="concept-desc">Крутость. Убеждение, запугивание, торговля, разборки.</div></div>
+                <div class="concept-card"><div class="concept-icon">⚡</div><div class="concept-title">WILL</div><div class="concept-desc">Воля. Спасброски от смерти, концентрация.</div></div>
+                <div class="concept-card"><div class="concept-icon">🍀</div><div class="concept-title">LUCK</div><div class="concept-desc">Удача. Пул очков = ХАР. Тратьте 1:1 на повышение броска ДО броска.</div></div>
+                <div class="concept-card"><div class="concept-icon">🏃</div><div class="concept-title">MOVE</div><div class="concept-desc">Скорость. За действие перемещения — MOVE × 2 метра.</div></div>
+                <div class="concept-card"><div class="concept-icon">🛡️</div><div class="concept-title">BODY</div><div class="concept-desc">Тело. Влияет на ПЗ, урон в драке.</div></div>
+                <div class="concept-card"><div class="concept-icon">❤️</div><div class="concept-title">EMP</div><div class="concept-desc">Эмпатия. Человечность = EMP × 10. Падение ниже 0 → киберпсихоз.</div></div>
+            </div>
+            <div class="formula-card">
+                <strong>Производные:</strong><br>
+                • ПЗ = 10 + 5 × (BODY + WILL)/2 (округление вверх).<br>
+                • Порог тяжёлого ранения = половина ПЗ (вверх).<br>
+                • Спасбросок от смерти = BODY (бросок 1d10; успех если результат < BODY, 10 — авто провал).
+            </div>
+        </div>
+    </details>
+
+    <!-- 2. Навыки и развитие (IP) -->
+    <details>
+        <summary>🎯 Навыки и развитие (IP) — стр. 81–91, 410–413</summary>
+        <div class="help-section">
+            <div class="formula-card">
+                <strong>Стартовые очки навыков:</strong> 86. Максимум уровня на старте — 6.<br>
+                <strong>Обязательные навыки (минимум 2):</strong> Атлетика, Драка, Концентрация, Общение, Образование, Уклонение, Первая помощь, Проницательность, Язык (уличный сленг), Знание района (твой дом), Восприятие, Убеждение, Скрытность.<br>
+                <strong>Стоимость повышения (IP):</strong> Обычный — 20×новый уровень, Сложный (×2) — 40×новый уровень, Ролевой — 60×новой ранг.
+            </div>
+            <div class="status-table"><table class="cyber-table"><thead><tr><th>Уровень</th><th>Обычный (IP)</th><th>Сложный (×2) (IP)</th><th>Ролевой (IP)</th></tr></thead><tbody>
+                <tr><td style="text-align:center">1→2</td><td style="text-align:center">40</td><td style="text-align:center">80</td><td style="text-align:center">120</td></tr>
+                <tr><td style="text-align:center">2→3</td><td style="text-align:center">60</td><td style="text-align:center">120</td><td style="text-align:center">180</td></tr>
+                <tr><td style="text-align:center">3→4</td><td style="text-align:center">80</td><td style="text-align:center">160</td><td style="text-align:center">240</td></tr>
+                <tr><td style="text-align:center">4→5</td><td style="text-align:center">100</td><td style="text-align:center">200</td><td style="text-align:center">300</td></tr>
+                <tr><td style="text-align:center">5→6</td><td style="text-align:center">120</td><td style="text-align:center">240</td><td style="text-align:center">360</td></tr>
+            </tbody></table></div>
+            <div class="tip-card"><div class="tip-icon">💡</div><div class="tip-text">Если ваш REF ≥ 8, учите Уклонение — оно работает и против пуль!</div></div>
+        </div>
+    </details>
+
+    <!-- 3. Бой (кратко, с таблицей СЛ) -->
+    <details>
+        <summary>⚔️ Бой (кратко — подробнее во вкладке «Бой»)</summary>
+        <div class="help-section">
+            <div class="formula-card">
+                <strong>Инициатива:</strong> REF + 1d10.<br>
+                <strong>В ход:</strong> действие перемещения (MOVE×2 м) + одно действие (атака, бег, перезарядка).<br>
+                <strong>Атака:</strong> дальнобойная — REF + навык + d10 против СЛ дистанции (см. таблицу); рукопашная — DEX + навык + d10 против DEX + Уклонение + d10 цели.<br>
+                <strong>Состояния ранений:</strong> Лёгкое → Тяжёлое (–2 ко всем действиям) → Смертельное (–4, –6 MOVE, спасбросок d10 &lt; BODY).<br>
+                <strong>Критические травмы:</strong> две шестёрки на кубах урона → +5 урона напрямую ПЗ и особый эффект.
+            </div>
+            <div class="status-table"><table class="cyber-table"><thead><tr><th>Тип оружия</th><th>0–6 м</th><th>7–12 м</th><th>13–25 м</th><th>26–50 м</th><th>51–100 м</th></tr></thead><tbody>
+                <tr><td>Пистолет</td><td>13</td><td>15</td><td>20</td><td>25</td><td>30</td></tr>
+                <tr><td>ПП</td><td>15</td><td>13</td><td>15</td><td>20</td><td>25</td></tr>
+                <tr><td>Дробовик</td><td>13</td><td>15</td><td>20</td><td>25</td><td>30</td></tr>
+                <tr><td>Штурмовая винтовка</td><td>17</td><td>16</td><td>15</td><td>13</td><td>15</td></tr>
+                <tr><td>Снайперская винтовка</td><td>30</td><td>25</td><td>25</td><td>20</td><td>15</td></tr>
+            </tbody></table></div>
+            <div class="note">📌 <strong>Золотая зона</strong> — минимальная СЛ (выделена жирным). Для автоогня свои таблицы (см. вкладку «Бой»).</div>
+            <div class="tip-card"><div class="tip-icon">📖</div><div class="tip-text">Полное руководство по бою — во вкладке <strong>«Бой → Справка по бою»</strong>.</div></div>
+        </div>
+    </details>
+
+    <!-- 4. Человечность, киберимпланты, терапия -->
+    <details>
+        <summary>🧠 Киберимпланты и человечность — стр. 108–118, 229–232</summary>
+        <div class="help-section">
+            <div class="formula-card">
+                <strong>Человечность (ЧЕЛ):</strong> EMP × 10. Каждый имплант (кроме медицинских) стоит ПЧ: обычно 2d6 (7 ПЧ), тяжёлый 4d6 (14 ПЧ), стилевые 1d6/2.<br>
+                <strong>Киберпсихоз:</strong> если ЧЕЛ ≤ 0 — персонаж сходит с ума (передаётся Мастеру).<br>
+                <strong>Терапия:</strong> стандартная (500eb, +2d6 ЧЕЛ), экстремальная (1000eb, +4d6 ЧЕЛ). Каждый имплант снижает <strong>максимум</strong> ЧЕЛ на 2 (боргирование на 4).
+            </div>
+            <div class="tip-card"><div class="tip-icon">💊</div><div class="tip-text">Уличные наркотики могут дать бонусы, но вызывают зависимость и потерю человечности (например, «Чёрное кружево» — 2d6).</div></div>
+        </div>
+    </details>
+
+    <!-- 5. Экономика и выживание -->
+    <details>
+        <summary>💰 Деньги, расходы, образ жизни — стр. 105, 380–388</summary>
+        <div class="help-section">
+            <div class="combat-type-card">
+                <strong>Образ жизни (в месяц):</strong> Киббл 100eb, Полуфабрикаты 300eb, Хорошие полуфабрикаты 600eb, Свежая еда 1500eb.<br>
+                <strong>Жильё (аренда в месяц):</strong> Куб-отель 500eb, Грузовой контейнер 1000eb, Квартира-студия 1500eb, Двуспальная квартира 2500eb.<br>
+                <strong>Заработок на заданиях:</strong> Лёгкая работа 500eb, обычная 1000eb, опасная 2000eb (на человека).
+            </div>
+            <div class="note">Неуплата в начале месяца → через неделю ежедневный спасбросок от смерти от голода и выселение.</div>
+        </div>
+    </details>
+
+    <!-- 6. Репутация и разборки -->
+    <details>
+        <summary>🎭 Репутация и разборки — стр. 193–194</summary>
+        <div class="help-section">
+            <div class="formula-card">
+                <strong>Репутация (от –5 до 10):</strong> меняется за заметные поступки. При первой встрече NPC бросает 1d10; если результат < вашей репутации, NPC о вас слышал.<br>
+                <strong>Разборка:</strong> COOL + Репутация + 1d10 против броска противника. Победитель может заставить проигравшего отступить или наложить штраф –2 до первой победы.
+            </div>
+            <div class="tip-card"><div class="tip-icon">👥</div><div class="tip-text">Отрицательная репутация <strong>вычитается</strong> из броска в разборках и вызывает враждебность NPC.</div></div>
+        </div>
+    </details>
+
+    <!-- 7. Лечение и травмы -->
+    <details>
+        <summary>🏥 Как лечиться — стр. 222–225</summary>
+        <div class="help-section">
+            <div class="formula-card">
+                <strong>Стабилизация:</strong> действие, проверка Первая помощь или Парамедицина против СЛ состояния (10/13/15). После успеха цель восстанавливает BODY ПЗ за день отдыха.<br>
+                <strong>Больница:</strong> стоимость зависит от наивысшей СЛ: СЛ10→50eb, СЛ13→100eb, СЛ15→500eb, СЛ17+→1000eb.<br>
+                <strong>Критические травмы:</strong> «Быстрая помощь» (1 минута) снимает эффект до конца дня, «Лечение» (4 часа) — навсегда. Некоторые требуют хирургии (только медтех).
+            </div>
+        </div>
+    </details>
+
+    <!-- 8. Нетраннинг (кратко) -->
+    <details>
+        <summary>🌐 Нетраннинг (кратко — подробнее во вкладке «Нетраннинг»)</summary>
+        <div class="help-section">
+            <div class="formula-card">
+                <strong>Что нужно:</strong> кибердека, нейролинк, интерфейсный разъём, очки виртуальности. Ранг Интерфейса даёт сетевые действия за ход (2–5).<br>
+                <strong>Основные действия:</strong> Бэкдор (взлом пароля), Разряд (атака 1d6), Подкат (побег от чёрного льда), Следопыт (разведка архитектуры).<br>
+                <strong>Программы:</strong> «Доспехи» (–4 к урону по мозгу), «Щит» (блок первой атаки), атакующие (Меч, Банхаммер, Адская стрела).
+            </div>
+            <div class="tip-card"><div class="tip-icon">💾</div><div class="tip-text">Полное руководство — во вкладке <strong>«Нетраннинг → Справка»</strong>.</div></div>
+        </div>
+    </details>
+
+    <!-- 9. Полезная информация (без ссылок) -->
+    <details>
+        <summary>📌 Полезные советы и памятки</summary>
+        <div class="help-section">
+            <div class="tips-grid">
+                <div class="tip-card"><div class="tip-icon">✅</div><div class="tip-text"><strong>Чек-лист перед выходом на задание:</strong> заряди оружие, надень броню, возьми аптечку, проверь человечность, не забудь агент и фонарик.</div></div>
+                <div class="tip-card"><div class="tip-icon">🔫</div><div class="tip-text"><strong>Всегда носи лёгкий арморджек (ОС 11)</strong> — спасает от большинства пистолетов.</div></div>
+                <div class="tip-card"><div class="tip-icon">⚡</div><div class="tip-text"><strong>Если REF ≥ 8, обязательно учи Уклонение</strong> — сможешь уклоняться от пуль.</div></div>
+                <div class="tip-card"><div class="tip-icon">💊</div><div class="tip-text"><strong>Спидхил</strong> (медтех) восстанавливает BODY+WILL ПЗ. Носите с собой!</div></div>
+                <div class="tip-card"><div class="tip-icon">📜</div><div class="tip-text"><strong>Изучай скримлисты</strong> — в них могут быть подсказки и слухи.</div></div>
+                <div class="tip-card"><div class="tip-icon">🤝</div><div class="tip-text"><strong>Фиксер</strong> — лучший друг. Через него можно достать почти всё.</div></div>
+                <div class="tip-card"><div class="tip-icon">💀</div><div class="tip-text"><strong>Не влезайте в долги</strong> — проценты в Найт-Сити убивают.</div></div>
+                <div class="tip-card"><div class="tip-icon">👥</div><div class="tip-text"><strong>Команда — это всё</strong>. Не действуйте в одиночку.</div></div>
+            </div>
+            <div class="formula-card">
+                <strong>Сложности (СЛ) для проверок навыков:</strong><br>
+                Просто (СЛ9) — большинство справятся.<br>
+                Обычно (СЛ13) — требует навыка.<br>
+                Трудно (СЛ15) — профессионалу под силу.<br>
+                Героически (СЛ21) — лучшие из лучших.<br>
+                Невероятно (СЛ24) — олимпийский уровень.
+            </div>
+            <div class="combat-type-card">
+                <strong>Уличный сленг (самые нужные слова):</strong><br>
+                <strong>Эдди</strong> — евродоллар (валюта).<br>
+                <strong>Чипнуться</strong> — установить киберимплант.<br>
+                <strong>Бустер</strong> — член банды, фанат кибернетики и насилия.<br>
+                <strong>Обнулить</strong> — убить.<br>
+                <strong>Фиксер</strong> — посредник, организатор сделок.<br>
+                <strong>Рипердок</strong> — уличный хирург, установщик имплантов.
+            </div>
+        </div>
+    </details>
+
+    <div class="help-footer">
+        <p>📖 <strong>Источник:</strong> Cyberpunk RED Core Rulebook (R. Talsorian Games).</p>
+        <p>💡 <strong>Напоминание:</strong> Помощник не заменяет книгу, но ускоряет рутинные расчёты и даёт быстрый доступ к правилам.</p>
     </div>
 </div>
 `;

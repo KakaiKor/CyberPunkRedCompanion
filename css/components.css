@@ -7230,6 +7230,56 @@ body {
     background: #ff3c5f;
     transform: scale(1.02);
 }
+/* ========== Справка игрока (единообразие с нетраннингом и боем) ========== */
+#char-help .help-section {
+    background: #0a0c12;
+    padding: 16px;
+    border-radius: 16px;
+    margin-bottom: 8px;
+}
+#char-help details {
+    background: #14181f;
+    border: 1px solid #2a3342;
+    border-radius: 16px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+#char-help summary {
+    background: #1e2530;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    list-style: none;
+}
+#char-help summary::before {
+    content: "▶";
+    margin-right: 10px;
+    color: #ff9a3c;
+}
+#char-help details[open] summary::before {
+    content: "▼";
+}
+#char-help .help-footer {
+    margin-top: 20px;
+    padding: 12px;
+    background: #0f1219;
+    border-radius: 16px;
+    text-align: center;
+    font-size: 0.85rem;
+    border-top: 1px solid #2a3342;
+}
+#char-help .note {
+    background: rgba(15, 18, 25, 0.6);
+    border-left-color: #ff9a3c;
+}
+@media (max-width: 700px) {
+    #char-help .concept-grid {
+        grid-template-columns: 1fr;
+    }
+    #char-help .tips-grid {
+        grid-template-columns: 1fr;
+    }
+}
 /* Адаптивность для мобильных */
 @media (max-width: 700px) {
     #combat-help .concept-grid,
