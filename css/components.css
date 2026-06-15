@@ -7272,6 +7272,19 @@ body {
     background: rgba(15, 18, 25, 0.6);
     border-left-color: #ff9a3c;
 }
+.contract-difficulty-badge {
+    display: inline-block;
+    background: #2a3342;
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.diff-easy .contract-difficulty-badge { background: #28a745; color: #0a0c12; }
+.diff-medium .contract-difficulty-badge { background: #ffc107; color: #0a0c12; }
+.diff-hard .contract-difficulty-badge { background: #fd7e14; color: #0a0c12; }
+.diff-deadly .contract-difficulty-badge { background: #dc3545; color: #fff; }
 @media (max-width: 700px) {
     #char-help .concept-grid {
         grid-template-columns: 1fr;
