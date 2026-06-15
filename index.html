@@ -35,7 +35,7 @@
         <!-- Терминал -->
         <div class="terminal-container">
             <div class="terminal-header" id="terminalHeader">
-                <span class="terminal-title">⚡ EDGERUNNER INTERFACE v.0.0.0.14_beta ⚡</span>
+                <span class="terminal-title">⚡ EDGERUNNER INTERFACE v.0.0.0.15_beta ⚡</span>
                 <button class="terminal-toggle" id="terminalToggle">−</button>
             </div>
             <div class="terminal-body" id="terminalBody">
@@ -416,6 +416,7 @@
                 <button class="sub-tab-btn" data-sub="gm-net">🌐 Архитектура сети</button>
                 <button class="sub-tab-btn" data-sub="gm-mooks">💀 Пушечное мясо</button>
                 <button class="sub-tab-btn" data-sub="gm-encounters">🗺️ Случайные встречи</button>
+                <button class="sub-tab-btn" data-sub="gm-rumor">🎭 Слухи & Крючки</button>
                 <button class="sub-tab-btn" data-sub="gm-development">📈 Развитие (IP)</button>
             </div>
             <!-- Здесь полное содержимое GM-панели, оставлено без изменений (я не стал дублировать весь текст, но в вашем реальном файле он есть) -->
@@ -441,6 +442,28 @@
                     <div id="contractResult"></div>
                 </div>
             </div>
+            <div id="gm-rumor" class="sub-pane">
+    <div class="card">
+        <h3>🎭 Генератор слухов и сюжетных крючков</h3>
+        <p class="note">Слухи — отличный способ дать игрокам намёк на задание или просто оживить город. Каждый слух может быть правдой, полуправдой или ложью.</p>
+        <div class="form-row">
+            <label>Тип слуха: 
+                <select id="rumorType">
+                    <option value="random">🎲 Случайный</option>
+                    <option value="crime">🕵️ Криминал</option>
+                    <option value="corporate">🏢 Корпорации</option>
+                    <option value="legend">📜 Легенды улиц</option>
+                    <option value="tech">🔧 Технологии</option>
+                    <option value="gang">💀 Банды</option>
+                    <option value="danger">⚠️ Опасности</option>
+                </select>
+            </label>
+            <button id="generateRumorBtn" class="cyber-btn">🎲 Сгенерировать слух</button>
+            <button id="copyRumorBtn" class="cyber-btn">📋 Скопировать</button>
+        </div>
+        <div id="rumorResult" class="rumor-container" style="margin-top: 20px;"></div>
+    </div>
+</div>
             <div id="gm-contract-advanced" class="sub-pane">
                 <div class="card">
                     <h3>⚙️ Генератор контрактов</h3>
@@ -708,6 +731,14 @@
             <button class="modal-close" id="changelogCloseBtn">&times;</button>
         </div>
         <div class="modal-body" id="changelogBody">
+            <div class="changelog-version">
+                <h3>Версия 0.0.0.15_beta</h3>
+                <ul>
+                    <li><strong>✨ Добавлен:</strong> Генератор слухов для ГМ </li>
+                    <li><strong>✨ Обновлен:</strong> Раздел "Контракты" для ГМ </li>
+                    <li><strong>✨ Добавлены:</strong> Подсказки игрокам для игры и в Боевке </li>
+                </ul>
+            </div>
              <div class="changelog-version">
                 <h3>Версия 0.0.0.14_beta</h3>
                 <ul>
@@ -753,13 +784,6 @@
                     <li><strong>✨ Улучшен:</strong> Импорт персонажа и редактирование карточки</li>
                 </ul>
             </div>
-            <div class="changelog-version">
-                <h3>Версия 0.0.0.8_beta</h3>
-                <ul>
-                    <li><strong>✨ Исправлено:</strong> Сохранение брони в карточку</li>
-                    <li><strong>✨ Добавлен:</strong> Рынок Снаряжения и Имплантов</li>
-                </ul>
-            </div>
         </div>
         <div class="modal-footer">
             <button class="modal-close-btn" id="changelogCloseBtn2">Закрыть</button>
@@ -790,7 +814,7 @@
     </div>
     <div class="footer-bottom">
         <p>Cyberpunk RED Companion. 2026. | <a href="#" id="toggleThemeBtn" style="color:#ff9a3c;">Версия
-                0.0.0.14_beta</a></p>
+                0.0.0.15_beta</a></p>
     </div>
 </footer>
 

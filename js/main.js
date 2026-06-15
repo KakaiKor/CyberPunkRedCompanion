@@ -22,6 +22,9 @@ import { ShopUI, InventoryUI } from './modules/market/shop.js';
 import { NetrunnerInterface } from './modules/netrunner-interface.js';
 import { NetArchitectureUI } from './modules/net-architecture-ui.js';
 import { AutoFireUI } from './modules/combat/auto-fire.js';
+import { RumorGenerator } from './modules/gm/rumor-generator.js';
+
+
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
     const data = {
@@ -1460,4 +1463,21 @@ document.getElementById('char-help').innerHTML = `
     </div>
 </div>
 `;
+const generateRumorBtn = document.getElementById('generateRumorBtn');
+const copyRumorBtn = document.getElementById('copyRumorBtn');
+if (generateRumorBtn) {
+    generateRumorBtn.addEventListener('click', () => RumorGenerator.generate());
+}
+if (copyRumorBtn) {
+    copyRumorBtn.addEventListener('click', () => RumorGenerator.copyToClipboard());
+}
+// При первом открытии вкладки можно сгенерировать случайный слух
+const rumorTabBtn = document.querySelector('.sub-tab-btn[data-sub="gm-rumor"]');
+if (rumorTabBtn) {
+    rumorTabBtn.addEventListener('click', () => {
+        if (!document.getElementById('rumorResult').innerHTML.trim()) {
+            RumorGenerator.generate();
+        }
+    });
+}
 });
