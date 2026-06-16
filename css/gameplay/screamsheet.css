@@ -1,0 +1,491 @@
+.scream-sheet {
+    background: #fef7e0;
+    background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 2px, transparent 2px, transparent 8px);
+    color: #2c2418;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+    font-family: 'Times New Roman', Georgia, serif;
+    border-left: 12px solid #b15a2a;
+    position: relative;
+    max-width: 900px;
+    margin: 20px auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.scream-sheet::before {
+    content: "✂️";
+    position: absolute;
+    top: -16px;
+    left: 24px;
+    font-size: 28px;
+    background: #fef7e0;
+    padding: 0 10px;
+    border-radius: 30px;
+    color: #b15a2a;
+}
+
+.sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px dashed #b15a2a;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    font-size: 0.85rem;
+    color: #5e3a1f;
+}
+
+.sheet-date {
+    font-style: italic;
+    font-weight: bold;
+}
+
+.sheet-truth {
+    font-weight: bold;
+    padding: 2px 10px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+.sheet-truth.правда { background: #2c6e2c; color: white; }
+.sheet-truth.полуправда { background: #c97e1a; color: white; }
+.sheet-truth.ложь { background: #a12a2a; color: white; }
+
+.sheet-headline {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    font-family: 'Orbitron', 'Times New Roman', serif;
+    color: #1f3b4c;
+    border-left: 4px solid #b15a2a;
+    padding-left: 16px;
+}
+
+/* ДВЕ КОЛОНКИ – принудительно */
+.sheet-body {
+    column-count: 2 !important;
+    column-gap: 32px !important;
+    column-rule: 1px dotted #c0a070 !important;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-align: justify;
+    margin-bottom: 24px;
+}
+
+.sheet-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #c0a070;
+    padding-top: 16px;
+    font-size: 0.75rem;
+    color: #5e3a1f;
+}
+
+.copy-sheet-btn {
+    background: #2c2418;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 40px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: 0.2s;
+    color: #fef7e0;
+}
+.copy-sheet-btn:hover {
+    background: #b15a2a;
+}
+.sheet-section {
+    background: #2c2418;
+    color: #fef7e0;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Скримлист */
+.scream-sheet {
+    background: #f5f2e0;
+    color: #2e241f;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-family: 'Times New Roman', serif;
+    border-left: 8px solid #b12a0e;
+}
+.sheet-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #2e241f;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    font-size: 0.8rem;
+}
+.sheet-date { font-style: italic; }
+.sheet-truth {
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.sheet-truth.правда { background: #4caf50; color: white; }
+.sheet-truth.полуправда { background: #ffc107; color: black; }
+.sheet-truth.ложь { background: #f44336; color: white; }
+.sheet-headline {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+.sheet-body {
+    font-size: 1rem;
+    line-height: 1.4;
+    margin-bottom: 16px;
+}
+.sheet-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px dashed #2e241f;
+    padding-top: 10px;
+    font-size: 0.75rem;
+}
+.copy-sheet-btn {
+    background: #2e241f;
+    color: #f5f2e0;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+.copy-sheet-btn:hover {
+    background: #b12a0e;
+}
+/* тёмная тема для киберпанк-режима */
+body.cyberpunk-theme .scream-sheet {
+    background: #1a1a1a;
+    color: #f0f0f0;
+    border-left-color: #ff3c5f;
+}
+body.cyberpunk-theme .sheet-header {
+    border-bottom-color: #ff3c5f;
+}
+body.cyberpunk-theme .copy-sheet-btn {
+    background: #ff3c5f;
+    color: #0a0c12;
+}
+/* Модальное окно для показа игрокам */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+}
+.modal-content {
+    background: #1a1a2a;
+    border-radius: 16px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+    padding: 20px;
+    border: 1px solid #ff3c5f;
+    box-shadow: 0 0 30px rgba(255, 60, 95, 0.5);
+}
+.scream-modal .scream-sheet-preview {
+    background: #f5f2e0;
+    color: #2e241f;
+    padding: 20px;
+    border-radius: 8px;
+    font-family: 'Times New Roman', serif;
+    min-width: 300px;
+    max-width: 600px;
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #ff3c5f;
+}
+.modal-footer {
+    margin-top: 20px;
+    text-align: right;
+}
+.modal-close-btn {
+    background: #ff3c5f;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+body.cyberpunk-theme .scream-modal .scream-sheet-preview {
+    background: #1a1a1a;
+    color: #f9f002;
+    border-left: 8px solid #ff3c5f;
+}
+/* Скримлист — стиль газетной вырезки */
+.scream-sheet {
+    background: #fef7e0;
+    color: #2c2418;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    font-family: 'Times New Roman', Georgia, serif;
+    border-left: 12px solid #b15a2a;
+    position: relative;
+    transition: 0.2s;
+}
+
+.scream-sheet::before {
+    content: "✂️";
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    font-size: 24px;
+    background: #fef7e0;
+    padding: 0 8px;
+    border-radius: 20px;
+    color: #b15a2a;
+}
+
+.sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px dashed #b15a2a;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    font-size: 0.8rem;
+    color: #5e3a1f;
+}
+
+.sheet-date {
+    font-style: italic;
+    font-weight: bold;
+}
+
+.sheet-truth {
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+.sheet-truth.правда { background: #2c6e2c; color: white; }
+.sheet-truth.полуправда { background: #c97e1a; color: white; }
+.sheet-truth.ложь { background: #a12a2a; color: white; }
+
+.sheet-headline {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    font-family: 'Orbitron', 'Times New Roman', serif;
+    color: #1f3b4c;
+    border-left: 4px solid #b15a2a;
+    padding-left: 12px;
+}
+
+.sheet-body {
+    font-size: 1rem;
+    line-height: 1.5;
+    text-align: justify;
+    margin-bottom: 20px;
+    columns: 2;
+    column-gap: 30px;
+    column-rule: 1px dotted #c0a070;
+}
+
+.sheet-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #c0a070;
+    padding-top: 12px;
+    font-size: 0.75rem;
+    color: #5e3a1f;
+}
+
+.copy-sheet-btn {
+    background: #2c2418;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: 0.2s;
+    color: #fef7e0;
+}
+.copy-sheet-btn:hover {
+    background: #b15a2a;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 700px) {
+    .sheet-body {
+        columns: 1;
+    }
+    .sheet-headline {
+        font-size: 1.3rem;
+    }
+}
+
+/* Киберпанк-тема для скримлиста (альтернативный вариант) */
+body.cyberpunk-theme .scream-sheet {
+    background: #1a1a1a;
+    color: #e0e0e0;
+    border-left-color: #ff3c5f;
+}
+body.cyberpunk-theme .scream-sheet::before {
+    background: #1a1a1a;
+    color: #ff3c5f;
+}
+body.cyberpunk-theme .sheet-header {
+    border-bottom-color: #ff3c5f;
+    color: #ff9a3c;
+}
+body.cyberpunk-theme .sheet-headline {
+    color: #ff9a3c;
+    border-left-color: #ff3c5f;
+}
+body.cyberpunk-theme .sheet-body {
+    column-rule-color: #ff3c5f;
+}
+body.cyberpunk-theme .copy-sheet-btn {
+    background: #ff3c5f;
+    color: #0a0c12;
+}
+.scream-sheet {
+    background: #fef7e0;
+    background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 2px, transparent 2px, transparent 8px);
+    color: #2c2418;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+    font-family: 'Times New Roman', Georgia, serif;
+    border-left: 12px solid #b15a2a;
+    position: relative;
+    max-width: 900px;
+    margin: 20px auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.scream-sheet::before {
+    content: "✂️";
+    position: absolute;
+    top: -16px;
+    left: 24px;
+    font-size: 28px;
+    background: #fef7e0;
+    padding: 0 10px;
+    border-radius: 30px;
+    color: #b15a2a;
+}
+
+.sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px dashed #b15a2a;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    font-size: 0.85rem;
+    color: #5e3a1f;
+}
+
+.sheet-date {
+    font-style: italic;
+    font-weight: bold;
+}
+
+.sheet-truth {
+    font-weight: bold;
+    padding: 2px 10px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+.sheet-truth.правда { background: #2c6e2c; color: white; }
+.sheet-truth.полуправда { background: #c97e1a; color: white; }
+.sheet-truth.ложь { background: #a12a2a; color: white; }
+
+.sheet-headline {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    font-family: 'Orbitron', 'Times New Roman', serif;
+    color: #1f3b4c;
+    border-left: 4px solid #b15a2a;
+    padding-left: 16px;
+}
+
+/* ДВЕ КОЛОНКИ – принудительно */
+.sheet-body {
+    column-count: 2 !important;
+    column-gap: 32px !important;
+    column-rule: 1px dotted #c0a070 !important;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-align: justify;
+    margin-bottom: 24px;
+}
+
+.sheet-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #c0a070;
+    padding-top: 16px;
+    font-size: 0.75rem;
+    color: #5e3a1f;
+}
+
+.copy-sheet-btn {
+    background: #2c2418;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 40px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: 0.2s;
+    color: #fef7e0;
+}
+.copy-sheet-btn:hover {
+    background: #b15a2a;
+}
+.sheet-section {
+    background: #2c2418;
+    color: #fef7e0;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}

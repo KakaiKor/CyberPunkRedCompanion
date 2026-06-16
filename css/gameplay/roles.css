@@ -1,0 +1,58 @@
+/* Стили для справочника ролей */
+.roles-accordion {
+    margin-top: 20px;
+}
+.role-details {
+    background: #14181f;
+    border: 1px solid #2a1a2a;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    transition: 0.2s;
+}
+.role-details[open] {
+    background: #1a1e2a;
+    border-color: #ff3c5f;
+}
+.role-summary {
+    padding: 15px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+}
+.role-summary::-webkit-details-marker {
+    display: none;
+}
+.role-summary::before {
+    content: '▶';
+    margin-right: 12px;
+    color: #ff9a3c;
+    transition: transform 0.2s;
+}
+.role-details[open] .role-summary::before {
+    transform: rotate(90deg);
+}
+.role-name {
+    font-size: 1.3rem;
+    color: #ff9a3c;
+    font-family: 'Orbitron', monospace;
+}
+.role-skill {
+    background: #ff3c5f;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #0a0c12;
+}
+.role-content {
+    padding: 0 20px 20px 20px;
+    border-top: 1px solid #2a1a2a;
+}
+.role-content ul {
+    margin: 10px 0 10px 20px;
+}
+.role-content li {
+    margin-bottom: 6px;
+}

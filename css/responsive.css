@@ -307,3 +307,169 @@
         flex: 1 0 auto;
     }
 }
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .tab-btn, .sub-tab-btn {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+    .card {
+        padding: 12px;
+    }
+}
+/* Для мобильных устройств – позволяем скроллить, если не влезает */
+@media (max-width: 700px) {
+    #skillsTable {
+        overflow-x: auto;
+    }
+    #skillsTable .cyber-table {
+        min-width: 500px;
+    }
+}
+/* Адаптивность – на узких экранах всё в колонку */
+@media (max-width: 800px) {
+    .stats-layout {
+        flex-direction: column;
+    }
+    .stats-card {
+        flex: auto;
+        width: 100%;
+    }
+    .skills-card {
+        width: 100%;
+    }
+}
+/* Адаптивность для мобильных */
+@media (max-width: 700px) {
+    .character-name {
+        font-size: 1.2rem;
+    }
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .skills-list.compact {
+        grid-template-columns: 1fr;
+    }
+    .equipment-grid {
+        grid-template-columns: 1fr;
+    }
+    .derived-stats {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .combat-buttons {
+        flex-direction: column;
+    }
+}
+@media (max-width: 700px) {
+    .character-name {
+        font-size: 1.2rem;
+    }
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+    .equipment-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* ========== ВЕРТИКАЛЬНОЕ МЕНЮ ГЛАВНЫХ ВКЛАДОК ========== */
+@media (min-width: 701px) {
+    .main-tabs {
+        flex-direction: column;
+        width: 220px;
+        float: left;
+        border-right: 1px solid #2a3342;
+        border-bottom: none;
+        margin-right: 20px;
+        padding-bottom: 0;
+    }
+    .main-pane {
+        margin-left: 240px;
+    }
+    .main-tabs .tab-btn {
+        width: 100%;
+        text-align: left;
+        margin-bottom: 5px;
+    }
+}
+/* ========== ВЕРТИКАЛЬНОЕ МЕНЮ (для десктопа) ========== */
+@media (min-width: 701px) {
+    .main-tabs {
+        flex-direction: column;
+        width: 220px;
+        float: left;
+        border-right: 1px solid #2a3342;
+        border-bottom: none;
+        margin-right: 20px;
+        padding-bottom: 0;
+    }
+    .main-pane {
+        margin-left: 240px;
+    }
+    .main-tabs .tab-btn {
+        width: 100%;
+        text-align: left;
+        margin-bottom: 5px;
+    }
+}
+@media (max-width: 700px) {
+    body { padding: 12px; }
+    header { flex-direction: column; align-items: stretch; }
+    .search-bar { max-width: 100%; }
+    .tab-btn, .sub-tab-btn { padding: 6px 12px; font-size: 0.8rem; }
+    .card-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+/* Адаптация для мобильных */
+@media (max-width: 700px) {
+    .sheet-body {
+        columns: 1;
+    }
+    .sheet-headline {
+        font-size: 1.3rem;
+    }
+}
+@media (max-width: 700px) {
+    #char-help .concept-grid {
+        grid-template-columns: 1fr;
+    }
+    #char-help .tips-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* Адаптивность для мобильных */
+@media (max-width: 700px) {
+    #combat-help .concept-grid,
+    #combat-help .combat-types,
+    #combat-help .tips-grid,
+    #combat-help .features-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 700px) {
+    .programs-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* Очень узкие экраны (≤ 400px) */
+@media (max-width: 400px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 700px) {
+    .skill-editor-name {
+        white-space: normal;
+    }
+}
+@media (max-width: 700px) {
+    .weapon-stats {
+        margin-left: 0;
+    }
+    .weapon-stat {
+        font-size: 0.65rem;
+        white-space: normal;
+    }
+}

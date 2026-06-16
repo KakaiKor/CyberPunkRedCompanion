@@ -1,0 +1,70 @@
+/* ========== Слухи и крючки ========== */
+.rumor-card {
+    background: linear-gradient(145deg, #1a1e2a, #0f1219);
+    border: 1px solid #2a3342;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 15px;
+    transition: transform 0.2s;
+}
+.rumor-card:hover {
+    transform: translateY(-2px);
+    border-color: #ff9a3c;
+}
+.rumor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #2a3342;
+}
+.rumor-type {
+    background: #ff3c5f;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #0a0c12;
+}
+.rumor-truth {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+.rumor-truth.truth-true {
+    background: #28a745;
+    color: white;
+}
+.rumor-truth.truth-half {
+    background: #ffc107;
+    color: #0a0c12;
+}
+.rumor-truth.truth-false {
+    background: #dc3545;
+    color: white;
+}
+.rumor-text {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    margin-bottom: 16px;
+    padding: 10px;
+    background: #0a0c12;
+    border-radius: 16px;
+    font-style: italic;
+    color: #e0e0e0;
+}
+.rumor-hook {
+    background: #0f1219;
+    padding: 12px;
+    border-radius: 16px;
+    border-left: 4px solid #ff9a3c;
+    font-size: 0.9rem;
+}
+.rumor-hook i {
+    color: #ff9a3c;
+    margin-right: 8px;
+}
