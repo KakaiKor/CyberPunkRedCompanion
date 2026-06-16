@@ -53,6 +53,7 @@
             <button class="tab-btn" data-tab="tab-combat"> Бой </button>
             <button class="tab-btn" data-tab="tab-netrunner"> Нетраннинг </button>
             <button class="tab-btn" data-tab="tab-gm"> GM инструменты </button>
+            <button class="tab-btn" data-tab="tab-story">GM Сценарий</button>
             <button class="tab-btn" data-tab="tab-market"> Рынок & Трофеи </button>
         </div>
 
@@ -140,7 +141,7 @@
                 </div>
                 <div id="characterCardContainer" style="margin-top: 20px;"></div>
             </div>
-
+            
             <div id="char-stats" class="sub-pane">
                 <div class="stats-layout">
                     <div class="stats-card">
@@ -253,7 +254,72 @@
                 </div>
             </div>
         </div>
+        <div id="tab-story" class="main-pane">
+    <div class="sub-tabs">
+        <button class="sub-tab-btn active" data-sub="story-campaigns">📁 Кампании</button>
+        <button class="sub-tab-btn" data-sub="story-board">🗺️ Доска</button>
+        <button class="sub-tab-btn" data-sub="story-tree">🌳 Дерево</button>
+        <button class="sub-tab-btn" data-sub="story-timeline">⏳ Таймлайн</button>
+        <button class="sub-tab-btn" data-sub="story-integration">🔗 Привязки</button>
+    </div>
 
+    <!-- Панель: Кампании (список, создание, импорт/экспорт) -->
+    <div id="story-campaigns" class="sub-pane active">
+        <div class="card">
+            <h3>📁 Управление кампаниями</h3>
+            <div class="button-group">
+                <button id="storyNewCampaignBtn" class="cyber-btn">➕ Новая кампания</button>
+                <button id="storyExportAllBtn" class="cyber-btn">📤 Экспорт всех</button>
+                <button id="storyImportAllBtn" class="cyber-btn">📥 Импорт</button>
+                <input type="file" id="storyImportFileInput" accept=".json" style="display:none">
+            </div>
+            <div id="storyCampaignList"></div>
+        </div>
+    </div>
+
+    <!-- Панель: Доска (визуальный редактор) -->
+    <div id="story-board" class="sub-pane">
+        <div class="card">
+            <h3>🗺️ Визуальная доска</h3>
+            <div class="story-board-toolbar">
+                <select id="storyBoardCampaignSelect"><option>— выберите кампанию —</option></select>
+                <button id="storyBoardAddNodeBtn" class="cyber-btn">➕ Добавить бит</button>
+                <button id="storyBoardZoomInBtn">🔍+</button>
+                <button id="storyBoardZoomOutBtn">🔍−</button>
+                <button id="storyBoardFitBtn">⊡ Вписать</button>
+            </div>
+            <div id="storyBoardCanvas" style="width:100%; height:600px; background:#0d1117; border:1px solid #2a3342; border-radius:8px;"></div>
+        </div>
+    </div>
+
+    <!-- Панель: Дерево (иерархический список) -->
+    <div id="story-tree" class="sub-pane">
+        <div class="card">
+            <h3>🌳 Иерархия сценария</h3>
+            <select id="storyTreeCampaignSelect"><option>— выберите кампанию —</option></select>
+            <div id="storyTreeContainer"></div>
+        </div>
+    </div>
+
+    <!-- Панель: Таймлайн -->
+    <div id="story-timeline" class="sub-pane">
+        <div class="card">
+            <h3>⏳ Хронология событий</h3>
+            <select id="storyTimelineCampaignSelect"><option>— выберите кампанию —</option></select>
+            <div id="storyTimelineContainer"></div>
+        </div>
+    </div>
+
+    <!-- Панель: Привязки (интеграция) -->
+    <div id="story-integration" class="sub-pane">
+        <div class="card">
+            <h3>🔗 Связи с игровыми сущностями</h3>
+            <p>Выберите сцену, чтобы увидеть связанных персонажей, локации, архитектуры сетей и встречи.</p>
+            <select id="storyIntegrationSceneSelect"><option>— выберите сцену —</option></select>
+            <div id="storyIntegrationDetails"></div>
+        </div>
+    </div>
+</div>
         <!-- Панель БОЙ (оставлена без изменений) -->
         <div id="tab-combat" class="main-pane">
             <div class="sub-tabs">
@@ -794,6 +860,7 @@
     <script type="module" src="js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"></script>
 </body>
 
 <footer class="cyber-footer">

@@ -23,7 +23,7 @@ import { NetrunnerInterface } from './modules/netrunner-interface.js';
 import { NetArchitectureUI } from './modules/net-architecture-ui.js';
 import { AutoFireUI } from './modules/combat/auto-fire.js';
 import { RumorGenerator } from './modules/gm/rumor-generator.js';
-
+import { initStoryModule } from './story/story-main.js';
 
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
@@ -126,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.wizard = new CharacterWizard();
     renderRoles();
     new CombatFormulas();
+    initStoryModule();
     window.characterHelper = new CharacterHelper();
     // Нетраннер интерфейс
     window.netrunnerInterface = new NetrunnerInterface('netrunnerInterfaceContainer');
