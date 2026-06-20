@@ -4035,7 +4035,75 @@ body.cyberpunk-theme .copy-sheet-btn {
     margin: 15px 0;
     flex-wrap: wrap;
 }
+/* ========== УЛУЧШЕННЫЕ КНОПКИ ДЛЯ STORY MASTER ========== */
+.cyber-btn.small {
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    border-radius: 30px;
+    background: #1e2530;
+    border: 1px solid #2a3342;
+    color: #e0e0e0;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
 
+.cyber-btn.small:hover {
+    background: #ff3c5f;
+    border-color: #ff3c5f;
+    color: #0a0c12;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(255, 60, 95, 0.3);
+}
+
+.cyber-btn.small:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Для выпадающих списков внутри дерева */
+select.move-scene-chapter {
+    background: #0a0c12;
+    border: 1px solid #2a3342;
+    border-radius: 30px;
+    padding: 4px 8px;
+    color: #f0e6d3;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+select.move-scene-chapter:focus {
+    border-color: #ff9a3c;
+    outline: none;
+}
+
+/* Модальное окно просмотра сцены (создаётся динамически) */
+#storySceneModal .modal-content {
+    background: #14181f;
+    border: 1px solid #ff3c5f;
+    border-radius: 16px;
+    max-width: 600px;
+    padding: 20px;
+}
+
+#storySceneModal .modal-body p {
+    margin: 8px 0;
+    font-size: 0.9rem;
+    color: #c9d1d9;
+}
+
+#storySceneModal .modal-body h4 {
+    color: #ff9a3c;
+    font-family: 'Orbitron', monospace;
+    margin: 0 0 12px 0;
+    font-size: 1.2rem;
+}
 /* ========== ФИКСАЦИЯ ФУТЕРА ВНИЗУ ========== */
 html, body {
     height: 100%;

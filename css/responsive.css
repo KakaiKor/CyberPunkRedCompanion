@@ -473,3 +473,120 @@
         white-space: normal;
     }
 }
+/* ========== АДАПТИВНОСТЬ STORY MASTER ========== */
+@media (max-width: 700px) {
+    /* Кампании */
+    .campaign-card {
+        padding: 14px;
+    }
+    .campaign-header h4 {
+        font-size: 1rem;
+    }
+
+    /* Дерево */
+    .tree-arc {
+        padding: 6px 10px;
+    }
+    .tree-chapter {
+        padding: 4px 10px;
+    }
+    .tree-scene {
+        padding: 3px 8px;
+    }
+    .tree-item-name {
+        font-size: 0.8rem;
+        min-width: 80px;
+    }
+    .tree-item-status {
+        font-size: 0.55rem;
+        padding: 1px 8px;
+    }
+    .tree-item-actions .cyber-btn.small {
+        font-size: 0.55rem;
+        padding: 1px 6px;
+    }
+    .scene-links {
+        gap: 4px;
+        margin-left: 12px;
+    }
+    .link-tag {
+        font-size: 0.55rem;
+        padding: 1px 6px;
+    }
+
+    /* Таймлайн */
+    .timeline-item:not(:last-child)::after {
+        left: 14px;
+        top: 24px;
+        bottom: -12px;
+    }
+    .timeline-marker {
+        width: 12px;
+        height: 12px;
+        margin-top: 4px;
+    }
+    .timeline-content {
+        padding: 8px 12px;
+    }
+    .timeline-header h4 {
+        font-size: 0.85rem;
+    }
+    .timeline-meta {
+        font-size: 0.65rem;
+        gap: 8px;
+    }
+    .timeline-desc {
+        font-size: 0.75rem;
+    }
+
+    /* Доска */
+    #storyBoardCanvas {
+        height: 400px;
+    }
+    .board-controls {
+        gap: 4px;
+        padding: 4px 10px;
+        bottom: 4px;
+        width: 96%;
+    }
+    .board-controls .cyber-btn.small {
+        font-size: 0.6rem;
+        padding: 3px 8px;
+    }
+
+    /* Привязки */
+    .integration-details {
+        padding: 12px;
+    }
+    .integration-details .card {
+        padding: 12px;
+    }
+    .integration-details h4 {
+        font-size: 1rem;
+    }
+    .integration-details p {
+        font-size: 0.8rem;
+    }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 480px) {
+    .story-tree-toolbar {
+        padding: 8px;
+    }
+    .story-tree-toolbar input,
+    .story-tree-toolbar select {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+    .move-scene-chapter {
+        max-width: 80px;
+    }
+    .tree-item-actions {
+        gap: 2px;
+    }
+    .tree-item-actions .cyber-btn.small {
+        font-size: 0.5rem;
+        padding: 1px 4px;
+    }
+}

@@ -147,23 +147,23 @@ export function addScene(campaignId, arcId, chapterId, sceneData) {
     const chapter = arc.chapters.find(ch => ch.id === chapterId);
     if (!chapter) return null;
     const newScene = {
-    id: 'sc_' + Date.now(),
-    name: sceneData.name || 'Новая сцена',
-    description: sceneData.description || '',
-    beatType: sceneData.beatType || 'development',
-    status: sceneData.status || 'draft',
-    participants: sceneData.participants || [],
-    location: sceneData.location || '',
-    netArchitectureId: sceneData.netArchitectureId || '',
-    encounterTemplate: sceneData.encounterTemplate || '',
-    prerequisites: sceneData.prerequisites || [],
-    unlocks: sceneData.unlocks || [],
-    choices: sceneData.choices || [],
-    gmNotes: sceneData.gmNotes || '',
-    outcome: null,
-    order: chapter.scenes.length, // порядковый номер в главе
-    timestamp: new Date().toISOString()
-};
+        id: 'sc_' + Date.now(),
+        name: sceneData.name || 'Новая сцена',
+        description: sceneData.description || '',
+        beatType: sceneData.beatType || 'development',
+        status: sceneData.status || 'draft',
+        participants: sceneData.participants || [],
+        location: sceneData.location || '',
+        netArchitectureId: sceneData.netArchitectureId || '',
+        encounterTemplate: sceneData.encounterTemplate || '',
+        prerequisites: sceneData.prerequisites || [],
+        unlocks: sceneData.unlocks || [],
+        choices: sceneData.choices || [],
+        gmNotes: sceneData.gmNotes || '',
+        outcome: null,
+        order: chapter.scenes.length,
+        timestamp: new Date().toISOString()
+    };
     chapter.scenes.push(newScene);
     saveStoryData(data);
     return newScene;
@@ -194,4 +194,60 @@ export function deleteScene(campaignId, arcId, chapterId, sceneId) {
     if (!chapter) return;
     chapter.scenes = chapter.scenes.filter(s => s.id !== sceneId);
     saveStoryData(data);
+}
+
+// ===== НОВЫЕ ФУНКЦИИ (дублирование, экспорт, импорт сцены) =====
+
+export function duplicateScene(campaignId, arcId, chapterId, sceneId) {
+    const data = loadStoryData();
+    const campaign = data.campaigns.find(c => c.id === campaignId);
+    if (!campaign) return null;
+    const arc = campaign.arcs.find(a => a.id === arcId);
+    if (!arc) return null;
+    const chapter = arc.chapters.find(ch => ch.id === chapterId);
+    if (!chapter) return null;
+    const original = chapter.scenes.find(s => s.id === sceneId);
+    if (!original) return null;
+
+    const newScene = {
+        ...original,
+        id: 'sc_' + Date.now(),
+        name: original.name + ' (копия)',
+        // копируем все остальные поля
+    };
+    chapter.scenes.push(newScene);
+    saveStoryData(data);
+    return newScene;
+}
+
+export function exportScene(campaignId, arcId, chapterId, sceneId) {
+    const data = loadStoryData();
+    const campaign = data.campaigns.find(c => c.id === campaignId);
+    if (!campaign) return null;
+    const arc = campaign.arcs.find(a => a.id === arcId);
+    if (!arc) return null;
+    const chapter = arc.chapters.find(ch => ch.id === chapterId);
+    if (!chapter) return null;
+    const scene = chapter.scenes.find(s => s.id === sceneId);
+    if (!scene) return null;
+    return JSON.stringify(scene, null, 2);
+}
+
+export function importScene(campaignId, arcId, chapterId, sceneData) {
+    const data = loadStoryData();
+    const campaign = data.campaigns.find(c => c.id === campaignId);
+    if (!campaign) return null;
+    const arc = campaign.arcs.find(a => a.id === arcId);
+    if (!arc) return null;
+    const chapter = arc.chapters.find(ch => ch.id === chapterId);
+    if (!chapter) return null;
+
+    const newScene = {
+        ...sceneData,
+        id: 'sc_' + Date.now(),
+        // можно оставить старые связи, но они могут быть невалидны
+    };
+    chapter.scenes.push(newScene);
+    saveStoryData(data);
+    return newScene;
 }

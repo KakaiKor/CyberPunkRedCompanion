@@ -1,14 +1,11 @@
 // js/story/story-board.js
 
 import { getCampaign, getCampaigns } from './story-manager.js';
-import { renderTree } from './story-ui.js';
+import { renderTree, switchStorySubTab } from './story-ui.js';
 
 let network = null;
 let currentCampaignId = null;
 
-/**
- * Инициализирует или обновляет доску для выбранной кампании.
- */
 export function renderBoard(campaignId) {
     const container = document.getElementById('storyBoardCanvas');
     if (!container) return;
@@ -21,7 +18,6 @@ export function renderBoard(campaignId) {
 
     currentCampaignId = campaignId;
 
-    // Если сеть уже создана, обновляем данные, иначе создаём новую
     if (network) {
         updateNetworkData(campaign);
     } else {
@@ -29,9 +25,6 @@ export function renderBoard(campaignId) {
     }
 }
 
-/**
- * Создаёт новую сеть vis-network.
- */
 function createNetwork(container, campaign) {
     const { nodes, edges } = buildGraphData(campaign);
 
@@ -39,130 +32,78 @@ function createNetwork(container, campaign) {
         nodes: {
             shape: 'box',
             margin: 10,
-            font: {
-                color: '#f0e6d3',
-                size: 14,
-                face: 'Orbitron, sans-serif'
-            },
+            font: { color: '#f0e6d3', size: 14, face: 'Orbitron, sans-serif' },
             borderWidth: 2,
             shadow: true,
-            widthConstraint: {
-                maximum: 200
-            }
+            widthConstraint: { maximum: 200 }
         },
         edges: {
-            arrows: {
-                to: { enabled: true, scaleFactor: 0.8 }
-            },
-            color: {
-                color: '#2a3342',
-                highlight: '#f0c040'
-            },
-            smooth: {
-                type: 'cubicBezier',
-                roundness: 0.2
-            }
+            arrows: { to: { enabled: true, scaleFactor: 0.8 } },
+            color: { color: '#2a3342', highlight: '#f0c040' },
+            smooth: { type: 'cubicBezier', roundness: 0.2 }
         },
         physics: {
             enabled: true,
-            stabilization: {
-                iterations: 100
-            },
-            barnesHut: {
-                gravitationalConstant: -2000,
-                centralGravity: 0.3,
-                springLength: 150,
-                springConstant: 0.04,
-                damping: 0.09
-            }
+            stabilization: { iterations: 100 },
+            barnesHut: { gravitationalConstant: -2000, centralGravity: 0.3, springLength: 150, springConstant: 0.04, damping: 0.09 }
         },
-        interaction: {
-            dragNodes: true,
-            dragView: true,
-            zoomView: true,
-            hover: true,
-            tooltipDelay: 300
-        },
-        layout: {
-            improvedLayout: true,
-            hierarchical: {
-                enabled: true,
-                levelSeparation: 150,
-                nodeSpacing: 100,
-                treeSpacing: 200,
-                direction: 'UD', // Up-Down
-                sortMethod: 'directed'
-            }
-        }
+        interaction: { dragNodes: true, dragView: true, zoomView: true, hover: true, tooltipDelay: 300 },
+        layout: { improvedLayout: true, hierarchical: { enabled: true, levelSeparation: 150, nodeSpacing: 100, treeSpacing: 200, direction: 'UD', sortMethod: 'directed' } }
     };
 
     network = new vis.Network(container, { nodes, edges }, options);
 
-    // Обработчик клика по узлу
     network.on('click', function(params) {
         if (params.nodes.length > 0) {
             const nodeId = params.nodes[0];
             const node = nodes.get(nodeId);
-            if (node) {
-                // Открываем редактор для этого элемента
-                const data = node.data;
-                if (data) {
-                    // Определяем тип и открываем соответствующее редактирование
-                    // Для простоты пока просто показываем информацию
-                    alert(`Элемент: ${node.label}\nТип: ${data.type}\nID: ${nodeId}`);
-                    // В будущем здесь можно открыть inline-редактор или модалку
-                }
+            if (node && node.data) {
+                showSceneInfoModal(node.data);
             }
         }
     });
 
-    // Обработчик двойного клика для открытия редактора
     network.on('doubleClick', function(params) {
         if (params.nodes.length > 0) {
             const nodeId = params.nodes[0];
             const node = nodes.get(nodeId);
             if (node && node.data) {
-                // Переключаемся на вкладку "Дерево" и открываем редактирование этого элемента
-                // Это упрощённая версия, можно улучшить
                 switchStorySubTab('story-tree');
-                const treeContainer = document.getElementById('storyTreeContainer');
-                if (treeContainer) {
-                    treeContainer.dataset.editingId = nodeId;
-                    renderTree(currentCampaignId);
+                const treeSelect = document.getElementById('storyTreeCampaignSelect');
+                if (treeSelect) {
+                    treeSelect.value = currentCampaignId;
+                    treeSelect.dispatchEvent(new Event('change'));
+                    setTimeout(() => {
+                        const container = document.getElementById('storyTreeContainer');
+                        if (container) {
+                            const data = node.data;
+                            const id = data.type === 'scene' ? `scene_${data.id}` :
+                                       data.type === 'chapter' ? `chapter_${data.id}` :
+                                       `arc_${data.id}`;
+                            container.dataset.editingId = id;
+                            renderTree(currentCampaignId);
+                        }
+                    }, 100);
                 }
             }
         }
     });
 
-    // Добавляем кнопки управления на контейнер
     addBoardControls(container);
 }
 
-/**
- * Обновляет данные существующей сети.
- */
 function updateNetworkData(campaign) {
     if (!network) return;
     const { nodes, edges } = buildGraphData(campaign);
     network.setData({ nodes, edges });
-    // Перенастраиваем физику для лучшего отображения
-    network.setOptions({
-        physics: {
-            enabled: true,
-            stabilization: { iterations: 50 }
-        }
-    });
+    network.setOptions({ physics: { enabled: true, stabilization: { iterations: 50 } } });
 }
 
-/**
- * Строит граф из данных кампании.
- */
 function buildGraphData(campaign) {
     const nodes = [];
     const edges = [];
     const nodeMap = new Map();
 
-    // Добавляем все арки, главы и сцены как узлы
     const arcs = campaign.arcs || [];
     arcs.forEach(arc => {
         const arcId = `arc_${arc.id}`;
@@ -170,16 +111,12 @@ function buildGraphData(campaign) {
             id: arcId,
             label: `📁 ${arc.name}`,
             data: { type: 'arc', id: arc.id, campaignId: campaign.id },
-            color: {
-                background: '#1a2332',
-                border: '#f0c040'
-            },
+            color: { background: '#1a2332', border: '#f0c040' },
             shape: 'box',
             title: `Арка: ${arc.name}\nСтатус: ${arc.status || 'draft'}\nГлав: ${(arc.chapters || []).length}`
         });
         nodeMap.set(arc.id, { id: arcId, type: 'arc' });
 
-        // Добавляем главы
         const chapters = arc.chapters || [];
         chapters.forEach(chapter => {
             const chapterId = `chapter_${chapter.id}`;
@@ -187,24 +124,14 @@ function buildGraphData(campaign) {
                 id: chapterId,
                 label: `📄 ${chapter.name}`,
                 data: { type: 'chapter', id: chapter.id, arcId: arc.id, campaignId: campaign.id },
-                color: {
-                    background: '#2a1a33',
-                    border: '#a070c0'
-                },
+                color: { background: '#2a1a33', border: '#a070c0' },
                 shape: 'box',
                 title: `Глава: ${chapter.name}\nСтатус: ${chapter.status || 'draft'}\nСцен: ${(chapter.scenes || []).length}`
             });
             nodeMap.set(chapter.id, { id: chapterId, type: 'chapter' });
 
-            // Связь арка → глава
-            edges.push({
-                from: arcId,
-                to: chapterId,
-                arrows: 'to',
-                color: { color: '#2a3342' }
-            });
+            edges.push({ from: arcId, to: chapterId, arrows: 'to', color: { color: '#2a3342' } });
 
-            // Добавляем сцены
             const scenes = chapter.scenes || [];
             scenes.forEach(scene => {
                 const sceneId = `scene_${scene.id}`;
@@ -229,24 +156,14 @@ function buildGraphData(campaign) {
                     id: sceneId,
                     label: `🎬 ${scene.name}`,
                     data: { type: 'scene', id: scene.id, chapterId: chapter.id, arcId: arc.id, campaignId: campaign.id },
-                    color: {
-                        background: '#1a2a1a',
-                        border: statusColor
-                    },
+                    color: { background: '#1a2a1a', border: statusColor },
                     shape: 'box',
                     title: `Сцена: ${scene.name}\nТип: ${scene.beatType || 'development'}\nСтатус: ${scene.status || 'draft'}\nУчастников: ${(scene.participants || []).length}`
                 });
                 nodeMap.set(scene.id, { id: sceneId, type: 'scene' });
 
-                // Связь глава → сцена
-                edges.push({
-                    from: chapterId,
-                    to: sceneId,
-                    arrows: 'to',
-                    color: { color: '#2a3342' }
-                });
+                edges.push({ from: chapterId, to: sceneId, arrows: 'to', color: { color: '#2a3342' } });
 
-                // Связи между сценами (если указаны)
                 if (scene.prerequisites && scene.prerequisites.length > 0) {
                     scene.prerequisites.forEach(prereqId => {
                         const prereqNode = nodeMap.get(prereqId);
@@ -263,7 +180,6 @@ function buildGraphData(campaign) {
                     });
                 }
 
-                // Связи открываемых сцен
                 if (scene.unlocks && scene.unlocks.length > 0) {
                     scene.unlocks.forEach(unlockId => {
                         const unlockNode = nodeMap.get(unlockId);
@@ -286,11 +202,7 @@ function buildGraphData(campaign) {
     return { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
 }
 
-/**
- * Добавляет элементы управления на доску.
- */
 function addBoardControls(container) {
-    // Создаём панель управления, если её нет
     let controls = container.parentElement.querySelector('.board-controls');
     if (!controls) {
         controls = document.createElement('div');
@@ -317,48 +229,127 @@ function addBoardControls(container) {
         container.parentElement.style.position = 'relative';
         container.parentElement.appendChild(controls);
 
-        // Обработчики кнопок
         controls.querySelector('#boardZoomIn').addEventListener('click', () => {
             if (network) {
                 const scale = network.getScale();
                 network.moveTo({ scale: scale * 1.2 });
             }
         });
-
         controls.querySelector('#boardZoomOut').addEventListener('click', () => {
             if (network) {
                 const scale = network.getScale();
                 network.moveTo({ scale: scale / 1.2 });
             }
         });
-
         controls.querySelector('#boardFit').addEventListener('click', () => {
-            if (network) {
-                network.fit();
-            }
+            if (network) network.fit();
         });
-
         controls.querySelector('#boardRefresh').addEventListener('click', () => {
-            if (currentCampaignId) {
-                renderBoard(currentCampaignId);
-            }
+            if (currentCampaignId) renderBoard(currentCampaignId);
         });
     }
 }
 
-/**
- * Переключает вкладку (импортируем из story-ui)
- */
-function switchStorySubTab(tabId) {
-    // Импортируем динамически, чтобы избежать циклических зависимостей
-    import('./story-ui.js').then(module => {
-        module.switchStorySubTab(tabId);
-    });
+// ===== Модальное окно для просмотра сцены =====
+function showSceneInfoModal(data) {
+    const campaign = getCampaign(data.campaignId);
+    if (!campaign) return;
+
+    let scene = null, arc = null, chapter = null;
+    if (data.type === 'scene') {
+        campaign.arcs.forEach(a => {
+            a.chapters.forEach(ch => {
+                ch.scenes.forEach(s => {
+                    if (s.id === data.id) {
+                        scene = s;
+                        arc = a;
+                        chapter = ch;
+                    }
+                });
+            });
+        });
+    }
+
+    if (!scene) {
+        alert('Сцена не найдена.');
+        return;
+    }
+
+    let modal = document.getElementById('storySceneModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'storySceneModal';
+        modal.className = 'modal-overlay';
+        modal.style.display = 'none';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:600px;">
+                <div class="modal-header">
+                    <span class="modal-title">🎬 Сцена</span>
+                    <button class="modal-close" id="closeSceneModalBtn">&times;</button>
+                </div>
+                <div class="modal-body" id="sceneModalBody"></div>
+                <div class="modal-footer">
+                    <button class="cyber-btn small" id="editSceneFromModalBtn">✏️ Редактировать</button>
+                    <button class="modal-close-btn" id="closeSceneModalFooterBtn">Закрыть</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        document.getElementById('closeSceneModalBtn').addEventListener('click', () => modal.style.display = 'none');
+        document.getElementById('closeSceneModalFooterBtn').addEventListener('click', () => modal.style.display = 'none');
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+        document.getElementById('editSceneFromModalBtn').addEventListener('click', () => {
+            const sceneId = modal.dataset.sceneId;
+            const campaignId = modal.dataset.campaignId;
+            modal.style.display = 'none';
+            switchStorySubTab('story-tree');
+            const treeSelect = document.getElementById('storyTreeCampaignSelect');
+            if (treeSelect) {
+                treeSelect.value = campaignId;
+                treeSelect.dispatchEvent(new Event('change'));
+                setTimeout(() => {
+                    const container = document.getElementById('storyTreeContainer');
+                    if (container) {
+                        container.dataset.editingId = `scene_${sceneId}`;
+                        renderTree(campaignId);
+                    }
+                }, 100);
+            }
+        });
+    }
+
+    fillSceneModal(modal, scene, arc, chapter, data.campaignId);
 }
 
-/**
- * Очищает доску.
- */
+function fillSceneModal(modal, scene, arc, chapter, campaignId) {
+    const body = document.getElementById('sceneModalBody');
+    body.innerHTML = `
+        <h4>${escapeHtml(scene.name)}</h4>
+        <p><strong>Тип бита:</strong> ${scene.beatType || 'development'}</p>
+        <p><strong>Статус:</strong> ${scene.status || 'draft'}</p>
+        <p><strong>Описание:</strong> ${escapeHtml(scene.description || '—')}</p>
+        <p><strong>Арка:</strong> ${escapeHtml(arc.name)} → <strong>Глава:</strong> ${escapeHtml(chapter.name)}</p>
+        <p><strong>Участники (ID):</strong> ${(scene.participants || []).join(', ') || '—'}</p>
+        <p><strong>Локация:</strong> ${escapeHtml(scene.location || '—')}</p>
+        <p><strong>Архитектура сети:</strong> ${escapeHtml(scene.netArchitectureId || '—')}</p>
+        <p><strong>Шаблон встречи:</strong> ${escapeHtml(scene.encounterTemplate || '—')}</p>
+        <p><strong>Предыдущие сцены:</strong> ${(scene.prerequisites || []).join(', ') || '—'}</p>
+        <p><strong>Открывает сцены:</strong> ${(scene.unlocks || []).join(', ') || '—'}</p>
+        <p><strong>Ветвления:</strong> ${scene.choices ? JSON.stringify(scene.choices) : '—'}</p>
+        ${scene.gmNotes ? `<p><strong>Заметки GM:</strong> ${escapeHtml(scene.gmNotes)}</p>` : ''}
+    `;
+    modal.dataset.sceneId = scene.id;
+    modal.dataset.campaignId = campaignId;
+    modal.style.display = 'flex';
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 export function clearBoard() {
     if (network) {
         network.destroy();

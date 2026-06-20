@@ -283,7 +283,6 @@
             <h3>🗺️ Визуальная доска</h3>
             <div class="story-board-toolbar">
                 <select id="storyBoardCampaignSelect"><option>— выберите кампанию —</option></select>
-                <button id="storyBoardAddNodeBtn" class="cyber-btn">➕ Добавить бит</button>
                 <button id="storyBoardZoomInBtn">🔍+</button>
                 <button id="storyBoardZoomOutBtn">🔍−</button>
                 <button id="storyBoardFitBtn">⊡ Вписать</button>
@@ -297,6 +296,19 @@
         <div class="card">
             <h3>🌳 Иерархия сценария</h3>
             <select id="storyTreeCampaignSelect"><option>— выберите кампанию —</option></select>
+            <div class="story-tree-toolbar" style="display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+            <input type="text" id="storyTreeSearch" placeholder="🔍 Поиск по названию/описанию..." style="flex:1; min-width:150px;">
+            <select id="storyTreeStatusFilter">
+                <option value="all">Все статусы</option>
+                <option value="draft">Черновик</option>
+                <option value="active">Активна</option>
+                <option value="completed">Завершена</option>
+                <option value="failed">Провалена</option>
+                <option value="hidden">Скрыта</option>
+            </select>
+            <button id="storyImportSceneBtn" class="cyber-btn small">📥 Импорт сцены</button>
+            <input type="file" id="storyImportSceneInput" accept=".json" style="display:none">
+        </div>
             <div id="storyTreeContainer"></div>
         </div>
     </div>

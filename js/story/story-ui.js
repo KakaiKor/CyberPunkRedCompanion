@@ -13,16 +13,195 @@ import {
     updateScene,
     deleteArc,
     deleteChapter,
-    deleteScene
+    deleteScene,
+    duplicateScene,
+    exportScene,
+    importScene,
+    loadStoryData,
+    saveStoryData
 } from './story-manager.js';
-
-// Импортируем функции доски (они будут использоваться в переключении вкладок)
 import { renderBoard, clearBoard } from './story-board.js';
+import { loadCharacter } from '../storage.js';
 
-/**
- * Рендерит список кампаний.
- * Поддерживает inline-редактирование и форму создания.
- */
+// ===== Вспомогательная функция =====
+function escapeHtml(text) {
+    if (!text) return '';
+    return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ===== Переключение подвкладок Story =====
+export function switchStorySubTab(tabId) {
+    const pane = document.getElementById('tab-story');
+    if (!pane) return;
+    pane.querySelectorAll('.sub-pane').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(tabId);
+    if (target) target.classList.add('active');
+    pane.querySelectorAll('.sub-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.sub === tabId);
+    });
+    if (tabId === 'story-board') {
+        const select = document.getElementById('storyBoardCampaignSelect');
+        if (select && select.value) renderBoard(select.value);
+        else clearBoard();
+    }
+    if (tabId === 'story-timeline') {
+        const select = document.getElementById('storyTimelineCampaignSelect');
+        if (select && select.value) renderTimeline(select.value);
+    }
+}
+
+// ===== Автоподстановка данных для полей =====
+function getAutoCompleteData(campaignId) {
+    const campaign = getCampaign(campaignId);
+    if (!campaign) return { participants: [], locations: [], netArchs: [], encounters: [] };
+    const participantsSet = new Set();
+    const locationsSet = new Set();
+    const netArchsSet = new Set();
+    const encountersSet = new Set();
+    campaign.arcs.forEach(arc => {
+        arc.chapters.forEach(ch => {
+            ch.scenes.forEach(scene => {
+                if (scene.participants) scene.participants.forEach(p => participantsSet.add(p));
+                if (scene.location) locationsSet.add(scene.location);
+                if (scene.netArchitectureId) netArchsSet.add(scene.netArchitectureId);
+                if (scene.encounterTemplate) encountersSet.add(scene.encounterTemplate);
+            });
+        });
+    });
+    const char = loadCharacter();
+    if (char && char.name) participantsSet.add(char.id || 'current_character');
+    return {
+        participants: Array.from(participantsSet).filter(Boolean),
+        locations: Array.from(locationsSet).filter(Boolean),
+        netArchs: Array.from(netArchsSet).filter(Boolean),
+        encounters: Array.from(encountersSet).filter(Boolean)
+    };
+}
+
+// ===== Рендер таймлайна с группировкой по аркам и главам =====
+export function renderTimeline(campaignId) {
+    const container = document.getElementById('storyTimelineContainer');
+    if (!container) return;
+
+    const campaign = getCampaign(campaignId);
+    if (!campaign) {
+        container.innerHTML = `<p class="note">Кампания не найдена.</p>`;
+        return;
+    }
+
+    // Собираем все сцены с привязкой к арке и главе
+    let grouped = [];
+    campaign.arcs.forEach(arc => {
+        arc.chapters.forEach(chapter => {
+            if (chapter.scenes && chapter.scenes.length > 0) {
+                const sortedScenes = [...chapter.scenes].sort((a, b) => (a.order || 0) - (b.order || 0) || new Date(a.timestamp) - new Date(b.timestamp));
+                grouped.push({
+                    arcName: arc.name,
+                    arcId: arc.id,
+                    chapterName: chapter.name,
+                    chapterId: chapter.id,
+                    scenes: sortedScenes
+                });
+            }
+        });
+    });
+
+    if (grouped.length === 0) {
+        container.innerHTML = `<p class="note">В этой кампании пока нет сцен.</p>`;
+        return;
+    }
+
+    let html = `<div class="timeline">`;
+
+    grouped.forEach(group => {
+        // Заголовок арки и главы
+        html += `
+            <div class="timeline-group-header">
+                <span class="timeline-arc-name">📁 ${escapeHtml(group.arcName)}</span>
+                <span class="timeline-chapter-name">→ ${escapeHtml(group.chapterName)}</span>
+            </div>
+        `;
+
+        // Сцены внутри группы
+        group.scenes.forEach(scene => {
+            const statusColor = scene.status === 'active' ? '#39ff14' :
+                                scene.status === 'completed' ? '#4caf50' :
+                                scene.status === 'failed' ? '#ff3c5f' :
+                                scene.status === 'hidden' ? '#555' : '#6b7b8d';
+
+            const beatIcons = {
+                hook: '🎣',
+                development: '📈',
+                cliffhanger: '🌀',
+                climax: '🔥',
+                resolution: '✅'
+            };
+            const beatIcon = beatIcons[scene.beatType] || '📌';
+
+            html += `
+                <div class="timeline-item">
+                    <div class="timeline-marker" style="background:${statusColor};"></div>
+                    <div class="timeline-content" style="border-left: 3px solid ${statusColor};">
+                        <div class="timeline-header">
+                            <h4>
+                                <span class="timeline-beat-icon">${beatIcon}</span>
+                                ${escapeHtml(scene.name)} 
+                                <span class="beat-tag">${scene.beatType || 'development'}</span>
+                            </h4>
+                            <span class="timeline-status" style="border-color:${statusColor}; color:${statusColor};">
+                                ${scene.status || 'draft'}
+                            </span>
+                        </div>
+                        ${scene.description ? `<p class="timeline-desc">${escapeHtml(scene.description)}</p>` : ''}
+                        <div class="timeline-meta">
+                            <span>🆔 ${escapeHtml(scene.id)}</span>
+                            ${scene.participants?.length ? `👥 ${scene.participants.join(', ')}` : ''}
+                        </div>
+                        <div class="timeline-actions">
+                            <button class="cyber-btn small edit-scene-from-timeline" 
+                                    data-campaign="${campaignId}" 
+                                    data-arc="${group.arcId}" 
+                                    data-chapter="${group.chapterId}" 
+                                    data-scene="${scene.id}">
+                                ✏️ Редактировать
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+
+    // Обработчики для кнопок редактирования
+    container.querySelectorAll('.edit-scene-from-timeline').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const cId = btn.dataset.campaign;
+            const aId = btn.dataset.arc;
+            const chId = btn.dataset.chapter;
+            const sId = btn.dataset.scene;
+            switchStorySubTab('story-tree');
+            const treeSelect = document.getElementById('storyTreeCampaignSelect');
+            if (treeSelect) {
+                treeSelect.value = cId;
+                treeSelect.dispatchEvent(new Event('change'));
+                setTimeout(() => {
+                    const treeContainer = document.getElementById('storyTreeContainer');
+                    if (treeContainer) {
+                        treeContainer.dataset.editingId = `scene_${sId}`;
+                        renderTree(cId);
+                    }
+                }, 100);
+            }
+        });
+    });
+}
+
+// ===== Рендер списка кампаний =====
+// ===== Рендер списка кампаний с прогресс-барами =====
+// ===== Рендер списка кампаний с прогресс-барами и обработчиками =====
 export function renderCampaignList() {
     const container = document.getElementById('storyCampaignList');
     if (!container) return;
@@ -33,7 +212,6 @@ export function renderCampaignList() {
 
     let html = `<div class="campaign-grid">`;
 
-    // --- Форма создания новой кампании ---
     if (showCreateForm) {
         html += `
             <div class="campaign-card campaign-create-form">
@@ -55,12 +233,31 @@ export function renderCampaignList() {
         `;
     }
 
-    // --- Существующие кампании ---
     campaigns.forEach(c => {
         const isEditing = (editingId === c.id);
         const statusLabel = c.status === 'active' ? '🟢 Активна' :
                             c.status === 'completed' ? '✅ Завершена' :
                             c.status === 'archived' ? '📦 Архив' : '📝 Черновик';
+
+        // Подсчёт статистики
+        let totalScenes = 0;
+        let completedScenes = 0;
+        let activeScenes = 0;
+        let totalChapters = 0;
+        let totalArcs = c.arcs?.length || 0;
+
+        c.arcs?.forEach(arc => {
+            arc.chapters?.forEach(ch => {
+                totalChapters++;
+                ch.scenes?.forEach(s => {
+                    totalScenes++;
+                    if (s.status === 'completed') completedScenes++;
+                    if (s.status === 'active') activeScenes++;
+                });
+            });
+        });
+
+        const progressPercent = totalScenes > 0 ? Math.round((completedScenes / totalScenes) * 100) : 0;
 
         html += `<div class="campaign-card" data-id="${c.id}">`;
 
@@ -84,13 +281,24 @@ export function renderCampaignList() {
         } else {
             html += `
                 <div class="campaign-header">
-                    <h4>${c.name}</h4>
-                    <span class="campaign-status">${statusLabel}</span>
+                    <h4>${escapeHtml(c.name)}</h4>
+                    <span class="campaign-status" data-status="${c.status}">${statusLabel}</span>
                 </div>
-                <p class="campaign-desc">${c.description || 'Нет описания'}</p>
+                <p class="campaign-desc">${escapeHtml(c.description || 'Нет описания')}</p>
+                
+                <!-- Прогресс-бар -->
+                <div class="campaign-progress">
+                    <div class="campaign-progress-bar">
+                        <div class="campaign-progress-fill" style="width:${progressPercent}%;"></div>
+                    </div>
+                    <span class="campaign-progress-text">${completedScenes}/${totalScenes} сцен завершено (${progressPercent}%)</span>
+                </div>
+
                 <div class="campaign-meta">
-                    <span>Арки: ${(c.arcs || []).length}</span>
-                    <span>Обновлена: ${new Date(c.updatedAt).toLocaleDateString()}</span>
+                    <span>📁 Арок: ${totalArcs}</span>
+                    <span>📄 Глав: ${totalChapters}</span>
+                    <span>🎬 Сцен: ${totalScenes}</span>
+                    ${activeScenes > 0 ? `<span style="color:#39ff14;">● ${activeScenes} активны</span>` : ''}
                 </div>
                 <div class="campaign-actions">
                     <button class="cyber-btn small open-campaign" data-id="${c.id}">📂 Открыть</button>
@@ -106,7 +314,9 @@ export function renderCampaignList() {
     html += `</div>`;
     container.innerHTML = html;
 
-    // --- Обработчики для формы создания кампании ---
+    // ===== ВСЕ ОБРАБОТЧИКИ СОБЫТИЙ (восстановлены) =====
+
+    // --- Создание кампании ---
     container.querySelectorAll('.save-create-campaign').forEach(btn => {
         btn.addEventListener('click', () => {
             const form = btn.closest('.campaign-create-form');
@@ -116,12 +326,9 @@ export function renderCampaignList() {
             if (!name) return alert('Название обязательно.');
             import('./story-manager.js').then(module => {
                 module.createCampaign(name, desc);
-                // Обновляем статус, если нужно
                 const campaigns = module.getCampaigns();
                 const created = campaigns.find(c => c.name === name && c.description === desc);
-                if (created && status) {
-                    module.updateCampaign(created.id, { status });
-                }
+                if (created && status) module.updateCampaign(created.id, { status });
                 delete container.dataset.showCreateForm;
                 renderCampaignList();
                 refreshCampaignSelects();
@@ -136,7 +343,7 @@ export function renderCampaignList() {
         });
     });
 
-    // --- Обработчики для редактирования кампании ---
+    // --- Редактирование кампании ---
     container.querySelectorAll('.edit-campaign-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -192,12 +399,10 @@ export function renderCampaignList() {
     });
 }
 
-// ===== Дерево с поддержкой inline-создания =====
-
+// ===== Рендер дерева с визуализацией связей и редактированием =====
 export function renderTree(campaignId) {
     const container = document.getElementById('storyTreeContainer');
     if (!container) return;
-
     const campaign = getCampaign(campaignId);
     if (!campaign) {
         container.innerHTML = `<p class="note">Кампания не найдена.</p>`;
@@ -205,35 +410,40 @@ export function renderTree(campaignId) {
     }
 
     const editingId = container.dataset.editingId || null;
-    const creatingType = container.dataset.creatingType || null; // 'arc', 'chapter', 'scene'
-    const creatingParentId = container.dataset.creatingParentId || null; // arcId или chapterId
+    const creatingType = container.dataset.creatingType || null;
+    const creatingParentId = container.dataset.creatingParentId || null;
 
-    if (!campaign.arcs || campaign.arcs.length === 0) {
-        // Если нет арок, показываем кнопку "Добавить арку" и форму создания, если активна
-        let html = `<div class="tree-empty">`;
-        if (creatingType === 'arc') {
-            html += renderCreateArcForm(campaignId);
-        } else {
-            html += `<p>В кампании нет арок. Создайте первую арку.</p>
-                     <button class="cyber-btn small create-arc-btn" data-campaign="${campaignId}">➕ Добавить арку</button>`;
-        }
-        html += `</div>`;
-        container.innerHTML = html;
-        bindTreeEvents(campaignId);
-        return;
+    const searchTerm = (document.getElementById('storyTreeSearch')?.value || '').toLowerCase();
+    const statusFilter = document.getElementById('storyTreeStatusFilter')?.value || 'all';
+
+    function sceneMatches(scene) {
+        if (statusFilter !== 'all' && scene.status !== statusFilter) return false;
+        if (searchTerm && !scene.name.toLowerCase().includes(searchTerm) && !(scene.description || '').toLowerCase().includes(searchTerm)) return false;
+        return true;
     }
+
+    // ---- список всех глав для выпадающего списка переноса ----
+    const allChapters = [];
+    campaign.arcs.forEach(arc => {
+        arc.chapters.forEach(ch => {
+            allChapters.push({
+                id: ch.id,
+                name: ch.name,
+                arcId: arc.id,
+                arcName: arc.name
+            });
+        });
+    });
 
     let html = `<div class="tree-container">`;
     campaign.arcs.forEach(arc => {
         const isEditingArc = (editingId === `arc_${arc.id}`);
         html += `<div class="tree-arc">`;
-
-        // Арка
         if (isEditingArc) {
             html += renderEditArcForm(campaignId, arc);
         } else {
             html += `<div class="tree-item-header">
-                        <span class="tree-item-name">📁 ${arc.name}</span>
+                        <span class="tree-item-name">📁 ${escapeHtml(arc.name)}</span>
                         <span class="tree-item-status">${arc.status || 'draft'}</span>
                         <div class="tree-item-actions">
                             <button class="cyber-btn small edit-arc" data-campaign="${campaignId}" data-arc="${arc.id}">✏️</button>
@@ -243,18 +453,16 @@ export function renderTree(campaignId) {
                     </div>`;
         }
 
-        // Главы
         if (arc.chapters && arc.chapters.length > 0) {
             html += `<div class="tree-chapters" style="padding-left:20px;">`;
             arc.chapters.forEach(chapter => {
                 const isEditingChapter = (editingId === `chapter_${chapter.id}`);
                 html += `<div class="tree-chapter">`;
-
                 if (isEditingChapter) {
                     html += renderEditChapterForm(campaignId, arc.id, chapter);
                 } else {
                     html += `<div class="tree-item-header">
-                                <span class="tree-item-name">📄 ${chapter.name}</span>
+                                <span class="tree-item-name">📄 ${escapeHtml(chapter.name)}</span>
                                 <span class="tree-item-status">${chapter.status || 'draft'}</span>
                                 <div class="tree-item-actions">
                                     <button class="cyber-btn small edit-chapter" data-campaign="${campaignId}" data-arc="${arc.id}" data-chapter="${chapter.id}">✏️</button>
@@ -264,30 +472,57 @@ export function renderTree(campaignId) {
                             </div>`;
                 }
 
-                // Сцены
+                // Сцены внутри главы
                 if (chapter.scenes && chapter.scenes.length > 0) {
+                    const sortedScenes = [...chapter.scenes].sort((a, b) => (a.order || 0) - (b.order || 0));
                     html += `<div class="tree-scenes" style="padding-left:20px;">`;
-                    chapter.scenes.forEach(scene => {
+                    sortedScenes.forEach((scene, index) => {
+                        if (!sceneMatches(scene)) {
+                            html += `<div class="tree-scene hidden-filtered" style="display:none;"></div>`;
+                            return;
+                        }
                         const isEditingScene = (editingId === `scene_${scene.id}`);
                         html += `<div class="tree-scene">`;
                         if (isEditingScene) {
                             html += renderEditSceneForm(campaignId, arc.id, chapter.id, scene);
                         } else {
                             const beatLabel = scene.beatType ? ` (${scene.beatType})` : '';
-                            html += `<div class="tree-item-header">
-                                        <span class="tree-item-name">🎬 ${scene.name}${beatLabel}</span>
-                                        <span class="tree-item-status">${scene.status || 'draft'}</span>
-                                        <div class="tree-item-actions">
-                                            <button class="cyber-btn small edit-scene" data-campaign="${campaignId}" data-arc="${arc.id}" data-chapter="${chapter.id}" data-scene="${scene.id}">✏️</button>
-                                            <button class="cyber-btn small delete-scene" data-campaign="${campaignId}" data-arc="${arc.id}" data-chapter="${chapter.id}" data-scene="${scene.id}">🗑️</button>
-                                        </div>
-                                    </div>`;
+                            // Визуализация связей
+                            let linksHtml = '';
+                            if (scene.unlocks && scene.unlocks.length > 0) {
+                                linksHtml += `<span class="link-tag unlock-tag" title="Открывает">🔓 ${scene.unlocks.join(', ')}</span>`;
+                            }
+                            if (scene.prerequisites && scene.prerequisites.length > 0) {
+                                linksHtml += `<span class="link-tag prereq-tag" title="Зависит от">🔗 ${scene.prerequisites.join(', ')}</span>`;
+                            }
+                            // Выпадающий список для переноса
+                            const chapterOptions = allChapters.map(ch =>
+                                `<option value="${ch.id}" ${ch.id === chapter.id ? 'selected' : ''}>${escapeHtml(ch.arcName)} → ${escapeHtml(ch.name)}</option>`
+                            ).join('');
+                            html += `
+                                <div class="tree-item-header">
+                                    <span class="tree-item-name">🎬 ${escapeHtml(scene.name)}${beatLabel}</span>
+                                    <span class="tree-item-status">${scene.status || 'draft'}</span>
+                                    <div class="tree-item-actions" style="display:flex; flex-wrap:wrap; gap:4px;">
+                                        <button class="cyber-btn small move-scene-up" data-campaign="${campaignId}" data-arc="${arc.id}" data-chapter="${chapter.id}" data-scene="${scene.id}" data-index="${index}" ${index === 0 ? 'disabled' : ''}>↑</button>
+                                        <button class="cyber-btn small move-scene-down" data-campaign="${campaignId}" data-arc="${arc.id}" data-chapter="${chapter.id}" data-scene="${scene.id}" data-index="${index}" ${index === sortedScenes.length - 1 ? 'disabled' : ''}>↓</button>
+                                        <select class="move-scene-chapter" data-campaign="${campaignId}" data-arc="${arc.id}" data-chapter="${chapter.id}" data-scene="${scene.id}" style="font-size:0.7rem; padding:2px 4px;">
+                                            ${chapterOptions}
+                                        </select>
+                                        <button class="cyber-btn small move-scene-to-chapter" data-campaign="${campaignId}" data-arc="${arc.id}" data-chapter="${chapter.id}" data-scene="${scene.id}">↪</button>
+                                        <button class="cyber-btn small edit-scene" data-campaign="${campaignId}" data-arc="${arc.id}" data-chapter="${chapter.id}" data-scene="${scene.id}">✏️</button>
+                                        <button class="cyber-btn small duplicate-scene-btn" data-campaign="${campaignId}" data-arc="${arc.id}" data-chapter="${chapter.id}" data-scene="${scene.id}">📋</button>
+                                        <button class="cyber-btn small delete-scene" data-campaign="${campaignId}" data-arc="${arc.id}" data-chapter="${chapter.id}" data-scene="${scene.id}">🗑️</button>
+                                        <button class="cyber-btn small export-scene-btn" data-campaign="${campaignId}" data-arc="${arc.id}" data-chapter="${chapter.id}" data-scene="${scene.id}">📤</button>
+                                    </div>
+                                </div>
+                                ${linksHtml ? `<div class="scene-links">${linksHtml}</div>` : ''}
+                            `;
                         }
                         html += `</div>`;
                     });
                     html += `</div>`;
                 } else {
-                    // Если нет сцен, но создаём новую сцену в этой главе
                     if (creatingType === 'scene' && creatingParentId === chapter.id) {
                         html += `<div style="padding-left:20px;">${renderCreateSceneForm(campaignId, arc.id, chapter.id)}</div>`;
                     } else {
@@ -299,7 +534,6 @@ export function renderTree(campaignId) {
             });
             html += `</div>`;
         } else {
-            // Если нет глав, но создаём новую главу в этой арке
             if (creatingType === 'chapter' && creatingParentId === arc.id) {
                 html += `<div style="padding-left:20px;">${renderCreateChapterForm(campaignId, arc.id)}</div>`;
             } else {
@@ -310,7 +544,6 @@ export function renderTree(campaignId) {
         html += `</div>`;
     });
 
-    // Если создаём новую арку (в корне)
     if (creatingType === 'arc') {
         html += `<div class="tree-arc">${renderCreateArcForm(campaignId)}</div>`;
     }
@@ -318,7 +551,6 @@ export function renderTree(campaignId) {
     html += `</div>`;
     container.innerHTML = html;
 
-    // Сохраняем состояние редактирования/создания
     if (editingId) container.dataset.editingId = editingId;
     else delete container.dataset.editingId;
     if (creatingType) container.dataset.creatingType = creatingType;
@@ -329,8 +561,7 @@ export function renderTree(campaignId) {
     bindTreeEvents(campaignId);
 }
 
-// ===== Вспомогательные функции для рендеринга форм =====
-
+// ===== Формы создания и редактирования =====
 function renderCreateArcForm(campaignId) {
     return `
         <div class="tree-edit-form">
@@ -359,16 +590,41 @@ function renderCreateChapterForm(campaignId, arcId) {
 
 function renderCreateSceneForm(campaignId, arcId, chapterId) {
     return `
-        <div class="tree-edit-form">
-            <input type="text" class="create-scene-name" placeholder="Название сцены *">
-            <textarea class="create-scene-desc" placeholder="Описание (необязательно)"></textarea>
-            <select class="create-scene-beat">
-                <option value="hook">Крюк</option>
-                <option value="development" selected>Развитие</option>
-                <option value="cliffhanger">Клиффхэнгер</option>
-                <option value="climax">Кульминация</option>
-                <option value="resolution">Развязка</option>
-            </select>
+        <div class="tree-edit-form scene-create-form">
+            <div class="form-row">
+                <input type="text" class="create-scene-name" placeholder="Название сцены *">
+                <select class="create-scene-beat">
+                    <option value="hook">Крюк</option>
+                    <option value="development" selected>Развитие</option>
+                    <option value="cliffhanger">Клиффхэнгер</option>
+                    <option value="climax">Кульминация</option>
+                    <option value="resolution">Развязка</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <textarea class="create-scene-desc" placeholder="Описание" rows="2"></textarea>
+            </div>
+            <details class="form-details">
+                <summary>⚙️ Дополнительные параметры</summary>
+                <div class="form-row">
+                    <input type="text" class="create-participants" placeholder="Участники (ID через запятую)">
+                </div>
+                <div class="form-row">
+                    <input type="text" class="create-location" placeholder="Локация (ID)">
+                    <input type="text" class="create-net" placeholder="Архитектура сети (ID)">
+                    <input type="text" class="create-encounter" placeholder="Шаблон встречи (ID)">
+                </div>
+                <div class="form-row">
+                    <input type="text" class="create-prereqs" placeholder="Предыдущие сцены (ID через запятую)">
+                    <input type="text" class="create-unlocks" placeholder="Открывает сцены (ID через запятую)">
+                </div>
+                <div class="form-row">
+                    <textarea class="create-choices" placeholder="Ветвления (JSON)" rows="2"></textarea>
+                </div>
+                <div class="form-row">
+                    <textarea class="create-gmnotes" placeholder="Заметки ГМ" rows="2"></textarea>
+                </div>
+            </details>
             <div class="edit-actions">
                 <button class="cyber-btn small save-create-scene" data-campaign="${campaignId}" data-arc="${arcId}" data-chapter="${chapterId}">💾 Создать</button>
                 <button class="cyber-btn small cancel-create">❌ Отмена</button>
@@ -406,41 +662,71 @@ function renderEditChapterForm(campaignId, arcId, chapter) {
 function renderEditSceneForm(campaignId, arcId, chapterId, scene) {
     const beatOptions = ['hook','development','cliffhanger','climax','resolution']
         .map(b => `<option value="${b}" ${scene.beatType === b ? 'selected' : ''}>${b}</option>`).join('');
+
+    const autoData = getAutoCompleteData(campaignId);
+    const datalistId = `scene_edit_datalist_${scene.id}`;
+
+    function datalistOptions(items, id) {
+        if (!items || items.length === 0) return '';
+        return `<datalist id="${id}">${items.map(v => `<option value="${escapeHtml(v)}">`).join('')}</datalist>`;
+    }
+
     return `
-        <div class="tree-edit-form">
-            <input type="text" class="edit-name" value="${escapeHtml(scene.name)}" placeholder="Название сцены">
-            <textarea class="edit-desc" placeholder="Описание">${escapeHtml(scene.description || '')}</textarea>
-            <select class="edit-beat">${beatOptions}</select>
-            <select class="edit-status">
-                <option value="draft" ${scene.status === 'draft' ? 'selected' : ''}>Черновик</option>
-                <option value="active" ${scene.status === 'active' ? 'selected' : ''}>Активна</option>
-                <option value="completed" ${scene.status === 'completed' ? 'selected' : ''}>Завершена</option>
-                <option value="failed" ${scene.status === 'failed' ? 'selected' : ''}>Провалена</option>
-                <option value="hidden" ${scene.status === 'hidden' ? 'selected' : ''}>Скрыта</option>
-            </select>
-            <input type="text" class="edit-participants" value="${(scene.participants || []).join(', ')}" placeholder="Участники (ID через запятую)">
-            <input type="text" class="edit-location" value="${scene.location || ''}" placeholder="Локация (ID)">
-            <input type="text" class="edit-net" value="${scene.netArchitectureId || ''}" placeholder="Архитектура сети (ID)">
-            <input type="text" class="edit-encounter" value="${scene.encounterTemplate || ''}" placeholder="Шаблон встречи (ID)">
-            <input type="text" class="edit-prereqs" value="${(scene.prerequisites || []).join(', ')}" placeholder="Предыдущие сцены (ID через запятую)">
-            <input type="text" class="edit-unlocks" value="${(scene.unlocks || []).join(', ')}" placeholder="Открывает сцены (ID через запятую)">
-            <textarea class="edit-choices" placeholder="Ветвления (JSON)">${JSON.stringify(scene.choices || [], null, 2)}</textarea>
-            <textarea class="edit-gmnotes" placeholder="Заметки ГМ">${escapeHtml(scene.gmNotes || '')}</textarea>
+        <div class="tree-edit-form scene-edit-form" data-scene-id="${scene.id}">
+            <div class="form-row">
+                <input type="text" class="edit-name" value="${escapeHtml(scene.name)}" placeholder="Название сцены *">
+                <select class="edit-beat">${beatOptions}</select>
+                <select class="edit-status">
+                    <option value="draft" ${scene.status === 'draft' ? 'selected' : ''}>Черновик</option>
+                    <option value="active" ${scene.status === 'active' ? 'selected' : ''}>Активна</option>
+                    <option value="completed" ${scene.status === 'completed' ? 'selected' : ''}>Завершена</option>
+                    <option value="failed" ${scene.status === 'failed' ? 'selected' : ''}>Провалена</option>
+                    <option value="hidden" ${scene.status === 'hidden' ? 'selected' : ''}>Скрыта</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <textarea class="edit-desc" placeholder="Описание" rows="2">${escapeHtml(scene.description || '')}</textarea>
+            </div>
+            <details class="form-details" open>
+                <summary>⚙️ Дополнительные параметры</summary>
+                <div class="form-row">
+                    <input type="text" class="edit-participants" value="${(scene.participants || []).join(', ')}" placeholder="Участники (ID через запятую)" list="${datalistId}_participants">
+                    ${datalistOptions(autoData.participants, `${datalistId}_participants`)}
+                </div>
+                <div class="form-row">
+                    <input type="text" class="edit-location" value="${scene.location || ''}" placeholder="Локация (ID)" list="${datalistId}_locations">
+                    ${datalistOptions(autoData.locations, `${datalistId}_locations`)}
+                    <input type="text" class="edit-net" value="${scene.netArchitectureId || ''}" placeholder="Архитектура сети (ID)" list="${datalistId}_net">
+                    ${datalistOptions(autoData.netArchs, `${datalistId}_net`)}
+                    <input type="text" class="edit-encounter" value="${scene.encounterTemplate || ''}" placeholder="Шаблон встречи (ID)" list="${datalistId}_encounters">
+                    ${datalistOptions(autoData.encounters, `${datalistId}_encounters`)}
+                </div>
+                <div class="form-row">
+                    <input type="text" class="edit-prereqs" value="${(scene.prerequisites || []).join(', ')}" placeholder="Предыдущие сцены (ID через запятую)">
+                    <input type="text" class="edit-unlocks" value="${(scene.unlocks || []).join(', ')}" placeholder="Открывает сцены (ID через запятую)">
+                </div>
+                <div class="form-row">
+                    <textarea class="edit-choices" placeholder="Ветвления (JSON)" rows="2">${JSON.stringify(scene.choices || [], null, 2)}</textarea>
+                </div>
+                <div class="form-row">
+                    <textarea class="edit-gmnotes" placeholder="Заметки ГМ" rows="2">${escapeHtml(scene.gmNotes || '')}</textarea>
+                </div>
+            </details>
             <div class="edit-actions">
                 <button class="cyber-btn small save-edit" data-type="scene" data-campaign="${campaignId}" data-arc="${arcId}" data-chapter="${chapterId}" data-scene="${scene.id}">💾 Сохранить</button>
-                <button class="cyber-btn small cancel-edit">❌ Отмена</button>
+                <button class="cyber-btn small duplicate-scene" data-campaign="${campaignId}" data-arc="${arcId}" data-chapter="${chapterId}" data-scene="${scene.id}">📋 Дублировать</button>
+                <button class="cyber-btn small cancel-edit">❌ Закрыть</button>
             </div>
         </div>
     `;
 }
 
-// ===== Привязка событий для дерева =====
-
+// ===== Привязка событий дерева =====
 function bindTreeEvents(campaignId) {
     const container = document.getElementById('storyTreeContainer');
     if (!container) return;
 
-    // --- Кнопки редактирования ---
+    // ---- Редактирование ----
     container.querySelectorAll('.edit-arc, .edit-chapter, .edit-scene').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -449,14 +735,12 @@ function bindTreeEvents(campaignId) {
             else if (btn.classList.contains('edit-chapter')) id = `chapter_${btn.dataset.chapter}`;
             else if (btn.classList.contains('edit-scene')) id = `scene_${btn.dataset.scene}`;
             container.dataset.editingId = id;
-            // Очищаем создание, если оно было
             delete container.dataset.creatingType;
             delete container.dataset.creatingParentId;
             renderTree(campaignId);
         });
     });
 
-    // --- Отмена редактирования ---
     container.querySelectorAll('.cancel-edit').forEach(btn => {
         btn.addEventListener('click', () => {
             delete container.dataset.editingId;
@@ -464,7 +748,6 @@ function bindTreeEvents(campaignId) {
         });
     });
 
-    // --- Сохранение редактирования ---
     container.querySelectorAll('.save-edit').forEach(btn => {
         btn.addEventListener('click', () => {
             const type = btn.dataset.type;
@@ -476,14 +759,11 @@ function bindTreeEvents(campaignId) {
             const patch = { name, description: desc };
 
             if (type === 'arc') {
-                const arcId = btn.dataset.arc;
-                updateArc(campaignId, arcId, patch);
+                updateArc(campaignId, btn.dataset.arc, patch);
                 delete container.dataset.editingId;
                 renderTree(campaignId);
             } else if (type === 'chapter') {
-                const arcId = btn.dataset.arc;
-                const chapterId = btn.dataset.chapter;
-                updateChapter(campaignId, arcId, chapterId, patch);
+                updateChapter(campaignId, btn.dataset.arc, btn.dataset.chapter, patch);
                 delete container.dataset.editingId;
                 renderTree(campaignId);
             } else if (type === 'scene') {
@@ -506,18 +786,10 @@ function bindTreeEvents(campaignId) {
                 const gmNotes = form.querySelector('.edit-gmnotes').value.trim();
 
                 const scenePatch = {
-                    name,
-                    description: desc,
-                    beatType: beat,
-                    status,
-                    participants,
-                    location,
-                    netArchitectureId: netArch,
-                    encounterTemplate: encounter,
-                    prerequisites: prereqs,
-                    unlocks,
-                    choices,
-                    gmNotes
+                    name, description: desc, beatType: beat, status,
+                    participants, location, netArchitectureId: netArch,
+                    encounterTemplate: encounter, prerequisites: prereqs,
+                    unlocks, choices, gmNotes
                 };
                 updateScene(campaignId, arcId, chapterId, sceneId, scenePatch);
                 delete container.dataset.editingId;
@@ -526,7 +798,7 @@ function bindTreeEvents(campaignId) {
         });
     });
 
-    // --- Кнопки создания (показывают формы) ---
+    // ---- Создание ----
     container.querySelectorAll('.create-arc-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             container.dataset.creatingType = 'arc';
@@ -551,7 +823,6 @@ function bindTreeEvents(campaignId) {
         });
     });
 
-    // --- Отмена создания ---
     container.querySelectorAll('.cancel-create').forEach(btn => {
         btn.addEventListener('click', () => {
             delete container.dataset.creatingType;
@@ -560,7 +831,6 @@ function bindTreeEvents(campaignId) {
         });
     });
 
-    // --- Сохранение создания ---
     container.querySelectorAll('.save-create-arc').forEach(btn => {
         btn.addEventListener('click', () => {
             const form = btn.closest('.tree-edit-form');
@@ -603,7 +873,7 @@ function bindTreeEvents(campaignId) {
         });
     });
 
-    // --- Удаление ---
+    // ---- Удаление ----
     container.querySelectorAll('.delete-arc').forEach(btn => {
         btn.addEventListener('click', () => {
             if (confirm('Удалить арку и все её главы и сцены?')) {
@@ -630,31 +900,94 @@ function bindTreeEvents(campaignId) {
             }
         });
     });
-}
 
-// ===== Вспомогательные функции =====
-
-export function switchStorySubTab(tabId) {
-    const pane = document.getElementById('tab-story');
-    if (!pane) return;
-    pane.querySelectorAll('.sub-pane').forEach(p => p.classList.remove('active'));
-    const target = document.getElementById(tabId);
-    if (target) target.classList.add('active');
-    pane.querySelectorAll('.sub-tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.sub === tabId);
+    // ---- Дублирование сцены ----
+    container.querySelectorAll('.duplicate-scene-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const { campaign, arc, chapter, scene } = btn.dataset;
+            duplicateScene(campaign, arc, chapter, scene);
+            renderTree(campaignId);
+        });
     });
 
-    // Если переключились на доску, обновляем её
-    if (tabId === 'story-board') {
-        const select = document.getElementById('storyBoardCampaignSelect');
-        if (select && select.value) {
-            renderBoard(select.value);
-        } else {
-            clearBoard();
-        }
-    }
+    // ---- Экспорт сцены ----
+    container.querySelectorAll('.export-scene-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const { campaign, arc, chapter, scene } = btn.dataset;
+            const json = exportScene(campaign, arc, chapter, scene);
+            if (json) {
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `scene_${scene}_${new Date().toISOString().slice(0,10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        });
+    });
+
+    // ---- Перемещение сцены вверх/вниз ----
+    container.querySelectorAll('.move-scene-up, .move-scene-down').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const { campaign, arc, chapter, scene, index } = btn.dataset;
+            const direction = btn.classList.contains('move-scene-up') ? -1 : 1;
+            const campaignObj = getCampaign(campaign);
+            if (!campaignObj) return;
+            const arcObj = campaignObj.arcs.find(a => a.id === arc);
+            if (!arcObj) return;
+            const chapterObj = arcObj.chapters.find(ch => ch.id === chapter);
+            if (!chapterObj) return;
+            const scenes = chapterObj.scenes;
+            const currentIndex = scenes.findIndex(s => s.id === scene);
+            if (currentIndex === -1) return;
+            const newIndex = currentIndex + direction;
+            if (newIndex < 0 || newIndex >= scenes.length) return;
+            // меняем местами
+            [scenes[currentIndex], scenes[newIndex]] = [scenes[newIndex], scenes[currentIndex]];
+            // обновляем порядок
+            scenes.forEach((s, i) => s.order = i);
+            // сохраняем
+            const data = loadStoryData();
+            saveStoryData(data);
+            renderTree(campaignId);
+        });
+    });
+
+    // ---- Перемещение сцены в другую главу ----
+    container.querySelectorAll('.move-scene-to-chapter').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const { campaign, arc, chapter, scene } = btn.dataset;
+            const select = btn.closest('.tree-item-header').querySelector('.move-scene-chapter');
+            const targetChapterId = select.value;
+            if (targetChapterId === chapter) {
+                alert('Сцена уже в этой главе.');
+                return;
+            }
+            const data = loadStoryData();
+            const camp = data.campaigns.find(c => c.id === campaign);
+            if (!camp) return;
+            const srcArc = camp.arcs.find(a => a.id === arc);
+            const srcChapter = srcArc?.chapters.find(ch => ch.id === chapter);
+            const targetChapter = camp.arcs.flatMap(a => a.chapters).find(ch => ch.id === targetChapterId);
+            if (!srcChapter || !targetChapter) {
+                alert('Ошибка: не найдена целевая глава.');
+                return;
+            }
+            const sceneIndex = srcChapter.scenes.findIndex(s => s.id === scene);
+            if (sceneIndex === -1) return;
+            const [movedScene] = srcChapter.scenes.splice(sceneIndex, 1);
+            targetChapter.scenes.push(movedScene);
+            // перенумеровываем порядок в обеих главах
+            srcChapter.scenes.forEach((s, i) => s.order = i);
+            targetChapter.scenes.forEach((s, i) => s.order = i);
+            saveStoryData(data);
+            renderTree(campaignId);
+        });
+    });
 }
 
+// ===== Обновление селектов кампаний =====
 export function refreshCampaignSelects() {
     const campaigns = getCampaigns();
     const selects = document.querySelectorAll('#storyBoardCampaignSelect, #storyTreeCampaignSelect, #storyTimelineCampaignSelect');
@@ -667,14 +1000,6 @@ export function refreshCampaignSelects() {
             opt.textContent = c.name;
             sel.appendChild(opt);
         });
-        if (currentVal && campaigns.some(c => c.id === currentVal)) {
-            sel.value = currentVal;
-        }
+        if (currentVal && campaigns.some(c => c.id === currentVal)) sel.value = currentVal;
     });
-}
-
-// ===== Утилита экранирования =====
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
