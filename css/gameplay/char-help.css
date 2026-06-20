@@ -40,3 +40,503 @@
     background: rgba(15, 18, 25, 0.6);
     border-left-color: #ff9a3c;
 }
+/* ===== МИНИМАЛЬНЫЕ ПРАВКИ КАРТОЧКИ ПЕРСОНАЖА ===== */
+
+/* Шапка — на одной строке */
+.character-card-header {
+    flex-wrap: wrap;
+}
+.character-name {
+    font-size: 1.6rem;
+    white-space: nowrap;
+}
+.character-role {
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+.role-skill-badge {
+    font-size: 0.7rem;
+    white-space: nowrap;
+}
+
+/* Характеристики — фиксированная сетка 5 колонок */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    justify-items: center;
+}
+.stat-item {
+    width: 100%;
+    padding: 6px 4px;
+}
+.stat-name {
+    font-size: 0.65rem;
+}
+.stat-value {
+    font-size: 1.2rem;
+}
+
+/* Навыки — 3 колонки на больших экранах, 2 на средних */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+.skill-item {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.skill-name {
+    flex: 1;
+    min-width: 0;
+}
+.skill-level {
+    flex-shrink: 0;
+}
+
+/* Прогресс-бары */
+.hp-bar-container {
+    background: #1e2530;
+    border-radius: 20px;
+    height: 6px;
+    margin-top: 4px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 150px;
+}
+.hp-bar {
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.3s;
+    background: linear-gradient(90deg, #ff3c5f, #ff9a3c);
+}
+.humanity-bar {
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.3s;
+    background: linear-gradient(90deg, #39ff14, #4caf50);
+}
+
+/* Производные (ПЗ, ЧЕЛ, репутация) — компактно */
+.derived-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    font-size: 0.85rem;
+}
+.derived-stats > div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    background: #1a1e2a;
+    padding: 4px 12px;
+    border-radius: 30px;
+}
+.derived-label {
+    font-weight: 600;
+    color: #9aa4bf;
+}
+.current-hp {
+    font-weight: bold;
+    color: #ff3c5f;
+}
+.char-reputation {
+    font-weight: bold;
+    color: #39ff14;
+}
+.implant-effects {
+    color: #39ff14;
+    font-size: 0.8rem;
+}
+
+/* Снаряжение — аккуратные списки */
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+.equipment-card {
+    padding: 10px;
+}
+.equipment-card h5 {
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+.compact li {
+    font-size: 0.75rem;
+    padding: 3px 0;
+}
+.weapon-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    margin-left: 4px;
+}
+.weapon-stat {
+    font-size: 0.65rem;
+    background: #1e2530;
+    padding: 2px 8px;
+    border-radius: 30px;
+    white-space: nowrap;
+}
+.weapon-name {
+    font-weight: 600;
+    color: #ff9a3c;
+}
+
+/* Кнопки лечения/урона */
+.combat-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+.combat-buttons button {
+    background: #1e2530;
+    border: 1px solid #2a3342;
+    padding: 4px 14px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+}
+.combat-buttons button:hover {
+    background: #ff3c5f;
+    color: #0a0c12;
+}
+
+/* Адаптивность */
+@media (max-width: 700px) {
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .skills-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .equipment-grid {
+        grid-template-columns: 1fr;
+    }
+    .derived-stats {
+        gap: 8px;
+    }
+    .derived-stats > div {
+        width: 100%;
+    }
+    .character-name {
+        font-size: 1.2rem;
+    }
+}
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* ===== МИНИМАЛЬНЫЕ ПРАВКИ КАРТОЧКИ ===== */
+
+/* Фиксированная сетка характеристик — 5 колонок */
+.stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 8px !important;
+}
+.stat-item {
+    padding: 6px 4px !important;
+    text-align: center !important;
+}
+.stat-name {
+    font-size: 0.65rem !important;
+}
+.stat-value {
+    font-size: 1.2rem !important;
+}
+
+/* Навыки — 3 колонки на широких экранах */
+.skills-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+}
+.skill-item {
+    padding: 4px 10px !important;
+    font-size: 0.8rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Прогресс-бары */
+.hp-bar-container {
+    background: #1e2530;
+    border-radius: 20px;
+    height: 6px;
+    margin-top: 4px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 150px;
+}
+.hp-bar {
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #ff3c5f, #ff9a3c);
+    transition: width 0.3s;
+}
+.humanity-bar {
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #39ff14, #4caf50);
+    transition: width 0.3s;
+}
+
+/* Производные — компактные чипсы */
+.derived-stats {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px 16px !important;
+    font-size: 0.85rem !important;
+}
+.derived-stats > div {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+    background: #1a1e2a;
+    padding: 4px 12px !important;
+    border-radius: 30px !important;
+}
+.derived-label {
+    font-weight: 600 !important;
+    color: #9aa4bf !important;
+}
+.current-hp {
+    font-weight: bold !important;
+    color: #ff3c5f !important;
+}
+.char-reputation {
+    font-weight: bold !important;
+    color: #39ff14 !important;
+}
+.implant-effects {
+    color: #39ff14 !important;
+    font-size: 0.8rem !important;
+}
+
+/* Оружие — компактно */
+.weapon-stats {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px 8px !important;
+    margin-left: 4px !important;
+}
+.weapon-stat {
+    font-size: 0.65rem !important;
+    background: #1e2530 !important;
+    padding: 2px 8px !important;
+    border-radius: 30px !important;
+    white-space: nowrap !important;
+}
+.weapon-name {
+    font-weight: 600 !important;
+    color: #ff9a3c !important;
+}
+/* ===== ХАРАКТЕРИСТИКИ — КОМПАКТНО ===== */
+#statsGridEditor {
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 6px 10px !important;
+    margin-bottom: 12px !important;
+}
+#statsGridEditor label {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    background: #1a1e2a !important;
+    padding: 4px 2px !important;
+    border-radius: 10px !important;
+    border: 1px solid #2a3342 !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+}
+#statsGridEditor label:hover {
+    border-color: #ff9a3c !important;
+}
+#statsGridEditor input {
+    width: 50px !important;
+    text-align: center !important;
+    font-size: 1.1rem !important;
+    font-weight: bold !important;
+    background: #0a0c12 !important;
+    border: 1px solid #2a3342 !important;
+    border-radius: 8px !important;
+    padding: 2px 0 !important;
+    margin-top: 0 !important;
+    color: #ff9a3c !important;
+}
+#statsGridEditor input:focus {
+    border-color: #ff9a3c !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(255,154,60,0.2) !important;
+}
+
+/* ===== НАВЫКИ — КОМПАКТНАЯ СЕТКА ===== */
+.skills-list-editor {
+    max-height: 400px !important;
+    overflow-y: auto !important;
+}
+.skills-grid-editor {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 4px 12px !important;
+}
+.skill-editor-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    background: #1a1e2a !important;
+    padding: 2px 8px !important;
+    border-radius: 20px !important;
+    border: 1px solid #2a3342 !important;
+    font-size: 0.75rem !important;
+}
+.skill-editor-item .skill-editor-name {
+    flex: 1 !important;
+    font-size: 0.75rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+.skill-editor-item .skill-editor-stat,
+.skill-editor-item .skill-editor-cost {
+    font-size: 0.6rem !important;
+    color: #8b949e !important;
+    min-width: 20px !important;
+    text-align: center !important;
+}
+.skill-editor-item .skill-editor-level {
+    width: 44px !important;
+    text-align: center !important;
+    background: #0a0c12 !important;
+    border: 1px solid #2a3342 !important;
+    border-radius: 16px !important;
+    padding: 0 0 !important;
+    font-size: 0.75rem !important;
+    color: #ff9a3c !important;
+    font-weight: bold !important;
+}
+.skill-editor-item .skill-editor-level:focus {
+    border-color: #ff9a3c !important;
+    outline: none !important;
+}
+
+/* ===== ИНДИКАТОР ОЧКОВ ===== */
+.skills-points {
+    font-size: 1rem !important;
+    background: #1a1e2a !important;
+    padding: 4px 14px !important;
+    border-radius: 30px !important;
+    display: inline-block !important;
+}
+.skills-points strong {
+    color: #39ff14 !important;
+    font-size: 1.2rem !important;
+}
+/* ===== ХАРАКТЕРИСТИКИ — 2 КОЛОНКИ ===== */
+#statsGridEditor {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px 12px !important;
+    margin-bottom: 12px !important;
+}
+#statsGridEditor label {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: #1a1e2a !important;
+    padding: 4px 12px !important;
+    border-radius: 10px !important;
+    border: 1px solid #2a3342 !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+}
+#statsGridEditor label:hover {
+    border-color: #ff9a3c !important;
+}
+#statsGridEditor input {
+    width: 50px !important;
+    text-align: center !important;
+    font-size: 1.1rem !important;
+    font-weight: bold !important;
+    background: #0a0c12 !important;
+    border: 1px solid #2a3342 !important;
+    border-radius: 8px !important;
+    padding: 2px 0 !important;
+    color: #ff9a3c !important;
+}
+#statsGridEditor input:focus {
+    border-color: #ff9a3c !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(255,154,60,0.2) !important;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+    #statsGridEditor {
+        grid-template-columns: 1fr !important;
+    }
+}
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 700px) {
+    #statsGridEditor {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 4px 6px !important;
+    }
+    #statsGridEditor input {
+        width: 40px !important;
+        font-size: 0.95rem !important;
+    }
+    .skills-grid-editor {
+        grid-template-columns: 1fr !important;
+    }
+    .skill-editor-item {
+        padding: 2px 6px !important;
+    }
+    .skill-editor-item .skill-editor-level {
+        width: 38px !important;
+    }
+}
+@media (max-width: 480px) {
+    #statsGridEditor {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 700px) {
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    .skills-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .equipment-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .derived-stats > div {
+        width: 100% !important;
+    }
+    .character-name {
+        font-size: 1.2rem !important;
+    }
+}
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .skills-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

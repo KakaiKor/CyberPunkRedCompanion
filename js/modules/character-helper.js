@@ -288,19 +288,31 @@ export class CharacterHelper {
         const notesHtml = `<div class="char-section" data-section="notes"><h4>📝 Заметки</h4><div class="notes-preview">${this.escapeHtml(notes) || '— нет —'}</div></div>`;
 
         let derivedStatsHtml = `
-            <div data-derived="hp">ПЗ: <span class="current-hp">${currentHp}</span> / ${maxHp} <span class="hp-threshold">(тяж. ≤ ${severe})</span></div>
-            <div data-derived="deathSave">Спасбросок: ${deathSave}</div>
-            <div data-derived="money">💰 Деньги: <span class="char-money">${isNaN(money) ? 0 : money}</span> eb</div>
-            <div data-derived="reputation">📢 Репутация: <span class="char-reputation">${reputation ?? 0}</span> 
-                ${reputation < 0 ? '<span style="color:#ff9a3c;"> (штраф к разборкам и реакциям)</span>' : ''}
-                <div style="display: inline-block; margin-left: 8px;">
-                <button class="reputation-inc-btn" style="background: none; border: none; color: #39ff14; cursor: pointer;">▲</button>
-                <button class="reputation-dec-btn" style="background: none; border: none; color: #ff3c5f; cursor: pointer;">▼</button>
-            </div>
-                <button class="confrontation-btn" ...>⚔️ Разборка</button>
-                <button class="npc-reaction-btn" ...>👥 Реакция</button>
-            </div>
-        `;
+    <div data-derived="hp">
+        <span class="derived-label">❤️ ПЗ</span>
+        <span class="current-hp">${currentHp}</span> / ${maxHp}
+        <span class="hp-threshold">(тяж. ≤ ${severe})</span>
+        <div class="hp-bar-container"><div class="hp-bar" style="width:${Math.min(100, (currentHp / maxHp) * 100)}%;"></div></div>
+    </div>
+    <div data-derived="humanity">
+        <span class="derived-label">🧠 ЧЕЛ</span>
+        ${humanity} / ${empFrom * 10}
+        <div class="hp-bar-container"><div class="humanity-bar" style="width:${Math.min(100, (humanity / (empFrom * 10)) * 100)}%;"></div></div>
+    </div>
+    <div data-derived="deathSave">💀 Спасбросок: ${deathSave}</div>
+    <div data-derived="money">💰 Деньги: <span class="char-money">${isNaN(money) ? 0 : money}</span> eb</div>
+    <div data-derived="reputation">📢 Репутация: <span class="char-reputation">${reputation ?? 0}</span> 
+        ${reputation < 0 ? '<span style="color:#ff9a3c; font-size:0.7rem;"> (штраф)</span>' : ''}
+        <div style="display: inline-block; margin-left: 4px;">
+            <button class="reputation-inc-btn" style="background:none; border:none; color:#39ff14; cursor:pointer; font-size:0.8rem;">▲</button>
+            <button class="reputation-dec-btn" style="background:none; border:none; color:#ff3c5f; cursor:pointer; font-size:0.8rem;">▼</button>
+        </div>
+        <button class="confrontation-btn" style="background:#1e2530; border:1px solid #2a3342; border-radius:30px; padding:2px 10px; color:#fff; cursor:pointer; font-size:0.7rem;">⚔️</button>
+        <button class="npc-reaction-btn" style="background:#1e2530; border:1px solid #2a3342; border-radius:30px; padding:2px 10px; color:#fff; cursor:pointer; font-size:0.7rem;">👥</button>
+    </div>
+    ${bonuses.initiative !== 0 ? `<div>⚡ Инициатива: ${stats.REF || 6} + ${bonuses.initiative}</div>` : ''}
+    ${extraEffects.length ? `<div class="implant-effects">✨ ${extraEffects.join(', ')}</div>` : ''}
+`;
         if (bonuses.initiative !== 0) derivedStatsHtml += `<div>Инициатива: ${stats.REF} + ${bonuses.initiative} (от имплантов)</div>`;
         derivedStatsHtml += `<div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>`;
         if (extraEffects.length) derivedStatsHtml += `<div class="implant-effects">✨ Эффекты имплантов: ${extraEffects.join(', ')}</div>`;
