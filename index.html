@@ -490,6 +490,7 @@
                 <button class="sub-tab-btn" data-sub="gm-group">👥 Группа</button>
                 <button class="sub-tab-btn" data-sub="gm-contract-advanced">📜 Контракты </button>
                 <button class="sub-tab-btn" data-sub="gm-scream">📰 Скримлист</button>
+                <button class="sub-tab-btn" data-sub="gm-story-generator">📖 Генератор сценариев</button>
                 <button class="sub-tab-btn" data-sub="gm-psycho">🧠 Киберпсихоз</button>
                 <button class="sub-tab-btn" data-sub="gm-net">🌐 Архитектура сети</button>
                 <button class="sub-tab-btn" data-sub="gm-mooks">💀 Пушечное мясо</button>
@@ -497,6 +498,52 @@
                 <button class="sub-tab-btn" data-sub="gm-rumor">🎭 Слухи & Крючки</button>
                 <button class="sub-tab-btn" data-sub="gm-development">📈 Развитие (IP)</button>
             </div>
+            <div id="gm-story-generator" class="sub-pane">
+    <div class="card">
+        <h2>🎲 Генератор сценариев (бит-чарт)</h2>
+        <p>Создаёт структуру приключения — от крюка до развязки — на основе правил Cyberpunk RED.</p>
+        
+        <div class="generator-controls">
+            <div class="control-group">
+                <label>Тип истории:</label>
+                <select id="storyType">
+                    <option value="all">Любой</option>
+                    <option value="ограбление">Ограбление</option>
+                    <option value="спасение">Спасение</option>
+                    <option value="расследование">Расследование</option>
+                    <option value="устранение">Устранение</option>
+                    <option value="контрабанда">Контрабанда</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Тон:</label>
+                <select id="storyTone">
+                    <option value="all">Любой</option>
+                    <option value="нуар">Нуар</option>
+                    <option value="кибер-экшн">Кибер-экшн</option>
+                    <option value="хоррор">Хоррор</option>
+                    <option value="корпоративная драма">Корпоративная драма</option>
+                    <option value="уличный">Уличный</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Сложность:</label>
+                <select id="storyComplexity">
+                    <option value="short">Короткая (2 бита)</option>
+                    <option value="medium" selected>Средняя (4 бита)</option>
+                    <option value="long">Длинная (6 битов)</option>
+                </select>
+            </div>
+            <button id="generateStoryBtn" class="btn-primary">🎲 Сгенерировать сценарий</button>
+            <button id="copyStoryBtn" class="btn-secondary">📋 Копировать</button>
+            <button id="saveStoryToCampaignBtn" class="btn-secondary" style="display:none;">💾 Сохранить в кампанию</button>
+        </div>
+        
+        <div id="storyResult" class="story-result-container">
+            <p class="note">Нажмите «Сгенерировать сценарий», чтобы создать новое приключение.</p>
+        </div>
+    </div>
+</div>
             <!-- Здесь полное содержимое GM-панели, оставлено без изменений (я не стал дублировать весь текст, но в вашем реальном файле он есть) -->
             <!-- Для краткости я сократил, но вы можете скопировать свой рабочий блок -->
             <div id="gm-npc" class="sub-pane active">

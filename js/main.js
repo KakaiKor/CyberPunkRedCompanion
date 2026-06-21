@@ -24,7 +24,7 @@ import { NetArchitectureUI } from './modules/net-architecture-ui.js';
 import { AutoFireUI } from './modules/combat/auto-fire.js';
 import { RumorGenerator } from './modules/gm/rumor-generator.js';
 import { initStoryModule } from './story/story-main.js';
-
+import { StoryGenerator } from './modules/story-generator.js';
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
     const data = {
@@ -1478,6 +1478,93 @@ if (rumorTabBtn) {
     rumorTabBtn.addEventListener('click', () => {
         if (!document.getElementById('rumorResult').innerHTML.trim()) {
             RumorGenerator.generate();
+        }
+    });
+}
+// ========== ГЕНЕРАТОР ИСТОРИЙ (интеграция с GM) ==========
+const generateStoryBtn = document.getElementById('generateStoryBtn');
+const storyResult = document.getElementById('storyResult');
+const copyStoryBtn = document.getElementById('copyStoryBtn');
+const saveToCampaignBtn = document.getElementById('saveToCampaignBtn');
+
+if (generateStoryBtn && storyResult) {
+    generateStoryBtn.addEventListener('click', () => {
+        const type = document.getElementById('storyType')?.value || 'random';
+        const difficulty = document.getElementById('storyDifficulty')?.value || 'medium';
+        const tone = document.getElementById('storyTone')?.value || 'all';
+        const complexity = document.getElementById('storyComplexity')?.value || 'medium';
+        const zone = document.getElementById('storyZone')?.value || 'moderate';
+        const time = document.getElementById('storyTime')?.value || 'day';
+        const playerCount = parseInt(document.getElementById('storyPlayerCount')?.value) || 4;
+
+        const story = StoryGenerator.generate({
+            type, difficulty, tone, complexity,
+            playerCount, zone, time
+        });
+        storyResult.innerHTML = StoryGenerator.renderToHTML(story);
+        
+        // Сохраняем последнюю историю для копирования/сохранения
+        window._lastStory = story;
+    });
+}
+
+if (copyStoryBtn) {
+    copyStoryBtn.addEventListener('click', () => {
+        const text = storyResult?.innerText || '';
+        if (text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('История скопирована в буфер обмена!');
+            }).catch(() => {
+                // fallback
+                const range = document.createRange();
+                range.selectNode(storyResult);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                alert('История скопирована!');
+            });
+        }
+    });
+}
+
+if (saveToCampaignBtn && window._lastStory) {
+    saveToCampaignBtn.addEventListener('click', () => {
+        const story = window._lastStory;
+        if (!story) {
+            alert('Сначала сгенерируйте историю!');
+            return;
+        }
+        
+        // TODO: Интеграция с Story Master
+        // Сохраняем в gm_story_data как черновик кампании
+        try {
+            const existing = JSON.parse(localStorage.getItem('gm_story_data') || '{"campaigns":[]}');
+            const newCampaign = {
+                id: `campaign_${Date.now()}`,
+                name: story.title,
+                description: story.hook.text,
+                status: 'draft',
+                createdAt: new Date().toISOString(),
+                arcs: [{
+                    id: `arc_${Date.now()}`,
+                    name: 'Основная арка',
+                    chapters: [{
+                        id: `chapter_${Date.now()}`,
+                        name: story.hook.type,
+                        scenes: story.beats.map((beat, i) => ({
+                            id: `scene_${Date.now()}_${i}`,
+                            name: `${beat.beatType}: ${beat.type}`,
+                            description: beat.text,
+                            status: 'planned'
+                        }))
+                    }]
+                }]
+            };
+            existing.campaigns.push(newCampaign);
+            localStorage.setItem('gm_story_data', JSON.stringify(existing));
+            alert('История сохранена в Story Master как черновик кампании!');
+        } catch (e) {
+            alert('Ошибка сохранения: ' + e.message);
         }
     });
 }
