@@ -10,6 +10,7 @@ import { STORY_DEVELOPMENTS } from '../data/story-developments.js';
 import { STORY_CLIFFHANGERS } from '../data/story-cliffhangers.js';
 import { STORY_CLIMAXES } from '../data/story-climaxes.js';
 import { STORY_RESOLUTIONS } from '../data/story-resolutions.js';
+import { STORY_TWISTS } from '../data/story-twists.js';
 
 export class StoryGenerator {
     /**
@@ -31,9 +32,23 @@ export class StoryGenerator {
             complexity = 'medium',
             playerCount = 4,
             zone = 'moderate',
+            includeTwist = false,
             time = 'day'
         } = params;
-
+         let twist = null;
+    if (includeTwist) {
+        // Выбираем случайный твист
+        twist = this.pickRandom(STORY_TWISTS);
+        // Вставляем твист в случайный бит (кроме крюка и развязки)
+        if (twist && beats.length > 1) {
+            const beatIndex = Math.floor(Math.random() * beats.length);
+            const beat = beats[beatIndex];
+            if (beat) {
+                beat.twist = twist.text;
+                beat.text = beat.text + `\n\n🔄 НЕОЖИДАННЫЙ ПОВОРОТ: ${twist.text}`;
+            }
+        }
+    }
         // 1. Генерируем контракт через существующий генератор
         const contract = AdvancedContractGenerator.buildContract(
             type === 'random' ? this.randomType() : type,
@@ -126,7 +141,35 @@ export class StoryGenerator {
             example: example || undefined
         };
     }
+    // modules/story-generator.js – дополнение
 
+static toJSON(story) {
+    if (!story) return null;
+    return {
+        version: '1.0',
+        generatedAt: new Date().toISOString(),
+        title: story.title,
+        meta: story.meta,
+        hook: {
+            type: story.hook.type,
+            text: story.hook.text,
+            example: story.hook.example || null
+        },
+        beats: story.beats.map(beat => ({
+            type: beat.type,
+            beatType: beat.beatType,
+            text: beat.text
+        })),
+        climax: {
+            type: story.climax.type,
+            text: story.climax.text
+        },
+        resolution: {
+            type: story.resolution.type,
+            text: story.resolution.text
+        }
+    };
+}
     static buildBeats(contract, count, tone) {
         const beats = [];
         const devs = STORY_DEVELOPMENTS.filter(d => {
@@ -263,7 +306,18 @@ export class StoryGenerator {
 
         return npcs;
     }
+    static generateFullAdventure(params = {}) {
+    const story = this.generate(params);
+    if (!story) return null;
 
+    // Генерируем контракт на основе истории
+    // (используем advanced-contract-generator)
+    // Здесь нужен импорт AdvancedContractGenerator
+    // Но чтобы избежать циклических зависимостей, можно вызвать через window или динамический импорт
+
+    // Для простоты вернём только историю, а контракт сгенерируем отдельно
+    return story;
+}
     static buildEncounters(zone, time, playerCount) {
         // Используем EncounterGenerator для подстановки встреч
         // Но нам нужно получить данные, а не рендерить
@@ -400,4 +454,120 @@ export class StoryGenerator {
             return m;
         });
     }
+    // modules/story-generator.js
+// modules/story-generator.js
+
+static contractToStory(contract) {
+    if (!contract) return null;
+
+    // Создаём бит-чарт на основе контракта
+    const hook = {
+        type: 'Контракт',
+        text: `Заказчик ${contract.client} нанимает команду для ${contract.type === 'extraction' ? 'извлечения' : contract.type === 'elimination' ? 'устранения' : contract.type}. Цель: ${contract.target}. Место: ${contract.location}. Награда: ${contract.reward} eb.`,
+        example: contract.description || ''
+    };
+
+    const developments = [
+        { type: 'Подготовка', text: 'Команда собирает информацию о цели и месте, изучает маршруты и систему безопасности.', beatType: 'Развитие' },
+        { type: 'Проникновение', text: 'Персонажи проникают на объект или приближаются к цели, избегая обнаружения.', beatType: 'Развитие' },
+    ];
+
+    const cliffhanger = contract.complication ? {
+        type: 'Осложнение',
+        text: contract.complication,
+        beatType: 'Клиффхэнгер'
+    } : {
+        type: 'Столкновение',
+        text: 'Персонажи сталкиваются с охраной или неожиданным препятствием на пути к цели.',
+        beatType: 'Клиффхэнгер'
+    };
+
+    const climax = {
+        type: 'Выполнение',
+        text: `Команда выполняет задание: ${contract.type === 'extraction' ? 'извлекает' : contract.type === 'elimination' ? 'устраняет' : 'завершает'} ${contract.target}.`,
+        beatType: 'Кульминация'
+    };
+
+    const resolution = {
+        type: contract.twist ? 'Неожиданный поворот' : 'Завершение',
+        text: contract.twist || `Команда получает награду ${contract.reward} eb и завершает контракт.`,
+        beatType: 'Развязка'
+    };
+
+    return {
+        title: contract.title || 'Контракт',
+        hook,
+        beats: [developments[0], cliffhanger, developments[1], climax],
+        climax,
+        resolution,
+        meta: { type: 'контракт', difficulty: contract.difficulty }
+    };
+}
+static toCampaign(story, campaignName = null) {
+    if (!story) return null;
+
+    const id = () => Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
+    const now = new Date().toISOString();
+
+    const name = campaignName || story.title || 'Сгенерированная кампания';
+
+    // Собираем все биты в массив
+    const beats = [
+        { type: 'Крюк', data: story.hook },
+        ...story.beats.map(b => ({ type: b.beatType || 'Бит', data: b })),
+        { type: 'Кульминация', data: story.climax },
+        { type: 'Развязка', data: story.resolution }
+    ];
+
+    // Преобразуем в сцены
+    const scenes = beats.map((beat, index) => {
+        const text = beat.data.text || '';
+        const example = beat.data.example || '';
+        const description = example ? `${text}\n\n💡 Пример: ${example}` : text;
+        return {
+            id: id(),
+            name: `${beat.type} ${index + 1}`,
+            description: description,
+            status: 'active',
+            beatType: beat.type,
+            createdAt: now,
+            // дополнительные поля – можно расширить
+            participants: [],
+            location: '',
+            netArchitectureId: '',
+            encounterTemplate: '',
+            prerequisites: [],
+            unlocks: [],
+            gmNotes: ''
+        };
+    });
+
+    // Глава
+    const chapter = {
+        id: id(),
+        name: 'Основная цепочка',
+        scenes: scenes,
+        createdAt: now
+    };
+
+    // Арка
+    const arc = {
+        id: id(),
+        name: 'Сгенерированная арка',
+        chapters: [chapter],
+        createdAt: now
+    };
+
+    // Кампания
+    const campaign = {
+        id: id(),
+        name: name,
+        description: `Сгенерировано из бит-чарта ${now}`,
+        arcs: [arc],
+        status: 'active',
+        createdAt: now
+    };
+
+    return campaign;
+}
 }

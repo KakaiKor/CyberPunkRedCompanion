@@ -1,9 +1,6 @@
 // js/story/story-main.js
 
-import {
-    loadStoryData, saveStoryData,
-    getCampaigns
-} from './story-manager.js';
+import {loadStoryData, saveStoryData,getCampaigns} from './story-manager.js';
 import {
     renderCampaignList,
     switchStorySubTab,

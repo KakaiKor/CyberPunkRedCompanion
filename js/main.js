@@ -25,6 +25,14 @@ import { AutoFireUI } from './modules/combat/auto-fire.js';
 import { RumorGenerator } from './modules/gm/rumor-generator.js';
 import { initStoryModule } from './story/story-main.js';
 import { StoryGenerator } from './modules/story-generator.js';
+import {
+    loadStoryData, saveStoryData,
+    getCampaigns
+} from './story/story-manager.js';
+import {
+    renderCampaignList,
+    refreshCampaignSelects
+} from './story/story-ui.js';
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
     const data = {
@@ -1566,6 +1574,69 @@ if (saveToCampaignBtn && window._lastStory) {
         } catch (e) {
             alert('Ошибка сохранения: ' + e.message);
         }
+    });
+}
+// ========== СОХРАНЕНИЕ В КАМПАНИЮ (Story Master) ==========
+const saveStoryBtn = document.getElementById('saveStoryToCampaignBtn');
+let lastGeneratedStory = null;
+
+// Обновляем lastGeneratedStory при генерации
+// (лучше вынести генерацию в функцию)
+function generateAndDisplayStory() {
+    const type = document.getElementById('storyType')?.value || 'all';
+    const tone = document.getElementById('storyTone')?.value || 'all';
+    const complexity = document.getElementById('storyComplexity')?.value || 'medium';
+    const story = StoryGenerator.generate({ type, tone, complexity });
+    lastGeneratedStory = story;
+    storyResult.innerHTML = StoryGenerator.renderToHTML(story);
+    if (saveStoryBtn) saveStoryBtn.style.display = 'inline-block';
+}
+
+if (generateStoryBtn) {
+    generateStoryBtn.addEventListener('click', generateAndDisplayStory);
+}
+
+if (saveStoryBtn) {
+    saveStoryBtn.addEventListener('click', () => {
+        if (!lastGeneratedStory) {
+            alert('Сначала сгенерируйте сценарий.');
+            return;
+        }
+
+        // 1. Преобразуем историю в кампанию
+        const campaign = StoryGenerator.toCampaign(lastGeneratedStory);
+        if (!campaign) {
+            alert('Ошибка преобразования истории в кампанию.');
+            return;
+        }
+
+        // 2. Загружаем текущие данные Story Master
+        let data = loadStoryData();
+        if (!data.campaigns) data.campaigns = [];
+
+        // 3. Добавляем кампанию
+        data.campaigns.push(campaign);
+
+        // 4. Сохраняем
+        saveStoryData(data);
+
+        // 5. Обновляем UI Story Master
+        renderCampaignList();
+        refreshCampaignSelects();
+
+        // 6. Переключаемся на вкладку Story Master (если есть)
+        const storyTabBtn = document.querySelector('.tab-btn[data-tab="story"]');
+        if (storyTabBtn) {
+            storyTabBtn.click();
+            // дополнительно можно переключить подвкладку на "Кампании"
+            const campaignsSubBtn = document.querySelector('.sub-tab-btn[data-sub="story-campaigns"]');
+            if (campaignsSubBtn) campaignsSubBtn.click();
+        }
+
+        alert(`✅ Кампания "${campaign.name}" сохранена в Story Master!`);
+        
+        // Скрываем кнопку сохранения, чтобы не сохранять повторно
+        saveStoryBtn.style.display = 'none';
     });
 }
 });
