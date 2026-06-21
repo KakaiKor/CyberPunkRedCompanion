@@ -35,7 +35,7 @@
         <!-- Терминал -->
         <div class="terminal-container">
             <div class="terminal-header" id="terminalHeader">
-                <span class="terminal-title">⚡ EDGERUNNER INTERFACE v.0.0.0.16_beta ⚡</span>
+                <span class="terminal-title">⚡ EDGERUNNER INTERFACE v.0.0.0.17_beta ⚡</span>
                 <button class="terminal-toggle" id="terminalToggle">−</button>
             </div>
             <div class="terminal-body" id="terminalBody">
@@ -141,7 +141,7 @@
                 </div>
                 <div id="characterCardContainer" style="margin-top: 20px;"></div>
             </div>
-            
+
             <div id="char-stats" class="sub-pane">
                 <div class="stats-layout">
                     <div class="stats-card">
@@ -255,83 +255,94 @@
             </div>
         </div>
         <div id="tab-story" class="main-pane">
-    <div class="sub-tabs">
-        <button class="sub-tab-btn active" data-sub="story-campaigns">📁 Кампании</button>
-        <button class="sub-tab-btn" data-sub="story-board">🗺️ Доска</button>
-        <button class="sub-tab-btn" data-sub="story-tree">🌳 Дерево</button>
-        <button class="sub-tab-btn" data-sub="story-timeline">⏳ Таймлайн</button>
-        <button class="sub-tab-btn" data-sub="story-integration">🔗 Привязки</button>
-    </div>
-
-    <!-- Панель: Кампании (список, создание, импорт/экспорт) -->
-    <div id="story-campaigns" class="sub-pane active">
-        <div class="card">
-            <h3>📁 Управление кампаниями</h3>
-            <div class="button-group">
-                <button id="storyNewCampaignBtn" class="cyber-btn">➕ Новая кампания</button>
-                <button id="storyExportAllBtn" class="cyber-btn">📤 Экспорт всех</button>
-                <button id="storyImportAllBtn" class="cyber-btn">📥 Импорт</button>
-                <input type="file" id="storyImportFileInput" accept=".json" style="display:none">
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" data-sub="story-campaigns">📁 Кампании</button>
+                <button class="sub-tab-btn" data-sub="story-board">🗺️ Доска</button>
+                <button class="sub-tab-btn" data-sub="story-tree">🌳 Дерево</button>
+                <button class="sub-tab-btn" data-sub="story-timeline">⏳ Таймлайн</button>
+                <button class="sub-tab-btn" data-sub="story-integration">🔗 Привязки</button>
             </div>
-            <div id="storyCampaignList"></div>
-        </div>
-    </div>
 
-    <!-- Панель: Доска (визуальный редактор) -->
-    <div id="story-board" class="sub-pane">
-        <div class="card">
-            <h3>🗺️ Визуальная доска</h3>
-            <div class="story-board-toolbar">
-                <select id="storyBoardCampaignSelect"><option>— выберите кампанию —</option></select>
-                <button id="storyBoardZoomInBtn">🔍+</button>
-                <button id="storyBoardZoomOutBtn">🔍−</button>
-                <button id="storyBoardFitBtn">⊡ Вписать</button>
+            <!-- Панель: Кампании (список, создание, импорт/экспорт) -->
+            <div id="story-campaigns" class="sub-pane active">
+                <div class="card">
+                    <h3>📁 Управление кампаниями</h3>
+                    <div class="button-group">
+                        <button id="storyNewCampaignBtn" class="cyber-btn">➕ Новая кампания</button>
+                        <button id="storyExportAllBtn" class="cyber-btn">📤 Экспорт всех</button>
+                        <button id="storyImportAllBtn" class="cyber-btn">📥 Импорт</button>
+                        <input type="file" id="storyImportFileInput" accept=".json" style="display:none">
+                    </div>
+                    <div id="storyCampaignList"></div>
+                </div>
             </div>
-            <div id="storyBoardCanvas" style="width:100%; height:600px; background:#0d1117; border:1px solid #2a3342; border-radius:8px;"></div>
-        </div>
-    </div>
 
-    <!-- Панель: Дерево (иерархический список) -->
-    <div id="story-tree" class="sub-pane">
-        <div class="card">
-            <h3>🌳 Иерархия сценария</h3>
-            <select id="storyTreeCampaignSelect"><option>— выберите кампанию —</option></select>
-            <div class="story-tree-toolbar" style="display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
-            <input type="text" id="storyTreeSearch" placeholder="🔍 Поиск по названию/описанию..." style="flex:1; min-width:150px;">
-            <select id="storyTreeStatusFilter">
-                <option value="all">Все статусы</option>
-                <option value="draft">Черновик</option>
-                <option value="active">Активна</option>
-                <option value="completed">Завершена</option>
-                <option value="failed">Провалена</option>
-                <option value="hidden">Скрыта</option>
-            </select>
-            <button id="storyImportSceneBtn" class="cyber-btn small">📥 Импорт сцены</button>
-            <input type="file" id="storyImportSceneInput" accept=".json" style="display:none">
-        </div>
-            <div id="storyTreeContainer"></div>
-        </div>
-    </div>
+            <!-- Панель: Доска (визуальный редактор) -->
+            <div id="story-board" class="sub-pane">
+                <div class="card">
+                    <h3>🗺️ Визуальная доска</h3>
+                    <div class="story-board-toolbar">
+                        <select id="storyBoardCampaignSelect">
+                            <option>— выберите кампанию —</option>
+                        </select>
+                        <button id="storyBoardZoomInBtn">🔍+</button>
+                        <button id="storyBoardZoomOutBtn">🔍−</button>
+                        <button id="storyBoardFitBtn">⊡ Вписать</button>
+                    </div>
+                    <div id="storyBoardCanvas"
+                        style="width:100%; height:600px; background:#0d1117; border:1px solid #2a3342; border-radius:8px;">
+                    </div>
+                </div>
+            </div>
 
-    <!-- Панель: Таймлайн -->
-    <div id="story-timeline" class="sub-pane">
-        <div class="card">
-            <h3>⏳ Хронология событий</h3>
-            <select id="storyTimelineCampaignSelect"><option>— выберите кампанию —</option></select>
-            <div id="storyTimelineContainer"></div>
-        </div>
-    </div>
+            <!-- Панель: Дерево (иерархический список) -->
+            <div id="story-tree" class="sub-pane">
+                <div class="card">
+                    <h3>🌳 Иерархия сценария</h3>
+                    <select id="storyTreeCampaignSelect">
+                        <option>— выберите кампанию —</option>
+                    </select>
+                    <div class="story-tree-toolbar" style="display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+                        <input type="text" id="storyTreeSearch" placeholder="🔍 Поиск по названию/описанию..."
+                            style="flex:1; min-width:150px;">
+                        <select id="storyTreeStatusFilter">
+                            <option value="all">Все статусы</option>
+                            <option value="draft">Черновик</option>
+                            <option value="active">Активна</option>
+                            <option value="completed">Завершена</option>
+                            <option value="failed">Провалена</option>
+                            <option value="hidden">Скрыта</option>
+                        </select>
+                        <button id="storyImportSceneBtn" class="cyber-btn small">📥 Импорт сцены</button>
+                        <input type="file" id="storyImportSceneInput" accept=".json" style="display:none">
+                    </div>
+                    <div id="storyTreeContainer"></div>
+                </div>
+            </div>
 
-    <!-- Панель: Привязки (интеграция) -->
-    <div id="story-integration" class="sub-pane">
-        <div class="card">
-            <h3>🔗 Связи с игровыми сущностями</h3>
-            <p>Выберите сцену, чтобы увидеть связанных персонажей, локации, архитектуры сетей и встречи.</p>
-            <select id="storyIntegrationSceneSelect"><option>— выберите сцену —</option></select>
-            <div id="storyIntegrationDetails"></div>
+            <!-- Панель: Таймлайн -->
+            <div id="story-timeline" class="sub-pane">
+                <div class="card">
+                    <h3>⏳ Хронология событий</h3>
+                    <select id="storyTimelineCampaignSelect">
+                        <option>— выберите кампанию —</option>
+                    </select>
+                    <div id="storyTimelineContainer"></div>
+                </div>
+            </div>
+
+            <!-- Панель: Привязки (интеграция) -->
+            <div id="story-integration" class="sub-pane">
+                <div class="card">
+                    <h3>🔗 Связи с игровыми сущностями</h3>
+                    <p>Выберите сцену, чтобы увидеть связанных персонажей, локации, архитектуры сетей и встречи.</p>
+                    <select id="storyIntegrationSceneSelect">
+                        <option>— выберите сцену —</option>
+                    </select>
+                    <div id="storyIntegrationDetails"></div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
         <!-- Панель БОЙ (оставлена без изменений) -->
         <div id="tab-combat" class="main-pane">
             <div class="sub-tabs">
@@ -443,46 +454,48 @@
             </div>
         </div>
         <!-- Нетраннер -->
-<div id="tab-netrunner" class="main-pane">
-    <div class="sub-tabs">
-        <button class="sub-tab-btn active" data-sub="netrunner-cyberdeck">🖥️ Кибердека</button>
-        <button class="sub-tab-btn" data-sub="netrunner-architecture">🏛️ Архитектура сети</button>
-        <button class="sub-tab-btn" data-sub="netrunner-combat">⚔️ Сетевой бой</button>
-        <button class="sub-tab-btn" data-sub="netrunner-help">📖 Справка</button>
-    </div>
-    <div id="netrunner-cyberdeck" class="sub-pane active">
-        <div class="card">
-            <h3>🖥️ Кибердека и программы</h3>
-            <div id="netrunnerInterfaceContainer"></div>
+        <div id="tab-netrunner" class="main-pane">
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" data-sub="netrunner-cyberdeck">🖥️ Кибердека</button>
+                <button class="sub-tab-btn" data-sub="netrunner-architecture">🏛️ Архитектура сети</button>
+                <button class="sub-tab-btn" data-sub="netrunner-combat">⚔️ Сетевой бой</button>
+                <button class="sub-tab-btn" data-sub="netrunner-help">📖 Справка</button>
+            </div>
+            <div id="netrunner-cyberdeck" class="sub-pane active">
+                <div class="card">
+                    <h3>🖥️ Кибердека и программы</h3>
+                    <div id="netrunnerInterfaceContainer"></div>
+                </div>
+            </div>
+            <div id="netrunner-architecture" class="sub-pane">
+                <div class="card">
+                    <h3> Архитектура сети </h3>
+                    <p class="note">GM может загрузить архитектуру из JSON-файла. Вы можете проходить этажи, взламывать
+                        пароли, сражаться с чёрным льдом.</p>
+                    <div class="architecture-controls">
+                        <input type="file" id="netrunnerImportArchitectureInput" accept=".json" style="display:none">
+                        <button id="netrunnerImportArchitectureBtn" class="cyber-btn">📥 Загрузить архитектуру от
+                            GM</button>
+                        <button id="netrunnerResetArchitectureBtn" class="cyber-btn">🔄 Сбросить</button>
+                    </div>
+                    <div id="netrunnerArchitectureContainer" class="architecture-container">
+                        <p>Нет загруженной архитектуры. Попросите GM экспортировать архитектуру и загрузите её.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="netrunner-combat" class="sub-pane">
+                <div class="card">
+                    <h3>⚔️ Сетевой бой</h3>
+                    <p>Здесь будет симуляция сетевого боя.</p>
+                </div>
+            </div>
+            <div id="netrunner-help" class="sub-pane">
+                <div class="card">
+                    <h3>📖 Краткое руководство по нетраннингу</h3>
+                    <p>Здесь будет справка.</p>
+                </div>
+            </div>
         </div>
-    </div>
-    <div id="netrunner-architecture" class="sub-pane">
-    <div class="card">
-        <h3> Архитектура сети </h3>
-        <p class="note">GM может загрузить архитектуру из JSON-файла. Вы можете проходить этажи, взламывать пароли, сражаться с чёрным льдом.</p>
-        <div class="architecture-controls">
-            <input type="file" id="netrunnerImportArchitectureInput" accept=".json" style="display:none">
-            <button id="netrunnerImportArchitectureBtn" class="cyber-btn">📥 Загрузить архитектуру от GM</button>
-            <button id="netrunnerResetArchitectureBtn" class="cyber-btn">🔄 Сбросить</button>
-        </div>
-        <div id="netrunnerArchitectureContainer" class="architecture-container">
-            <p>Нет загруженной архитектуры. Попросите GM экспортировать архитектуру и загрузите её.</p>
-        </div>
-    </div>
-</div>
-    <div id="netrunner-combat" class="sub-pane">
-        <div class="card">
-            <h3>⚔️ Сетевой бой</h3>
-            <p>Здесь будет симуляция сетевого боя.</p>
-        </div>
-    </div>
-    <div id="netrunner-help" class="sub-pane">
-        <div class="card">
-            <h3>📖 Краткое руководство по нетраннингу</h3>
-            <p>Здесь будет справка.</p>
-        </div>
-    </div>
-</div>
         <!-- Панель GM (оставлена без изменений, приведены основные блоки для краткости) -->
         <div id="tab-gm" class="main-pane">
             <div class="sub-tabs">
@@ -499,52 +512,52 @@
                 <button class="sub-tab-btn" data-sub="gm-development">📈 Развитие (IP)</button>
             </div>
             <div id="gm-story-generator" class="sub-pane">
-    <div class="card">
-        <h2>🎲 Генератор сценариев (бит-чарт)</h2>
-        <p>Создаёт структуру приключения — от крюка до развязки — на основе правил Cyberpunk RED.</p>
-        
-        <div class="generator-controls">
-            <div class="control-group">
-                <label>Тип истории:</label>
-                <select id="storyType">
-                    <option value="all">Любой</option>
-                    <option value="ограбление">Ограбление</option>
-                    <option value="спасение">Спасение</option>
-                    <option value="расследование">Расследование</option>
-                    <option value="устранение">Устранение</option>
-                    <option value="контрабанда">Контрабанда</option>
-                </select>
+                <div class="card">
+                    <h2>🎲 Генератор сценариев (бит-чарт)</h2>
+                    <p>Создаёт структуру приключения — от крюка до развязки — на основе правил Cyberpunk RED.</p>
+
+                    <div class="generator-controls">
+                        <div class="control-group">
+                            <label>Тип истории:</label>
+                            <select id="storyType">
+                                <option value="all">Любой</option>
+                                <option value="ограбление">Ограбление</option>
+                                <option value="спасение">Спасение</option>
+                                <option value="расследование">Расследование</option>
+                                <option value="устранение">Устранение</option>
+                                <option value="контрабанда">Контрабанда</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Тон:</label>
+                            <select id="storyTone">
+                                <option value="all">Любой</option>
+                                <option value="нуар">Нуар</option>
+                                <option value="кибер-экшн">Кибер-экшн</option>
+                                <option value="хоррор">Хоррор</option>
+                                <option value="корпоративная драма">Корпоративная драма</option>
+                                <option value="уличный">Уличный</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Сложность:</label>
+                            <select id="storyComplexity">
+                                <option value="short">Короткая (2 бита)</option>
+                                <option value="medium" selected>Средняя (4 бита)</option>
+                                <option value="long">Длинная (6 битов)</option>
+                            </select>
+                        </div>
+                        <button id="generateStoryBtn" class="btn-primary">🎲 Сгенерировать сценарий</button>
+                        <button id="copyStoryBtn" class="btn-secondary">📋 Копировать</button>
+                        <button id="saveStoryToCampaignBtn" class="btn-secondary" style="display:none;">💾 Сохранить в
+                            кампанию</button>
+                    </div>
+
+                    <div id="storyResult" class="story-result-container">
+                        <p class="note">Нажмите «Сгенерировать сценарий», чтобы создать новое приключение.</p>
+                    </div>
+                </div>
             </div>
-            <div class="control-group">
-                <label>Тон:</label>
-                <select id="storyTone">
-                    <option value="all">Любой</option>
-                    <option value="нуар">Нуар</option>
-                    <option value="кибер-экшн">Кибер-экшн</option>
-                    <option value="хоррор">Хоррор</option>
-                    <option value="корпоративная драма">Корпоративная драма</option>
-                    <option value="уличный">Уличный</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label>Сложность:</label>
-                <select id="storyComplexity">
-                    <option value="short">Короткая (2 бита)</option>
-                    <option value="medium" selected>Средняя (4 бита)</option>
-                    <option value="long">Длинная (6 битов)</option>
-                </select>
-            </div>
-            <button id="generateStoryBtn" class="btn-primary">🎲 Сгенерировать сценарий</button>
-            <button id="copyStoryBtn" class="btn-secondary">📋 Копировать</button>
-            <button id="exportStoryJsonBtn" class="btn-secondary">📥 Экспорт JSON</button>
-            <button id="saveStoryToCampaignBtn" class="btn-secondary" style="display:none;">💾 Сохранить в кампанию</button>
-        </div>
-        
-        <div id="storyResult" class="story-result-container">
-            <p class="note">Нажмите «Сгенерировать сценарий», чтобы создать новое приключение.</p>
-        </div>
-    </div>
-</div>
             <!-- Здесь полное содержимое GM-панели, оставлено без изменений (я не стал дублировать весь текст, но в вашем реальном файле он есть) -->
             <!-- Для краткости я сократил, но вы можете скопировать свой рабочий блок -->
             <div id="gm-npc" class="sub-pane active">
@@ -569,27 +582,28 @@
                 </div>
             </div>
             <div id="gm-rumor" class="sub-pane">
-    <div class="card">
-        <h3>🎭 Генератор слухов и сюжетных крючков</h3>
-        <p class="note">Слухи — отличный способ дать игрокам намёк на задание или просто оживить город. Каждый слух может быть правдой, полуправдой или ложью.</p>
-        <div class="form-row">
-            <label>Тип слуха: 
-                <select id="rumorType">
-                    <option value="random">🎲 Случайный</option>
-                    <option value="crime">🕵️ Криминал</option>
-                    <option value="corporate">🏢 Корпорации</option>
-                    <option value="legend">📜 Легенды улиц</option>
-                    <option value="tech">🔧 Технологии</option>
-                    <option value="gang">💀 Банды</option>
-                    <option value="danger">⚠️ Опасности</option>
-                </select>
-            </label>
-            <button id="generateRumorBtn" class="cyber-btn">🎲 Сгенерировать слух</button>
-            <button id="copyRumorBtn" class="cyber-btn">📋 Скопировать</button>
-        </div>
-        <div id="rumorResult" class="rumor-container" style="margin-top: 20px;"></div>
-    </div>
-</div>
+                <div class="card">
+                    <h3>🎭 Генератор слухов и сюжетных крючков</h3>
+                    <p class="note">Слухи — отличный способ дать игрокам намёк на задание или просто оживить город.
+                        Каждый слух может быть правдой, полуправдой или ложью.</p>
+                    <div class="form-row">
+                        <label>Тип слуха:
+                            <select id="rumorType">
+                                <option value="random">🎲 Случайный</option>
+                                <option value="crime">🕵️ Криминал</option>
+                                <option value="corporate">🏢 Корпорации</option>
+                                <option value="legend">📜 Легенды улиц</option>
+                                <option value="tech">🔧 Технологии</option>
+                                <option value="gang">💀 Банды</option>
+                                <option value="danger">⚠️ Опасности</option>
+                            </select>
+                        </label>
+                        <button id="generateRumorBtn" class="cyber-btn">🎲 Сгенерировать слух</button>
+                        <button id="copyRumorBtn" class="cyber-btn">📋 Скопировать</button>
+                    </div>
+                    <div id="rumorResult" class="rumor-container" style="margin-top: 20px;"></div>
+                </div>
+            </div>
             <div id="gm-contract-advanced" class="sub-pane">
                 <div class="card">
                     <h3>⚙️ Генератор контрактов</h3>
@@ -629,49 +643,49 @@
                 </div>
             </div>
             <div id="gm-net" class="sub-pane">
-    <div class="card">
-        <h3>Архитектура сети</h3>
-        
-        <!-- ===== БЫСТРАЯ ТЕКСТОВАЯ ГЕНЕРАЦИЯ (старая) ===== -->
-        <details>
-            <summary>📄 Быстрая текстовая генерация</summary>
-            <label>Сложность: 
-                <select id="netComplexity">
-                    <option value="1">Низкая (СЛ6)</option>
-                    <option value="2">Средняя (СЛ8)</option>
-                    <option value="3">Высокая (СЛ10)</option>
-                    <option value="4">Очень высокая (СЛ12)</option>
-                </select>
-            </label>
-            <button id="genNetArchBtn">🎲 Сгенерировать</button>
-            <div id="netArchResult"></div>
-        </details>
+                <div class="card">
+                    <h3>Архитектура сети</h3>
 
-        <hr style="margin: 20px 0; border-color: #2a3342;">
+                    <!-- ===== БЫСТРАЯ ТЕКСТОВАЯ ГЕНЕРАЦИЯ (старая) ===== -->
+                    <details>
+                        <summary>📄 Быстрая текстовая генерация</summary>
+                        <label>Сложность:
+                            <select id="netComplexity">
+                                <option value="1">Низкая (СЛ6)</option>
+                                <option value="2">Средняя (СЛ8)</option>
+                                <option value="3">Высокая (СЛ10)</option>
+                                <option value="4">Очень высокая (СЛ12)</option>
+                            </select>
+                        </label>
+                        <button id="genNetArchBtn">🎲 Сгенерировать</button>
+                        <div id="netArchResult"></div>
+                    </details>
 
-        <!-- ===== ВИЗУАЛЬНАЯ ИНТЕРАКТИВНАЯ АРХИТЕКТУРА (GM) ===== -->
-        <details open>
-            <summary>🏛️ Визуальная архитектура (GM)</summary>
-            <div class="architecture-controls">
-                <label>Сложность: 
-                    <select id="gmVisComplexity">
-                        <option value="easy">Лёгкая (СЛ6)</option>
-                        <option value="medium" selected>Средняя (СЛ8)</option>
-                        <option value="hard">Тяжёлая (СЛ10)</option>
-                    </select>
-                </label>
-                <button id="gmVisGenBtn" class="cyber-btn">🎲 Сгенерировать</button>
-                <button id="gmVisResetBtn" class="cyber-btn">🔄 Сбросить</button>
-                <button id="gmVisExportBtn" class="cyber-btn">💾 Экспорт JSON</button>
-                <input type="file" id="gmVisImportInput" accept=".json" style="display:none">
-                <button id="gmVisImportBtn" class="cyber-btn">📥 Импорт JSON</button>
+                    <hr style="margin: 20px 0; border-color: #2a3342;">
+
+                    <!-- ===== ВИЗУАЛЬНАЯ ИНТЕРАКТИВНАЯ АРХИТЕКТУРА (GM) ===== -->
+                    <details open>
+                        <summary>🏛️ Визуальная архитектура (GM)</summary>
+                        <div class="architecture-controls">
+                            <label>Сложность:
+                                <select id="gmVisComplexity">
+                                    <option value="easy">Лёгкая (СЛ6)</option>
+                                    <option value="medium" selected>Средняя (СЛ8)</option>
+                                    <option value="hard">Тяжёлая (СЛ10)</option>
+                                </select>
+                            </label>
+                            <button id="gmVisGenBtn" class="cyber-btn">🎲 Сгенерировать</button>
+                            <button id="gmVisResetBtn" class="cyber-btn">🔄 Сбросить</button>
+                            <button id="gmVisExportBtn" class="cyber-btn">💾 Экспорт JSON</button>
+                            <input type="file" id="gmVisImportInput" accept=".json" style="display:none">
+                            <button id="gmVisImportBtn" class="cyber-btn">📥 Импорт JSON</button>
+                        </div>
+                        <div id="gmVisArchitectureContainer" class="architecture-container">
+                            <p>Нажмите «Сгенерировать», чтобы создать архитектуру.</p>
+                        </div>
+                    </details>
+                </div>
             </div>
-            <div id="gmVisArchitectureContainer" class="architecture-container">
-                <p>Нажмите «Сгенерировать», чтобы создать архитектуру.</p>
-            </div>
-        </details>
-    </div>
-</div>
             <div id="gm-mooks" class="sub-pane">
                 <div class="card">
                     <h3>Генератор врагов</h3>
@@ -736,191 +750,193 @@
 
         <!-- Панель Рынок -->
         <div id="tab-market" class="main-pane">
-    <div class="sub-tabs">
-        <button class="sub-tab-btn active" data-sub="market-shop">🛒 Магазин</button>
-        <button class="sub-tab-btn" data-sub="market-inventory">🎒 Инвентарь</button>
-        <button class="sub-tab-btn" data-sub="market-treasure">💎 Трофеи</button>
-    </div>
-    <div id="market-shop" class="sub-pane active">
-        <div class="card">
-            <div id="shopContainer"></div>
-        </div>
-    </div>
-    <div id="market-inventory" class="sub-pane">
-        <div class="card">
-            <div id="inventoryContainer"></div>
-        </div>
-    </div>
-    <div id="market-treasure" class="sub-pane">
-        <div class="card">
-            <h3>Трофеи</h3>
-            <button id="generateTreasureBtn" class="cyber-btn">🎲 Найти</button>
-            <div id="treasureResult"></div>
-        </div>
-    </div>
-</div>
-
-    <!-- Модальное окно конструктора персонажа -->
-    <div id="wizardModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content wizard-modal">
-            <div class="modal-header">
-                <span class="modal-title">✨ Создание персонажа</span>
-                <button class="modal-close" id="closeWizardModalBtn">&times;</button>
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" data-sub="market-shop">🛒 Магазин</button>
+                <button class="sub-tab-btn" data-sub="market-inventory">🎒 Инвентарь</button>
+                <button class="sub-tab-btn" data-sub="market-treasure">💎 Трофеи</button>
             </div>
-            <div class="modal-body" id="wizardModalBody">
-                <!-- ПОЛНОЕ СОДЕРЖИМОЕ КОНСТРУКТОРА -->
-                <div class="card" style="position: relative;">
-                    <div class="wip-overlay">
-                        <div class="wip-badge">⚠️ IN PROGRESS ⚠️</div>
-                        <div class="wip-message">Разработка еще ведется<br>Пока что всё находится в ознакомительных
-                            целях</div>
-                    </div>
-                    <div class="wizard-steps">
-                        <div class="step" data-step="0"><i class="fas fa-user"></i><span>Имя</span></div>
-                        <div class="step" data-step="1"><i class="fas fa-mask"></i><span>Роль</span></div>
-                        <div class="step" data-step="2"><i class="fas fa-chart-line"></i><span>ХАР</span></div>
-                        <div class="step" data-step="3"><i class="fas fa-vest"></i><span>Снаряжение</span></div>
-                        <div class="step" data-step="4"><i class="fas fa-brain"></i><span>Навыки</span></div>
-                        <div class="step" data-step="5"><i class="fas fa-microchip"></i><span>Импланты</span></div>
-                        <div class="step" data-step="6"><i class="fas fa-palette"></i><span>Стиль</span></div>
-                        <div class="step" data-step="7"><i class="fas fa-heartbeat"></i><span>Человечность</span></div>
-                        <div class="step" data-step="8"><i class="fas fa-coins"></i><span>Расходы</span></div>
-                        <div class="step" data-step="9"><i class="fas fa-pen"></i><span>Заметки</span></div>
-                        <div class="step" data-step="10"><i class="fas fa-check-circle"></i><span>Итог</span></div>
-                    </div>
-                    <div class="wizard-content" id="wizardContent"></div>
-                    <div class="wizard-buttons">
-                        <button id="wizardPrevBtn" class="cyber-btn" disabled>◀ Назад</button>
-                        <button id="wizardNextBtn" class="cyber-btn">Далее ▶</button>
-                        <button id="wizardSaveBtn" class="cyber-btn" style="display:none">💾 Сохранить
-                            персонажа</button>
-                    </div>
-                    <div id="wizardStatus" class="info-block"></div>
+            <div id="market-shop" class="sub-pane active">
+                <div class="card">
+                    <div id="shopContainer"></div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="modal-close-btn" id="closeWizardModalFooterBtn">Закрыть</button>
+            <div id="market-inventory" class="sub-pane">
+                <div class="card">
+                    <div id="inventoryContainer"></div>
+                </div>
+            </div>
+            <div id="market-treasure" class="sub-pane">
+                <div class="card">
+                    <h3>Трофеи</h3>
+                    <button id="generateTreasureBtn" class="cyber-btn">🎲 Найти</button>
+                    <div id="treasureResult"></div>
+                </div>
             </div>
         </div>
-    </div>
-<!-- Модальное окно разборки -->
-<div id="confrontationModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 450px;">
-        <div class="modal-header">
-            <span class="modal-title">⚔️ Разборка</span>
-            <button class="modal-close" id="closeConfrontationModalBtn">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="form-row" style="margin-bottom: 12px;">
-                <label><strong>Ваш персонаж:</strong> КРУТ = <span id="confrontationMyCool">—</span>, Репутация = <span id="confrontationMyRep">—</span></label>
-            </div>
-            <div class="form-row">
-                <label>Противник — КРУТ: <input type="number" id="opponentCool" value="6" min="2" max="10" step="1"></label>
-                <label>Репутация противника: <input type="number" id="opponentRep" value="0" min="0" max="10" step="1"></label>
-            </div>
-            <div class="form-row">
-                <button id="rollConfrontationBtn" class="cyber-btn">🎲 Бросить</button>
-            </div>
-            <div id="confrontationResult" class="info-block"></div>
-        </div>
-        <div class="modal-footer">
-            <button class="modal-close-btn" id="closeConfrontationModalFooterBtn">Закрыть</button>
-        </div>
-    </div>
-</div>
-<!-- Модальное окно проверки реакции NPC -->
-<div id="reactionModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 400px;">
-        <div class="modal-header">
-            <span class="modal-title">👥 Реакция NPC</span>
-            <button class="modal-close" id="closeReactionModalBtn">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="form-row" style="margin-bottom: 12px;">
-                <label><strong>Ваша репутация:</strong> <span id="reputationValue">0</span></label>
-            </div>
-            <div class="form-row">
-                <button id="rollReactionBtn" class="cyber-btn">🎲 Бросить d10</button>
-            </div>
-            <div id="reactionResult" class="info-block"></div>
-        </div>
-        <div class="modal-footer">
-            <button class="modal-close-btn" id="closeReactionModalFooterBtn">Закрыть</button>
-        </div>
-    </div>
-</div>
-<!-- Модальное окно Changelog -->
-<div id="changelogModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content changelog-modal">
-        <div class="modal-header">
-            <span class="modal-title">📋 История изменений</span>
-            <button class="modal-close" id="changelogCloseBtn">&times;</button>
-        </div>
-        <div class="modal-body" id="changelogBody">
-            <div class="changelog-version">
-                
-                <h3>Версия 0.0.0.16_beta</h3>
-                <ul>
-                    <li><strong>✨ Добавлена:</strong> Панель Сценариев для ГМа </li>
-                </ul>
-            </div>
-            <div class="changelog-version">
-                <h3>Версия 0.0.0.15_beta</h3>
-                <ul>
-                    <li><strong>✨ Добавлен:</strong> Генератор слухов для ГМ </li>
-                    <li><strong>✨ Обновлен:</strong> Раздел "Контракты" для ГМ </li>
-                    <li><strong>✨ Добавлены:</strong> Подсказки игрокам для игры и в Боевке </li>
-                </ul>
-            </div>
-             <div class="changelog-version">
-                <h3>Версия 0.0.0.14_beta</h3>
-                <ul>
-                    <li><strong>✨ Обновлен:</strong> Визуал карточек НПС и врагов </li>
-                    <li><strong>✨ Добавлен:</strong> Новый противник: Адам Смешер </li>
-                </ul>
-            </div>
-            <div class="changelog-version">
-                <h3>Версия 0.0.0.13_beta</h3>
-                <ul>
-                    <li><strong>✨ Добавлена:</strong> Система репутации и провеки из карточки персонажа </li>
-                </ul>
-            </div>
-            <div class="changelog-version">
-                <h3>Версия 0.0.0.12_beta</h3>
-                <ul>
-                    <li><strong>✨ Добавлен:</strong> Калькулятор Автоматического огня </li>
-                    <li><strong>✨ Добавлена:</strong> Справка по боевой системе  </li>
-                    <li><strong>✨ Добавлено:</strong> Покупка боеприпасов </li>
-                    <li><strong>✨ Поправлено:</strong> Карточка персонажа после покупки боеприпасов </li>
-                </ul>
-            </div>
-            <div class="changelog-version">
-                <h3>Версия 0.0.0.11_beta</h3>
-                <ul>
-                    <li><strong>✨ Улучшена:</strong> Скрытие архитектуры сети при загрузке </li>
-                    <li><strong>✨ Добавлена:</strong> Мини-карта при генерации архитектуры сети</li>
-                    <li><strong>✨ Добавлена:</strong> Механика "Следопыт" </li>
-                </ul>
-            </div>
-            <div class="changelog-version">
-                <h3>Версия 0.0.0.10_beta</h3>
-                <ul>
-                    <li><strong>✨ Добавлен:</strong> Нетраннинг и загрузка Архитектуры Сети от ГМ</li>
-                    <li><strong>✨ Добавлен:</strong> Синхронизация урона от боя в киберпространстве</li>
-                    <li><strong>✨ Добавлен:</strong> Нетраннинг: Справка</li>
-                </ul>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="modal-close-btn" id="changelogCloseBtn2">Закрыть</button>
-        </div>
-    </div>
-</div>
 
-    <script type="module" src="js/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"></script>
+        <!-- Модальное окно конструктора персонажа -->
+        <div id="wizardModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content wizard-modal">
+                <div class="modal-header">
+                    <span class="modal-title">✨ Создание персонажа</span>
+                    <button class="modal-close" id="closeWizardModalBtn">&times;</button>
+                </div>
+                <div class="modal-body" id="wizardModalBody">
+                    <!-- ПОЛНОЕ СОДЕРЖИМОЕ КОНСТРУКТОРА -->
+                    <div class="card" style="position: relative;">
+                        <div class="wip-overlay">
+                            <div class="wip-badge">⚠️ IN PROGRESS ⚠️</div>
+                            <div class="wip-message">Разработка еще ведется<br>Пока что всё находится в ознакомительных
+                                целях</div>
+                        </div>
+                        <div class="wizard-steps">
+                            <div class="step" data-step="0"><i class="fas fa-user"></i><span>Имя</span></div>
+                            <div class="step" data-step="1"><i class="fas fa-mask"></i><span>Роль</span></div>
+                            <div class="step" data-step="2"><i class="fas fa-chart-line"></i><span>ХАР</span></div>
+                            <div class="step" data-step="3"><i class="fas fa-vest"></i><span>Снаряжение</span></div>
+                            <div class="step" data-step="4"><i class="fas fa-brain"></i><span>Навыки</span></div>
+                            <div class="step" data-step="5"><i class="fas fa-microchip"></i><span>Импланты</span></div>
+                            <div class="step" data-step="6"><i class="fas fa-palette"></i><span>Стиль</span></div>
+                            <div class="step" data-step="7"><i class="fas fa-heartbeat"></i><span>Человечность</span>
+                            </div>
+                            <div class="step" data-step="8"><i class="fas fa-coins"></i><span>Расходы</span></div>
+                            <div class="step" data-step="9"><i class="fas fa-pen"></i><span>Заметки</span></div>
+                            <div class="step" data-step="10"><i class="fas fa-check-circle"></i><span>Итог</span></div>
+                        </div>
+                        <div class="wizard-content" id="wizardContent"></div>
+                        <div class="wizard-buttons">
+                            <button id="wizardPrevBtn" class="cyber-btn" disabled>◀ Назад</button>
+                            <button id="wizardNextBtn" class="cyber-btn">Далее ▶</button>
+                            <button id="wizardSaveBtn" class="cyber-btn" style="display:none">💾 Сохранить
+                                персонажа</button>
+                        </div>
+                        <div id="wizardStatus" class="info-block"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-close-btn" id="closeWizardModalFooterBtn">Закрыть</button>
+                </div>
+            </div>
+        </div>
+        <!-- Модальное окно разборки -->
+        <div id="confrontationModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content" style="max-width: 450px;">
+                <div class="modal-header">
+                    <span class="modal-title">⚔️ Разборка</span>
+                    <button class="modal-close" id="closeConfrontationModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row" style="margin-bottom: 12px;">
+                        <label><strong>Ваш персонаж:</strong> КРУТ = <span id="confrontationMyCool">—</span>, Репутация
+                            = <span id="confrontationMyRep">—</span></label>
+                    </div>
+                    <div class="form-row">
+                        <label>Противник — КРУТ: <input type="number" id="opponentCool" value="6" min="2" max="10"
+                                step="1"></label>
+                        <label>Репутация противника: <input type="number" id="opponentRep" value="0" min="0" max="10"
+                                step="1"></label>
+                    </div>
+                    <div class="form-row">
+                        <button id="rollConfrontationBtn" class="cyber-btn">🎲 Бросить</button>
+                    </div>
+                    <div id="confrontationResult" class="info-block"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-close-btn" id="closeConfrontationModalFooterBtn">Закрыть</button>
+                </div>
+            </div>
+        </div>
+        <!-- Модальное окно проверки реакции NPC -->
+        <div id="reactionModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-header">
+                    <span class="modal-title">👥 Реакция NPC</span>
+                    <button class="modal-close" id="closeReactionModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row" style="margin-bottom: 12px;">
+                        <label><strong>Ваша репутация:</strong> <span id="reputationValue">0</span></label>
+                    </div>
+                    <div class="form-row">
+                        <button id="rollReactionBtn" class="cyber-btn">🎲 Бросить d10</button>
+                    </div>
+                    <div id="reactionResult" class="info-block"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-close-btn" id="closeReactionModalFooterBtn">Закрыть</button>
+                </div>
+            </div>
+        </div>
+        <!-- Модальное окно Changelog -->
+        <div id="changelogModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content changelog-modal">
+                <div class="modal-header">
+                    <span class="modal-title">📋 История изменений</span>
+                    <button class="modal-close" id="changelogCloseBtn">&times;</button>
+                </div>
+                <div class="modal-body" id="changelogBody">
+                     <div class="changelog-version">
+                        <h3>Версия 0.0.0.17_beta</h3>
+                        <ul>
+                            <li><strong>✨ Добавлен:</strong> Генератор сценариев в GM Инструменты</li>
+                            <li><strong>✨ Добавлена:</strong> Интеграция Генератора сценариев в GM Инструменты</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-version">
+                        <h3>Версия 0.0.0.16_beta</h3>
+                        <ul>
+                            <li><strong>✨ Добавлена:</strong> Панель Сценариев для ГМа </li>
+                        </ul>
+                    </div>
+                    <div class="changelog-version">
+                        <h3>Версия 0.0.0.15_beta</h3>
+                        <ul>
+                            <li><strong>✨ Добавлен:</strong> Генератор слухов для ГМ </li>
+                            <li><strong>✨ Обновлен:</strong> Раздел "Контракты" для ГМ </li>
+                            <li><strong>✨ Добавлены:</strong> Подсказки игрокам для игры и в Боевке </li>
+                        </ul>
+                    </div>
+                    <div class="changelog-version">
+                        <h3>Версия 0.0.0.14_beta</h3>
+                        <ul>
+                            <li><strong>✨ Обновлен:</strong> Визуал карточек НПС и врагов </li>
+                            <li><strong>✨ Добавлен:</strong> Новый противник: Адам Смешер </li>
+                        </ul>
+                    </div>
+                    <div class="changelog-version">
+                        <h3>Версия 0.0.0.13_beta</h3>
+                        <ul>
+                            <li><strong>✨ Добавлена:</strong> Система репутации и провеки из карточки персонажа </li>
+                        </ul>
+                    </div>
+                    <div class="changelog-version">
+                        <h3>Версия 0.0.0.12_beta</h3>
+                        <ul>
+                            <li><strong>✨ Добавлен:</strong> Калькулятор Автоматического огня </li>
+                            <li><strong>✨ Добавлена:</strong> Справка по боевой системе </li>
+                            <li><strong>✨ Добавлено:</strong> Покупка боеприпасов </li>
+                            <li><strong>✨ Поправлено:</strong> Карточка персонажа после покупки боеприпасов </li>
+                        </ul>
+                    </div>
+                    <div class="changelog-version">
+                        <h3>Версия 0.0.0.11_beta</h3>
+                        <ul>
+                            <li><strong>✨ Улучшена:</strong> Скрытие архитектуры сети при загрузке </li>
+                            <li><strong>✨ Добавлена:</strong> Мини-карта при генерации архитектуры сети</li>
+                            <li><strong>✨ Добавлена:</strong> Механика "Следопыт" </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-close-btn" id="changelogCloseBtn2">Закрыть</button>
+                </div>
+            </div>
+        </div>
+
+        <script type="module" src="js/main.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script type="text/javascript" src="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"></script>
 </body>
 
 <footer class="cyber-footer">
@@ -941,7 +957,7 @@
     </div>
     <div class="footer-bottom">
         <p>Cyberpunk RED Companion. 2026. | <a href="#" id="toggleThemeBtn" style="color:#ff9a3c;">Версия
-                0.0.0.16_beta</a></p>
+                0.0.0.17_beta</a></p>
     </div>
 </footer>
 
