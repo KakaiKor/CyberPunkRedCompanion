@@ -2921,7 +2921,7 @@ body.cyberpunk-theme .npc-threat {
 }
 /* Footer – киберпанк-стиль */
 .cyber-footer {
-    margin-top: 50px;
+    margin-top: 300px;
     background: #0a0c12;
     border-top: 2px solid #ff3c5f;
     padding: 30px 20px 20px;
@@ -4118,10 +4118,7 @@ body {
 .app-container {
     flex: 1 0 auto; /* контент занимает всё доступное пространство */
 }
-.cyber-footer {
-    flex-shrink: 0; /* футер не сжимается */
-    margin-top: auto; /* прижимает футер к низу */
-}
+
 
 /* Анимация пульсации для текущего узла */
 @keyframes pulse-glow {
