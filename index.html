@@ -35,7 +35,7 @@
         <!-- Терминал -->
         <div class="terminal-container">
             <div class="terminal-header" id="terminalHeader">
-                <span class="terminal-title">⚡ EDGERUNNER INTERFACE v.0.0.0.17_beta ⚡</span>
+                <span class="terminal-title">⚡ EDGERUNNER INTERFACE v.0.0.0.18_beta ⚡</span>
                 <button class="terminal-toggle" id="terminalToggle">−</button>
             </div>
             <div class="terminal-body" id="terminalBody">
@@ -63,6 +63,7 @@
                 <!-- Вкладка char-wizard удалена, так как конструктор теперь в модалке -->
                 <button class="sub-tab-btn active" data-sub="char-main">Основное</button>
                 <button class="sub-tab-btn" data-sub="char-stats">ХАР & Навыки</button>
+                <button class="sub-tab-btn" data-sub="char-development"> Развитие</button>
                 <button class="sub-tab-btn" data-sub="char-roles">Роли</button>
                 <button class="sub-tab-btn" data-sub="char-help">📖 Помощь игроку</button>
             </div>
@@ -71,7 +72,9 @@
             <div style="margin-bottom: 15px;">
                 <button id="openWizardModalBtn" class="cyber-btn">✨ Создать персонажа</button>
             </div>
-
+             <div id="char-development" class="sub-pane">
+                <div id="developmentContainer"></div>
+            </div>
             <!-- Скрытый пустой блок (бывший конструктор) – удалён, оставлен для совместимости -->
             <div id="char-wizard" class="sub-pane" style="display: none;"></div>
 
@@ -875,6 +878,13 @@
                     <button class="modal-close" id="changelogCloseBtn">&times;</button>
                 </div>
                 <div class="modal-body" id="changelogBody">
+                    <div class="changelog-version">
+                        <h3>Версия 0.0.0.18_beta</h3>
+                        <ul>
+                            <li><strong>✨ Добавлена:</strong> Возможность прокачки через окно Персонаж.Развитие</li>
+                            <li><strong>✨ Добавлена:</strong> Интеграция с карточкой персонажа</li>
+                        </ul>
+                    </div>
                      <div class="changelog-version">
                         <h3>Версия 0.0.0.17_beta</h3>
                         <ul>
@@ -957,7 +967,7 @@
     </div>
     <div class="footer-bottom">
         <p>Cyberpunk RED Companion. 2026. | <a href="#" id="toggleThemeBtn" style="color:#ff9a3c;">Версия
-                0.0.0.17_beta</a></p>
+                0.0.0.18_beta</a></p>
     </div>
 </footer>
 

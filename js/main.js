@@ -25,14 +25,9 @@ import { AutoFireUI } from './modules/combat/auto-fire.js';
 import { RumorGenerator } from './modules/gm/rumor-generator.js';
 import { initStoryModule } from './story/story-main.js';
 import { StoryGenerator } from './modules/story-generator.js';
-import {
-    loadStoryData, saveStoryData,
-    getCampaigns
-} from './story/story-manager.js';
-import {
-    renderCampaignList,
-    refreshCampaignSelects
-} from './story/story-ui.js';
+import { loadStoryData, saveStoryData, getCampaigns} from './story/story-manager.js';
+import { renderCampaignList, refreshCampaignSelects} from './story/story-ui.js';
+import { getCharacterWithIP, upgradeSkill, upgradeRoleRank, getUpgradeableSkills, addIP } from './modules/ip-manager.js';
 
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
@@ -70,6 +65,145 @@ function importAllData(file) {
     };
     reader.readAsText(file);
 }
+function renderDevelopmentTab() {
+    const container = document.getElementById('developmentContainer');
+    if (!container) return;
+
+    const char = getCharacterWithIP();
+    if (!char) {
+        container.innerHTML = '<p class="note">Сначала создайте персонажа.</p>';
+        return;
+    }
+
+    const ip = char.ip || { available: 0, spent: 0, totalEarned: 0, history: [] };
+    const available = ip.available || 0;
+    const spent = ip.spent || 0;
+    const totalEarned = ip.totalEarned || 0;
+
+    let html = `
+        <div class="dev-header">
+            <h3>📈 Развитие персонажа</h3>
+            <div class="dev-summary">
+                <span class="ip-available">💰 Доступно IP: <strong>${available}</strong></span>
+                <span class="ip-spent">📊 Потрачено: ${spent}</span>
+                <span class="ip-total">📈 Всего заработано: ${totalEarned}</span>
+            </div>
+        </div>
+    `;
+
+    // Ролевой ранг
+    const roleRank = char.roleRank || 4;
+    const nextRank = roleRank + 1;
+    const roleCost = nextRank * 60;
+    const canAffordRole = available >= roleCost;
+    html += `
+        <div class="dev-role-block">
+            <h4>🎯 Ролевой навык: <strong>${char.role || '—'}</strong> (ранг ${roleRank})</h4>
+            <div class="dev-role-action">
+                <label>Повысить до ${nextRank} (стоимость: ${roleCost} IP)</label>
+                <div class="dev-input-group">
+                    <input type="number" class="dev-role-levels" min="1" max="${10 - roleRank}" value="1" step="1">
+                    <button class="upgrade-role-btn" ${!canAffordRole ? 'disabled' : ''}>Повысить</button>
+                </div>
+                ${!canAffordRole ? `<span class="dev-warning">Недостаточно IP</span>` : ''}
+            </div>
+        </div>
+    `;
+
+    // Навыки
+    const skillsList = getUpgradeableSkills(char);
+    if (skillsList.length === 0) {
+        html += `<p class="note">Все навыки достигли максимума (10).</p>`;
+    } else {
+        html += `
+            <div class="dev-skills-block">
+                <h4>📚 Навыки</h4>
+                <div class="dev-skills-grid">
+        `;
+        for (const skill of skillsList) {
+            const maxLevels = skill.maxLevels;
+            const canAfford = skill.canAfford;
+            html += `
+                <div class="dev-skill-item" data-skill="${skill.name}">
+                    <span class="dev-skill-name">${skill.name}</span>
+                    <span class="dev-skill-level">${skill.currentLevel} → ${skill.nextLevel} (×${skill.costMult})</span>
+                    <span class="dev-skill-cost ${canAfford ? 'affordable' : 'expensive'}">${skill.costForOne} IP</span>
+                    <div class="dev-input-group">
+                        <input type="number" class="dev-skill-levels" min="1" max="${maxLevels}" value="1" step="1" ${!canAfford ? 'disabled' : ''}>
+                        <button class="upgrade-skill-btn" data-skill="${skill.name}" ${!canAfford ? 'disabled' : ''}>Повысить</button>
+                    </div>
+                    ${!canAfford ? `<span class="dev-warning">Недостаточно IP</span>` : ''}
+                </div>
+            `;
+        }
+        html += `</div></div>`;
+    }
+
+    // История
+    const history = ip.history || [];
+    html += `
+        <div class="dev-history-block">
+            <h4>📜 История повышений</h4>
+            <ul>
+                ${history.length === 0 ? '<li>Пока нет повышений</li>' :
+                history.slice(-10).reverse().map(h =>
+                    `<li>${h.date.slice(0,10)}: ${h.name} ${h.from}→${h.to} (${h.cost} IP${h.levels > 1 ? `, +${h.levels} уровней` : ''})</li>`
+                ).join('')}
+            </ul>
+        </div>
+    `;
+
+    container.innerHTML = html;
+
+    // Обработчики для навыков
+    container.querySelectorAll('.upgrade-skill-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const skillName = this.dataset.skill;
+            const item = this.closest('.dev-skill-item');
+            const levelsInput = item.querySelector('.dev-skill-levels');
+            const levels = parseInt(levelsInput.value) || 1;
+
+            const char = getCharacterWithIP();
+            const result = upgradeSkill(char, skillName, levels);
+            if (result.success) {
+                renderDevelopmentTab(); // Обновляем UI
+                if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+                alert(result.message);
+            } else {
+                alert(result.message);
+            }
+        });
+    });
+
+    // Обработчики для ролевого ранга
+    container.querySelector('.upgrade-role-btn')?.addEventListener('click', function() {
+        const levelsInput = this.closest('.dev-role-action').querySelector('.dev-role-levels');
+        const levels = parseInt(levelsInput.value) || 1;
+        const char = getCharacterWithIP();
+        const result = upgradeRoleRank(char, levels);
+        if (result.success) {
+            renderDevelopmentTab();
+            if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+            alert(result.message);
+        } else {
+            alert(result.message);
+        }
+    });
+
+    // Динамическое обновление доступности при изменении количества уровней
+    container.querySelectorAll('.dev-skill-levels, .dev-role-levels').forEach(input => {
+        input.addEventListener('input', function() {
+            const item = this.closest('.dev-skill-item') || this.closest('.dev-role-action');
+            const btn = item.querySelector('button');
+            const maxLevels = parseInt(this.max) || 1;
+            const val = parseInt(this.value) || 1;
+            if (val < 1) this.value = 1;
+            if (val > maxLevels) this.value = maxLevels;
+            // Можно пересчитать стоимость, но для простоты оставляем как есть
+        });
+    });
+}
+document.querySelector('.sub-tab-btn[data-sub="char-development"]')?.addEventListener('click', renderDevelopmentTab);
 
 function addRangedWeapon() {
     let newWeapon = { name: prompt("Название:") || "Новое", skill: prompt("Навык:") || "Короткоствольное", dmg: prompt("Урон:") || "2d6", mag: parseInt(prompt("Магазин:")||"10"), rof: parseInt(prompt("СКОР:")||"2"), hands: parseInt(prompt("Рук:")||"1"), conceal: prompt("Скрыть (да/нет):")||"да", cost: parseInt(prompt("Цена:")||"100"), notes: "" };
@@ -191,7 +325,71 @@ if (gmVisExport) {
         }
     });
 }
+// Внутри DOMContentLoaded, после объявления window.renderDevelopmentTab
+const devContainer = document.getElementById('developmentContainer');
+if (devContainer) {
+    devContainer.addEventListener('click', function(e) {
+        // Обработка кнопки добавления IP
+        const addBtn = e.target.closest('#addIpBtn');
+        if (addBtn) {
+            e.preventDefault();
+            const input = document.getElementById('addIpInput');
+            const amount = parseInt(input?.value) || 0;
+            if (amount <= 0) { alert('Введите положительное число.'); return; }
+            const char = getCharacterWithIP();
+            if (!char) return;
+            const result = addIP(char, amount);
+            if (result !== undefined) {
+                window.renderDevelopmentTab();
+                if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+                alert(`✅ Добавлено ${amount} IP. Теперь доступно: ${result}.`);
+            }
+            return;
+        }
 
+        // Обработка кнопки ролевого ранга
+        const roleBtn = e.target.closest('.upgrade-role-btn');
+        if (roleBtn) {
+            // Проверяем, что это не кнопка добавления IP (у неё тоже класс upgrade-role-btn)
+            if (roleBtn.id === 'addIpBtn') return;
+            e.preventDefault();
+            const roleAction = roleBtn.closest('.dev-role-action');
+            if (!roleAction) return;
+            const levelsInput = roleAction.querySelector('.dev-role-levels');
+            const levels = parseInt(levelsInput?.value) || 1;
+            const char = getCharacterWithIP();
+            const result = upgradeRoleRank(char, levels);
+            if (result.success) {
+                window.renderDevelopmentTab();
+                if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+                alert(result.message);
+            } else {
+                alert(result.message);
+            }
+            return;
+        }
+
+        // Обработка кнопки навыка
+        const skillBtn = e.target.closest('.upgrade-skill-btn');
+        if (skillBtn) {
+            e.preventDefault();
+            const skillName = skillBtn.dataset.skill;
+            const item = skillBtn.closest('.dev-skill-item');
+            const levelsInput = item?.querySelector('.dev-skill-levels');
+            const levels = parseInt(levelsInput?.value) || 1;
+            const char = getCharacterWithIP();
+            const result = upgradeSkill(char, skillName, levels);
+            if (result.success) {
+                window.renderDevelopmentTab();
+                if (window.characterHelper) window.characterHelper.displaySavedCharacterCard();
+                alert(result.message);
+            } else {
+                alert(result.message);
+            }
+            return;
+        }
+    });
+}
 const gmVisImportBtn = document.getElementById('gmVisImportBtn');
 const gmVisImportInput = document.getElementById('gmVisImportInput');
 if (gmVisImportBtn && gmVisImportInput) {
@@ -1362,6 +1560,126 @@ if (openModalBtn && wizardModal) {
             }
         });
     }
+    // ========== РАЗВИТИЕ ПЕРСОНАЖА (IP) ==========
+window.renderDevelopmentTab = function() {
+    const container = document.getElementById('developmentContainer');
+    if (!container) {
+        console.warn('developmentContainer не найден');
+        return;
+    }
+
+    const char = getCharacterWithIP();
+    if (!char) {
+        container.innerHTML = '<p class="note">Сначала создайте персонажа.</p>';
+        return;
+    }
+
+    const ip = char.ip || { available: 0, spent: 0, totalEarned: 0, history: [] };
+    const available = ip.available || 0;
+    const spent = ip.spent || 0;
+    const totalEarned = ip.totalEarned || 0;
+
+    let html = `
+        <div class="dev-header">
+            <h3>📈 Развитие персонажа</h3>
+            <div class="dev-summary">
+                <span class="ip-available">💰 Доступно IP: <strong>${available}</strong></span>
+                <span class="ip-spent">📊 Потрачено: ${spent}</span>
+                <span class="ip-total">📈 Всего заработано: ${totalEarned}</span>
+            </div>
+        </div>
+    `;
+
+    // Блок добавления IP
+    html += `
+        <div class="dev-add-ip" style="background:#0f1219; padding:12px 16px; border-radius:16px; margin-bottom:20px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <span style="font-weight:bold; color:#ff9a3c;">➕ Добавить IP:</span>
+            <input type="number" id="addIpInput" min="1" value="10" step="1" style="width:80px; padding:6px; background:#1e2530; border:1px solid #2a3342; border-radius:8px; color:#fff;">
+            <button id="addIpBtn" class="upgrade-role-btn" style="padding:6px 16px;">Добавить</button>
+            <span style="font-size:0.8rem; color:#9aa4bf;">(для GM или тестирования)</span>
+        </div>
+    `;
+
+    // Ролевой ранг
+    const roleRank = char.roleRank || 4;
+    const nextRank = roleRank + 1;
+    const roleCost = nextRank * 60;
+    const canAffordRole = available >= roleCost;
+    const maxRoleLevels = 10 - roleRank;
+    html += `
+        <div class="dev-role-block">
+            <h4>🎯 Ролевой навык: <strong>${char.role || '—'}</strong> (ранг ${roleRank})</h4>
+            <div class="dev-role-action">
+                <label>Повысить до ${nextRank}+ (стоимость: ${roleCost} IP за уровень)</label>
+                <div class="dev-input-group">
+                    <input type="number" class="dev-role-levels" min="1" max="${maxRoleLevels}" value="1" step="1">
+                    <button class="upgrade-role-btn" ${!canAffordRole ? 'disabled' : ''}>Повысить</button>
+                </div>
+                ${!canAffordRole ? `<span class="dev-warning">Недостаточно IP</span>` : ''}
+            </div>
+        </div>
+    `;
+
+    // Навыки
+    const skillsList = getUpgradeableSkills(char);
+    if (skillsList.length === 0) {
+        html += `<p class="note">Все навыки достигли максимума (10).</p>`;
+    } else {
+        html += `
+            <div class="dev-skills-block">
+                <h4>📚 Навыки</h4>
+                <div class="dev-skills-grid">
+        `;
+        for (const skill of skillsList) {
+            const maxLevels = skill.maxLevels;
+            const canAfford = skill.canAfford;
+            html += `
+                <div class="dev-skill-item" data-skill="${skill.name}">
+                    <span class="dev-skill-name">${skill.name}</span>
+                    <span class="dev-skill-level">${skill.currentLevel} → ${skill.nextLevel} (×${skill.costMult})</span>
+                    <span class="dev-skill-cost ${canAfford ? 'affordable' : 'expensive'}">${skill.costForOne} IP</span>
+                    <div class="dev-input-group">
+                        <input type="number" class="dev-skill-levels" min="1" max="${maxLevels}" value="1" step="1" ${!canAfford ? 'disabled' : ''}>
+                        <button class="upgrade-skill-btn" data-skill="${skill.name}" ${!canAfford ? 'disabled' : ''}>Повысить</button>
+                    </div>
+                    ${!canAfford ? `<span class="dev-warning">Недостаточно IP</span>` : ''}
+                </div>
+            `;
+        }
+        html += `</div></div>`;
+    }
+
+    // История
+    const history = ip.history || [];
+    html += `
+        <div class="dev-history-block">
+            <h4>📜 История повышений</h4>
+            <ul>
+                ${history.length === 0 ? '<li>Пока нет повышений</li>' :
+                history.slice(-10).reverse().map(h =>
+                    `<li>${h.date.slice(0,10)}: ${h.name} ${h.from}→${h.to} (${h.cost} IP${h.levels > 1 ? `, +${h.levels} уровней` : ''})</li>`
+                ).join('')}
+            </ul>
+        </div>
+    `;
+
+    container.innerHTML = html;
+};
+
+// При переключении на подвкладку "Развитие" — обновляем
+document.querySelector('.sub-tab-btn[data-sub="char-development"]')?.addEventListener('click', function() {
+    if (typeof window.renderDevelopmentTab === 'function') {
+        window.renderDevelopmentTab();
+    }
+});
+
+// Также сразу вызываем, если подвкладка активна при загрузке
+setTimeout(() => {
+    const activeSub = document.querySelector('.sub-pane#char-development.active');
+    if (activeSub && typeof window.renderDevelopmentTab === 'function') {
+        window.renderDevelopmentTab();
+    }
+}, 100);
 
     // ========== ГЕНЕРАТОР ИСТОРИЙ (интеграция с GM) ==========
     const generateStoryBtn = document.getElementById('generateStoryBtn');

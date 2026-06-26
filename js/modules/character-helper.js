@@ -381,89 +381,95 @@ export class CharacterHelper {
     }
 
     displaySavedCharacterCard() {
-        let char = loadCharacter();
-        if (!char) return;
-
-        // Если нет baseStats, создаём из текущих характеристик
-        if (!char.baseStats) {
-            char.baseStats = {
-                INT: char.INT || 6, REF: char.REF || 6, DEX: char.DEX || 6,
-                TECH: char.TECH || 6, COOL: char.COOL || 6, WILL: char.WILL || 6,
-                LUCK: char.LUCK || 6, MOVE: char.MOVE || 6, BODY: char.BODY || 6, EMP: char.EMP || 6
-            };
-            saveCharacter(char);
-        }
-
-        // === ГАРАНТИРУЕМ НАЛИЧИЕ ПЗ ===
-        if (!char.maxHp || !char.currentHp) {
-            const body = char.baseStats.BODY || 6;
-            const will = char.baseStats.WILL || 6;
-            const maxHp = getHP(body, will);
-            char.maxHp = maxHp;
-            char.currentHp = char.currentHp !== undefined ? char.currentHp : maxHp;
-            saveCharacter(char);
-        }
-
-        // === ДЛЯ НЕТРАННЕРА: создаём кибердеку и интерфейс, если их нет ===
-        if (char.role === "Нетраннер") {
-            if (!char.cyberdeck) {
-                char.cyberdeck = { slots: 7, programs: [] };
-                saveCharacter(char);
-            }
-            if (char.interfaceRank === undefined) {
-                char.interfaceRank = char.roleRank || 4;
-                saveCharacter(char);
-            }
-        } else {
-            if (char.interfaceRank === undefined) char.interfaceRank = 0;
-        }
-        // ===============================================================
-
-        const baseStats = char.baseStats;
-        const cyberware = char.cyberware || [];
-        const modifiedStats = this.applyCyberwareModifiers(baseStats, cyberware);
-
-        // Объединяем: отображаем модифицированные, но для редактирования будем использовать baseStats
-        const statsForDisplay = { ...modifiedStats };
-        delete statsForDisplay._initiativeBonus;
-        delete statsForDisplay._extraEffects;
-
-        const gear = char.gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
-        const skills = char.skills || {};
-        const body = modifiedStats.BODY, will = baseStats.WILL, emp = baseStats.EMP;
-        const maxHp = char.maxHp;
-        let currentHp = char.currentHp;
-        const severe = Math.ceil(maxHp / 2);
-        let humanityLoss = 0;
-        for (const name of cyberware) {
-            const implant = detailedCyberware.find(i => i.name === name);
-            if (implant) humanityLoss += parseInt(implant.humanity) || 0;
-        }
-        const humanity = Math.max(0, emp * 10 - humanityLoss);
-        const empFrom = Math.floor(humanity / 10);
-        const deathSave = body;
-        const money = char.money !== undefined && !isNaN(char.money) ? char.money : 0;
-        if (char.role === "Нетраннер") {
-            if (char.interfaceRank === undefined) {
-                char.interfaceRank = char.roleRank || 4;
-                saveCharacter(char);
-            }
-        } else {
-            char.interfaceRank = 0;
-        }
-        this.buildCharacterCard({
-            name: char.name || 'Безымянный',
-            role: char.role || 'Без роли',
-            roleRank: char.roleRank || 4,
-            stats: statsForDisplay,
-            baseStats: baseStats,
-            skills, gear, cyberware, currentHp, maxHp, severe,
-            humanity, empFrom, deathSave,
-            notes: char.notes || '', avatar: char.avatar || '', money,
-            ammo: char.ammo || [],
-            reputation: char.reputation ?? 0
-        });
+    let char = loadCharacter();
+    if (!char) return;
+    
+    // ИНИЦИАЛИЗИРУЕМ html
+    let html = '';
+    
+    const ip = char.ip || { available: 0 };
+    html += `<div class="derived-stat"><span class="derived-label">💾 IP:</span> ${ip.available}</div>`;
+    
+    // Если нет baseStats, создаём из текущих характеристик
+    if (!char.baseStats) {
+        char.baseStats = {
+            INT: char.INT || 6, REF: char.REF || 6, DEX: char.DEX || 6,
+            TECH: char.TECH || 6, COOL: char.COOL || 6, WILL: char.WILL || 6,
+            LUCK: char.LUCK || 6, MOVE: char.MOVE || 6, BODY: char.BODY || 6, EMP: char.EMP || 6
+        };
+        saveCharacter(char);
     }
+
+    // === ГАРАНТИРУЕМ НАЛИЧИЕ ПЗ ===
+    if (!char.maxHp || !char.currentHp) {
+        const body = char.baseStats.BODY || 6;
+        const will = char.baseStats.WILL || 6;
+        const maxHp = getHP(body, will);
+        char.maxHp = maxHp;
+        char.currentHp = char.currentHp !== undefined ? char.currentHp : maxHp;
+        saveCharacter(char);
+    }
+
+    // === ДЛЯ НЕТРАННЕРА: создаём кибердеку и интерфейс, если их нет ===
+    if (char.role === "Нетраннер") {
+        if (!char.cyberdeck) {
+            char.cyberdeck = { slots: 7, programs: [] };
+            saveCharacter(char);
+        }
+        if (char.interfaceRank === undefined) {
+            char.interfaceRank = char.roleRank || 4;
+            saveCharacter(char);
+        }
+    } else {
+        if (char.interfaceRank === undefined) char.interfaceRank = 0;
+    }
+    // ===============================================================
+
+    const baseStats = char.baseStats;
+    const cyberware = char.cyberware || [];
+    const modifiedStats = this.applyCyberwareModifiers(baseStats, cyberware);
+
+    // Объединяем: отображаем модифицированные, но для редактирования будем использовать baseStats
+    const statsForDisplay = { ...modifiedStats };
+    delete statsForDisplay._initiativeBonus;
+    delete statsForDisplay._extraEffects;
+
+    const gear = char.gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
+    const skills = char.skills || {};
+    const body = modifiedStats.BODY, will = baseStats.WILL, emp = baseStats.EMP;
+    const maxHp = char.maxHp;
+    let currentHp = char.currentHp;
+    const severe = Math.ceil(maxHp / 2);
+    let humanityLoss = 0;
+    for (const name of cyberware) {
+        const implant = detailedCyberware.find(i => i.name === name);
+        if (implant) humanityLoss += parseInt(implant.humanity) || 0;
+    }
+    const humanity = Math.max(0, emp * 10 - humanityLoss);
+    const empFrom = Math.floor(humanity / 10);
+    const deathSave = body;
+    const money = char.money !== undefined && !isNaN(char.money) ? char.money : 0;
+    if (char.role === "Нетраннер") {
+        if (char.interfaceRank === undefined) {
+            char.interfaceRank = char.roleRank || 4;
+            saveCharacter(char);
+        }
+    } else {
+        char.interfaceRank = 0;
+    }
+    this.buildCharacterCard({
+        name: char.name || 'Безымянный',
+        role: char.role || 'Без роли',
+        roleRank: char.roleRank || 4,
+        stats: statsForDisplay,
+        baseStats: baseStats,
+        skills, gear, cyberware, currentHp, maxHp, severe,
+        humanity, empFrom, deathSave,
+        notes: char.notes || '', avatar: char.avatar || '', money,
+        ammo: char.ammo || [],
+        reputation: char.reputation ?? 0
+    });
+}
 
     exportCharacterToJSON() {
         const char = loadCharacter();
@@ -478,46 +484,55 @@ export class CharacterHelper {
     }
 
     importCharacterFromJSON(file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const char = JSON.parse(e.target.result);
-                if (!char.name) char.name = 'Безымянный';
-                if (!char.role) char.role = 'Соло';
-                if (char.roleRank === undefined) char.roleRank = 4;
-                if (!char.skills) char.skills = {};
-                if (!char.cyberware) char.cyberware = [];
-                if (!char.gear) char.gear = { weapons: [], armor: { body: '', head: '' }, items: [] };
-                if (!char.style) char.style = [];
-                if (!char.lifestyle) char.lifestyle = "100";
-                if (!char.housing) char.housing = "500";
-                if (!char.notes) char.notes = "";
-                if (!char.avatar) char.avatar = "";
-                if (char.money === undefined) char.money = 1000;
-                if (!char.baseStats) {
-                    char.baseStats = {
-                        INT: char.INT || 6, REF: char.REF || 6, DEX: char.DEX || 6,
-                        TECH: char.TECH || 6, COOL: char.COOL || 6, WILL: char.WILL || 6,
-                        LUCK: char.LUCK || 6, MOVE: char.MOVE || 6, BODY: char.BODY || 6, EMP: char.EMP || 6
-                    };
-                }
-                ['INT', 'REF', 'DEX', 'TECH', 'COOL', 'WILL', 'LUCK', 'MOVE', 'BODY', 'EMP'].forEach(s => delete char[s]);
-                saveCharacter(char);
-                const nameInp = document.getElementById('charName');
-                const roleSel = document.getElementById('genRole');
-                if (nameInp) nameInp.value = char.name;
-                if (roleSel) roleSel.value = char.role;
-                this.displaySavedCharacterCard();
-                if (window.shopUI) window.shopUI.render();
-                if (window.inventoryUI) window.inventoryUI.render();
-                alert('Персонаж импортирован!');
-            } catch (err) {
-                console.error('Ошибка разбора JSON:', err);
-                alert('Ошибка разбора JSON: ' + err.message);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const char = JSON.parse(e.target.result);
+            if (!char.name) char.name = 'Безымянный';
+            if (!char.role) char.role = 'Соло';
+            if (char.roleRank === undefined) char.roleRank = 4;
+            if (!char.skills) char.skills = {};
+            if (!char.cyberware) char.cyberware = [];
+            if (!char.gear) char.gear = { weapons: [], armor: { body: '', head: '' }, items: [] };
+            if (!char.style) char.style = [];
+            if (!char.lifestyle) char.lifestyle = "100";
+            if (!char.housing) char.housing = "500";
+            if (!char.notes) char.notes = "";
+            if (!char.avatar) char.avatar = "";
+            if (char.money === undefined) char.money = 1000;
+            if (!char.baseStats) {
+                char.baseStats = {
+                    INT: char.INT || 6, REF: char.REF || 6, DEX: char.DEX || 6,
+                    TECH: char.TECH || 6, COOL: char.COOL || 6, WILL: char.WILL || 6,
+                    LUCK: char.LUCK || 6, MOVE: char.MOVE || 6, BODY: char.BODY || 6, EMP: char.EMP || 6
+                };
             }
-        };
-        reader.readAsText(file);
-    }
+            // Добавляем поддержку IP и roleRank
+            if (!char.ip) {
+                char.ip = { totalEarned: 0, spent: 0, available: 0, history: [] };
+            }
+            if (!char.ip.history) char.ip.history = [];
+            ['INT', 'REF', 'DEX', 'TECH', 'COOL', 'WILL', 'LUCK', 'MOVE', 'BODY', 'EMP'].forEach(s => delete char[s]);
+            saveCharacter(char);
+            const nameInp = document.getElementById('charName');
+            const roleSel = document.getElementById('genRole');
+            if (nameInp) nameInp.value = char.name;
+            if (roleSel) roleSel.value = char.role;
+            this.displaySavedCharacterCard();
+            if (window.shopUI) window.shopUI.render();
+            if (window.inventoryUI) window.inventoryUI.render();
+            // Обновляем вкладку развития, если она открыта
+            if (typeof window.renderDevelopmentTab === 'function') {
+                window.renderDevelopmentTab();
+            }
+            alert('Персонаж импортирован!');
+        } catch (err) {
+            console.error('Ошибка разбора JSON:', err);
+            alert('Ошибка разбора JSON: ' + err.message);
+        }
+    };
+    reader.readAsText(file);
+}
 
     enableEditMode(card) {
         const char = loadCharacter();
