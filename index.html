@@ -72,7 +72,7 @@
             <div style="margin-bottom: 15px;">
                 <button id="openWizardModalBtn" class="cyber-btn">✨ Создать персонажа</button>
             </div>
-             <div id="char-development" class="sub-pane">
+            <div id="char-development" class="sub-pane">
                 <div id="developmentContainer"></div>
             </div>
             <!-- Скрытый пустой блок (бывший конструктор) – удалён, оставлен для совместимости -->
@@ -555,7 +555,20 @@
                         <button id="saveStoryToCampaignBtn" class="btn-secondary" style="display:none;">💾 Сохранить в
                             кампанию</button>
                     </div>
-
+                    <div class="control-group">
+                        <label>Тип награды:</label>
+                        <select id="contractRewardType">
+                            <option value="random">🎲 Случайно</option>
+                            <option value="money">💰 Деньги</option>
+                            <option value="cyberware">🦾 Киберимплант</option>
+                            <option value="weapon">🔫 Оружие</option>
+                            <option value="armor">🛡️ Броня</option>
+                            <option value="info">📜 Информация</option>
+                            <option value="service">🤝 Услуга</option>
+                            <option value="reputation">🎭 Репутация</option>
+                            <option value="training">📖 Обучение</option>
+                        </select>
+                    </div>
                     <div id="storyResult" class="story-result-container">
                         <p class="note">Нажмите «Сгенерировать сценарий», чтобы создать новое приключение.</p>
                     </div>
@@ -885,7 +898,7 @@
                             <li><strong>✨ Добавлена:</strong> Интеграция с карточкой персонажа</li>
                         </ul>
                     </div>
-                     <div class="changelog-version">
+                    <div class="changelog-version">
                         <h3>Версия 0.0.0.17_beta</h3>
                         <ul>
                             <li><strong>✨ Добавлен:</strong> Генератор сценариев в GM Инструменты</li>

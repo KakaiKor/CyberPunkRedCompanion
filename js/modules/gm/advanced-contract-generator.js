@@ -7,12 +7,17 @@ export class AdvancedContractGenerator {
             const types = ['extraction','elimination','protection','theft','sabotage','transport','espionage','psyop'];
             chosenType = types[Math.floor(Math.random() * types.length)];
         }
-        const contract = this.buildContract(chosenType, difficulty);
+        // Получаем выбранный тип награды (если есть)
+        let rewardTypePref = 'random';
+        const rewardSelect = document.getElementById('contractRewardType');
+        if (rewardSelect) rewardTypePref = rewardSelect.value;
+
+        const contract = this.buildContract(chosenType, difficulty, rewardTypePref);
         this.renderContract(contract);
         return contract;
     }
 
-    static buildContract(type, difficulty) {
+    static buildContract(type, difficulty, rewardTypePref = 'random') {
         // ----- клиенты, цели, локации, осложнения, повороты, сроки -----
         const clients = {
             extraction: ["Корпорация Arasaka", "Militech", "Банда Мальстрём", "Тигриные когти", "Фиксер Хорнет", "Правительство НСША", "Кочевники Альдекальдо", "Trauma Team", "Медиа-корпорация", "Частный коллекционер", "Криминальный синдикат", "Шестая улица", "Учёный Biotechnica", "Нетраннер-одиночка", "Культ", "Банда позеров", "Беглый корпорат"],
@@ -87,6 +92,121 @@ export class AdvancedContractGenerator {
         const hasTwist = Math.random() > 0.65;
         const twist = hasTwist ? twists[Math.floor(Math.random() * twists.length)] : null;
 
+        // ----- Определение типа награды -----
+        const rewardTypes = [
+            { id: 'money', label: '💰 Деньги', weight: 50 },
+            { id: 'cyberware', label: '🦾 Киберимплант', weight: 15 },
+            { id: 'weapon', label: '🔫 Оружие', weight: 12 },
+            { id: 'armor', label: '🛡️ Броня', weight: 8 },
+            { id: 'info', label: '📜 Информация', weight: 10 },
+            { id: 'service', label: '🤝 Услуга', weight: 7 },
+            { id: 'reputation', label: '🎭 Репутация', weight: 8 },
+            { id: 'training', label: '📖 Обучение', weight: 5 }
+        ];
+
+        // Если пользователь выбрал конкретный тип – используем его
+        let chosenRewardType = rewardTypePref;
+        if (chosenRewardType === 'random' || !rewardTypes.some(rt => rt.id === chosenRewardType)) {
+            // Случайный выбор с учётом весов
+            const totalWeight = rewardTypes.reduce((sum, rt) => sum + rt.weight, 0);
+            let rand = Math.random() * totalWeight;
+            for (const rt of rewardTypes) {
+                rand -= rt.weight;
+                if (rand <= 0) {
+                    chosenRewardType = rt.id;
+                    break;
+                }
+            }
+            if (!chosenRewardType) chosenRewardType = 'money';
+        }
+
+        // Генерация описания награды
+        let rewardDescription = '';
+        let rewardType = chosenRewardType;
+
+        // Импортируем данные для предметов (если есть)
+        let detailedCyberware = [];
+        let rangedWeapons = [];
+        let armors = [];
+        try {
+            // Пытаемся загрузить данные из глобальных переменных (если они определены)
+            if (typeof window !== 'undefined') {
+                if (window.detailedCyberware) detailedCyberware = window.detailedCyberware;
+                if (window.rangedWeapons) rangedWeapons = window.rangedWeapons;
+                if (window.armors) armors = window.armors;
+            }
+        } catch(e) {}
+
+        switch(chosenRewardType) {
+            case 'money':
+                rewardDescription = `${reward} eb`;
+                break;
+            case 'cyberware':
+                if (detailedCyberware.length > 0) {
+                    const item = detailedCyberware[Math.floor(Math.random() * detailedCyberware.length)];
+                    rewardDescription = `${item.name} (стоимостью ~${item.cost || '?'} eb)`;
+                } else {
+                    const cyberList = ["Нейролинк", "Керензиков", "Сандевистан", "Подкожная броня", "Киберглаз (пара)", "Киберрука"];
+                    const cyberItem = cyberList[Math.floor(Math.random() * cyberList.length)];
+                    rewardDescription = `${cyberItem} (стоимостью до ${reward} eb)`;
+                }
+                break;
+            case 'weapon':
+                if (rangedWeapons.length > 0) {
+                    const item = rangedWeapons[Math.floor(Math.random() * rangedWeapons.length)];
+                    rewardDescription = `${item.name} (${item.dmg})`;
+                } else {
+                    const weaponList = ["Malorian Arms 3516", "Штурмовая винтовка с интерфейсом", "Дробовик Militech Bulldog", "Моно-катана"];
+                    rewardDescription = weaponList[Math.floor(Math.random() * weaponList.length)];
+                }
+                break;
+            case 'armor':
+                if (armors.length > 0) {
+                    const item = armors[Math.floor(Math.random() * armors.length)];
+                    rewardDescription = `${item.name} (ОС ${item.sp})`;
+                } else {
+                    const armorList = ["Лёгкий арморджек", "Средний арморджек", "Осколочный бронежилет", "Костюм Bodyweight"];
+                    rewardDescription = armorList[Math.floor(Math.random() * armorList.length)];
+                }
+                break;
+            case 'info':
+                const infoList = [
+                    "Компромат на корпоративного менеджера",
+                    "Коды доступа к серверной Arasaka",
+                    "Чертежи прототипа оружия",
+                    "Список агентов в Найт-Сити",
+                    "Финансовые отчёты корпорации",
+                    "Пароли к защищённой сети"
+                ];
+                rewardDescription = infoList[Math.floor(Math.random() * infoList.length)];
+                break;
+            case 'service':
+                const serviceList = [
+                    "Бесплатный вызов Trauma Team (одно использование)",
+                    "Месяц защиты от банды Мальстрём",
+                    "Услуга фиксера без комиссии",
+                    "Тренировочная сессия с ветераном",
+                    "Личный телохранитель на одно задание",
+                    "Ремонт брони и оружия за счёт клиента"
+                ];
+                rewardDescription = serviceList[Math.floor(Math.random() * serviceList.length)];
+                break;
+            case 'reputation':
+                const repAmount = Math.floor(Math.random() * 3) + 1;
+                const factionList = ["Альдекальдо", "Arasaka", "Militech", "Банда Мальстрём", "Тигриные когти", "Фиксеры"];
+                const faction = factionList[Math.floor(Math.random() * factionList.length)];
+                rewardDescription = `+${repAmount} репутации у ${faction}`;
+                break;
+            case 'training':
+                const skillList = ["Вождение", "Уклонение", "Восприятие", "Длинноствольное оружие", "Холодное оружие", "Драка"];
+                const skillName = skillList[Math.floor(Math.random() * skillList.length)];
+                rewardDescription = `Бесплатное обучение: +1 к навыку "${skillName}" (требуется время)`;
+                break;
+            default:
+                rewardDescription = `${reward} eb`;
+                rewardType = 'money';
+        }
+
         // ----- ЖИВЫЕ ОПИСАНИЯ (с атмосферой и голосом) -----
         let description = "";
         const intro = [
@@ -100,30 +220,43 @@ export class AdvancedContractGenerator {
         let body = "";
         switch(type) {
             case 'extraction':
-                body = `«${client} платит ${reward} eb за извлечение ${target}. Последний раз его видели ${location}. Охрана — бывшие корпоративные соло. Заказчик хочет живым, но если пойдёт не по плану — приоритет на доставку. Времени до полуночи.»`;
+                body = `«${client} платит за извлечение ${target}. Последний раз его видели ${location}. Охрана — бывшие корпоративные соло. Заказчик хочет живым, но если пойдёт не по плану — приоритет на доставку. Времени до полуночи.»`;
                 break;
             case 'elimination':
-                body = `«${client} просит убрать ${target}. Цель засела ${location}. У неё кибероружие и как минимум трое охранников. Оплата ${reward} eb. Доказательства — любая часть тела с узнаваемой татуировкой.»`;
+                body = `«${client} просит убрать ${target}. Цель засела ${location}. У неё кибероружие и как минимум трое охранников. Доказательства — любая часть тела с узнаваемой татуировкой.»`;
                 break;
             case 'protection':
-                body = `«${client} нанимает команду для охраны ${target} ${location}. Угроза — конкурентные банды или корпоративные киллеры. Оплата ${reward} eb + бонус за каждую отражённую атаку. Заказчик будет рядом — не подведите.»`;
+                body = `«${client} нанимает команду для охраны ${target} ${location}. Угроза — конкурентные банды или корпоративные киллеры. Заказчик будет рядом — не подведите.»`;
                 break;
             case 'theft':
-                body = `«Нужно выкрасть ${target} из ${location}. Охрана — электронные замки и патруль с ПП. ${client} платит ${reward} eb. Желательно без шума, но если начнётся стрельба — заметайте следы.»`;
+                body = `«Нужно выкрасть ${target} из ${location}. Охрана — электронные замки и патруль с ПП. ${client} платит. Желательно без шума, но если начнётся стрельба — заметайте следы.»`;
                 break;
             case 'sabotage':
-                body = `«${client} хочет уничтожить ${target} ${location}. Чем больше хаоса, тем лучше — но без прямых улик на заказчика. Награда ${reward} eb. Подрывная смесь ждёт в условленном месте.»`;
+                body = `«${client} хочет уничтожить ${target} ${location}. Чем больше хаоса, тем лучше — но без прямых улик на заказчика. Подрывная смесь ждёт в условленном месте.»`;
                 break;
             case 'transport':
-                body = `«Доставить ${target} из ${location} до склада в доке. Маршрут идёт через боевую зону, возможны нападения кочевников-контрабандистов. ${client} платит ${reward} eb. Груз хрупкий — не трясите.»`;
+                body = `«Доставить ${target} из ${location} до склада в доке. Маршрут идёт через боевую зону, возможны нападения кочевников-контрабандистов. ${client} платит. Груз хрупкий — не трясите.»`;
                 break;
             case 'espionage':
-                body = `«Раздобыть ${target} ${location}. Система безопасности — Level 3, есть чёрный лёд. ${client} даёт ${reward} eb. Работа строго конфиденциально — если вас поймают, заказчик откажется от любых связей.»`;
+                body = `«Раздобыть ${target} ${location}. Система безопасности — Level 3, есть чёрный лёд. ${client} даёт щедрую награду. Работа строго конфиденциально — если вас поймают, заказчик откажется от любых связей.»`;
                 break;
             case 'psyop':
-                body = `«Психологическая операция: ${target} через ${location}. Нужно, чтобы слух разошёлся по всему городу. ${client} платит ${reward} eb. Используйте агентов, подставные скримлисты — ваша фантазия.»`;
+                body = `«Психологическая операция: ${target} через ${location}. Нужно, чтобы слух разошёлся по всему городу. ${client} платит. Используйте агентов, подставные скримлисты — ваша фантазия.»`;
                 break;
         }
+
+        // Добавляем информацию о награде в описание
+        const rewardIcon = {
+            money: '💰',
+            cyberware: '🦾',
+            weapon: '🔫',
+            armor: '🛡️',
+            info: '📜',
+            service: '🤝',
+            reputation: '🎭',
+            training: '📖'
+        }[rewardType] || '💰';
+        body += `\n\n🏆 Награда: ${rewardIcon} ${rewardDescription}`;
 
         if (complication) body += ` ⚠️ Проблема: ${complication}.`;
         if (twist) body += ` 🔄 Поворот: ${twist}.`;
@@ -140,6 +273,8 @@ export class AdvancedContractGenerator {
             location,
             difficulty,
             reward,
+            rewardType: rewardType,
+            rewardDescription: rewardDescription,
             timeLimit: timeLimits[difficulty],
             recommendedRank: { easy: "1–2", medium: "3–4", hard: "5–6", deadly: "7+" }[difficulty],
             complication,
@@ -152,6 +287,17 @@ export class AdvancedContractGenerator {
         const container = document.getElementById('advancedContractResult');
         if (!container) return;
         const difficultyClass = `diff-${contract.difficulty}`;
+        const rewardIcon = {
+            money: '💰',
+            cyberware: '🦾',
+            weapon: '🔫',
+            armor: '🛡️',
+            info: '📜',
+            service: '🤝',
+            reputation: '🎭',
+            training: '📖'
+        }[contract.rewardType] || '💰';
+
         const html = `
             <div class="contract-card ${difficultyClass}">
                 <div class="contract-header">
@@ -159,6 +305,9 @@ export class AdvancedContractGenerator {
                     <div class="contract-type">${this.translateType(contract.type)}</div>
                 </div>
                 <div class="contract-difficulty-badge">${this.translateDifficulty(contract.difficulty)}</div>
+                <div class="contract-reward" style="font-size:1.2rem; padding:8px 0; border-bottom:1px solid #2a3342; margin-bottom:8px;">
+                    <strong>🏆 Награда:</strong> ${rewardIcon} ${this.escapeHtml(contract.rewardDescription)}
+                </div>
                 <div class="contract-description">${this.escapeHtml(contract.description)}</div>
                 <div class="contract-details">
                     <div><i class="fas fa-user"></i> <strong>Заказчик:</strong> ${this.escapeHtml(contract.client)}</div>
@@ -166,7 +315,6 @@ export class AdvancedContractGenerator {
                     <div><i class="fas fa-map-marker-alt"></i> <strong>Место:</strong> ${this.escapeHtml(contract.location)}</div>
                     <div><i class="fas fa-hourglass-half"></i> <strong>Срок:</strong> ${contract.timeLimit}</div>
                     <div><i class="fas fa-chart-line"></i> <strong>Рекомендуемый ранг:</strong> ${contract.recommendedRank}</div>
-                    <div><i class="fas fa-coins"></i> <strong>Награда:</strong> ${contract.reward} eb</div>
                     ${contract.complication ? `<div><i class="fas fa-exclamation-triangle"></i> <strong>Осложнение:</strong> ${this.escapeHtml(contract.complication)}</div>` : ''}
                     ${contract.twist ? `<div><i class="fas fa-sync-alt"></i> <strong>Поворот:</strong> ${this.escapeHtml(contract.twist)}</div>` : ''}
                 </div>
