@@ -77,6 +77,14 @@ export function upgradeSkill(char, skillName, levels = 1) {
     });
 
     saveCharacter(char);
+
+    // Добавляем анимацию для элемента навыка, если он есть на странице
+    const item = document.querySelector(`.dev-skill-item[data-skill="${skillName}"]`);
+    if (item) {
+        item.classList.add('just-upgraded');
+        setTimeout(() => item.classList.remove('just-upgraded'), 800);
+    }
+
     return {
         success: true,
         message: `Навык "${skillName}" повышен с ${currentLevel} до ${targetLevel}. Потрачено ${totalCost} IP.`,
