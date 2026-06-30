@@ -11,6 +11,11 @@ import { STORY_CLIFFHANGERS } from '../data/story-cliffhangers.js';
 import { STORY_CLIMAXES } from '../data/story-climaxes.js';
 import { STORY_RESOLUTIONS } from '../data/story-resolutions.js';
 import { STORY_TWISTS } from '../data/story-twists.js';
+import { STORY_NPCS } from '../data/story-npcs.js';
+import { STORY_LOCATIONS } from '../data/story-locations.js';
+import { STORY_CLUES } from '../data/story-clues.js';
+import { STORY_ITEMS } from '../data/story-items.js';
+import { STORY_ENEMIES } from '../data/story-enemies.js';
 
 export class StoryGenerator {
     /**
@@ -110,6 +115,72 @@ export class StoryGenerator {
         const map = { short: 2, medium: 4, long: 6 };
         return map[complexity] || 4;
     }
+    static getDetailsForBeat(beatType, tags = []) {
+    let npcs = [];
+    let locations = [];
+    let clues = [];
+    let items = [];
+    let enemies = [];
+
+    // --- NPC ---
+    let candidates = STORY_NPCS;
+    if (tags && tags.length) {
+        candidates = candidates.filter(n => n.tags.some(t => tags.includes(t)));
+    }
+    if (candidates.length === 0) candidates = STORY_NPCS;
+    const npcCount = Math.random() < 0.3 ? 2 : 1;
+    for (let i = 0; i < npcCount; i++) {
+        const chosen = this.pickRandom(candidates);
+        if (chosen && !npcs.some(n => n.id === chosen.id)) npcs.push(chosen);
+    }
+
+    // --- Локация ---
+    let locCandidates = STORY_LOCATIONS;
+    if (tags && tags.length) {
+        locCandidates = locCandidates.filter(l => l.tags.some(t => tags.includes(t)));
+    }
+    if (locCandidates.length === 0) locCandidates = STORY_LOCATIONS;
+    const loc = this.pickRandom(locCandidates);
+    if (loc) locations.push(loc);
+
+    // --- Улика (50% шанс) ---
+    if (Math.random() < 0.5) {
+        let clueCandidates = STORY_CLUES;
+        if (tags && tags.length) {
+            clueCandidates = clueCandidates.filter(c => c.tags.some(t => tags.includes(t)));
+        }
+        if (clueCandidates.length === 0) clueCandidates = STORY_CLUES;
+        const clue = this.pickRandom(clueCandidates);
+        if (clue) clues.push(clue);
+    }
+
+    // --- Предмет (30% шанс) ---
+    if (Math.random() < 0.3) {
+        let itemCandidates = STORY_ITEMS;
+        if (tags && tags.length) {
+            itemCandidates = itemCandidates.filter(it => it.tags.some(t => tags.includes(t)));
+        }
+        if (itemCandidates.length === 0) itemCandidates = STORY_ITEMS;
+        const item = this.pickRandom(itemCandidates);
+        if (item) items.push(item);
+    }
+
+    // --- Враги (только для боевых битов) ---
+    if (beatType === 'Клиффхэнгер' || beatType === 'Кульминация') {
+        let enemyCandidates = STORY_ENEMIES;
+        if (tags && tags.length) {
+            enemyCandidates = enemyCandidates.filter(e => e.tags.some(t => tags.includes(t)));
+        }
+        if (enemyCandidates.length === 0) enemyCandidates = STORY_ENEMIES;
+        const enemyCount = Math.random() < 0.5 ? 1 : 2;
+        for (let i = 0; i < enemyCount; i++) {
+            const enemy = this.pickRandom(enemyCandidates);
+            if (enemy) enemies.push(enemy);
+        }
+    }
+
+    return { npcs, locations, clues, items, enemies };
+}
 
     static buildHookFromContract(contract, tone) {
         // Берём подходящий крюк из story-hooks.js, подгоняем под контракт
@@ -171,47 +242,142 @@ static toJSON(story) {
     };
 }
     static buildBeats(contract, count, tone) {
-        const beats = [];
-        const devs = STORY_DEVELOPMENTS.filter(d => {
-            if (tone !== 'all') return d.tags && d.tags.includes(tone);
-            return true;
-        });
-        const cliffs = STORY_CLIFFHANGERS.filter(c => {
-            if (tone !== 'all') return c.tags && c.tags.includes(tone);
-            return true;
-        });
+    const beats = [];
+    const devs = STORY_DEVELOPMENTS.filter(d => {
+        if (tone !== 'all') return d.tags && d.tags.includes(tone);
+        return true;
+    });
+    const cliffs = STORY_CLIFFHANGERS.filter(c => {
+        if (tone !== 'all') return c.tags && c.tags.includes(tone);
+        return true;
+    });
 
-        const devPool = devs.length ? devs : STORY_DEVELOPMENTS;
-        const cliffPool = cliffs.length ? cliffs : STORY_CLIFFHANGERS;
+    const devPool = devs.length ? devs : STORY_DEVELOPMENTS;
+    const cliffPool = cliffs.length ? cliffs : STORY_CLIFFHANGERS;
 
-        // Чередуем: начинаем с развития, если контракт не боевой, иначе с клиффхэнгера
-        const isActionType = ['elimination', 'sabotage'].includes(contract.type);
-        let nextIsDev = !isActionType;
+    const isActionType = ['elimination', 'sabotage'].includes(contract.type);
+    let nextIsDev = !isActionType;
 
-        for (let i = 0; i < count; i++) {
-            let beat;
-            if (nextIsDev) {
-                const template = devPool[Math.floor(Math.random() * devPool.length)];
-                beat = {
-                    ...template,
-                    beatType: 'Развитие',
-                    text: this.customizeBeatText(template.text, contract)
-                };
-            } else {
-                const template = cliffPool[Math.floor(Math.random() * cliffPool.length)];
-                beat = {
-                    ...template,
-                    beatType: 'Клиффхэнгер',
-                    text: this.customizeBeatText(template.text, contract)
-                };
-            }
-            beats.push(beat);
-            nextIsDev = !nextIsDev;
+    for (let i = 0; i < count; i++) {
+        let beat;
+        if (nextIsDev) {
+            const template = devPool[Math.floor(Math.random() * devPool.length)];
+            beat = {
+                ...template,
+                beatType: 'Развитие',
+                text: this.customizeBeatText(template.text, contract)
+            };
+        } else {
+            const template = cliffPool[Math.floor(Math.random() * cliffPool.length)];
+            beat = {
+                ...template,
+                beatType: 'Клиффхэнгер',
+                text: this.customizeBeatText(template.text, contract)
+            };
         }
 
-        return beats;
+        // === ДОБАВЛЯЕМ ДЕТАЛИ К БИТУ ===
+        const details = this.getDetailsForBeat(beat.beatType, beat.tags || []);
+        let extraText = '';
+        if (details.npcs.length) {
+            extraText += '\n\n👤 NPC: ' + details.npcs.map(n => `${n.name} (${n.role})`).join(', ');
+        }
+        if (details.locations.length) {
+            extraText += '\n\n📍 Локация: ' + details.locations.map(l => l.name).join(', ');
+        }
+        if (details.clues.length) {
+            extraText += '\n\n🔍 Улики: ' + details.clues.map(c => c.name).join(', ');
+        }
+        if (details.items.length) {
+            extraText += '\n\n📦 Предметы: ' + details.items.map(i => i.name).join(', ');
+        }
+        if (details.enemies.length) {
+            extraText += '\n\n💀 Враги: ' + details.enemies.map(e => `${e.name} (${e.threat})`).join(', ');
+        }
+        if (extraText) {
+            beat.text += extraText;
+        }
+        beat.details = details;
+
+        beats.push(beat);
+        nextIsDev = !nextIsDev;
     }
 
+    return beats;
+}
+    // modules/story-generator.js – новые методы
+
+static pickRandom(arr) {
+    if (!arr || arr.length === 0) return null;
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+static getDetailsForBeat(beatType, tags = []) {
+    let npcs = [];
+    let locations = [];
+    let clues = [];
+    let items = [];
+    let enemies = [];
+
+    // --- NPC ---
+    let candidates = STORY_NPCS;
+    if (tags && tags.length) {
+        candidates = candidates.filter(n => n.tags.some(t => tags.includes(t)));
+    }
+    if (candidates.length === 0) candidates = STORY_NPCS;
+    const npcCount = Math.random() < 0.3 ? 2 : 1;
+    for (let i = 0; i < npcCount; i++) {
+        const chosen = this.pickRandom(candidates);
+        if (chosen && !npcs.some(n => n.id === chosen.id)) npcs.push(chosen);
+    }
+
+    // --- Локация ---
+    let locCandidates = STORY_LOCATIONS;
+    if (tags && tags.length) {
+        locCandidates = locCandidates.filter(l => l.tags.some(t => tags.includes(t)));
+    }
+    if (locCandidates.length === 0) locCandidates = STORY_LOCATIONS;
+    const loc = this.pickRandom(locCandidates);
+    if (loc) locations.push(loc);
+
+    // --- Улика (50% шанс) ---
+    if (Math.random() < 0.5) {
+        let clueCandidates = STORY_CLUES;
+        if (tags && tags.length) {
+            clueCandidates = clueCandidates.filter(c => c.tags.some(t => tags.includes(t)));
+        }
+        if (clueCandidates.length === 0) clueCandidates = STORY_CLUES;
+        const clue = this.pickRandom(clueCandidates);
+        if (clue) clues.push(clue);
+    }
+
+    // --- Предмет (30% шанс) ---
+    if (Math.random() < 0.3) {
+        let itemCandidates = STORY_ITEMS;
+        if (tags && tags.length) {
+            itemCandidates = itemCandidates.filter(it => it.tags.some(t => tags.includes(t)));
+        }
+        if (itemCandidates.length === 0) itemCandidates = STORY_ITEMS;
+        const item = this.pickRandom(itemCandidates);
+        if (item) items.push(item);
+    }
+
+    // --- Враги (только для боевых битов) ---
+    if (beatType === 'Клиффхэнгер' || beatType === 'Кульминация') {
+        let enemyCandidates = STORY_ENEMIES;
+        if (tags && tags.length) {
+            enemyCandidates = enemyCandidates.filter(e => e.tags.some(t => tags.includes(t)));
+        }
+        if (enemyCandidates.length === 0) enemyCandidates = STORY_ENEMIES;
+        const enemyCount = Math.random() < 0.5 ? 1 : 2;
+        for (let i = 0; i < enemyCount; i++) {
+            const enemy = this.pickRandom(enemyCandidates);
+            if (enemy) enemies.push(enemy);
+        }
+    }
+
+    return { npcs, locations, clues, items, enemies };
+}
     static customizeBeatText(text, contract) {
         // Заменяем плейсхолдеры
         return text
@@ -391,15 +557,38 @@ static toJSON(story) {
 
         // Биты
         story.beats.forEach((beat, index) => {
-            const icon = beat.beatType === 'Развитие' ? '📌' : '⚡';
-            html += `
-                <div class="story-beat">
-                    <div class="beat-label">${icon} БИТ ${index + 1}: ${beat.beatType} (${beat.type})</div>
-                    <div class="beat-text">${this.escapeHtml(beat.text)}</div>
-                </div>
-            `;
-        });
-
+    const icon = beat.beatType === 'Развитие' ? '📌' : '⚡';
+    let detailsHtml = '';
+    if (beat.details) {
+        const d = beat.details;
+        const parts = [];
+        if (d.npcs && d.npcs.length) {
+            parts.push(`<span class="beat-detail-item"><span class="detail-icon">👤</span> ${d.npcs.map(n => n.name).join(', ')}</span>`);
+        }
+        if (d.locations && d.locations.length) {
+            parts.push(`<span class="beat-detail-item"><span class="detail-icon">📍</span> ${d.locations.map(l => l.name).join(', ')}</span>`);
+        }
+        if (d.clues && d.clues.length) {
+            parts.push(`<span class="beat-detail-item"><span class="detail-icon">🔍</span> ${d.clues.map(c => c.name).join(', ')}</span>`);
+        }
+        if (d.items && d.items.length) {
+            parts.push(`<span class="beat-detail-item"><span class="detail-icon">📦</span> ${d.items.map(i => i.name).join(', ')}</span>`);
+        }
+        if (d.enemies && d.enemies.length) {
+            parts.push(`<span class="beat-detail-item"><span class="detail-icon">💀</span> ${d.enemies.map(e => e.name).join(', ')}</span>`);
+        }
+        if (parts.length) {
+            detailsHtml = `<div class="beat-details">${parts.join('')}</div>`;
+        }
+    }
+    html += `
+        <div class="story-beat">
+            <div class="beat-label">${icon} БИТ ${index + 1}: ${beat.beatType} (${beat.type})</div>
+            <div class="beat-text">${this.escapeHtml(beat.text)}</div>
+            ${detailsHtml}
+        </div>
+    `;
+});
         // Кульминация
         html += `
                     <div class="story-beat story-climax">

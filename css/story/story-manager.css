@@ -1639,3 +1639,375 @@ body.cyberpunk-theme .beat-example {
     border-left-color: #f9f002;
     background: rgba(249, 240, 2, 0.08);
 }
+/* ===== СТИЛИ ДЛЯ ДЕТАЛЕЙ БИТОВ (этап 2) ===== */
+
+.beat-details-wrapper {
+    margin-top: 8px;
+    padding: 10px 14px;
+    background: rgba(15, 18, 25, 0.6);
+    border-radius: 12px;
+    border-left: 3px solid #ff9a3c;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.beat-details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    font-size: 0.85rem;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #ff9a3c;
+    min-width: 80px;
+}
+
+.detail-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: #1e2530;
+    color: #e0e0e0;
+    border: 1px solid #2a3342;
+}
+
+.detail-tag.npc-tag {
+    border-color: #39ff14;
+    color: #39ff14;
+}
+
+.detail-tag.location-tag {
+    border-color: #ff9a3c;
+    color: #ff9a3c;
+}
+
+.detail-tag.clue-tag {
+    border-color: #4caf50;
+    color: #4caf50;
+}
+
+.detail-tag.item-tag {
+    border-color: #0099ff;
+    color: #0099ff;
+}
+
+.detail-tag.enemy-tag {
+    border-color: #ff3c5f;
+    color: #ff3c5f;
+}
+/* ============================================================
+   УЛУЧШЕННАЯ СТИЛИЗАЦИЯ БИТОВ В ГЕНЕРАТОРЕ
+   ============================================================ */
+
+/* Карточка истории */
+.story-card {
+    background: #14181f;
+    border: 1px solid #2a3342;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+/* Заголовок */
+.story-header {
+    border-bottom: 2px solid #ff3c5f;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+}
+
+.story-header h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.6rem;
+    color: #ff9a3c;
+    margin: 0 0 10px 0;
+    text-shadow: 0 0 8px rgba(255,154,60,0.3);
+}
+
+.story-meta .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-right: 6px;
+    background: #1e2530;
+    color: #9aa4bf;
+    border: 1px solid #2a3342;
+}
+
+.story-meta .badge.diff-easy { background: #28a745; color: #fff; }
+.story-meta .badge.diff-medium { background: #ffc107; color: #0a0c12; }
+.story-meta .badge.diff-hard { background: #fd7e14; color: #fff; }
+.story-meta .badge.diff-deadly { background: #dc3545; color: #fff; }
+
+/* Контракт */
+.story-contract {
+    background: #0a0c12;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 24px;
+    border-left: 4px solid #ff9a3c;
+}
+
+.contract-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
+.contract-summary strong {
+    color: #ff9a3c;
+}
+
+.contract-description {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #e0e0e0;
+    white-space: pre-wrap;
+}
+
+.complication {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 60, 95, 0.1);
+    border-radius: 12px;
+    border-left: 3px solid #ff3c5f;
+    color: #ff9a3c;
+}
+
+.twist {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(57, 255, 20, 0.05);
+    border-radius: 12px;
+    border-left: 3px solid #39ff14;
+    color: #39ff14;
+}
+
+/* Бит */
+.story-beat {
+    background: #0f1219;
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    border: 1px solid #2a3342;
+    transition: border-color 0.2s;
+}
+
+.story-beat:hover {
+    border-color: #ff9a3c;
+}
+
+.beat-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ff9a3c;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.beat-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #e0e0e0;
+    white-space: pre-wrap;
+}
+
+/* Специальные биты */
+.story-hook {
+    border-left: 4px solid #39ff14;
+    background: rgba(57, 255, 20, 0.04);
+}
+
+.story-climax {
+    border-left: 4px solid #ff3c5f;
+    background: rgba(255, 60, 95, 0.04);
+}
+
+.story-resolution {
+    border-left: 4px solid #4caf50;
+    background: rgba(76, 175, 80, 0.04);
+}
+
+.beat-example {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 154, 60, 0.06);
+    border-radius: 12px;
+    border-left: 2px solid #ff9a3c;
+    font-style: italic;
+    color: #9aa4bf;
+}
+
+/* Детали бита (NPC, локации, улики, предметы, враги) */
+.beat-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed #2a3342;
+}
+
+.beat-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #1a1e2a;
+    padding: 4px 10px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    color: #c9d1d9;
+}
+
+.beat-detail-item .detail-icon {
+    font-size: 0.9rem;
+}
+
+.beat-detail-item .detail-label {
+    color: #9aa4bf;
+    margin-right: 4px;
+}
+
+/* NPC и встречи в футере */
+.story-npcs, .story-encounters {
+    margin-top: 24px;
+    padding: 16px;
+    background: #0a0c12;
+    border-radius: 16px;
+    border: 1px solid #2a3342;
+}
+
+.story-npcs .beat-label, .story-encounters .beat-label {
+    margin-bottom: 12px;
+}
+
+.npc-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+}
+
+.npc-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+}
+
+.npc-group.enemies strong { color: #ff3c5f; }
+.npc-group.allies strong { color: #39ff14; }
+
+.npc-group .npc-name {
+    background: #1e2530;
+    padding: 2px 10px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    color: #e0e0e0;
+}
+
+.encounters-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.encounter-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    background: #1a1e2a;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+}
+
+.encounter-item .encounter-threat {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 30px;
+}
+
+.encounter-item .encounter-threat.low { background: #28a745; color: #fff; }
+.encounter-item .encounter-threat.medium { background: #ffc107; color: #0a0c12; }
+.encounter-item .encounter-threat.high { background: #fd7e14; color: #fff; }
+.encounter-item .encounter-threat.deadly { background: #dc3545; color: #fff; }
+
+/* Футер истории */
+.story-meta-footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #2a3342;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+/* Адаптация под киберпанк-тему */
+body.cyberpunk-theme .story-card {
+    background: #0a0c12;
+    border-color: #f9f002;
+}
+
+body.cyberpunk-theme .story-header {
+    border-bottom-color: #f9f002;
+}
+
+body.cyberpunk-theme .story-header h3 {
+    color: #f9f002;
+    text-shadow: 0 0 12px rgba(249, 240, 2, 0.5);
+}
+
+body.cyberpunk-theme .story-contract {
+    border-left-color: #f9f002;
+}
+
+body.cyberpunk-theme .beat-label {
+    color: #f9f002;
+}
+
+body.cyberpunk-theme .story-hook {
+    border-left-color: #39ff14;
+}
+
+body.cyberpunk-theme .story-climax {
+    border-left-color: #ff003c;
+}
+
+body.cyberpunk-theme .story-resolution {
+    border-left-color: #39ff14;
+}
+
+body.cyberpunk-theme .story-meta .badge {
+    background: #1a1a2a;
+    border-color: #f9f002;
+    color: #f9f002;
+}
+/* Адаптивность */
+@media (max-width: 700px) {
+    .beat-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    .detail-label {
+        min-width: auto;
+    }
+}
