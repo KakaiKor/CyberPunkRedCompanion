@@ -1,6 +1,19 @@
-// wizard-step-summary.js (исправленная версия)
+// wizard-step-summary.js (исправленная версия с русскими названиями ХАР)
 import { getHP } from '../../utils.js';
 import { detailedCyberware } from '../../data.js';
+
+const STAT_NAMES = {
+    INT: 'ИНТ',
+    REF: 'РЕФ',
+    DEX: 'ЛВК',
+    TECH: 'ТЕХ',
+    COOL: 'КРУТ',
+    WILL: 'ВОЛЯ',
+    LUCK: 'УДЧ',
+    MOVE: 'СКО',
+    BODY: 'ТЕЛО',
+    EMP: 'ЭМП'
+};
 
 export function renderSummaryStep(data) {
     // Читаем все данные о снаряжении из data.gear (который заполняется на шаге 3)
@@ -26,10 +39,10 @@ export function renderSummaryStep(data) {
     const humanity = Math.max(0, baseHumanity - humanityLoss);
     const empFrom = Math.floor(humanity / 10);
 
-    // Рендер характеристик
+    // Рендер характеристик с русскими названиями
     const statsHtml = Object.entries(data.stats).map(([k, v]) => `
         <div class="stat-item" data-stat="${k}">
-            <span class="stat-name">${k}</span>
+            <span class="stat-name">${STAT_NAMES[k] || k}</span>
             <span class="stat-value">${v}</span>
         </div>
     `).join('');
@@ -74,7 +87,7 @@ export function renderSummaryStep(data) {
                             <span class="hp-threshold">(тяж. ≤ ${severe})</span>
                         </div>
                         <div>Спасбросок: ${body}</div>
-                        <div>Человечность: ${humanity} (ЭМП = ${empFrom})</div>
+                        <div>Человечность: ${humanity} (${STAT_NAMES.EMP} = ${empFrom})</div>
                     </div>
                     <div class="combat-buttons">
                         <button class="heal-btn" type="button">💊 Лечение (+${body} ПЗ)</button>

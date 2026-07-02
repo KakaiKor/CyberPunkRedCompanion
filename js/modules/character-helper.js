@@ -4,6 +4,19 @@ import { saveCharacter, loadCharacter } from '../storage.js';
 import { detailedCyberware, armors, rangedWeapons, meleeWeapons, gearItems } from '../data.js';
 import { rolesData } from '../data/roles-data.js';
 
+const STAT_NAMES = {
+    INT: 'ИНТ',
+    REF: 'РЕФ',
+    DEX: 'ЛВК',
+    TECH: 'ТЕХ',
+    COOL: 'КРУТ',
+    WILL: 'ВОЛЯ',
+    LUCK: 'УДЧ',
+    MOVE: 'СКО',
+    BODY: 'ТЕЛО',
+    EMP: 'ЭМП'
+};
+
 export class CharacterHelper {
     constructor() {
         this.buildStatsGrid();
@@ -15,7 +28,7 @@ export class CharacterHelper {
 
         window.addEventListener('characterUpdated', () => this.displaySavedCharacterCard());
     }
-
+    
     // НОВЫЙ МЕТОД – применяет модификаторы имплантов к базовым характеристикам
     applyCyberwareModifiers(baseStats, cyberwareList) {
         if (!baseStats) return {};
@@ -158,227 +171,224 @@ export class CharacterHelper {
     }
 
     buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats, ammo = [], reputation = 0 }) {
-        const baseStatsAttr = baseStats ? JSON.stringify(baseStats) : '';
-        stats = stats || {};
-        skills = skills || {};
-        gear = gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
-        cyberware = cyberware || [];
+    const baseStatsAttr = baseStats ? JSON.stringify(baseStats) : '';
+    stats = stats || {};
+    skills = skills || {};
+    gear = gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
+    cyberware = cyberware || [];
 
-        const implantModifiers = {
-            "Керензиков": { initiative: 2, display: "+2 к инициативе" },
-            "Сандевистан": { initiativeTemporary: "Активация: +3 к инициативе на 1 минуту", display: "Временное ускорение" },
-            "Прицельный модуль": { perception: 1, display: "+1 к прицельным выстрелам" },
-            "Улучшение изображения": { perception: 2, display: "+2 к Восприятию, чтению по губам" },
-            "Усиленный слух": { perception: 2, display: "+2 к Восприятию (слух)" },
-            "Анализатор голосового напряжения": { perception: 2, display: "+2 к Проницательности и Допросу (детектор лжи)" },
-            "Искусственные мышцы и усиленные кости": { BODY: 2, maxBody: 10, display: "+2 к ТЕЛО (макс. 10)" },
-            "Усиленные антитела": { recovery: "ТЕЛО×2 ПЗ в день", display: "Регенерация (ТЕЛО×2 ПЗ/день)" },
-            "Связыватели токсинов": { resistance: 2, display: "+2 к Сопротивлению пыткам/наркотикам" },
-            "Жабры": { special: "дыхание под водой", display: "Дыхание под водой" },
-            "Назальные фильтры": { special: "иммунитет к газам", display: "Иммунитет к газам" },
-            "Эндоскелет Сигма": { replaceBody: true, bodyValue: 12, display: "ТЕЛО = 12" },
-            "Эндоскелет Бета": { replaceBody: true, bodyValue: 14, display: "ТЕЛО = 14" },
-            "Подкожная броня": { armor: 11, display: "ОС 11 на тело и голову" },
-            "Плетёная кожа": { armor: 7, special: "Регенерирует 1 ОС в день", display: "ОС 7 + регенерация брони" },
-            "Роликовая стопа": { movement: 6, display: "+6 м к бегу" }
-        };
+    const implantModifiers = {
+        "Керензиков": { initiative: 2, display: "+2 к инициативе" },
+        "Сандевистан": { initiativeTemporary: "Активация: +3 к инициативе на 1 минуту", display: "Временное ускорение" },
+        "Прицельный модуль": { perception: 1, display: "+1 к прицельным выстрелам" },
+        "Улучшение изображения": { perception: 2, display: "+2 к Восприятию, чтению по губам" },
+        "Усиленный слух": { perception: 2, display: "+2 к Восприятию (слух)" },
+        "Анализатор голосового напряжения": { perception: 2, display: "+2 к Проницательности и Допросу (детектор лжи)" },
+        "Искусственные мышцы и усиленные кости": { BODY: 2, maxBody: 10, display: "+2 к ТЕЛО (макс. 10)" },
+        "Усиленные антитела": { recovery: "ТЕЛО×2 ПЗ в день", display: "Регенерация (ТЕЛО×2 ПЗ/день)" },
+        "Связыватели токсинов": { resistance: 2, display: "+2 к Сопротивлению пыткам/наркотикам" },
+        "Жабры": { special: "дыхание под водой", display: "Дыхание под водой" },
+        "Назальные фильтры": { special: "иммунитет к газам", display: "Иммунитет к газам" },
+        "Эндоскелет Сигма": { replaceBody: true, bodyValue: 12, display: "ТЕЛО = 12" },
+        "Эндоскелет Бета": { replaceBody: true, bodyValue: 14, display: "ТЕЛО = 14" },
+        "Подкожная броня": { armor: 11, display: "ОС 11 на тело и голову" },
+        "Плетёная кожа": { armor: 7, special: "Регенерирует 1 ОС в день", display: "ОС 7 + регенерация брони" },
+        "Роликовая стопа": { movement: 6, display: "+6 м к бегу" }
+    };
 
-        let bonuses = { BODY: 0, initiative: 0, resistance: 0 };
-        let extraEffects = [];
-        let replaceBody = null;
-        for (const implant of cyberware) {
-            const mod = implantModifiers[implant];
-            if (mod) {
-                if (mod.BODY) bonuses.BODY += mod.BODY;
-                if (mod.initiative) bonuses.initiative += mod.initiative;
-                if (mod.resistance) bonuses.resistance += mod.resistance;
-                if (mod.replaceBody) {
-                    if (!replaceBody || mod.bodyValue > replaceBody.value) {
-                        replaceBody = { value: mod.bodyValue, display: mod.display };
-                    }
+    let bonuses = { BODY: 0, initiative: 0, resistance: 0 };
+    let extraEffects = [];
+    let replaceBody = null;
+    for (const implant of cyberware) {
+        const mod = implantModifiers[implant];
+        if (mod) {
+            if (mod.BODY) bonuses.BODY += mod.BODY;
+            if (mod.initiative) bonuses.initiative += mod.initiative;
+            if (mod.resistance) bonuses.resistance += mod.resistance;
+            if (mod.replaceBody) {
+                if (!replaceBody || mod.bodyValue > replaceBody.value) {
+                    replaceBody = { value: mod.bodyValue, display: mod.display };
                 }
-                if (mod.display) extraEffects.push(mod.display);
             }
+            if (mod.display) extraEffects.push(mod.display);
         }
-        let bodyBase = stats.BODY || 6;
-        let bodyDisplay, bodyBonusText;
-        if (replaceBody) {
-            bodyDisplay = replaceBody.value;
-            bodyBonusText = ` (замена: ${replaceBody.display})`;
-        } else {
-            bodyDisplay = bodyBase + bonuses.BODY;
-            const maxBody = 10;
-            if (bodyDisplay > maxBody) bodyDisplay = maxBody;
-            bodyBonusText = bonuses.BODY !== 0 ? ` (база ${bodyBase} +${bonuses.BODY} от имплантов)` : '';
+    }
+    let bodyBase = stats.BODY || 6;
+    let bodyDisplay, bodyBonusText;
+    if (replaceBody) {
+        bodyDisplay = replaceBody.value;
+        bodyBonusText = ` (замена: ${replaceBody.display})`;
+    } else {
+        bodyDisplay = bodyBase + bonuses.BODY;
+        const maxBody = 10;
+        if (bodyDisplay > maxBody) bodyDisplay = maxBody;
+        bodyBonusText = bonuses.BODY !== 0 ? ` (база ${bodyBase} +${bonuses.BODY} от имплантов)` : '';
+    }
+
+    // ===== ИСПОЛЬЗУЕМ STAT_NAMES ДЛЯ РУССКИХ НАЗВАНИЙ =====
+    const statsHtml = Object.entries(stats).map(([k, v]) => {
+        const statName = STAT_NAMES[k] || k;
+        if (k === 'BODY' && (replaceBody || bonuses.BODY !== 0)) {
+            return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${statName}</span><span class="stat-value">${bodyDisplay}${bodyBonusText}</span></div>`;
         }
+        return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${statName}</span><span class="stat-value">${v}</span></div>`;
+    }).join('');
 
-        const statsHtml = Object.entries(stats).map(([k, v]) => {
-            if (k === 'BODY' && (replaceBody || bonuses.BODY !== 0)) {
-                return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${bodyDisplay}${bodyBonusText}</span></div>`;
-            }
-            return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${k}</span><span class="stat-value">${v}</span></div>`;
-        }).join('');
+    const skillsHtml = Object.entries(skills).filter(([_, v]) => v > 0).map(([k, v]) => `
+        <div class="skill-item" data-skill="${k}">
+            <span class="skill-name">${this.escapeHtml(k)}</span>
+            <span class="skill-level">${v}</span>
+        </div>
+    `).join('');
 
-        const skillsHtml = Object.entries(skills).filter(([_, v]) => v > 0).map(([k, v]) => `
-            <div class="skill-item" data-skill="${k}">
-                <span class="skill-name">${this.escapeHtml(k)}</span>
-                <span class="skill-level">${v}</span>
-            </div>
-        `).join('');
-
-        const getWeaponDetails = (weaponName) => {
-            const ranged = rangedWeapons.find(w => w.name === weaponName);
-            if (ranged) {
-                return { type: 'ranged', skill: ranged.skill, dmg: ranged.dmg, mag: ranged.mag, rof: ranged.rof, hands: ranged.hands, conceal: ranged.conceal === 'да', notes: ranged.notes };
-            }
-            const melee = meleeWeapons.find(w => w.name === weaponName);
-            if (melee) {
-                return { type: 'melee', kind: melee.type, dmg: melee.dmg, rof: melee.rof, conceal: melee.conceal === 'да' };
-            }
-            return null;
-        };
-        const weaponsHtml = (gear.weapons || []).map((w, idx) => {
-            const details = getWeaponDetails(w);
-            let statsWeapon = '';
-            if (details) {
-                if (details.type === 'ranged') {
-                    statsWeapon = `<span class="weapon-stat">${details.skill}</span> <span class="weapon-stat">${details.dmg}</span> <span class="weapon-stat">Маг.: ${details.mag}</span> <span class="weapon-stat">СКОР: ${details.rof}</span> <span class="weapon-stat">Рук.: ${details.hands}</span> <span class="weapon-stat">Скрыт.: ${details.conceal ? 'да' : 'нет'}</span>${details.notes ? `<span class="weapon-stat">${details.notes}</span>` : ''}`;
-                } else {
-                    statsWeapon = `<span class="weapon-stat">${details.kind}</span> <span class="weapon-stat">${details.dmg}</span> <span class="weapon-stat">СКОР: ${details.rof}</span> <span class="weapon-stat">Скрыт.: ${details.conceal ? 'да' : 'нет'}</span>`;
-                }
+    const getWeaponDetails = (weaponName) => {
+        const ranged = rangedWeapons.find(w => w.name === weaponName);
+        if (ranged) {
+            return { type: 'ranged', skill: ranged.skill, dmg: ranged.dmg, mag: ranged.mag, rof: ranged.rof, hands: ranged.hands, conceal: ranged.conceal === 'да', notes: ranged.notes };
+        }
+        const melee = meleeWeapons.find(w => w.name === weaponName);
+        if (melee) {
+            return { type: 'melee', kind: melee.type, dmg: melee.dmg, rof: melee.rof, conceal: melee.conceal === 'да' };
+        }
+        return null;
+    };
+    const weaponsHtml = (gear.weapons || []).map((w, idx) => {
+        const details = getWeaponDetails(w);
+        let statsWeapon = '';
+        if (details) {
+            if (details.type === 'ranged') {
+                statsWeapon = `<span class="weapon-stat">${details.skill}</span> <span class="weapon-stat">${details.dmg}</span> <span class="weapon-stat">Маг.: ${details.mag}</span> <span class="weapon-stat">СКОР: ${details.rof}</span> <span class="weapon-stat">Рук.: ${details.hands}</span> <span class="weapon-stat">Скрыт.: ${details.conceal ? 'да' : 'нет'}</span>${details.notes ? `<span class="weapon-stat">${details.notes}</span>` : ''}`;
             } else {
-                statsWeapon = `<span class="weapon-stat">(данные не найдены)</span>`;
+                statsWeapon = `<span class="weapon-stat">${details.kind}</span> <span class="weapon-stat">${details.dmg}</span> <span class="weapon-stat">СКОР: ${details.rof}</span> <span class="weapon-stat">Скрыт.: ${details.conceal ? 'да' : 'нет'}</span>`;
             }
-            return `<li data-weapon-idx="${idx}" class="weapon-item"><div class="weapon-header"><strong class="weapon-name">${this.escapeHtml(w)}</strong></div><div class="weapon-stats">${statsWeapon}</div></li>`;
-        }).join('');
+        } else {
+            statsWeapon = `<span class="weapon-stat">(данные не найдены)</span>`;
+        }
+        return `<li data-weapon-idx="${idx}" class="weapon-item"><div class="weapon-header"><strong class="weapon-name">${this.escapeHtml(w)}</strong></div><div class="weapon-stats">${statsWeapon}</div></li>`;
+    }).join('');
 
-        const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}</li>`).join('');
-        const gearHtmlItems = (gear.items || []).map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
-        // const ammo = cardData.ammo || [];
-        const ammoList = this.getAmmoFromChar(ammo);
-        let ammoHtml = '';
-        if (ammoList.length > 0) {
-            ammoHtml = `
-        <div class="equipment-card" data-type="ammo">
-            <h5>💣 Боеприпасы</h5>
-            <ul class="compact" data-ammo-list>
-                ${ammoList.map(a => {
-                // Пытаемся определить тип патронов из названия
-                let typeHint = '';
-                if (a.name.toLowerCase().includes('пистолет')) typeHint = ' (пистолетные)';
-                else if (a.name.toLowerCase().includes('винтовочн')) typeHint = ' (винтовочные)';
-                else if (a.name.toLowerCase().includes('дробь')) typeHint = ' (дробь)';
-                else if (a.name.toLowerCase().includes('средний пистолет')) typeHint = ' (средний)';
-                else if (a.name.toLowerCase().includes('тяжёлый пистолет')) typeHint = ' (тяжёлый)';
-                else if (a.name.toLowerCase().includes('очень тяжёлый')) typeHint = ' (оч. тяжёлый)';
+    const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}</li>`).join('');
+    const gearHtmlItems = (gear.items || []).map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
+    const ammoList = this.getAmmoFromChar(ammo);
+    let ammoHtml = '';
+    if (ammoList.length > 0) {
+        ammoHtml = `
+    <div class="equipment-card" data-type="ammo">
+        <h5>💣 Боеприпасы</h5>
+        <ul class="compact" data-ammo-list>
+            ${ammoList.map(a => {
+            let typeHint = '';
+            if (a.name.toLowerCase().includes('пистолет')) typeHint = ' (пистолетные)';
+            else if (a.name.toLowerCase().includes('винтовочн')) typeHint = ' (винтовочные)';
+            else if (a.name.toLowerCase().includes('дробь')) typeHint = ' (дробь)';
+            else if (a.name.toLowerCase().includes('средний пистолет')) typeHint = ' (средний)';
+            else if (a.name.toLowerCase().includes('тяжёлый пистолет')) typeHint = ' (тяжёлый)';
+            else if (a.name.toLowerCase().includes('очень тяжёлый')) typeHint = ' (оч. тяжёлый)';
+            let qtyText = `${a.quantity} шт.`;
+            if (a.quantity === 1) qtyText = '1 шт.';
+            return `<li data-ammo-name="${this.escapeHtml(a.name)}" data-ammo-qty="${a.quantity}">🔸 ${this.escapeHtml(a.name)}${typeHint}: ${qtyText}</li>`;
+        }).join('')}
+        </ul>
+    </div>
+`;
+    }
+    const bodyArmorInfo = armors.find(a => a.name === gear.armor?.body);
+    const headArmorInfo = armors.find(a => a.name === gear.armor?.head);
+    const armorHtml = `<li>🛡️ Тело: ${this.escapeHtml(gear.armor?.body || 'нет')}${bodyArmorInfo ? ` (ОС ${bodyArmorInfo.sp}, штраф ${bodyArmorInfo.penalty})` : ''}</li><li>⛑️ Голова: ${this.escapeHtml(gear.armor?.head || 'нет')}${headArmorInfo ? ` (ОС ${headArmorInfo.sp}, штраф ${headArmorInfo.penalty})` : ''}</li>`;
+    const notesHtml = `<div class="char-section" data-section="notes"><h4>📝 Заметки</h4><div class="notes-preview">${this.escapeHtml(notes) || '— нет —'}</div></div>`;
 
-                // Показываем количество с единицей измерения "шт."
-                let qtyText = `${a.quantity} шт.`;
-                if (a.quantity === 1) qtyText = '1 шт.';
+    let derivedStatsHtml = `
+<div data-derived="hp">
+    <span class="derived-label">❤️ ПЗ</span>
+    <span class="current-hp">${currentHp}</span> / ${maxHp}
+    <span class="hp-threshold">(тяж. ≤ ${severe})</span>
+    <div class="hp-bar-container"><div class="hp-bar" style="width:${Math.min(100, (currentHp / maxHp) * 100)}%;"></div></div>
+</div>
+<div data-derived="humanity">
+    <span class="derived-label">🧠 ЧЕЛ</span>
+    ${humanity} / ${empFrom * 10}
+    <div class="hp-bar-container"><div class="humanity-bar" style="width:${Math.min(100, (humanity / (empFrom * 10)) * 100)}%;"></div></div>
+</div>
+<div data-derived="deathSave">💀 Спасбросок: ${deathSave}</div>
+<div data-derived="money">💰 Деньги: <span class="char-money">${isNaN(money) ? 0 : money}</span> eb</div>
+<div data-derived="reputation">📢 Репутация: <span class="char-reputation">${reputation ?? 0}</span> 
+    ${reputation < 0 ? '<span style="color:#ff9a3c; font-size:0.7rem;"> (штраф)</span>' : ''}
+    <div style="display: inline-block; margin-left: 4px;">
+        <button class="reputation-inc-btn" style="background:none; border:none; color:#39ff14; cursor:pointer; font-size:0.8rem;">▲</button>
+        <button class="reputation-dec-btn" style="background:none; border:none; color:#ff3c5f; cursor:pointer; font-size:0.8rem;">▼</button>
+    </div>
+    <button class="confrontation-btn" style="background:#1e2530; border:1px solid #2a3342; border-radius:30px; padding:2px 10px; color:#fff; cursor:pointer; font-size:0.7rem;">⚔️</button>
+    <button class="npc-reaction-btn" style="background:#1e2530; border:1px solid #2a3342; border-radius:30px; padding:2px 10px; color:#fff; cursor:pointer; font-size:0.7rem;">👥</button>
+</div>
+${bonuses.initiative !== 0 ? `<div>⚡ Инициатива: ${stats.REF || 6} + ${bonuses.initiative}</div>` : ''}
+${extraEffects.length ? `<div class="implant-effects">✨ ${extraEffects.join(', ')}</div>` : ''}
+`;
+    if (bonuses.initiative !== 0) derivedStatsHtml += `<div>Инициатива: ${stats.REF} + ${bonuses.initiative} (от имплантов)</div>`;
+    derivedStatsHtml += `<div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>`;
+    if (extraEffects.length) derivedStatsHtml += `<div class="implant-effects">✨ Эффекты имплантов: ${extraEffects.join(', ')}</div>`;
 
-                return `<li data-ammo-name="${this.escapeHtml(a.name)}" data-ammo-qty="${a.quantity}">🔸 ${this.escapeHtml(a.name)}${typeHint}: ${qtyText}</li>`;
-            }).join('')}
-            </ul>
+    const roleInfo = rolesData.find(r => r.name === role);
+    const roleSkillHtml = `<div class="role-skill-badge"><span class="role-skill-name">${roleInfo ? roleInfo.skill : '—'}</span><span class="role-skill-rank">${roleRank ? ` (ранг ${roleRank})` : ''}</span></div>`;
+    const avatarHtml = avatar ? `<div class="avatar-container"><img src="${avatar}" class="character-avatar" alt="avatar"></div>` : '';
+
+    return `
+        <div class="character-card" data-name="${this.escapeHtml(name)}" data-role="${role}" data-base-stats='${baseStatsAttr}'>
+            <div class="character-card-header">
+                ${avatarHtml}
+                <div class="character-name" data-field="name">${this.escapeHtml(name)}</div>
+                <div class="character-role" data-field="role">${role}</div>
+                ${roleSkillHtml}
+                <div class="card-actions">
+                    <button class="edit-card-btn" title="Редактировать">✏️</button>
+                    <button class="sync-card-btn" title="Синхронизировать с вкладками">🔄</button>
+                    <button class="close-card-btn" id="closeCardBtn">✖</button>
+                </div>
+            </div>
+            <div class="character-card-body">
+                <div class="char-section" data-section="stats">
+                    <h4>📊 Характеристики</h4>
+                    <div class="stats-grid" data-stats-container>${statsHtml}</div>
+                </div>
+                <div class="char-section" data-section="derived">
+                    <h4>❤️ Состояние</h4>
+                    <div class="derived-stats">${derivedStatsHtml}</div>
+                    <div class="combat-buttons">
+                        <button class="heal-btn">💊 Лечение (+${stats.BODY || 6} ПЗ)</button>
+                        <button class="damage-btn">💥 Урон</button>
+                    </div>
+                </div>
+                <div class="char-section" data-section="skills">
+                    <h4>🎯 Навыки</h4>
+                    <div class="skills-grid" data-skills-container>${skillsHtml || '<p>— нет —</p>'}</div>
+                </div>
+                ${notesHtml}
+                <div class="equipment-grid" data-equipment>
+                    <div class="equipment-card" data-type="armor">
+                        <h5>🛡️ Броня</h5>
+                        <ul class="compact" data-armor-list>${armorHtml}</ul>
+                    </div>
+                    <div class="equipment-card" data-type="weapons">
+                        <h5>🔫 Оружие</h5>
+                        <ul class="compact" data-weapons-list>${weaponsHtml || '<li>— нет —</li>'}</ul>
+                    </div>
+                    <div class="equipment-card" data-type="cyberware">
+                        <h5>🦾 Киберимпланты</h5>
+                        <ul class="compact" data-cyber-list>${cyberHtml || '<li>— нет —</li>'}</ul>
+                    </div>
+                    <div class="equipment-card" data-type="gear">
+                        <h5>🎒 Снаряжение</h5>
+                        <ul class="compact" data-gear-list>${gearHtmlItems || '<li>— нет —</li>'}</ul>
+                    </div>
+                    ${ammoHtml}
+                </div>
+            </div>
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+            <div class="corner bottom-left"></div>
+            <div class="corner bottom-right"></div>
         </div>
     `;
-        }
-        const bodyArmorInfo = armors.find(a => a.name === gear.armor?.body);
-        const headArmorInfo = armors.find(a => a.name === gear.armor?.head);
-        const armorHtml = `<li>🛡️ Тело: ${this.escapeHtml(gear.armor?.body || 'нет')}${bodyArmorInfo ? ` (ОС ${bodyArmorInfo.sp}, штраф ${bodyArmorInfo.penalty})` : ''}</li><li>⛑️ Голова: ${this.escapeHtml(gear.armor?.head || 'нет')}${headArmorInfo ? ` (ОС ${headArmorInfo.sp}, штраф ${headArmorInfo.penalty})` : ''}</li>`;
-        const notesHtml = `<div class="char-section" data-section="notes"><h4>📝 Заметки</h4><div class="notes-preview">${this.escapeHtml(notes) || '— нет —'}</div></div>`;
-
-        let derivedStatsHtml = `
-    <div data-derived="hp">
-        <span class="derived-label">❤️ ПЗ</span>
-        <span class="current-hp">${currentHp}</span> / ${maxHp}
-        <span class="hp-threshold">(тяж. ≤ ${severe})</span>
-        <div class="hp-bar-container"><div class="hp-bar" style="width:${Math.min(100, (currentHp / maxHp) * 100)}%;"></div></div>
-    </div>
-    <div data-derived="humanity">
-        <span class="derived-label">🧠 ЧЕЛ</span>
-        ${humanity} / ${empFrom * 10}
-        <div class="hp-bar-container"><div class="humanity-bar" style="width:${Math.min(100, (humanity / (empFrom * 10)) * 100)}%;"></div></div>
-    </div>
-    <div data-derived="deathSave">💀 Спасбросок: ${deathSave}</div>
-    <div data-derived="money">💰 Деньги: <span class="char-money">${isNaN(money) ? 0 : money}</span> eb</div>
-    <div data-derived="reputation">📢 Репутация: <span class="char-reputation">${reputation ?? 0}</span> 
-        ${reputation < 0 ? '<span style="color:#ff9a3c; font-size:0.7rem;"> (штраф)</span>' : ''}
-        <div style="display: inline-block; margin-left: 4px;">
-            <button class="reputation-inc-btn" style="background:none; border:none; color:#39ff14; cursor:pointer; font-size:0.8rem;">▲</button>
-            <button class="reputation-dec-btn" style="background:none; border:none; color:#ff3c5f; cursor:pointer; font-size:0.8rem;">▼</button>
-        </div>
-        <button class="confrontation-btn" style="background:#1e2530; border:1px solid #2a3342; border-radius:30px; padding:2px 10px; color:#fff; cursor:pointer; font-size:0.7rem;">⚔️</button>
-        <button class="npc-reaction-btn" style="background:#1e2530; border:1px solid #2a3342; border-radius:30px; padding:2px 10px; color:#fff; cursor:pointer; font-size:0.7rem;">👥</button>
-    </div>
-    ${bonuses.initiative !== 0 ? `<div>⚡ Инициатива: ${stats.REF || 6} + ${bonuses.initiative}</div>` : ''}
-    ${extraEffects.length ? `<div class="implant-effects">✨ ${extraEffects.join(', ')}</div>` : ''}
-`;
-        if (bonuses.initiative !== 0) derivedStatsHtml += `<div>Инициатива: ${stats.REF} + ${bonuses.initiative} (от имплантов)</div>`;
-        derivedStatsHtml += `<div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>`;
-        if (extraEffects.length) derivedStatsHtml += `<div class="implant-effects">✨ Эффекты имплантов: ${extraEffects.join(', ')}</div>`;
-
-        const roleInfo = rolesData.find(r => r.name === role);
-        const roleSkillHtml = `<div class="role-skill-badge"><span class="role-skill-name">${roleInfo ? roleInfo.skill : '—'}</span><span class="role-skill-rank">${roleRank ? ` (ранг ${roleRank})` : ''}</span></div>`;
-        const avatarHtml = avatar ? `<div class="avatar-container"><img src="${avatar}" class="character-avatar" alt="avatar"></div>` : '';
-
-        return `
-            <div class="character-card" data-name="${this.escapeHtml(name)}" data-role="${role}" data-base-stats='${baseStatsAttr}'>
-                <div class="character-card-header">
-                    ${avatarHtml}
-                    <div class="character-name" data-field="name">${this.escapeHtml(name)}</div>
-                    <div class="character-role" data-field="role">${role}</div>
-                    ${roleSkillHtml}
-                    <div class="card-actions">
-                        <button class="edit-card-btn" title="Редактировать">✏️</button>
-                        <button class="sync-card-btn" title="Синхронизировать с вкладками">🔄</button>
-                        <button class="close-card-btn" id="closeCardBtn">✖</button>
-                    </div>
-                </div>
-                <div class="character-card-body">
-                    <div class="char-section" data-section="stats">
-                        <h4>📊 Характеристики</h4>
-                        <div class="stats-grid" data-stats-container>${statsHtml}</div>
-                    </div>
-                    <div class="char-section" data-section="derived">
-                        <h4>❤️ Состояние</h4>
-                        <div class="derived-stats">${derivedStatsHtml}</div>
-                        <div class="combat-buttons">
-                            <button class="heal-btn">💊 Лечение (+${stats.BODY || 6} ПЗ)</button>
-                            <button class="damage-btn">💥 Урон</button>
-                        </div>
-                    </div>
-                    <div class="char-section" data-section="skills">
-                        <h4>🎯 Навыки</h4>
-                        <div class="skills-grid" data-skills-container>${skillsHtml || '<p>— нет —</p>'}</div>
-                    </div>
-                    ${notesHtml}
-                    <div class="equipment-grid" data-equipment>
-                        <div class="equipment-card" data-type="armor">
-                            <h5>🛡️ Броня</h5>
-                            <ul class="compact" data-armor-list>${armorHtml}</ul>
-                        </div>
-                        <div class="equipment-card" data-type="weapons">
-                            <h5>🔫 Оружие</h5>
-                            <ul class="compact" data-weapons-list>${weaponsHtml || '<li>— нет —</li>'}</ul>
-                        </div>
-                        <div class="equipment-card" data-type="cyberware">
-                            <h5>🦾 Киберимпланты</h5>
-                            <ul class="compact" data-cyber-list>${cyberHtml || '<li>— нет —</li>'}</ul>
-                        </div>
-                        <div class="equipment-card" data-type="gear">
-                            <h5>🎒 Снаряжение</h5>
-                            <ul class="compact" data-gear-list>${gearHtmlItems || '<li>— нет —</li>'}</ul>
-                        </div>
-                        ${ammoHtml}
-                    </div>
-                </div>
-                <div class="corner top-left"></div>
-                <div class="corner top-right"></div>
-                <div class="corner bottom-left"></div>
-                <div class="corner bottom-right"></div>
-            </div>
-        `;
-    }
+}
 
     displaySavedCharacterCard() {
     let char = loadCharacter();
@@ -535,86 +545,88 @@ export class CharacterHelper {
 }
 
     enableEditMode(card) {
-        const char = loadCharacter();
-        if (!char) return;
-        // Репутация
-        const repSpan = card.querySelector('.char-reputation');
-        if (repSpan && !card.querySelector('.edit-reputation')) {
-            const currentRep = parseInt(repSpan.innerText);
-            repSpan.outerHTML = `<input type="number" class="edit-reputation" value="${currentRep}" min="-5" max="10" step="1">`;
-        }
-        // Базовые характеристики – берём из сохранённого персонажа
-        const baseStats = char.baseStats || {
-            INT: char.INT || 6, REF: char.REF || 6, DEX: char.DEX || 6,
-            TECH: char.TECH || 6, COOL: char.COOL || 6, WILL: char.WILL || 6,
-            LUCK: char.LUCK || 6, MOVE: char.MOVE || 6, BODY: char.BODY || 6, EMP: char.EMP || 6
-        };
+    const char = loadCharacter();
+    if (!char) return;
+    // Репутация
+    const repSpan = card.querySelector('.char-reputation');
+    if (repSpan && !card.querySelector('.edit-reputation')) {
+        const currentRep = parseInt(repSpan.innerText);
+        repSpan.outerHTML = `<input type="number" class="edit-reputation" value="${currentRep}" min="-5" max="10" step="1">`;
+    }
+    // Базовые характеристики – берём из сохранённого персонажа
+    const baseStats = char.baseStats || {
+        INT: char.INT || 6, REF: char.REF || 6, DEX: char.DEX || 6,
+        TECH: char.TECH || 6, COOL: char.COOL || 6, WILL: char.WILL || 6,
+        LUCK: char.LUCK || 6, MOVE: char.MOVE || 6, BODY: char.BODY || 6, EMP: char.EMP || 6
+    };
 
-        const nameSpan = card.querySelector('[data-field="name"]');
-        const roleSpan = card.querySelector('[data-field="role"]');
-        if (!nameSpan || !roleSpan) return;
-        const currentRole = roleSpan.innerText;
-        roleSpan.innerHTML = `<select class="edit-select">${this.getRoleOptions(currentRole)}</select>`;
+    const nameSpan = card.querySelector('[data-field="name"]');
+    const roleSpan = card.querySelector('[data-field="role"]');
+    if (!nameSpan || !roleSpan) return;
+    const currentRole = roleSpan.innerText;
+    roleSpan.innerHTML = `<select class="edit-select">${this.getRoleOptions(currentRole)}</select>`;
 
-        // Характеристики – используем baseStats
-        card.querySelectorAll('.stat-item').forEach(item => {
-            const statNameElem = item.querySelector('.stat-name');
-            if (statNameElem) {
-                const statName = statNameElem.innerText;
-                const baseValue = baseStats[statName] || 6;
-                const valueSpan = item.querySelector('.stat-value');
-                if (valueSpan) {
-                    valueSpan.outerHTML = `<input type="number" class="edit-stat" data-stat="${statName}" value="${baseValue}" min="2" max="8">`;
-                }
-            }
-        });
-
-        // Навыки (без изменений)
-        card.querySelectorAll('.skill-item').forEach(item => {
-            const skillNameElem = item.querySelector('.skill-name');
-            const skillLevelElem = item.querySelector('.skill-level');
-            if (skillNameElem && skillLevelElem) {
-                const skillName = skillNameElem.innerText;
-                const skillLevel = skillLevelElem.innerText;
-                item.innerHTML = `<span class="skill-name">${skillName}</span><input type="number" class="edit-skill" data-skill="${skillName}" value="${skillLevel}" min="0" max="10">`;
-            }
-        });
-
-        // ПЗ
-        const hpDiv = card.querySelector('.derived-stats div:first-child');
-        if (hpDiv) {
-            const match = hpDiv.innerText.match(/ПЗ:\s*(\d+)\s*\/\s*(\d+)/);
-            if (match) {
-                const current = match[1];
-                const max = match[2];
-                hpDiv.innerHTML = `<label>ПЗ: <input type="number" class="edit-hp" value="${current}" min="0" max="${max}" style="width:70px"> / ${max}</label>`;
+    // Характеристики – используем baseStats, но отображаем русские названия
+    card.querySelectorAll('.stat-item').forEach(item => {
+        const statNameElem = item.querySelector('.stat-name');
+        if (statNameElem) {
+            const displayName = statNameElem.innerText; // русское
+            // Находим английский ключ по русскому названию
+            const englishKey = Object.keys(STAT_NAMES).find(key => STAT_NAMES[key] === displayName) || displayName;
+            const baseValue = baseStats[englishKey] || 6;
+            const valueSpan = item.querySelector('.stat-value');
+            if (valueSpan) {
+                valueSpan.outerHTML = `<input type="number" class="edit-stat" data-stat="${englishKey}" value="${baseValue}" min="2" max="8">`;
             }
         }
+    });
 
-        // Деньги
-        const existingEditMoney = card.querySelector('.edit-money');
-        if (!existingEditMoney) {
-            const moneySpan = card.querySelector('.char-money');
-            if (moneySpan) {
-                let currentMoney = parseInt(moneySpan.innerText);
-                if (isNaN(currentMoney)) currentMoney = 0;
-                moneySpan.innerHTML = `<input type="number" class="edit-money" value="${currentMoney}" min="0" step="100" style="width:100px">`;
-            }
+    // Навыки (без изменений)
+    card.querySelectorAll('.skill-item').forEach(item => {
+        const skillNameElem = item.querySelector('.skill-name');
+        const skillLevelElem = item.querySelector('.skill-level');
+        if (skillNameElem && skillLevelElem) {
+            const skillName = skillNameElem.innerText;
+            const skillLevel = skillLevelElem.innerText;
+            item.innerHTML = `<span class="skill-name">${skillName}</span><input type="number" class="edit-skill" data-skill="${skillName}" value="${skillLevel}" min="0" max="10">`;
         }
+    });
 
-        this.makeEquipmentEditable(card);
-        const editBtn = card.querySelector('.edit-card-btn');
-        if (editBtn) {
-            editBtn.textContent = '💾 Сохранить';
-            editBtn.classList.add('save-card-btn');
-            editBtn.classList.remove('edit-card-btn');
-            const oldHandler = editBtn._clickHandler;
-            if (oldHandler) editBtn.removeEventListener('click', oldHandler);
-            const saveHandler = () => this.disableEditMode(card);
-            editBtn.addEventListener('click', saveHandler);
-            editBtn._clickHandler = saveHandler;
+    // ПЗ
+    const hpDiv = card.querySelector('.derived-stats div:first-child');
+    if (hpDiv) {
+        const match = hpDiv.innerText.match(/ПЗ:\s*(\d+)\s*\/\s*(\d+)/);
+        if (match) {
+            const current = match[1];
+            const max = match[2];
+            hpDiv.innerHTML = `<label>ПЗ: <input type="number" class="edit-hp" value="${current}" min="0" max="${max}" style="width:70px"> / ${max}</label>`;
         }
     }
+
+    // Деньги
+    const existingEditMoney = card.querySelector('.edit-money');
+    if (!existingEditMoney) {
+        const moneySpan = card.querySelector('.char-money');
+        if (moneySpan) {
+            let currentMoney = parseInt(moneySpan.innerText);
+            if (isNaN(currentMoney)) currentMoney = 0;
+            moneySpan.innerHTML = `<input type="number" class="edit-money" value="${currentMoney}" min="0" step="100" style="width:100px">`;
+        }
+    }
+
+    this.makeEquipmentEditable(card);
+    const editBtn = card.querySelector('.edit-card-btn');
+    if (editBtn) {
+        editBtn.textContent = '💾 Сохранить';
+        editBtn.classList.add('save-card-btn');
+        editBtn.classList.remove('edit-card-btn');
+        const oldHandler = editBtn._clickHandler;
+        if (oldHandler) editBtn.removeEventListener('click', oldHandler);
+        const saveHandler = () => this.disableEditMode(card);
+        editBtn.addEventListener('click', saveHandler);
+        editBtn._clickHandler = saveHandler;
+    }
+}
 
     getRoleOptions(selectedRole) {
         const roles = ["Рокербой", "Соло", "Нетраннер", "Техник", "Медтех", "Медиа", "Законник", "Менеджер", "Фиксер", "Кочевник"];
@@ -715,123 +727,116 @@ export class CharacterHelper {
     }
 
     disableEditMode(card) {
-        const existingChar = loadCharacter() || {};
-        // Получаем новые базовые характеристики из полей ввода
-        const newBaseStats = { ...(existingChar.baseStats || {}) };
-        card.querySelectorAll('.edit-stat').forEach(input => {
-            const statName = input.dataset.stat;
-            newBaseStats[statName] = parseInt(input.value) || 6;
-        });
+    const existingChar = loadCharacter() || {};
+    // Получаем новые базовые характеристики из полей ввода
+    const newBaseStats = { ...(existingChar.baseStats || {}) };
+    card.querySelectorAll('.edit-stat').forEach(input => {
+        const statName = input.dataset.stat; // английский
+        newBaseStats[statName] = parseInt(input.value) || 6;
+    });
 
-        // Получаем остальные данные из карточки
-        const cardDiv = card.closest('.character-card');
-        let newName = cardDiv?.getAttribute('data-name') || 'Безымянный';
-        if (!newName || newName === 'Безымянный') {
-            newName = card.querySelector('.character-name')?.innerText || 'Безымянный';
-        }
-        const roleSelect = card.querySelector('[data-field="role"] select');
-        const newRole = roleSelect ? roleSelect.value : "Соло";
-
-        const newSkills = {};
-        card.querySelectorAll('.edit-skill').forEach(input => {
-            const skillName = input.dataset.skill;
-            newSkills[skillName] = parseInt(input.value) || 0;
-        });
-        //Репутация 
-        let newReputation = existingChar.reputation ?? 0;
-        const editRep = card.querySelector('.edit-reputation');
-        if (editRep) {
-            let val = parseInt(editRep.value);
-            if (isNaN(val)) val = 0;
-            // Ограничиваем диапазон [-5, 10]
-            if (val < -5) val = -5;
-            if (val > 10) val = 10;
-            newReputation = val;
-        }
-        // Снаряжение (кроме имплантов – их мы не трогаем, чтобы не потерять)
-        const newGear = { weapons: [], cyberware: [], gear: [], armor: { body: '', head: '' } };
-        card.querySelectorAll('[data-weapons-list] li').forEach(li => {
-            let text = li.innerText.replace('✖', '').trim();
-            if (text.startsWith('🔫')) text = text.substring(1).trim();
-            if (text) newGear.weapons.push(text);
-        });
-        // Собираем боеприпасы из редактируемой карточки
-        const newAmmo = [];
-        card.querySelectorAll('[data-ammo-list] li').forEach(li => {
-            const name = li.getAttribute('data-ammo-name');
-            const qty = li.getAttribute('data-ammo-qty');
-            if (name && qty) {
-                newAmmo.push(`${name} × ${qty}`);
-            }
-        });
-        // Импланты берём из existingChar, а не из карточки
-        newGear.cyberware = existingChar.cyberware || [];
-        card.querySelectorAll('[data-gear-list] li').forEach(li => {
-            let text = li.innerText.replace('✖', '').trim();
-            if (text.startsWith('📦')) text = text.substring(1).trim();
-            if (text) newGear.gear.push(text);
-        });
-        card.querySelectorAll('[data-armor-list] li').forEach(li => {
-            let text = li.innerText.replace('✖', '').trim();
-            if (text.includes('Тело:')) newGear.armor.body = text.replace('🛡️', '').trim();
-            else if (text.includes('Голова:')) newGear.armor.head = text.replace('⛑️', '').trim();
-        });
-
-        const editHp = card.querySelector('.edit-hp');
-        let newHp = null;
-        if (editHp) newHp = parseInt(editHp.value);
-
-        let newMoney = existingChar.money !== undefined && !isNaN(existingChar.money) ? existingChar.money : 0;
-        const editMoney = card.querySelector('.edit-money');
-        if (editMoney) {
-            const rawValue = editMoney.value.trim();
-            if (rawValue !== "") {
-                const val = parseInt(rawValue);
-                if (!isNaN(val) && val >= 0) newMoney = val;
-            }
-        }
-
-        const notesDiv = card.querySelector('.notes-preview');
-        const newNotes = notesDiv ? notesDiv.innerText : '';
-
-        // Используем старый список имплантов (existingChar.cyberware)
-        const cyberwareList = existingChar.cyberware || [];
-        const modifiedStats = this.applyCyberwareModifiers(newBaseStats, cyberwareList);
-
-        const charData = {
-            ...existingChar,
-            name: newName,
-            role: newRole,
-            roleRank: existingChar.roleRank || 4,
-            baseStats: newBaseStats,
-            // Обновляем поля для обратной совместимости
-            INT: modifiedStats.INT,
-            REF: modifiedStats.REF,
-            DEX: modifiedStats.DEX,
-            TECH: modifiedStats.TECH,
-            COOL: modifiedStats.COOL,
-            WILL: modifiedStats.WILL,
-            LUCK: modifiedStats.LUCK,
-            MOVE: modifiedStats.MOVE,
-            BODY: modifiedStats.BODY,
-            EMP: modifiedStats.EMP,
-            skills: newSkills,
-            gear: newGear,
-            cyberware: cyberwareList,
-            style: existingChar.style || [],
-            lifestyle: existingChar.lifestyle || "100",
-            housing: existingChar.housing || "500",
-            notes: newNotes,
-            money: newMoney,
-            currentHp: newHp !== null ? newHp : (existingChar.currentHp || getHP(modifiedStats.BODY, modifiedStats.WILL)),
-            ammo: newAmmo,
-            reputation: newReputation
-        };
-        saveCharacter(charData);
-        if (window.shopUI) window.shopUI.render();
-        if (window.inventoryUI) window.inventoryUI.render();
-        this.displaySavedCharacterCard();
+    // Получаем остальные данные из карточки
+    const cardDiv = card.closest('.character-card');
+    let newName = cardDiv?.getAttribute('data-name') || 'Безымянный';
+    if (!newName || newName === 'Безымянный') {
+        newName = card.querySelector('.character-name')?.innerText || 'Безымянный';
     }
+    const roleSelect = card.querySelector('[data-field="role"] select');
+    const newRole = roleSelect ? roleSelect.value : "Соло";
+
+    const newSkills = {};
+    card.querySelectorAll('.edit-skill').forEach(input => {
+        const skillName = input.dataset.skill;
+        newSkills[skillName] = parseInt(input.value) || 0;
+    });
+    let newReputation = existingChar.reputation ?? 0;
+    const editRep = card.querySelector('.edit-reputation');
+    if (editRep) {
+        let val = parseInt(editRep.value);
+        if (isNaN(val)) val = 0;
+        if (val < -5) val = -5;
+        if (val > 10) val = 10;
+        newReputation = val;
+    }
+    const newGear = { weapons: [], cyberware: [], gear: [], armor: { body: '', head: '' } };
+    card.querySelectorAll('[data-weapons-list] li').forEach(li => {
+        let text = li.innerText.replace('✖', '').trim();
+        if (text.startsWith('🔫')) text = text.substring(1).trim();
+        if (text) newGear.weapons.push(text);
+    });
+    const newAmmo = [];
+    card.querySelectorAll('[data-ammo-list] li').forEach(li => {
+        const name = li.getAttribute('data-ammo-name');
+        const qty = li.getAttribute('data-ammo-qty');
+        if (name && qty) {
+            newAmmo.push(`${name} × ${qty}`);
+        }
+    });
+    newGear.cyberware = existingChar.cyberware || [];
+    card.querySelectorAll('[data-gear-list] li').forEach(li => {
+        let text = li.innerText.replace('✖', '').trim();
+        if (text.startsWith('📦')) text = text.substring(1).trim();
+        if (text) newGear.gear.push(text);
+    });
+    card.querySelectorAll('[data-armor-list] li').forEach(li => {
+        let text = li.innerText.replace('✖', '').trim();
+        if (text.includes('Тело:')) newGear.armor.body = text.replace('🛡️', '').trim();
+        else if (text.includes('Голова:')) newGear.armor.head = text.replace('⛑️', '').trim();
+    });
+
+    const editHp = card.querySelector('.edit-hp');
+    let newHp = null;
+    if (editHp) newHp = parseInt(editHp.value);
+
+    let newMoney = existingChar.money !== undefined && !isNaN(existingChar.money) ? existingChar.money : 0;
+    const editMoney = card.querySelector('.edit-money');
+    if (editMoney) {
+        const rawValue = editMoney.value.trim();
+        if (rawValue !== "") {
+            const val = parseInt(rawValue);
+            if (!isNaN(val) && val >= 0) newMoney = val;
+        }
+    }
+
+    const notesDiv = card.querySelector('.notes-preview');
+    const newNotes = notesDiv ? notesDiv.innerText : '';
+
+    const cyberwareList = existingChar.cyberware || [];
+    const modifiedStats = this.applyCyberwareModifiers(newBaseStats, cyberwareList);
+
+    const charData = {
+        ...existingChar,
+        name: newName,
+        role: newRole,
+        roleRank: existingChar.roleRank || 4,
+        baseStats: newBaseStats,
+        INT: modifiedStats.INT,
+        REF: modifiedStats.REF,
+        DEX: modifiedStats.DEX,
+        TECH: modifiedStats.TECH,
+        COOL: modifiedStats.COOL,
+        WILL: modifiedStats.WILL,
+        LUCK: modifiedStats.LUCK,
+        MOVE: modifiedStats.MOVE,
+        BODY: modifiedStats.BODY,
+        EMP: modifiedStats.EMP,
+        skills: newSkills,
+        gear: newGear,
+        cyberware: cyberwareList,
+        style: existingChar.style || [],
+        lifestyle: existingChar.lifestyle || "100",
+        housing: existingChar.housing || "500",
+        notes: newNotes,
+        money: newMoney,
+        currentHp: newHp !== null ? newHp : (existingChar.currentHp || getHP(modifiedStats.BODY, modifiedStats.WILL)),
+        ammo: newAmmo,
+        reputation: newReputation
+    };
+    saveCharacter(charData);
+    if (window.shopUI) window.shopUI.render();
+    if (window.inventoryUI) window.inventoryUI.render();
+    this.displaySavedCharacterCard();
+}
 
     syncFromTabs() {
         const name = document.getElementById('charName').value || 'Безымянный';

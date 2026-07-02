@@ -614,21 +614,26 @@ if (openModalBtn && wizardModal) {
 
     // Функция загрузки редактора характеристик
     window.loadStatsEditor = function() {
-        const char = loadCharacter();
-        if (!char) return;
-        const baseStats = char.baseStats || {
-            INT: char.INT||6, REF: char.REF||6, DEX: char.DEX||6,
-            TECH: char.TECH||6, COOL: char.COOL||6, WILL: char.WILL||6,
-            LUCK: char.LUCK||6, MOVE: char.MOVE||6, BODY: char.BODY||6, EMP: char.EMP||6
-        };
-        const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
-        let html = '';
-        stats.forEach(stat => {
-            const value = baseStats[stat] || 6;
-            html += `<label>${stat}: <input type="number" id="stat_${stat}" min="2" max="8" value="${value}"></label>`;
-        });
-        statsGrid.innerHTML = html;
+    const char = loadCharacter();
+    if (!char) return;
+    const baseStats = char.baseStats || {
+        INT: char.INT||6, REF: char.REF||6, DEX: char.DEX||6,
+        TECH: char.TECH||6, COOL: char.COOL||6, WILL: char.WILL||6,
+        LUCK: char.LUCK||6, MOVE: char.MOVE||6, BODY: char.BODY||6, EMP: char.EMP||6
     };
+    const stats = ['INT','REF','DEX','TECH','COOL','WILL','LUCK','MOVE','BODY','EMP'];
+    const statNames = {
+        INT:'ИНТ', REF:'РЕФ', DEX:'ЛВК', TECH:'ТЕХ',
+        COOL:'КРУТ', WILL:'ВОЛЯ', LUCK:'УДЧ',
+        MOVE:'СКО', BODY:'ТЕЛО', EMP:'ЭМП'
+    };
+    let html = '';
+    stats.forEach(stat => {
+        const value = baseStats[stat] || 6;
+        html += `<label>${statNames[stat]}: <input type="number" id="stat_${stat}" min="2" max="8" value="${value}"></label>`;
+    });
+    statsGrid.innerHTML = html;
+};
     window.loadStatsEditor();
 
     // Функция загрузки редактора навыков
@@ -957,15 +962,21 @@ if (openModalBtn && wizardModal) {
                         }
                         break;
                     case 'stats':
-                        const savedChar = loadCharacter();
-                        if (savedChar && savedChar.name) {
-                            addTerminalLine(`Имя: ${savedChar.name}`);
-                            addTerminalLine(`Роль: ${savedChar.role}`);
-                            addTerminalLine(`ХАР: INT=${savedChar.INT} REF=${savedChar.REF} DEX=${savedChar.DEX} ...`);
-                        } else {
-                            addTerminalLine('Персонаж не загружен. Создайте его в конструкторе.', true);
-                        }
-                        break;
+    const savedChar = loadCharacter();
+    if (savedChar && savedChar.name) {
+        addTerminalLine(`Имя: ${savedChar.name}`);
+        addTerminalLine(`Роль: ${savedChar.role}`);
+        const statNames = { INT:'ИНТ', REF:'РЕФ', DEX:'ЛВК', TECH:'ТЕХ', COOL:'КРУТ', WILL:'ВОЛЯ', LUCK:'УДЧ', MOVE:'СКО', BODY:'ТЕЛО', EMP:'ЭМП' };
+        let statsStr = '';
+        for (const [eng, rus] of Object.entries(statNames)) {
+            const val = savedChar[eng] !== undefined ? savedChar[eng] : '?';
+            statsStr += `${rus}=${val} `;
+        }
+        addTerminalLine(`ХАР: ${statsStr.trim()}`);
+    } else {
+        addTerminalLine('Персонаж не загружен. Создайте его в конструкторе.', true);
+    }
+    break;
                     case 'cyberware':
                         if (typeof detailedCyberware !== 'undefined' && detailedCyberware.length) {
                             addTerminalLine(`Всего имплантов: ${detailedCyberware.length}`);
@@ -1355,7 +1366,7 @@ if (openModalBtn && wizardModal) {
                     <div class="concept-card">
                         <div class="concept-icon">❤️</div>
                         <div class="concept-title">Что такое человечность?</div>
-                        <div class="concept-desc">EMP × 10. Установка киберимплантов снижает её. Если упала до 0 или ниже — персонаж сходит с ума (киберпсихоз).</div>
+                        <div class="concept-desc">ЭМП × 10. Установка киберимплантов снижает её. Если упала до 0 или ниже — персонаж сходит с ума (киберпсихоз).</div>
                     </div>
                     <div class="concept-card">
                         <div class="concept-icon">💰</div>
@@ -1365,7 +1376,7 @@ if (openModalBtn && wizardModal) {
                     <div class="concept-card">
                         <div class="concept-icon">⚔️</div>
                         <div class="concept-title">Что делать в бою?</div>
-                        <div class="concept-desc">Каждый ход: действие перемещения (MOVE×2 м) + одно действие (атака, бег, перезарядка). Атака — REF/DEX + навык + d10.</div>
+                        <div class="concept-desc">Каждый ход: действие перемещения (СКО×2 м) + одно действие (атака, бег, перезарядка). Атака — РЕФ/ЛВК + навык + d10.</div>
                     </div>
                 </div>
             </div>
@@ -1376,22 +1387,22 @@ if (openModalBtn && wizardModal) {
             <summary>💪 Характеристики (ХАР) — стр. 72–81</summary>
             <div class="help-section">
                 <div class="concept-grid">
-                    <div class="concept-card"><div class="concept-icon">🧠</div><div class="concept-title">INT</div><div class="concept-desc">Интеллект. Образование, Поиск информации, Наука.</div></div>
-                    <div class="concept-card"><div class="concept-icon">👁️</div><div class="concept-title">REF</div><div class="concept-desc">Рефлексы. Инициатива, дальнобойные атаки, вождение.</div></div>
-                    <div class="concept-card"><div class="concept-icon">🤸</div><div class="concept-title">DEX</div><div class="concept-desc">Ловкость. Рукопашный бой, уклонение, акробатика, скрытность.</div></div>
-                    <div class="concept-card"><div class="concept-icon">🔧</div><div class="concept-title">TECH</div><div class="concept-desc">Техника. Ремонт, взлом замков, электроника.</div></div>
-                    <div class="concept-card"><div class="concept-icon">😎</div><div class="concept-title">COOL</div><div class="concept-desc">Крутость. Убеждение, запугивание, торговля, разборки.</div></div>
-                    <div class="concept-card"><div class="concept-icon">⚡</div><div class="concept-title">WILL</div><div class="concept-desc">Воля. Спасброски от смерти, концентрация.</div></div>
-                    <div class="concept-card"><div class="concept-icon">🍀</div><div class="concept-title">LUCK</div><div class="concept-desc">Удача. Пул очков = ХАР. Тратьте 1:1 на повышение броска ДО броска.</div></div>
-                    <div class="concept-card"><div class="concept-icon">🏃</div><div class="concept-title">MOVE</div><div class="concept-desc">Скорость. За действие перемещения — MOVE × 2 метра.</div></div>
-                    <div class="concept-card"><div class="concept-icon">🛡️</div><div class="concept-title">BODY</div><div class="concept-desc">Тело. Влияет на ПЗ, урон в драке.</div></div>
-                    <div class="concept-card"><div class="concept-icon">❤️</div><div class="concept-title">EMP</div><div class="concept-desc">Эмпатия. Человечность = EMP × 10. Падение ниже 0 → киберпсихоз.</div></div>
+                    <div class="concept-card"><div class="concept-icon">🧠</div><div class="concept-title">ИНТ</div><div class="concept-desc">Интеллект. Образование, Поиск информации, Наука.</div></div>
+                    <div class="concept-card"><div class="concept-icon">👁️</div><div class="concept-title">РЕФ</div><div class="concept-desc">Рефлексы. Инициатива, дальнобойные атаки, вождение.</div></div>
+                    <div class="concept-card"><div class="concept-icon">🤸</div><div class="concept-title">ЛВК</div><div class="concept-desc">Ловкость. Рукопашный бой, уклонение, акробатика, скрытность.</div></div>
+                    <div class="concept-card"><div class="concept-icon">🔧</div><div class="concept-title">ТЕХ</div><div class="concept-desc">Техника. Ремонт, взлом замков, электроника.</div></div>
+                    <div class="concept-card"><div class="concept-icon">😎</div><div class="concept-title">КРУТ</div><div class="concept-desc">Крутость. Убеждение, запугивание, торговля, разборки.</div></div>
+                    <div class="concept-card"><div class="concept-icon">⚡</div><div class="concept-title">ВОЛЯ</div><div class="concept-desc">Воля. Спасброски от смерти, концентрация.</div></div>
+                    <div class="concept-card"><div class="concept-icon">🍀</div><div class="concept-title">УДЧ</div><div class="concept-desc">Удача. Пул очков = ХАР. Тратьте 1:1 на повышение броска ДО броска.</div></div>
+                    <div class="concept-card"><div class="concept-icon">🏃</div><div class="concept-title">СКО</div><div class="concept-desc">Скорость. За действие перемещения — СКО × 2 метра.</div></div>
+                    <div class="concept-card"><div class="concept-icon">🛡️</div><div class="concept-title">ТЕЛО</div><div class="concept-desc">Тело. Влияет на ПЗ, урон в драке.</div></div>
+                    <div class="concept-card"><div class="concept-icon">❤️</div><div class="concept-title">ЭМП</div><div class="concept-desc">Эмпатия. Человечность = ЭМП × 10. Падение ниже 0 → киберпсихоз.</div></div>
                 </div>
                 <div class="formula-card">
                     <strong>Производные:</strong><br>
-                    • ПЗ = 10 + 5 × (BODY + WILL)/2 (округление вверх).<br>
+                    • ПЗ = 10 + 5 × (ТЕЛО + ВОЛЯ)/2 (округление вверх).<br>
                     • Порог тяжёлого ранения = половина ПЗ (вверх).<br>
-                    • Спасбросок от смерти = BODY (бросок 1d10; успех если результат < BODY, 10 — авто провал).
+                    • Спасбросок от смерти = ТЕЛО (бросок 1d10; успех если результат < ТЕЛО, 10 — авто провал).
                 </div>
             </div>
         </details>
@@ -1412,7 +1423,7 @@ if (openModalBtn && wizardModal) {
                     <tr><td style="text-align:center">4→5</td><td style="text-align:center">100</td><td style="text-align:center">200</td><td style="text-align:center">300</td></tr>
                     <tr><td style="text-align:center">5→6</td><td style="text-align:center">120</td><td style="text-align:center">240</td><td style="text-align:center">360</td></tr>
                 </tbody></table></div>
-                <div class="tip-card"><div class="tip-icon">💡</div><div class="tip-text">Если ваш REF ≥ 8, учите Уклонение — оно работает и против пуль!</div></div>
+                <div class="tip-card"><div class="tip-icon">💡</div><div class="tip-text">Если ваш РЕФ ≥ 8, учите Уклонение — оно работает и против пуль!</div></div>
             </div>
         </details>
 
@@ -1421,10 +1432,10 @@ if (openModalBtn && wizardModal) {
             <summary>⚔️ Бой (кратко — подробнее во вкладке «Бой»)</summary>
             <div class="help-section">
                 <div class="formula-card">
-                    <strong>Инициатива:</strong> REF + 1d10.<br>
-                    <strong>В ход:</strong> действие перемещения (MOVE×2 м) + одно действие (атака, бег, перезарядка).<br>
-                    <strong>Атака:</strong> дальнобойная — REF + навык + d10 против СЛ дистанции (см. таблицу); рукопашная — DEX + навык + d10 против DEX + Уклонение + d10 цели.<br>
-                    <strong>Состояния ранений:</strong> Лёгкое → Тяжёлое (–2 ко всем действиям) → Смертельное (–4, –6 MOVE, спасбросок d10 &lt; BODY).<br>
+                    <strong>Инициатива:</strong> РЕФ + 1d10.<br>
+                    <strong>В ход:</strong> действие перемещения (СКО×2 м) + одно действие (атака, бег, перезарядка).<br>
+                    <strong>Атака:</strong> дальнобойная — РЕФ + навык + d10 против СЛ дистанции (см. таблицу); рукопашная — ЛВК + навык + d10 против ЛВК + Уклонение + d10 цели.<br>
+                    <strong>Состояния ранений:</strong> Лёгкое → Тяжёлое (–2 ко всем действиям) → Смертельное (–4, –6 СКО, спасбросок d10 &lt; ТЕЛО).<br>
                     <strong>Критические травмы:</strong> две шестёрки на кубах урона → +5 урона напрямую ПЗ и особый эффект.
                 </div>
                 <div class="status-table"><table class="cyber-table"><thead><tr><th>Тип оружия</th><th>0–6 м</th><th>7–12 м</th><th>13–25 м</th><th>26–50 м</th><th>51–100 м</th></tr></thead><tbody>
@@ -1444,7 +1455,7 @@ if (openModalBtn && wizardModal) {
             <summary>🧠 Киберимпланты и человечность — стр. 108–118, 229–232</summary>
             <div class="help-section">
                 <div class="formula-card">
-                    <strong>Человечность (ЧЕЛ):</strong> EMP × 10. Каждый имплант (кроме медицинских) стоит ПЧ: обычно 2d6 (7 ПЧ), тяжёлый 4d6 (14 ПЧ), стилевые 1d6/2.<br>
+                    <strong>Человечность (ЧЕЛ):</strong> ЭМП × 10. Каждый имплант (кроме медицинских) стоит ПЧ: обычно 2d6 (7 ПЧ), тяжёлый 4d6 (14 ПЧ), стилевые 1d6/2.<br>
                     <strong>Киберпсихоз:</strong> если ЧЕЛ ≤ 0 — персонаж сходит с ума (передаётся Мастеру).<br>
                     <strong>Терапия:</strong> стандартная (500eb, +2d6 ЧЕЛ), экстремальная (1000eb, +4d6 ЧЕЛ). Каждый имплант снижает <strong>максимум</strong> ЧЕЛ на 2 (боргирование на 4).
                 </div>
@@ -1471,7 +1482,7 @@ if (openModalBtn && wizardModal) {
             <div class="help-section">
                 <div class="formula-card">
                     <strong>Репутация (от –5 до 10):</strong> меняется за заметные поступки. При первой встрече NPC бросает 1d10; если результат < вашей репутации, NPC о вас слышал.<br>
-                    <strong>Разборка:</strong> COOL + Репутация + 1d10 против броска противника. Победитель может заставить проигравшего отступить или наложить штраф –2 до первой победы.
+                    <strong>Разборка:</strong> КРУТ + Репутация + 1d10 против броска противника. Победитель может заставить проигравшего отступить или наложить штраф –2 до первой победы.
                 </div>
                 <div class="tip-card"><div class="tip-icon">👥</div><div class="tip-text">Отрицательная репутация <strong>вычитается</strong> из броска в разборках и вызывает враждебность NPC.</div></div>
             </div>
@@ -1482,7 +1493,7 @@ if (openModalBtn && wizardModal) {
             <summary>🏥 Как лечиться — стр. 222–225</summary>
             <div class="help-section">
                 <div class="formula-card">
-                    <strong>Стабилизация:</strong> действие, проверка Первая помощь или Парамедицина против СЛ состояния (10/13/15). После успеха цель восстанавливает BODY ПЗ за день отдыха.<br>
+                    <strong>Стабилизация:</strong> действие, проверка Первая помощь или Парамедицина против СЛ состояния (10/13/15). После успеха цель восстанавливает ТЕЛО ПЗ за день отдыха.<br>
                     <strong>Больница:</strong> стоимость зависит от наивысшей СЛ: СЛ10→50eb, СЛ13→100eb, СЛ15→500eb, СЛ17+→1000eb.<br>
                     <strong>Критические травмы:</strong> «Быстрая помощь» (1 минута) снимает эффект до конца дня, «Лечение» (4 часа) — навсегда. Некоторые требуют хирургии (только медтех).
                 </div>
@@ -1509,8 +1520,8 @@ if (openModalBtn && wizardModal) {
                 <div class="tips-grid">
                     <div class="tip-card"><div class="tip-icon">✅</div><div class="tip-text"><strong>Чек-лист перед выходом на задание:</strong> заряди оружие, надень броню, возьми аптечку, проверь человечность, не забудь агент и фонарик.</div></div>
                     <div class="tip-card"><div class="tip-icon">🔫</div><div class="tip-text"><strong>Всегда носи лёгкий арморджек (ОС 11)</strong> — спасает от большинства пистолетов.</div></div>
-                    <div class="tip-card"><div class="tip-icon">⚡</div><div class="tip-text"><strong>Если REF ≥ 8, обязательно учи Уклонение</strong> — сможешь уклоняться от пуль.</div></div>
-                    <div class="tip-card"><div class="tip-icon">💊</div><div class="tip-text"><strong>Спидхил</strong> (медтех) восстанавливает BODY+WILL ПЗ. Носите с собой!</div></div>
+                    <div class="tip-card"><div class="tip-icon">⚡</div><div class="tip-text"><strong>Если РЕФ ≥ 8, обязательно учи Уклонение</strong> — сможешь уклоняться от пуль.</div></div>
+                    <div class="tip-card"><div class="tip-icon">💊</div><div class="tip-text"><strong>Спидхил</strong> (медтех) восстанавливает ТЕЛО+ВОЛЯ ПЗ. Носите с собой!</div></div>
                     <div class="tip-card"><div class="tip-icon">📜</div><div class="tip-text"><strong>Изучай скримлисты</strong> — в них могут быть подсказки и слухи.</div></div>
                     <div class="tip-card"><div class="tip-icon">🤝</div><div class="tip-text"><strong>Фиксер</strong> — лучший друг. Через него можно достать почти всё.</div></div>
                     <div class="tip-card"><div class="tip-icon">💀</div><div class="tip-text"><strong>Не влезайте в долги</strong> — проценты в Найт-Сити убивают.</div></div>
@@ -1541,7 +1552,7 @@ if (openModalBtn && wizardModal) {
             <p>💡 <strong>Напоминание:</strong> Помощник не заменяет книгу, но ускоряет рутинные расчёты и даёт быстрый доступ к правилам.</p>
         </div>
     </div>
-    `;
+`;
 
     const generateRumorBtn = document.getElementById('generateRumorBtn');
     const copyRumorBtn = document.getElementById('copyRumorBtn');
