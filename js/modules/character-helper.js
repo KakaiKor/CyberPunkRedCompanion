@@ -63,6 +63,33 @@ export class CharacterHelper {
         result.MOVE = newMove;
         return result;
     }
+    calculateArmorPenalty(char) {
+    const gear = char.gear || { armor: { body: '', head: '' } };
+    const bodyArmor = gear.armor?.body || '';
+    const headArmor = gear.armor?.head || '';
+    
+    // Ищем штраф для каждой части брони
+    let maxPenalty = 0;
+    const allArmor = [...armors]; // из data.js
+    
+    const bodyInfo = allArmor.find(a => a.name === bodyArmor);
+    const headInfo = allArmor.find(a => a.name === headArmor);
+    
+    if (bodyInfo && bodyInfo.penalty !== undefined && bodyInfo.penalty < maxPenalty) {
+        maxPenalty = bodyInfo.penalty;
+    }
+    if (headInfo && headInfo.penalty !== undefined && headInfo.penalty < maxPenalty) {
+        maxPenalty = headInfo.penalty;
+    }
+    
+    // Возвращаем объект с информацией о штрафе
+    return {
+        penalty: maxPenalty,
+        source: maxPenalty < 0 ? (bodyInfo?.name || headInfo?.name || 'броня') : null,
+        bodyName: bodyArmor || 'нет',
+        headName: headArmor || 'нет'
+    };
+}
     buildStatsGrid() {
         const container = document.getElementById('statsGrid');
         if (!container) return;
@@ -158,10 +185,10 @@ export class CharacterHelper {
 
     // ========== КАРТОЧКА ПЕРСОНАЖА ==========
     buildCharacterCard(cardData) {
-        const { name, role, roleRank = 4, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar = '', money = 0, baseStats = null, ammo } = cardData;
+        const { name, role, roleRank = 4, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar = '', money = 0, baseStats = null, ammo, armorPenalty = null} = cardData;
         const container = document.getElementById('characterCardContainer');
         if (!container) return;
-        const cardHtml = this.buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats, ammo, reputation: cardData.reputation });
+        const cardHtml = this.buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats, ammo, reputation: cardData.reputation, armorPenalty });
         container.innerHTML = cardHtml;
         this.attachCardEventHandlers();
         const editBtn = container.querySelector('.edit-card-btn');
@@ -170,7 +197,11 @@ export class CharacterHelper {
         if (syncBtn) syncBtn.addEventListener('click', () => this.syncFromTabs());
     }
 
-    buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats, ammo = [], reputation = 0 }) {
+    buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats, ammo = [], reputation = 0, armorPenalty = null }) {
+    // ===== ДЛЯ ОТЛАДКИ =====
+    console.log('buildCharacterCardHTML получил armorPenalty:', armorPenalty);
+    console.log('buildCharacterCardHTML получил baseStats:', baseStats);
+
     const baseStatsAttr = baseStats ? JSON.stringify(baseStats) : '';
     stats = stats || {};
     skills = skills || {};
@@ -225,15 +256,38 @@ export class CharacterHelper {
         bodyBonusText = bonuses.BODY !== 0 ? ` (база ${bodyBase} +${bonuses.BODY} от имплантов)` : '';
     }
 
-    // ===== ИСПОЛЬЗУЕМ STAT_NAMES ДЛЯ РУССКИХ НАЗВАНИЙ =====
+    // ===== РУССКИЕ НАЗВАНИЯ ХАР =====
+    const statNames = {
+        INT: 'ИНТ', REF: 'РЕФ', DEX: 'ЛВК', TECH: 'ТЕХ',
+        COOL: 'КРУТ', WILL: 'ВОЛЯ', LUCK: 'УДЧ',
+        MOVE: 'СКО', BODY: 'ТЕЛО', EMP: 'ЭМП'
+    };
+
+    // ===== ХАРАКТЕРИСТИКИ СО СНОСКАМИ =====
     const statsHtml = Object.entries(stats).map(([k, v]) => {
-        const statName = STAT_NAMES[k] || k;
+        const statName = statNames[k] || k;
+        let displayValue = v;
+        let extraNote = '';
+
+        // ===== ДЛЯ REF, DEX, MOVE – ДОБАВЛЯЕМ СНОСКУ =====
+        if (armorPenalty && armorPenalty.penalty < 0) {
+            if (k === 'REF' || k === 'DEX' || k === 'MOVE') {
+                const baseValue = baseStats ? baseStats[k] : v - armorPenalty.penalty;
+                if (baseValue !== undefined && baseValue !== v) {
+                    extraNote = ` <span class="armor-penalty-note" title="Исходное значение: ${baseValue}, штраф брони: ${armorPenalty.penalty}" style="font-size:0.7rem; color:#ff9a3c; cursor:help;">ⓘ (было ${baseValue}, ${armorPenalty.penalty} от брони)</span>`;
+                }
+            }
+        }
+
+        // Обработка BODY с бонусами от имплантов
         if (k === 'BODY' && (replaceBody || bonuses.BODY !== 0)) {
             return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${statName}</span><span class="stat-value">${bodyDisplay}${bodyBonusText}</span></div>`;
         }
-        return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${statName}</span><span class="stat-value">${v}</span></div>`;
+
+        return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${statName}</span><span class="stat-value">${displayValue}${extraNote}</span></div>`;
     }).join('');
 
+    // ===== ОСТАЛЬНЫЕ БЛОКИ (навыки, оружие, броня, снаряжение) =====
     const skillsHtml = Object.entries(skills).filter(([_, v]) => v > 0).map(([k, v]) => `
         <div class="skill-item" data-skill="${k}">
             <span class="skill-name">${this.escapeHtml(k)}</span>
@@ -297,6 +351,24 @@ export class CharacterHelper {
     const armorHtml = `<li>🛡️ Тело: ${this.escapeHtml(gear.armor?.body || 'нет')}${bodyArmorInfo ? ` (ОС ${bodyArmorInfo.sp}, штраф ${bodyArmorInfo.penalty})` : ''}</li><li>⛑️ Голова: ${this.escapeHtml(gear.armor?.head || 'нет')}${headArmorInfo ? ` (ОС ${headArmorInfo.sp}, штраф ${headArmorInfo.penalty})` : ''}</li>`;
     const notesHtml = `<div class="char-section" data-section="notes"><h4>📝 Заметки</h4><div class="notes-preview">${this.escapeHtml(notes) || '— нет —'}</div></div>`;
 
+    // ===== БЛОК ШТРАФА БРОНИ (ОБЩАЯ СНОСКА) =====
+    let penaltyDisplay = '';
+    if (armorPenalty && armorPenalty.penalty < 0) {
+        penaltyDisplay = `
+            <div class="armor-penalty" style="color: #ff9a3c; font-size: 0.9rem; margin-top: 4px; border-left: 2px solid #ff9a3c; padding-left: 8px;">
+                ⚠️ Штраф брони: <strong>${armorPenalty.penalty}</strong> к РЕФ, ЛВК, СКО 
+                (от ${armorPenalty.source || 'брони'})<br>
+                <span style="font-size:0.8rem; color:#9aa4bf;">Наведите на иконку ⓘ в характеристиках для подробностей</span>
+            </div>
+        `;
+    } else if (armorPenalty) {
+        penaltyDisplay = `
+            <div class="armor-penalty" style="color: #39ff14; font-size: 0.9rem; margin-top: 4px; border-left: 2px solid #39ff14; padding-left: 8px;">
+                ✅ Броня без штрафа (${armorPenalty.bodyName || 'тело'}, ${armorPenalty.headName || 'голова'})
+            </div>
+        `;
+    }
+
     let derivedStatsHtml = `
 <div data-derived="hp">
     <span class="derived-label">❤️ ПЗ</span>
@@ -322,10 +394,8 @@ export class CharacterHelper {
 </div>
 ${bonuses.initiative !== 0 ? `<div>⚡ Инициатива: ${stats.REF || 6} + ${bonuses.initiative}</div>` : ''}
 ${extraEffects.length ? `<div class="implant-effects">✨ ${extraEffects.join(', ')}</div>` : ''}
+${penaltyDisplay}
 `;
-    if (bonuses.initiative !== 0) derivedStatsHtml += `<div>Инициатива: ${stats.REF} + ${bonuses.initiative} (от имплантов)</div>`;
-    derivedStatsHtml += `<div data-derived="humanity">Человечность: ${humanity} (ЭМП = ${empFrom})</div>`;
-    if (extraEffects.length) derivedStatsHtml += `<div class="implant-effects">✨ Эффекты имплантов: ${extraEffects.join(', ')}</div>`;
 
     const roleInfo = rolesData.find(r => r.name === role);
     const roleSkillHtml = `<div class="role-skill-badge"><span class="role-skill-name">${roleInfo ? roleInfo.skill : '—'}</span><span class="role-skill-rank">${roleRank ? ` (ранг ${roleRank})` : ''}</span></div>`;
@@ -393,13 +463,12 @@ ${extraEffects.length ? `<div class="implant-effects">✨ ${extraEffects.join(',
     displaySavedCharacterCard() {
     let char = loadCharacter();
     if (!char) return;
-    
-    // ИНИЦИАЛИЗИРУЕМ html
+
+    // ИНИЦИАЛИЗИРУЕМ html (для отображения IP)
     let html = '';
-    
     const ip = char.ip || { available: 0 };
     html += `<div class="derived-stat"><span class="derived-label">💾 IP:</span> ${ip.available}</div>`;
-    
+
     // Если нет baseStats, создаём из текущих характеристик
     if (!char.baseStats) {
         char.baseStats = {
@@ -433,23 +502,39 @@ ${extraEffects.length ? `<div class="implant-effects">✨ ${extraEffects.join(',
     } else {
         if (char.interfaceRank === undefined) char.interfaceRank = 0;
     }
-    // ===============================================================
 
     const baseStats = char.baseStats;
     const cyberware = char.cyberware || [];
+
+    // 1. Применяем модификаторы имплантов
     const modifiedStats = this.applyCyberwareModifiers(baseStats, cyberware);
 
-    // Объединяем: отображаем модифицированные, но для редактирования будем использовать baseStats
-    const statsForDisplay = { ...modifiedStats };
-    delete statsForDisplay._initiativeBonus;
-    delete statsForDisplay._extraEffects;
+    // 2. Рассчитываем штраф брони
+    const armorPenaltyInfo = this.calculateArmorPenalty(char);
 
+    // 3. Применяем штраф к финальным значениям РЕФ, ЛВК, СКО
+    const finalStats = { ...modifiedStats };
+    if (armorPenaltyInfo.penalty < 0) {
+        finalStats.REF = Math.max(0, (finalStats.REF || 0) + armorPenaltyInfo.penalty);
+        finalStats.DEX = Math.max(0, (finalStats.DEX || 0) + armorPenaltyInfo.penalty);
+        finalStats.MOVE = Math.max(0, (finalStats.MOVE || 0) + armorPenaltyInfo.penalty);
+    }
+
+    // 4. Удаляем вспомогательные поля (если они есть)
+    delete finalStats._initiativeBonus;
+    delete finalStats._extraEffects;
+
+    // 5. Собираем остальные данные для карточки
     const gear = char.gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
     const skills = char.skills || {};
-    const body = modifiedStats.BODY, will = baseStats.WILL, emp = baseStats.EMP;
+    const body = finalStats.BODY;  // берём итоговое ТЕЛО (уже с учётом имплантов, но без штрафа брони, так как штраф не влияет на ТЕЛО)
+    const will = baseStats.WILL;   // Воля не меняется от имплантов/брони
+    const emp = baseStats.EMP;     // Эмпатия не меняется от имплантов/брони (человечность считается отдельно)
     const maxHp = char.maxHp;
     let currentHp = char.currentHp;
     const severe = Math.ceil(maxHp / 2);
+
+    // Человечность: учитываем потерю от имплантов
     let humanityLoss = 0;
     for (const name of cyberware) {
         const implant = detailedCyberware.find(i => i.name === name);
@@ -459,25 +544,30 @@ ${extraEffects.length ? `<div class="implant-effects">✨ ${extraEffects.join(',
     const empFrom = Math.floor(humanity / 10);
     const deathSave = body;
     const money = char.money !== undefined && !isNaN(char.money) ? char.money : 0;
-    if (char.role === "Нетраннер") {
-        if (char.interfaceRank === undefined) {
-            char.interfaceRank = char.roleRank || 4;
-            saveCharacter(char);
-        }
-    } else {
-        char.interfaceRank = 0;
-    }
+    console.log('armorPenaltyInfo:', armorPenaltyInfo);
+    console.log('baseStats:', baseStats);
+    // 6. Вызываем построение карточки с итоговыми данными
     this.buildCharacterCard({
         name: char.name || 'Безымянный',
         role: char.role || 'Без роли',
         roleRank: char.roleRank || 4,
-        stats: statsForDisplay,
-        baseStats: baseStats,
-        skills, gear, cyberware, currentHp, maxHp, severe,
-        humanity, empFrom, deathSave,
-        notes: char.notes || '', avatar: char.avatar || '', money,
+        stats: finalStats,                 // финальные ХАР с учётом имплантов и штрафа брони
+        baseStats: baseStats,              // базовые ХАР для редактирования
+        skills: skills,
+        gear: gear,
+        cyberware: cyberware,
+        currentHp: currentHp,
+        maxHp: maxHp,
+        severe: severe,
+        humanity: humanity,
+        empFrom: empFrom,
+        deathSave: deathSave,
+        notes: char.notes || '',
+        avatar: char.avatar || '',
+        money: money,
         ammo: char.ammo || [],
-        reputation: char.reputation ?? 0
+        reputation: char.reputation ?? 0,
+        armorPenalty: armorPenaltyInfo   // передаём информацию о штрафе
     });
 }
 
