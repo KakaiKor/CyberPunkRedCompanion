@@ -1,0 +1,55 @@
+
+/* Стили для генератора случайных встреч */
+.encounter-result {
+    margin-top: 20px;
+}
+.encounter-card {
+    background: linear-gradient(135deg, #1a1a2a, #0f0f1a);
+    border: 1px solid #ff3c5f;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.2s ease;
+}
+.encounter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #2a1a2a;
+}
+.encounter-type {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ff9a3c;
+}
+.encounter-threat {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    font-weight: bold;
+    background: rgba(0,0,0,0.5);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+.encounter-description {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    color: #e0e0e0;
+}
+.encounter-roll {
+    font-size: 0.85rem;
+    color: #9aa4bf;
+    font-family: monospace;
+}
+#rerollEncounterBtn {
+    background: #2a1a2a;
+    border: 1px solid #ff3c5f;
+}
+#rerollEncounterBtn:hover {
+    background: #ff3c5f;
+    color: #0a0c12;
+}

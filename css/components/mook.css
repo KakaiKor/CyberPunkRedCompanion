@@ -1,0 +1,409 @@
+/* Стили для генератора пушечного мяса */
+.mook-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+.mook-card {
+    background: #1e2530;
+    border-radius: 16px;
+    padding: 12px;
+    border: 1px solid #2a3342;
+    transition: 0.2s;
+}
+.mook-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.mook-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #2a3342;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+.mook-type {
+    background: #ff3c5f;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+.mook-stats div {
+    font-size: 0.85rem;
+    margin: 4px 0;
+}
+.mook-controls {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+}
+.mook-controls label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem;
+}
+.mook-controls input {
+    width: 60px;
+    text-align: center;
+}
+.remove-mook-btn {
+    background: #5a2a2a;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+}
+.remove-mook-btn:hover {
+    background: #8a3a3a;
+}
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+    margin-bottom: 15px;
+}
+
+/* Трекер группы – улучшенный список травм */
+.group-list table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #0a0c12;
+}
+.group-list th, .group-list td {
+    border: 1px solid #2a1a2a;
+    padding: 8px;
+    text-align: left;
+}
+.group-list th {
+    background: #1a121a;
+    color: #ff3c5f;
+    font-family: 'Orbitron', monospace;
+}
+.group-list select {
+    background: #0a0c12;
+    border: 1px solid #ff3c5f;
+    min-width: 180px;
+}
+.group-list select option {
+    padding: 4px;
+}
+.group-list select option:checked {
+    background: #ff3c5f linear-gradient(0deg, #ff3c5f 0%, #ff3c5f 100%);
+    color: #0a0c12;
+}
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+    margin-bottom: 15px;
+}
+.note {
+    font-size: 0.8rem;
+    color: #9aa4bf;
+    margin-top: 10px;
+    padding: 8px;
+    background: #0f1219;
+    border-left: 3px solid #ff9a3c;
+}
+
+/* Стили для трекера группы с чипсами */
+.group-members {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.member-card {
+    background: #14181f;
+    border: 1px solid #2a3342;
+    padding: 15px;
+    border-radius: 12px;
+}
+.member-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #2a3342;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ff3c5f;
+}
+.member-stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+.hp-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.member-hp {
+    width: 70px;
+    text-align: center;
+}
+.penalty {
+    background: #0f1219;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+.penalty-value {
+    color: #ff9a3c;
+    font-size: 1.2rem;
+}
+.crits-section {
+    margin-top: 8px;
+}
+.crits-label {
+    font-size: 0.85rem;
+    color: #9aa4bf;
+    margin-bottom: 8px;
+}
+.crits-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.crit-chip {
+    background: #1e2530;
+    border: 1px solid #2a3342;
+    border-radius: 24px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    color: #e0e0e0;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: normal;
+}
+.crit-chip:hover {
+    background: #2a3342;
+    border-color: #ff3c5f;
+    transform: scale(1.02);
+}
+.crit-chip.active {
+    background: #ff3c5f;
+    border-color: #ff9a3c;
+    color: #0a0c12;
+    box-shadow: 0 0 6px #ff3c5f;
+}
+.remove-member {
+    background: none;
+    border: 1px solid #5a2a2a;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+}
+.remove-member:hover {
+    background: #5a2a2a;
+    border-color: #ff3c5f;
+}
+.crits-chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.crit-chip {
+    background: #1e2530;
+    border: 1px solid #2a3342;
+    color: #9aa4bf;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.crit-chip:hover {
+    background: #2a3342;
+    border-color: #ff3c5f;
+    color: #ff9a3c;
+}
+
+.crit-chip.active {
+    background: #ff3c5f;
+    border-color: #ff9a3c;
+    color: #0a0c12;
+    box-shadow: 0 0 8px rgba(255, 60, 95, 0.5);
+}
+/* Компактная сетка для характеристик врагов */
+.stats-grid-compact {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px 8px;
+    font-size: 0.8rem;
+    margin-top: 6px;
+}
+.stats-grid-compact span {
+    background: #1e2530;
+    padding: 2px 4px;
+    border-radius: 12px;
+    text-align: center;
+}
+.skills-list-compact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+.skills-list-compact span {
+    background: #1e2530;
+    padding: 2px 8px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+}
+.mook-hp-armor {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+    background: #0a0c12;
+    padding: 8px;
+    border-radius: 16px;
+}
+.mook-hp-armor label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    margin: 0;
+}
+.mook-hp-armor input {
+    width: auto;
+    padding: 4px;
+}
+/* Чтобы карточки не разрывались при маленькой ширине */
+.mook-card {
+    min-width: 280px;
+    overflow-x: auto;
+}
+/* Карточка NPC */
+.npc-card {
+    background: #14181f;
+    border: 1px solid #2a3342;
+    border-radius: 24px;
+    padding: 20px;
+    margin-top: 20px;
+    transition: all 0.2s;
+}
+.npc-card:hover {
+    border-color: #ff9a3c;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+.npc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #2a3342;
+}
+.npc-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ff9a3c;
+    font-family: 'Orbitron', monospace;
+}
+.npc-badges {
+    display: flex;
+    gap: 8px;
+}
+.npc-type, .npc-role {
+    background: #1e2530;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+.npc-type {
+    background: #ff3c5f;
+    color: white;
+}
+.npc-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.npc-hp-armor {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    background: #0a0c12;
+    padding: 10px;
+    border-radius: 16px;
+}
+.npc-description {
+    font-size: 0.85rem;
+    color: #9aa4bf;
+    background: #0a0c12;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-style: italic;
+}
+.npc-controls {
+    margin-top: 16px;
+    text-align: right;
+}
+.regenerate-npc-btn {
+    background: #2a3342;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+}
+.regenerate-npc-btn:hover {
+    background: #ff3c5f;
+    color: white;
+}
+.npc-role {
+    background: #ff9a3c;
+    color: #0a0c12;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+.npc-threat {
+    background: #2a3342;
+    color: #9aa4bf;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+body.cyberpunk-theme .npc-role {
+    background: #f9f002;
+    color: #000;
+}
+body.cyberpunk-theme .npc-threat {
+    background: #000;
+    color: #f9f002;
+    border: 1px solid #f9f002;
+}
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255,60,95,0.5); }
+    70% { box-shadow: 0 0 0 6px rgba(255,60,95,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,60,95,0); }
+}
+.cyber-badge {
+    animation: pulse 1.5s infinite;
+}
+#damageResult {
+    margin-top: 15px;
+    padding: 8px;
+    background: #0f1219;
+    border-radius: 12px;
+    font-size: 0.9rem;
+}

@@ -1,0 +1,1025 @@
+
+/* Карточка персонажа */
+.character-card-container {
+    margin-top: 20px;
+}
+.character-card {
+    background: linear-gradient(135deg, #1a1a2a, #0f0f1a);
+    border: 2px solid #ff3c5f;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(255, 60, 95, 0.3);
+}
+.character-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #ff9a3c;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+.character-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ff9a3c;
+}
+.character-role {
+    font-size: 1rem;
+    background: #ff3c5f;
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: #0a0c12;
+    font-weight: bold;
+}
+.close-card-btn {
+    background: none;
+    border: none;
+    color: #ff3c5f;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+.stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 10px 0;
+}
+.stats-row span {
+    background: #0a0c12;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-family: monospace;
+}
+.character-derived button {
+    margin: 5px 5px 0 0;
+}
+
+/* Карточка персонажа — улучшенная вёрстка */
+.character-card {
+    background: linear-gradient(145deg, #1a1e2a, #0f1219);
+    border: 1px solid #ff3c5f;
+    border-radius: 20px;
+    padding: 0;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,60,95,0.2);
+    overflow: hidden;
+}
+
+.character-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f1219;
+    padding: 15px 20px;
+    border-bottom: 2px solid #ff3c5f;
+}
+
+.character-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ff9a3c;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(255,60,95,0.5);
+}
+
+.character-role {
+    background: #ff3c5f;
+    padding: 5px 15px;
+    border-radius: 30px;
+    font-weight: bold;
+    color: #0a0c12;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.close-card-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #ff3c5f;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.close-card-btn:hover {
+    color: #ff9a3c;
+    transform: scale(1.1);
+}
+
+.character-card-body {
+    padding: 20px;
+}
+
+.char-section {
+    background: #0a0c12;
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border: 1px solid #2a1a2a;
+}
+
+.char-section h4 {
+    margin: 0 0 12px 0;
+    color: #ff9a3c;
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-left: 3px solid #ff3c5f;
+    padding-left: 10px;
+}
+
+/* Сетка характеристик */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 10px;
+}
+.stat-item {
+    background: #1a1e2a;
+    border-radius: 12px;
+    text-align: center;
+    padding: 6px 4px;
+    transition: 0.1s;
+}
+.stat-name {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #9aa4bf;
+    display: block;
+}
+.stat-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ff9a3c;
+    font-family: monospace;
+}
+
+/* Производные */
+.derived-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+.derived-stats div {
+    background: #1a1e2a;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+}
+.derived-label {
+    font-weight: bold;
+    color: #9aa4bf;
+}
+.current-hp {
+    font-weight: bold;
+    color: #ff3c5f;
+    font-size: 1.1rem;
+}
+.hp-threshold {
+    font-size: 0.7rem;
+    color: #9aa4bf;
+}
+.emp-value {
+    font-size: 0.8rem;
+    color: #9aa4bf;
+}
+.combat-buttons {
+    display: flex;
+    gap: 12px;
+}
+.combat-buttons button {
+    background: #1a1e2a;
+    border: 1px solid #ff3c5f;
+    padding: 6px 16px;
+    font-size: 0.8rem;
+}
+
+/* Навыки – компактный много‑колоночный список */
+.skills-list.compact {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 6px 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.skills-list.compact li {
+    display: flex;
+    justify-content: space-between;
+    background: #1a1e2a;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+.skill-name {
+    color: #e0e0e0;
+}
+.skill-level {
+    color: #ff9a3c;
+    font-weight: bold;
+}
+
+/* Сетка для снаряжения */
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 15px;
+}
+.equipment-grid .char-section {
+    margin-bottom: 0;
+}
+ul.compact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+ul.compact li {
+    padding: 4px 0;
+    border-bottom: 1px dashed #2a1a2a;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+ul.compact li:last-child {
+    border-bottom: none;
+}
+/* Карточка на всю ширину */
+.full-width-card {
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+/* Таблица навыков – делаем широкой и удобной для чтения */
+#skillsTable .cyber-table {
+    width: 100%;
+    min-width: 100%;
+    table-layout: auto;
+}
+#skillsTable .cyber-table th,
+#skillsTable .cyber-table td {
+    padding: 10px 12px;
+    white-space: normal;
+    word-break: normal;
+}
+#skillsTable .cyber-table th:first-child,
+#skillsTable .cyber-table td:first-child {
+    width: 30%; /* Название навыка занимает 30% */
+}
+#skillsTable .cyber-table th:nth-child(2),
+#skillsTable .cyber-table td:nth-child(2) {
+    width: 15%; /* ХАР */
+}
+#skillsTable .cyber-table td:nth-child(3),
+#skillsTable .cyber-table th:nth-child(3) {
+    width: 55%; /* Описание */
+}
+
+
+/* Две колонки: характеристики + навыки рядом */
+.stats-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: stretch;
+}
+.stats-card {
+    flex: 0 0 320px; /* фиксированная ширина для характеристик */
+    min-width: 280px;
+}
+.skills-card {
+    flex: 1; /* занимает оставшееся пространство */
+    min-width: 300px;
+}
+.skills-card .card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.skills-card .card h3 {
+    flex-shrink: 0;
+}
+#skillsTable {
+    flex: 1;
+    overflow-x: auto;
+}
+#skillsTable .cyber-table {
+    width: 100%;
+    min-width: 600px; /* чтобы таблица не сжималась слишком сильно */
+    table-layout: auto;
+}
+#skillsTable .cyber-table th,
+#skillsTable .cyber-table td {
+    padding: 8px 10px;
+    white-space: normal;
+}
+#skillsTable .cyber-table th:first-child,
+#skillsTable .cyber-table td:first-child {
+    width: 30%;
+}
+#skillsTable .cyber-table th:nth-child(2),
+#skillsTable .cyber-table td:nth-child(2) {
+    width: 15%;
+}
+#skillsTable .cyber-table th:nth-child(3),
+#skillsTable .cyber-table td:nth-child(3) {
+    width: 55%;
+}
+
+/* Карточка персонажа – улучшенная структура */
+.character-card {
+    background: linear-gradient(145deg, #1a1e2a, #0f1219);
+    border: 1px solid #ff3c5f;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+.character-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f1219;
+    padding: 15px 20px;
+    border-bottom: 2px solid #ff3c5f;
+}
+.character-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ff9a3c;
+}
+.character-role {
+    background: #ff3c5f;
+    padding: 5px 15px;
+    border-radius: 30px;
+    font-weight: bold;
+    color: #0a0c12;
+}
+.close-card-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #ff3c5f;
+    cursor: pointer;
+}
+.character-card-body {
+    padding: 20px;
+}
+.char-section {
+    background: #0a0c12;
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border: 1px solid #2a1a2a;
+}
+.char-section h4 {
+    margin: 0 0 12px 0;
+    color: #ff9a3c;
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 10px;
+}
+.stat-item {
+    background: #1a1e2a;
+    border-radius: 12px;
+    text-align: center;
+    padding: 6px 4px;
+}
+.stat-name {
+    font-size: 0.7rem;
+    color: #9aa4bf;
+    display: block;
+}
+.stat-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ff9a3c;
+}
+.derived-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+.derived-stats div {
+    background: #1a1e2a;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+}
+.derived-label {
+    font-weight: bold;
+    color: #9aa4bf;
+}
+.current-hp {
+    font-weight: bold;
+    color: #ff3c5f;
+}
+.combat-buttons {
+    display: flex;
+    gap: 12px;
+}
+.combat-buttons button {
+    background: #1a1e2a;
+    border: 1px solid #ff3c5f;
+    padding: 6px 16px;
+}
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+}
+.skill-row {
+    display: flex;
+    justify-content: space-between;
+    background: #1a1e2a;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+.skill-name {
+    color: #e0e0e0;
+}
+.skill-level {
+    color: #ff9a3c;
+    font-weight: bold;
+}
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 15px;
+}
+.equipment-card {
+    background: #0a0c12;
+    border: 1px solid #2a1a2a;
+    border-radius: 16px;
+    padding: 12px;
+}
+.equipment-card h4 {
+    margin: 0 0 10px 0;
+    color: #ff9a3c;
+    font-size: 1rem;
+}
+.gear-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.gear-item {
+    font-size: 0.85rem;
+    padding: 4px 0;
+    border-bottom: 1px dashed #2a1a2a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.gear-icon {
+    font-size: 1rem;
+    min-width: 24px;
+}
+
+/* Улучшенная карточка персонажа */
+.char-section {
+    background: #0f1219;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-left: 3px solid #ff3c5f;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 8px;
+}
+.stat-item {
+    background: #1a1e2a;
+    border-radius: 8px;
+    text-align: center;
+    padding: 6px;
+}
+.stat-name {
+    font-size: 0.7rem;
+    color: #9aa4bf;
+    display: block;
+}
+.stat-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ff9a3c;
+}
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 6px;
+}
+.skill-item {
+    display: flex;
+    justify-content: space-between;
+    background: #1a1e2a;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+.skill-level {
+    color: #ff9a3c;
+    font-weight: bold;
+}
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+.equipment-card {
+    background: #0f1219;
+    border: 1px solid #2a1a2a;
+    border-radius: 12px;
+    padding: 10px;
+}
+.equipment-card h5 {
+    margin: 0 0 8px 0;
+    color: #ff9a3c;
+    font-size: 0.9rem;
+}
+.compact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.compact li {
+    padding: 4px 0;
+    border-bottom: 1px dashed #2a1a2a;
+    font-size: 0.8rem;
+}
+.compact li:last-child {
+    border-bottom: none;
+}
+.derived-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+.combat-buttons {
+    display: flex;
+    gap: 10px;
+}
+.heal-btn, .damage-btn {
+    background: #1a1e2a;
+    border: 1px solid #ff3c5f;
+    padding: 4px 12px;
+    cursor: pointer;
+}
+.heal-btn:hover, .damage-btn:hover {
+    background: #ff3c5f;
+    color: #0a0c12;
+}
+
+/* Режим редактирования карточки */
+.edit-input, .edit-select, .edit-stat, .edit-skill {
+    background: #0a0c12;
+    border: 1px solid #ff3c5f;
+    color: #fff;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+.edit-stat {
+    width: 60px;
+    text-align: center;
+}
+.edit-skill {
+    width: 60px;
+    text-align: center;
+}
+.add-item-btn {
+    background: #2a3342;
+    border: none;
+    padding: 2px 8px;
+    margin-top: 5px;
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+.remove-item {
+    background: none;
+    border: none;
+    color: #ff3c5f;
+    margin-left: 8px;
+    cursor: pointer;
+    font-size: 0.7rem;
+}
+.card-actions {
+    display: flex;
+    gap: 8px;
+}
+.edit-card-btn, .sync-card-btn {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0 4px;
+}
+/* Модальное окно конструктора */
+.wizard-modal {
+    width: 90%;
+    max-width: 1300px;
+    height: 85vh;
+    overflow-y: auto;
+    background: #14181f;
+    border: 1px solid #ff3c5f;
+    border-radius: 24px;
+}
+.wizard-modal .modal-body {
+    padding: 20px;
+}
+
+
+/* ========== КОРРЕКТНОЕ ОТОБРАЖЕНИЕ ЦИФР ХАРАКТЕРИСТИК ========== */
+.stats-grid .stat-value,
+.stats-grid input {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ff9a3c;  /* яркий цвет для видимости */
+    background: #1e2530;
+    border-radius: 8px;
+    padding: 2px 6px;
+}
+.stat-item .stat-value {
+    color: #ff9a3c;
+    font-weight: bold;
+}
+body.cyberpunk-theme .stats-grid .stat-value,
+body.cyberpunk-theme .stats-grid input {
+    color: var(--neon-color);
+    text-shadow: 0 0 2px var(--neon-color);
+}
+/* ========== ИСПРАВЛЕНИЕ НАСЛОЕНИЯ DROPDOWN В КИБЕРПАНК-ТЕМЕ ========== */
+body.cyberpunk-theme select {
+    clip-path: none !important;
+    overflow: visible !important;
+    position: relative;
+    z-index: 1000;
+    background: var(--black-color);
+    border: 1px solid var(--yellow-color);
+    color: var(--yellow-color);
+}
+body.cyberpunk-theme .stat-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--neon-color);
+    text-shadow: 0 0 3px var(--neon-color);
+    display: inline-block;
+    min-width: 40px;
+    text-align: center;
+}
+
+body.cyberpunk-theme .stat-name {
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+}
+
+
+
+
+
+/* Центрирование содержимого в разделе Роли */
+.roles-accordion {
+    max-width: 900px;
+    margin: 0 auto;
+}
+.role-details {
+    text-align: center;
+}
+.role-summary {
+    justify-content: center;
+    gap: 20px;
+}
+.role-content {
+    text-align: left;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.role-content ul, .role-content p {
+    text-align: left;
+}
+/* Стили для раздела Роли – центрирование карточек, но текст по краям */
+.roles-accordion {
+    max-width: 900px;
+    margin: 0 auto;
+}
+.role-details {
+    text-align: left;
+    background: #14181f;
+    border: 1px solid #2a3342;
+    border-radius: 16px;
+    margin-bottom: 16px;
+}
+.role-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    background: #1e2530;
+    border-radius: 16px;
+    list-style: none;
+}
+.role-summary::-webkit-details-marker {
+    display: none;
+}
+.role-summary::before {
+    content: '▶';
+    margin-right: 12px;
+    color: #ff9a3c;
+    transition: transform 0.2s;
+}
+.role-details[open] .role-summary::before {
+    transform: rotate(90deg);
+}
+.role-name {
+    font-size: 1.3rem;
+    color: #ff9a3c;
+    font-family: monospace;
+    flex: 1;
+    text-align: left;
+}
+.role-skill {
+    background: #ff3c5f;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #0a0c12;
+    text-align: right;
+    margin-left: auto;
+}
+.role-content {
+    padding: 12px 20px 20px 20px;
+    border-top: 1px solid #2a3342;
+}
+.role-content ul, .role-content p {
+    text-align: left;
+    margin-left: 0;
+    padding-left: 20px;
+}
+body.cyberpunk-theme #idealStatsGrid input,
+body.cyberpunk-theme .skill-level,
+body.cyberpunk-theme .stat-value,
+body.cyberpunk-theme .number-value,
+body.cyberpunk-theme .current-hp,
+body.cyberpunk-theme #idealStatsPoints,
+body.cyberpunk-theme #idealSkillPoints {
+    color: #f9f002 !important;
+    text-shadow: 0 0 3px #f9f002, 0 0 5px #000 !important;
+    -webkit-text-stroke: 0.5px #000 !important;
+    font-weight: bold !important;
+}
+
+/* Стили для улучшенного шага снаряжения */
+.gear-wizard-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #2a3342;
+}
+.gear-tab-btn {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #9aa4bf;
+}
+.gear-tab-btn.active {
+    color: #ff3c5f;
+    border-bottom: 2px solid #ff3c5f;
+}
+.gear-tab-content {
+    display: none;
+}
+.gear-tab-content.active {
+    display: block;
+}
+.gear-checkbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 8px;
+    background: #0f1219;
+    border-radius: 12px;
+}
+.gear-checkbox-list label {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 4px;
+    border-bottom: 1px solid #2a3342;
+}
+.weapon-categories {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.weapon-cat {
+    flex: 1;
+    min-width: 250px;
+}
+.search-box {
+    margin-bottom: 12px;
+}
+.search-box input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 20px;
+}
+.item-desc {
+    font-size: 0.7rem;
+    color: #9aa4bf;
+    margin-left: 8px;
+}
+.gear-wizard-budget {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    text-align: right;
+}
+/* Стили для шага снаряжения (табличный вид) */
+.gear-budget {
+    font-size: 1.2rem;
+    text-align: right;
+    margin-bottom: 15px;
+    padding: 8px;
+    background: #0f1219;
+    border-radius: 12px;
+}
+.gear-filter {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.gear-filter select, .gear-filter input {
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+.gear-section {
+    margin-bottom: 25px;
+    border-top: 1px solid #2a3342;
+    padding-top: 15px;
+}
+.gear-section h4 {
+    margin: 10px 0;
+    color: #ff9a3c;
+}
+.cyber-table td:first-child, .cyber-table th:first-child {
+    text-align: center;
+}
+/* Стили для шага навыков (группировка, компактные таблицы) */
+.skills-wizard-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+    gap: 15px;
+}
+.skills-points {
+    font-size: 1.1rem;
+    background: #0f1219;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+.skills-search input {
+    padding: 6px 12px;
+    border-radius: 20px;
+    width: 200px;
+}
+.skill-category {
+    margin-bottom: 15px;
+    border: 1px solid #2a3342;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.skill-category-header {
+    padding: 10px 12px;
+    background: #1e2530;
+    cursor: pointer;
+    font-weight: bold;
+    user-select: none;
+}
+.skill-category-header:hover {
+    background: #2a3342;
+}
+.category-toggle {
+    display: inline-block;
+    width: 20px;
+}
+.skill-category-body {
+    padding: 0;
+    overflow-x: auto;
+}
+.skills-table-compact {
+    min-width: 400px;
+    font-size: 0.8rem;
+}
+.skills-table-compact td, .skills-table-compact th {
+    padding: 6px 8px;
+}
+.skills-table-compact input {
+    width: 60px;
+    text-align: center;
+    padding: 4px;
+}
+/* Таблицы навыков и имплантов */
+.skills-budget, .cyber-budget-info {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    text-align: right;
+    background: #0f1219;
+    padding: 8px 12px;
+    border-radius: 12px;
+}
+.skills-controls, .cyber-controls {
+    margin-bottom: 20px;
+}
+.skills-controls input, .cyber-controls input {
+    width: 250px;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+.skills-category-table, .cyber-group-table {
+    margin-bottom: 25px;
+    border-top: 1px solid #2a3342;
+    padding-top: 10px;
+}
+.skills-category-table h4, .cyber-group-table h4 {
+    margin: 10px 0;
+    color: #ff9a3c;
+    font-size: 1.1rem;
+}
+.skill-level-table {
+    width: 70px;
+    text-align: center;
+}
+.style-budget {
+    font-size: 1.2rem;
+    text-align: right;
+    margin-bottom: 15px;
+    padding: 8px;
+    background: #0f1219;
+    border-radius: 12px;
+}
+.style-controls {
+    margin-bottom: 20px;
+}
+.style-controls input {
+    width: 250px;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+.style-category-table {
+    margin-bottom: 25px;
+    border-top: 1px solid #2a3342;
+    padding-top: 10px;
+}
+.style-category-table h4 {
+    margin: 10px 0;
+    color: #ff9a3c;
+}
+.collapsible-header {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.collapsible-header .collapse-icon {
+    font-size: 0.8rem;
+    margin-left: 8px;
+}
+.skills-category-table .table-wrapper,
+.cyber-group-table .table-wrapper {
+    transition: all 0.2s ease;
+}
+.notes-preview {
+    background: #0a0c12;
+    padding: 12px;
+    border-radius: 12px;
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 0.85rem;
+    border-left: 3px solid #ff9a3c;
+}

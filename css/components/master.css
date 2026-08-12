@@ -1,0 +1,107 @@
+
+/* ========== УЛУЧШЕННЫЕ КНОПКИ ДЛЯ STORY MASTER ========== */
+.cyber-btn.small {
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    border-radius: 30px;
+    background: #1e2530;
+    border: 1px solid #2a3342;
+    color: #e0e0e0;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.cyber-btn.small:hover {
+    background: #ff3c5f;
+    border-color: #ff3c5f;
+    color: #0a0c12;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(255, 60, 95, 0.3);
+}
+
+.cyber-btn.small:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Для выпадающих списков внутри дерева */
+select.move-scene-chapter {
+    background: #0a0c12;
+    border: 1px solid #2a3342;
+    border-radius: 30px;
+    padding: 4px 8px;
+    color: #f0e6d3;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+select.move-scene-chapter:focus {
+    border-color: #ff9a3c;
+    outline: none;
+}
+
+/* Модальное окно просмотра сцены (создаётся динамически) */
+#storySceneModal .modal-content {
+    background: #14181f;
+    border: 1px solid #ff3c5f;
+    border-radius: 16px;
+    max-width: 600px;
+    padding: 20px;
+}
+
+#storySceneModal .modal-body p {
+    margin: 8px 0;
+    font-size: 0.9rem;
+    color: #c9d1d9;
+}
+
+#storySceneModal .modal-body h4 {
+    color: #ff9a3c;
+    font-family: 'Orbitron', monospace;
+    margin: 0 0 12px 0;
+    font-size: 1.2rem;
+}
+/* ========== ФИКСАЦИЯ ФУТЕРА ВНИЗУ ========== */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.app-container {
+    flex: 1 0 auto; /* контент занимает всё доступное пространство */
+}
+
+
+/* Анимация пульсации для текущего узла */
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(57, 255, 20, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0); }
+}
+
+
+
+/* Анимация глитча */
+@keyframes glitch-anim {
+    0% { clip: rect(10px, 9999px, 30px, 0); transform: skew(0.5deg); }
+    10% { clip: rect(50px, 9999px, 70px, 0); transform: skew(0.2deg); }
+    20% { clip: rect(20px, 9999px, 60px, 0); transform: skew(0.8deg); }
+    100% { clip: rect(80px, 9999px, 100px, 0); transform: skew(0.1deg); }
+}
+@keyframes glitch-anim-2 {
+    0% { clip: rect(60px, 9999px, 80px, 0); transform: skew(0.6deg); }
+    10% { clip: rect(10px, 9999px, 30px, 0); transform: skew(0.3deg); }
+    100% { clip: rect(90px, 9999px, 100px, 0); transform: skew(0.1deg); }
+}
