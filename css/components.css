@@ -2586,3 +2586,40 @@ body.cyberpunk-theme .copy-sheet-btn {
     margin: 15px 0;
     flex-wrap: wrap;
 }
+.main-pane, .sub-pane {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.main-pane.active, .sub-pane.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  background: var(--bg-card-hover);
+  border-color: rgba(0, 212, 255, 0.2);
+  box-shadow: var(--glow-cyan), 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Заголовки карточек – с акцентной полосой */
+.card h3 {
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-left: 3px solid var(--accent-cyan);
+  padding-left: 14px;
+  margin-bottom: 16px;
+  letter-spacing: 0.3px;
+}
