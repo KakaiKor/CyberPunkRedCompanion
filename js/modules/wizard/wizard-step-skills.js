@@ -1,8 +1,12 @@
-import { allSkills } from '../../data/skills-data.js';
+// js/modules/wizard/wizard-step-skills.js
+import { allSkills, roleTemplates } from '../../data/skills-data.js'; // [PRIORITY] добавлен roleTemplates
 
 export function renderSkillsStep(data, skillsList) {
     const userSkills = data.skills || {};
+    const role = data.role || 'Соло';                       // [PRIORITY] какая роль выбрана
+    const roleTemplate = roleTemplates[role] || {};         // [PRIORITY] карта приоритетов для неё
     const categories = groupSkillsByCategory(skillsList || allSkills);
+
     let totalSpent = 0;
     for (let skill of (skillsList || allSkills)) {
         const level = userSkills[skill.name] ?? (skill.base ? 2 : 0);
@@ -10,9 +14,22 @@ export function renderSkillsStep(data, skillsList) {
     }
     const remaining = 86 - totalSpent;
 
+    // [PRIORITY] Если для роли вообще есть шаблон — покажем легенду
+    const hasAnyPriority = Object.keys(roleTemplate).length > 0;
+
     return `
         <h3>🎯 Навыки (очков: 86, базовые минимум 2)</h3>
         <div class="skills-budget">Осталось очков: <strong class="${remaining < 0 ? 'over' : 'ok'}">${remaining}</strong></div>
+
+        ${hasAnyPriority ? `
+        <div class="skills-priority-legend">
+            <span class="legend-title">Роль «${role}»:</span>
+            <span class="legend-item"><span class="legend-swatch high"></span> Приоритетный</span>
+            <span class="legend-item"><span class="legend-swatch mid"></span> Вторичный</span>
+            <span class="legend-item"><span class="legend-swatch low"></span> Рекомендуемый</span>
+        </div>
+        ` : ''}
+
         <div class="skills-controls">
             <input type="text" id="skillsSearchTable" placeholder="🔍 Поиск по названию...">
         </div>
@@ -28,8 +45,10 @@ export function renderSkillsStep(data, skillsList) {
                             <tbody>
                                 ${skills.map(skill => {
         const current = userSkills[skill.name] ?? (skill.base ? 2 : 0);
+        const priorityClass = getPriorityClass(skill.name, roleTemplate);   // [PRIORITY]
+        const priorityTitle = getPriorityTitle(priorityClass, role);        // [PRIORITY]
         return `
-                                        <tr data-skill-name="${skill.name}">
+                                        <tr data-skill-name="${skill.name}" class="${priorityClass}"${priorityTitle ? ` title="${priorityTitle}"` : ''}>
                                             <td>${skill.name}</td>
                                             <td>${skill.stat}</td>
                                             <td>${skill.costMult === 2 ? 'да' : ''}</td>
@@ -75,4 +94,28 @@ export function renderSkillsStep(data, skillsList) {
         for (const cat in map) if (map[cat].length === 0) delete map[cat];
         return map;
     }
+}
+
+// ============================================================
+// [PRIORITY] Хелперы — вне функции, чтобы не пересоздавались
+// ============================================================
+
+/**
+ * Определяет CSS-класс приоритета навыка для выбранной роли.
+ * 6 → высокий, 4 → средний, 2 → низкий, иначе — без класса.
+ */
+function getPriorityClass(skillName, template) {
+    const lvl = template[skillName];
+    if (lvl === 6) return 'skill-priority-high';
+    if (lvl === 4) return 'skill-priority-mid';
+    if (lvl === 2) return 'skill-priority-low';
+    return '';
+}
+
+/** Текст подсказки при наведении на строку. */
+function getPriorityTitle(priorityClass, role) {
+    if (priorityClass === 'skill-priority-high') return `★ Приоритетный навык роли «${role}»`;
+    if (priorityClass === 'skill-priority-mid')  return `☆ Вторичный навык роли «${role}»`;
+    if (priorityClass === 'skill-priority-low')  return `Рекомендуемый навык роли «${role}»`;
+    return '';
 }

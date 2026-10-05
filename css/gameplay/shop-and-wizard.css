@@ -1139,3 +1139,122 @@
     color: #9aa4bf;
     grid-column: 1 / -1;
 }
+/* ============================================================
+   ПОДСВЕТКА ПРИОРИТЕТНЫХ НАВЫКОВ ПО РОЛИ (wizard + editor)
+   ============================================================ */
+
+/* Высокий приоритет — приоритетный навык роли (уровень 6 в шаблоне) */
+.skills-table tbody tr.skill-priority-high,
+.skills-table-editor tbody tr.skill-priority-high {
+    background: linear-gradient(90deg,
+        rgba(255, 154, 60, 0.20) 0%,
+        rgba(255, 154, 60, 0.05) 55%,
+        transparent 100%);
+    box-shadow: inset 4px 0 0 0 #ff9a3c;
+    transition: background 0.2s ease;
+}
+.skills-table tbody tr.skill-priority-high td:first-child,
+.skills-table-editor tbody tr.skill-priority-high td:first-child {
+    font-weight: 600;
+    color: #ffd6a8;
+}
+
+/* Средний приоритет — вторичный навык роли (уровень 4) */
+.skills-table tbody tr.skill-priority-mid,
+.skills-table-editor tbody tr.skill-priority-mid {
+    background: linear-gradient(90deg,
+        rgba(64, 156, 255, 0.16) 0%,
+        rgba(64, 156, 255, 0.04) 55%,
+        transparent 100%);
+    box-shadow: inset 4px 0 0 0 #409cff;
+    transition: background 0.2s ease;
+}
+.skills-table tbody tr.skill-priority-mid td:first-child,
+.skills-table-editor tbody tr.skill-priority-mid td:first-child {
+    font-weight: 500;
+    color: #b8d6ff;
+}
+
+/* Низкий приоритет — опциональный/базовый навык роли (уровень 2) */
+.skills-table tbody tr.skill-priority-low,
+.skills-table-editor tbody tr.skill-priority-low {
+    background: linear-gradient(90deg,
+        rgba(90, 110, 140, 0.10) 0%,
+        transparent 100%);
+    box-shadow: inset 3px 0 0 0 rgba(90, 110, 140, 0.55);
+}
+
+/* Ховер — легкая подсветка строки */
+.skills-table tbody tr.skill-priority-high:hover,
+.skills-table tbody tr.skill-priority-mid:hover,
+.skills-table tbody tr.skill-priority-low:hover {
+    filter: brightness(1.12);
+}
+
+/* ============================================================
+   ЛЕГЕНДА ПОД ТАБЛИЦЕЙ НАВЫКОВ
+   ============================================================ */
+
+.skills-priority-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px;
+    margin: 10px 0 16px;
+    padding: 10px 14px;
+    background: rgba(15, 18, 25, 0.55);
+    border: 1px solid #2a3342;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    color: #c8d2e0;
+}
+.skills-priority-legend .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+.skills-priority-legend .legend-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+.skills-priority-legend .legend-swatch.high { background: #ff9a3c; box-shadow: 0 0 6px rgba(255,154,60,0.6); }
+.skills-priority-legend .legend-swatch.mid  { background: #409cff; box-shadow: 0 0 6px rgba(64,156,255,0.6); }
+.skills-priority-legend .legend-swatch.low  { background: rgba(90, 110, 140, 0.65); }
+.skills-priority-legend .legend-title {
+    font-weight: 600;
+    color: #ff9a3c;
+    margin-right: 4px;
+}
+
+/* Адаптив: легенда в столбик на мобильных */
+@media (max-width: 700px) {
+    .skills-priority-legend {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+/* ============================================================
+   Совместимость с cyberpunk-theme
+   ============================================================ */
+body.cyberpunk-theme .skills-table tbody tr.skill-priority-high,
+body.cyberpunk-theme .skills-table-editor tbody tr.skill-priority-high {
+    background: linear-gradient(90deg,
+        rgba(255, 215, 0, 0.22) 0%,
+        rgba(255, 215, 0, 0.05) 55%,
+        transparent 100%);
+    box-shadow: inset 4px 0 0 0 #ffd700;
+}
+body.cyberpunk-theme .skills-table tbody tr.skill-priority-mid,
+body.cyberpunk-theme .skills-table-editor tbody tr.skill-priority-mid {
+    background: linear-gradient(90deg,
+        rgba(0, 200, 255, 0.18) 0%,
+        rgba(0, 200, 255, 0.04) 55%,
+        transparent 100%);
+    box-shadow: inset 4px 0 0 0 #00c8ff;
+}
