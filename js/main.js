@@ -16,6 +16,7 @@ import {
 } from './data.js';
 import { saveCharacter, loadCharacter, saveGroup, loadGroup } from './storage.js';
 import { allSkills, roleTemplates } from './data/skills-data.js';
+import { skillDescriptions } from './data/skills-descriptions.js';
 // import { NightMarket, TreasureGenerator, IdealShop } from './modules/market.js';
 import { renderGear } from './modules/gear.js';
 import { ShopUI, InventoryUI } from './modules/market/shop.js';
@@ -28,6 +29,7 @@ import { StoryGenerator } from './modules/story-generator.js';
 import { loadStoryData, saveStoryData, getCampaigns} from './story/story-manager.js';
 import { renderCampaignList, refreshCampaignSelects} from './story/story-ui.js';
 import { getCharacterWithIP, upgradeSkill, upgradeRoleRank, getUpgradeableSkills, addIP } from './modules/ip-manager.js';
+import { initTooltipPositioning } from './modules/ui/tooltip-positioner.js';
 
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
@@ -44,7 +46,14 @@ function exportAllData() {
     a.click();
     URL.revokeObjectURL(a.href);
 }
-
+function escapeTip(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
 function importAllData(file) {
     const reader = new FileReader();
     reader.onload = e => {
@@ -253,6 +262,7 @@ function calculateIp() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initTooltipPositioning();
     updateAllTables();
     fillIpTable();
     new AutoFireUI();
@@ -655,14 +665,23 @@ if (openModalBtn && wizardModal) {
         const remaining = 86 - spent;
         if (skillsPointsSpan) skillsPointsSpan.innerText = remaining;
 
-        let html = '<div class="skills-grid-editor">';
+             let html = '<div class="skills-grid-editor">';
         for (let skill of allSkillsList) {
             const level = userSkills[skill.name] ?? (skill.base ? 2 : 0);
             const isMandatory = mandatorySkills.includes(skill.name);
             const mandatoryMark = isMandatory ? ' *' : '';
+
+            // [TIP] Иконка «i» с описанием — если есть в skills-descriptions.js
+            const desc = skillDescriptions[skill.name];
+            const infoIcon = desc ? `
+                <span class="skill-info-icon" aria-label="Описание навыка">i<span class="skill-tooltip">
+                    <span class="tip-section"><span class="tip-label">Что это</span><span class="tip-text">${escapeTip(desc.what)}</span></span>
+                    <span class="tip-section"><span class="tip-label">Как применять</span><span class="tip-text">${escapeTip(desc.how)}</span></span>
+                </span></span>` : '';
+
             html += `
                 <div class="skill-editor-item" data-skill="${skill.name}">
-                    <span class="skill-editor-name">${skill.name}${mandatoryMark}</span>
+                    <span class="skill-editor-name">${skill.name}${mandatoryMark}${infoIcon}</span>
                     <span class="skill-editor-stat">${skill.stat}</span>
                     <span class="skill-editor-cost">${skill.costMult === 2 ? '×2' : ''}</span>
                     <input type="number" class="skill-editor-level" data-skill="${skill.name}" data-cost="${skill.costMult}" min="0" max="6" value="${level}" step="1">

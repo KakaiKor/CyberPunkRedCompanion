@@ -1258,3 +1258,146 @@ body.cyberpunk-theme .skills-table-editor tbody tr.skill-priority-mid {
         transparent 100%);
     box-shadow: inset 4px 0 0 0 #00c8ff;
 }
+/* ============================================================
+   ИКОНКА «i» И ПЛАВАЮЩИЙ ТУЛТИП (v3 — портал в body)
+   ============================================================ */
+
+/* Иконка */
+.skill-info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: rgba(255, 154, 60, 0.15);
+    border: 1px solid rgba(255, 154, 60, 0.55);
+    color: #ff9a3c;
+    font-size: 10px;
+    font-weight: 700;
+    font-style: normal;
+    font-family: 'Georgia', serif;
+    line-height: 1;
+    cursor: help;
+    vertical-align: middle;
+    transition: background 0.15s ease;
+    user-select: none;
+}
+.skill-info-icon:hover {
+    background: rgba(255, 154, 60, 0.35);
+}
+
+/* Инлайн-тултип внутри иконки — только источник данных,
+   скрыт всегда. JS клонирует его содержимое в floating-элемент. */
+.skill-info-icon .skill-tooltip {
+    display: none;
+}
+
+/* ============================================================
+   ПЛАВАЮЩИЙ ТУЛТИП (position: fixed, аппендится в body через JS)
+   ============================================================ */
+.skill-tooltip-floating {
+    position: fixed;
+    width: 300px;
+    max-width: 80vw;
+    padding: 12px 14px;
+    background: #0f1219;
+    border: 1px solid #ff9a3c;
+    border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.75), 0 0 12px rgba(255, 154, 60, 0.3);
+    color: #e6ecf5;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    font-weight: 400;
+    font-style: normal;
+    text-align: left;
+    z-index: 999999;
+    pointer-events: none;
+    white-space: normal;
+    animation: skillTipFadeIn 0.14s ease-out;
+}
+
+@keyframes skillTipFadeIn {
+    from { opacity: 0; transform: translateY(3px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Стрелка: указывает на иконку. Смещение задаётся через --arrow-left */
+.skill-tooltip-floating::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: var(--arrow-left, 50%);
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #ff9a3c;
+}
+
+/* Модификатор: тултип развёрнут вниз — стрелка сверху */
+.skill-tooltip-floating--below::after {
+    top: auto;
+    bottom: 100%;
+    border-top-color: transparent;
+    border-bottom-color: #ff9a3c;
+}
+
+/* Заголовки и текст внутри тултипа */
+.skill-tooltip-floating .tip-section {
+    display: block;
+    margin-bottom: 8px;
+}
+.skill-tooltip-floating .tip-section:last-child {
+    margin-bottom: 0;
+}
+.skill-tooltip-floating .tip-label {
+    display: inline-block;
+    color: #ff9a3c;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+}
+.skill-tooltip-floating .tip-text {
+    display: block;
+    color: #c8d2e0;
+}
+
+/* Ховер строк — без filter (не создаёт stacking context) */
+.skills-table tbody tr.skill-priority-high:hover { background-color: rgba(255, 154, 60, 0.28); }
+.skills-table tbody tr.skill-priority-mid:hover  { background-color: rgba(64, 156, 255, 0.22); }
+.skills-table tbody tr.skill-priority-low:hover  { background-color: rgba(90, 110, 140, 0.16); }
+
+/* Мобильные */
+@media (max-width: 700px) {
+    .skill-tooltip-floating {
+        width: 240px;
+        font-size: 0.78rem;
+    }
+}
+
+/* Cyberpunk theme */
+body.cyberpunk-theme .skill-info-icon {
+    background: rgba(255, 215, 0, 0.15);
+    border-color: rgba(255, 215, 0, 0.55);
+    color: #ffd700;
+}
+body.cyberpunk-theme .skill-info-icon:hover {
+    background: rgba(255, 215, 0, 0.35);
+}
+body.cyberpunk-theme .skill-tooltip-floating {
+    border-color: #ffd700;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.75), 0 0 12px rgba(255, 215, 0, 0.35);
+}
+body.cyberpunk-theme .skill-tooltip-floating::after {
+    border-top-color: #ffd700;
+}
+body.cyberpunk-theme .skill-tooltip-floating--below::after {
+    border-top-color: transparent;
+    border-bottom-color: #ffd700;
+}
+body.cyberpunk-theme .skill-tooltip-floating .tip-label {
+    color: #ffd700;
+}

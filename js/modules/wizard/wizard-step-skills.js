@@ -1,5 +1,6 @@
 // js/modules/wizard/wizard-step-skills.js
-import { allSkills, roleTemplates } from '../../data/skills-data.js'; // [PRIORITY] добавлен roleTemplates
+import { allSkills, roleTemplates } from '../../data/skills-data.js';
+import { skillDescriptions } from '../../data/skills-descriptions.js'; // [TIP]
 
 export function renderSkillsStep(data, skillsList) {
     const userSkills = data.skills || {};
@@ -46,10 +47,16 @@ export function renderSkillsStep(data, skillsList) {
                                 ${skills.map(skill => {
         const current = userSkills[skill.name] ?? (skill.base ? 2 : 0);
         const priorityClass = getPriorityClass(skill.name, roleTemplate);   // [PRIORITY]
-        const priorityTitle = getPriorityTitle(priorityClass, role);        // [PRIORITY]
+        // const priorityTitle = getPriorityTitle(priorityClass, role);        // [PRIORITY]
+        const desc = skillDescriptions[skill.name];                          // [TIP]
+        const infoIcon = desc ? `
+            <span class="skill-info-icon" aria-label="Описание навыка">i<span class="skill-tooltip">
+                <span class="tip-section"><span class="tip-label">Что это</span><span class="tip-text">${escapeTip(desc.what)}</span></span>
+                <span class="tip-section"><span class="tip-label">Как применять</span><span class="tip-text">${escapeTip(desc.how)}</span></span>
+            </span></span>` : '';                                              // [TIP]
         return `
-                                        <tr data-skill-name="${skill.name}" class="${priorityClass}"${priorityTitle ? ` title="${priorityTitle}"` : ''}>
-                                            <td>${skill.name}</td>
+                                        <tr data-skill-name="${skill.name}" class="${priorityClass}">
+                                            <td>${skill.name}${infoIcon}</td>
                                             <td>${skill.stat}</td>
                                             <td>${skill.costMult === 2 ? 'да' : ''}</td>
                                             <td><input type="number" class="skill-level-table" data-skill="${skill.name}" data-cost="${skill.costMult}" min="0" max="6" value="${current}" step="1"></td>
@@ -118,4 +125,21 @@ function getPriorityTitle(priorityClass, role) {
     if (priorityClass === 'skill-priority-mid')  return `☆ Вторичный навык роли «${role}»`;
     if (priorityClass === 'skill-priority-low')  return `Рекомендуемый навык роли «${role}»`;
     return '';
+}
+
+// ============================================================
+// [TIP] Хелпер экранирования для содержимого тултипа
+// ============================================================
+
+/**
+ * Экранирует служебные символы в тексте описания,
+ * чтобы тултип не сломал вёрстку и не открыл XSS-дыру.
+ */
+function escapeTip(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
 }
