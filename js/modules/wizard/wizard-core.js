@@ -3,7 +3,7 @@ import { getHP } from '../../utils.js';
 import { saveCharacter } from '../../storage.js';
 import { detailedCyberware, rangedWeapons, meleeWeapons, armors, gearItems } from '../../data.js';
 import { allSkills } from '../../data/skills-data.js';
-
+import { getRequirements, areRequirementsMet } from '../../data/cyberware-requirements.js';
 import { renderIdentityStep } from './wizard-step-identity.js';
 import { renderRoleStep } from './wizard-step-role.js';
 import { renderStatsStep } from './wizard-step-stats.js';
@@ -419,21 +419,88 @@ this.data.gear.armor.head = headCheckbox ? headCheckbox.value : '';
     }
 
     attachCyberwareEvents() {
-        if (this._cyberHandler) document.removeEventListener('change', this._cyberHandler);
-        this._cyberHandler = (e) => {
-            if (e.target && e.target.classList.contains('cyber-checkbox-table')) {
-                this.updateCyberware();
-            }
-        };
-        document.addEventListener('change', this._cyberHandler);
+    if (this._cyberHandler) document.removeEventListener('change', this._cyberHandler);
+    this._cyberHandler = (e) => {
+        if (e.target && e.target.classList.contains('cyber-checkbox-table')) {
+            this.updateCyberware();
+        }
+    };
+    document.addEventListener('change', this._cyberHandler);
+
+    // [REQ] Перехват кликов по заблокированным строкам
+    const container = document.getElementById('cyberTablesContainer');
+    if (container && !container._reqHandlerAttached) {
+        container._reqHandlerAttached = true;
+        container.addEventListener('click', (e) => {
+            const row = e.target.closest('tr.cyber-locked');
+            if (!row) return;
+
+            // Отменяем переключение чекбокса
+            e.preventDefault();
+            e.stopPropagation();
+
+            const cb = row.querySelector('input[type="checkbox"]');
+            if (cb) cb.checked = false;
+
+            const required = row.dataset.required || '';
+            const optionName = row.dataset.name || 'Эта опция';
+            alert(`🔒 ${optionName}\n\nТребуется сначала установить: ${required}`);
+        });
     }
+}
 
     updateCyberware() {
-        const checkboxes = document.querySelectorAll('.cyber-checkbox-table:checked');
-        this.data.cyberware = Array.from(checkboxes).map(cb => cb.value);
-        this.updateTotalSpent();
-        this.saveProgress();
-    }
+    const checkboxes = document.querySelectorAll('.cyber-checkbox-table:checked');
+    this.data.cyberware = Array.from(checkboxes).map(cb => cb.value);
+    this.updateTotalSpent();
+    this.saveProgress();
+    this.refreshCyberwareLocks();   // [REQ] мгновенно пересчитываем блокировки
+}
+
+// [REQ] Хирургическое обновление классов блокировки без полного ре-рендера
+refreshCyberwareLocks() {
+    const container = document.getElementById('cyberTablesContainer');
+    if (!container) return;
+
+    const selected = this.data.cyberware || [];
+
+    container.querySelectorAll('tr[data-name]').forEach(row => {
+        const optionName = row.dataset.name;
+        if (!optionName) return;
+
+        const isSelected = selected.includes(optionName);
+        const reqs = getRequirements(optionName);
+        const locked = !isSelected
+            && reqs.length > 0
+            && !areRequirementsMet(optionName, selected);
+
+        // Класс на строке
+        row.classList.toggle('cyber-locked', locked);
+
+        // Класс на чекбоксе
+        const cb = row.querySelector('input.cyber-checkbox-table');
+        if (cb) cb.classList.toggle('cyber-locked-checkbox', locked);
+
+        // Иконка 🔒 рядом с названием (вторая ячейка)
+        const nameCell = row.children[1];
+        if (nameCell) {
+            const existing = nameCell.querySelector('.cyber-lock-icon');
+            if (locked && !existing) {
+                const span = document.createElement('span');
+                span.className = 'cyber-lock-icon';
+                span.setAttribute('aria-label', 'Заблокировано');
+                span.textContent = '🔒';
+                nameCell.appendChild(span);
+            } else if (!locked && existing) {
+                existing.remove();
+            }
+        }
+
+        // Тултип с требуемыми базами
+        row.title = locked ? `Требуется: ${reqs.join(', ')}` : '';
+        row.dataset.required = locked ? reqs.join(', ') : (reqs.join(', ') || '');
+    });
+}
 
     attachStyleEvents() {
         if (this._styleHandler) document.removeEventListener('change', this._styleHandler);

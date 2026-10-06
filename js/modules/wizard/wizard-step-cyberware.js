@@ -1,5 +1,6 @@
 import { detailedCyberware } from '../../data.js';
-
+import { getRequirements, areRequirementsMet } from '../../data/cyberware-requirements.js';  // [REQ]
+import { cyberwareRecommendations } from '../../data/cyberware-recommendations.js';
 export function renderCyberwareStep(data) {
     const groups = {
         "нейро": { name: "🧠 Нейроимпланты", items: [] },
@@ -19,7 +20,8 @@ export function renderCyberwareStep(data) {
     const selected = data.cyberware || [];
     const totalSpent = data.totalSpentOnGearAndCyber || 0;
     const remaining = 2550 - totalSpent;
-
+    const role = data.role || 'Соло';                                  // [REC]
+    const recommendations = cyberwareRecommendations[role] || [];      // [REC]
     return `
         <h3>🦾 Киберимпланты (общий бюджет 2550 eb на снаряжение + импланты)</h3>
         <div class="cyber-budget-info">Осталось: <strong class="${remaining < 0 ? 'over' : 'ok'}">${remaining}</strong> eb</div>
@@ -36,16 +38,44 @@ export function renderCyberwareStep(data) {
                                 <tr><th style="width:30px">✓</th><th>Название</th><th>Установка</th><th>Эффект</th><th>Цена</th><th>ПЧ</th></tr>
                             </thead>
                             <tbody>
-                                ${group.items.map(item => `
-                                    <tr data-name="${item.name}">
-                                        <td style="text-align:center"><input type="checkbox" class="cyber-checkbox-table" value="${item.name}" data-cost="${item.cost}" data-humanity="${item.humanity}" ${selected.includes(item.name) ? 'checked' : ''}> </td>
-                                        <td><strong>${item.name}</strong></td>
-                                        <td>${item.install}</td>
-                                        <td>${item.effect.substring(0, 60)}${item.effect.length > 60 ? '…' : ''}</td>
-                                        <td>${item.cost} eb</td>
-                                        <td>${item.humanity}</td>
-                                    </tr>
-                                `).join('')}
+                                ${group.items.map(item => {
+    const isSelected = selected.includes(item.name);
+    const reqs = getRequirements(item.name);
+    const isLocked = !isSelected && reqs.length > 0
+        && !areRequirementsMet(item.name, selected);
+    const isRecommended = !isLocked && recommendations.includes(item.name);   // [REC]
+
+    // Иконки рядом с названием
+    const lockIcon = isLocked
+        ? ` <span class="cyber-lock-icon" aria-label="Заблокировано">🔒</span>` : '';
+    const starIcon = isRecommended
+        ? ` <span class="cyber-rec-icon" aria-label="Рекомендуется для роли">⭐</span>` : '';
+
+    // Классы на строке
+    const rowClasses = [
+        isLocked ? 'cyber-locked' : '',
+        isRecommended ? 'cyber-recommended' : ''
+    ].filter(Boolean).join(' ');
+
+    const rowTitle = isLocked
+        ? ` title="Требуется: ${reqs.join(', ')}"`
+        : (isRecommended ? ` title="Рекомендуется для роли «${role}»"` : '');
+
+    const cbClass = isLocked
+        ? 'cyber-checkbox-table cyber-locked-checkbox'
+        : 'cyber-checkbox-table';
+
+    return `
+        <tr data-name="${item.name}" class="${rowClasses}"${rowTitle} data-required="${reqs.join(', ')}">
+            <td style="text-align:center"><input type="checkbox" class="${cbClass}" value="${item.name}" data-cost="${item.cost}" data-humanity="${item.humanity}" ${isSelected ? 'checked' : ''}> </td>
+            <td><strong>${item.name}</strong>${lockIcon}${starIcon}</td>
+            <td>${item.install}</td>
+            <td>${item.effect.substring(0, 60)}${item.effect.length > 60 ? '…' : ''}</td>
+            <td>${item.cost} eb</td>
+            <td>${item.humanity}</td>
+        </tr>
+    `;
+}).join('')}
                             </tbody>
                         </table>
                     </div>
