@@ -3,6 +3,8 @@ import { getHP } from '../utils.js';
 import { saveCharacter, loadCharacter } from '../storage.js';
 import { detailedCyberware, armors, rangedWeapons, meleeWeapons, gearItems } from '../data.js';
 import { rolesData } from '../data/roles-data.js';
+import { skillDescriptions } from '../data/skills-descriptions.js';   // [TIP]
+import { roleTemplates } from '../data/skills-data.js';       
 
 const STAT_NAMES = {
     INT: 'ИНТ',
@@ -287,10 +289,10 @@ export class CharacterHelper {
         return `<div class="stat-item" data-stat="${k}"><span class="stat-name">${statName}</span><span class="stat-value">${displayValue}${extraNote}</span></div>`;
     }).join('');
 
-    // ===== ОСТАЛЬНЫЕ БЛОКИ (навыки, оружие, броня, снаряжение) =====
+        // ===== ОСТАЛЬНЫЕ БЛОКИ (навыки, оружие, броня, снаряжение) =====
     const skillsHtml = Object.entries(skills).filter(([_, v]) => v > 0).map(([k, v]) => `
-        <div class="skill-item" data-skill="${k}">
-            <span class="skill-name">${this.escapeHtml(k)}</span>
+        <div class="skill-item" data-skill="${this.escapeHtml(k)}">
+            <span class="skill-name">${this.escapeHtml(k)}${this.buildSkillTooltip(k, role)}</span>
             <span class="skill-level">${v}</span>
         </div>
     `).join('');
@@ -671,12 +673,13 @@ ${penaltyDisplay}
         }
     });
 
-    // Навыки (без изменений)
+        // Навыки
     card.querySelectorAll('.skill-item').forEach(item => {
         const skillNameElem = item.querySelector('.skill-name');
         const skillLevelElem = item.querySelector('.skill-level');
         if (skillNameElem && skillLevelElem) {
-            const skillName = skillNameElem.innerText;
+            const skillName = item.dataset.skill || skillNameElem.innerText;  // [FIX] — берём из data-атрибута,
+                                                                               // а не из innerText (иначе «i» сломает имя)
             const skillLevel = skillLevelElem.innerText;
             item.innerHTML = `<span class="skill-name">${skillName}</span><input type="number" class="edit-skill" data-skill="${skillName}" value="${skillLevel}" min="0" max="10">`;
         }
@@ -1081,6 +1084,34 @@ if (repDec) {
     escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+        // [TIP] Экранирование текста тултипа — полное, включая кавычки
+    escapeTip(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    // [TIP] Тултип с описанием навыка и меткой приоритета для роли
+    buildSkillTooltip(skillName, role) {
+        const desc = skillDescriptions[skillName];
+        if (!desc) return '';
+        const template = roleTemplates[role] || {};
+        const priority = template[skillName];
+        let priorityLabel = '';
+        if (priority === 6) priorityLabel = `★ Приоритетный для роли «${role}»`;
+        else if (priority === 4) priorityLabel = `☆ Вторичный для роли «${role}»`;
+        else if (priority === 2) priorityLabel = `Рекомендуемый для роли «${role}»`;
+
+        return `
+            <span class="skill-info-icon" aria-label="Описание навыка">i<span class="skill-tooltip">
+                ${priorityLabel ? `<span class="tip-section"><span class="tip-label">Роль</span><span class="tip-text">${this.escapeTip(priorityLabel)}</span></span>` : ''}
+                <span class="tip-section"><span class="tip-label">Что это</span><span class="tip-text">${this.escapeTip(desc.what)}</span></span>
+                <span class="tip-section"><span class="tip-label">Как применять</span><span class="tip-text">${this.escapeTip(desc.how)}</span></span>
+            </span></span>`;
     }
 
 
