@@ -30,7 +30,8 @@ import { loadStoryData, saveStoryData, getCampaigns} from './story/story-manager
 import { renderCampaignList, refreshCampaignSelects} from './story/story-ui.js';
 import { getCharacterWithIP, upgradeSkill, upgradeRoleRank, getUpgradeableSkills, addIP } from './modules/ip-manager.js';
 import { initTooltipPositioning } from './modules/ui/tooltip-positioner.js';
-
+import { SkillCheckCalculator } from './modules/skill-check.js';
+import { QuickStats } from './modules/quick-stats.js';
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
     const data = {
@@ -272,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new DistanceCalculator();
     window.initTracker = new InitiativeTracker();
     new CombatCalculatorUI();
-    new HumanityCalculator();
+    // new HumanityCalculator();
     window.groupInitiative = new GroupInitiative();
     initTransport();
     initGM(); 
@@ -285,7 +286,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.netrunnerInterface = new NetrunnerInterface('netrunnerInterfaceContainer');
     window.netArchUI = new NetArchitectureUI('architectureContainer');
     window.gmVisArchUI = new NetArchitectureUI('gmVisArchitectureContainer');
-    
+    window.skillCheckCalc = new SkillCheckCalculator();
+    window.quickStats = new QuickStats();
     // Привязка кнопки генерации архитектуры (в новой вкладке)
     // Привязка кнопок
 const gmVisGen = document.getElementById('gmVisGenBtn');
@@ -425,7 +427,7 @@ if (gmVisImportBtn && gmVisImportInput) {
     window.inventoryUI = new InventoryUI();
     window.playerNetArchUI = new NetArchitectureUI('netrunnerArchitectureContainer');
 
-    document.getElementById('calcExpensesBtn')?.addEventListener('click', () => ExpensesCalc.calc());
+    // document.getElementById('calcExpensesBtn')?.addEventListener('click', () => ExpensesCalc.calc());
     document.getElementById('generateTreasureBtn')?.addEventListener('click', () => TreasureGenerator.generate());
     document.getElementById('exportDataBtn')?.addEventListener('click', exportAllData);
     document.getElementById('importDataBtn')?.addEventListener('click', () => document.getElementById('importFileInput').click());

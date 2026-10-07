@@ -1,0 +1,332 @@
+/* ============================================================
+   МИНИ-СТАТУС-БАР, ПУЛ УДАЧИ, БЫСТРЫЕ ДЕЙСТВИЯ
+   Страница «Персонаж → Основное»
+   ============================================================ */
+
+/* ============================================================
+   1. ЧИПСЫ СТАТУСА (ПЗ, ЧЕЛ, деньги, репутация, IP)
+   ============================================================ */
+
+.char-quick-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0;
+}
+
+.cqs-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: rgba(15, 18, 25, 0.7);
+    border: 1px solid #2a3342;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+    cursor: default;
+}
+.cqs-chip:hover {
+    transform: translateY(-1px);
+}
+.cqs-chip .cqs-icon {
+    font-size: 0.9em;
+    line-height: 1;
+}
+.cqs-chip .cqs-value {
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.3px;
+}
+
+/* Цветовые акценты по типу */
+.cqs-chip.cqs-hp {
+    border-color: rgba(255, 60, 95, 0.35);
+}
+.cqs-chip.cqs-hp .cqs-value { color: #ff7a94; }
+
+.cqs-chip.cqs-humanity {
+    border-color: rgba(64, 156, 255, 0.35);
+}
+.cqs-chip.cqs-humanity .cqs-value { color: #7ab6ff; }
+
+.cqs-chip.cqs-money {
+    border-color: rgba(255, 215, 0, 0.35);
+}
+.cqs-chip.cqs-money .cqs-value { color: #ffd700; }
+
+.cqs-chip.cqs-rep {
+    border-color: rgba(255, 154, 60, 0.35);
+}
+.cqs-chip.cqs-rep .cqs-value { color: #ff9a3c; }
+
+.cqs-chip.cqs-ip {
+    border-color: rgba(57, 255, 20, 0.35);
+}
+.cqs-chip.cqs-ip .cqs-value { color: #39ff14; }
+
+/* Состояние «низкое ПЗ» / «низкая ЧЕЛ» — пульсирующий красный */
+.cqs-chip.cqs-critical {
+    border-color: #ff3c5f;
+    background: rgba(255, 60, 95, 0.12);
+    animation: cqsPulse 2s infinite;
+}
+.cqs-chip.cqs-critical .cqs-value { color: #ff3c5f; }
+
+@keyframes cqsPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 60, 95, 0.5); }
+    50%      { box-shadow: 0 0 0 4px rgba(255, 60, 95, 0); }
+}
+
+/* ============================================================
+   2. ПУЛ УДАЧИ
+   ============================================================ */
+
+.char-luck-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: rgba(15, 18, 25, 0.55);
+    border: 1px solid #2a3342;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.char-luck-bar .luck-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #c8d2e0;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+}
+
+.char-luck-bar .luck-track {
+    flex: 1;
+    height: 10px;
+    background: #0f1219;
+    border: 1px solid #2a3342;
+    border-radius: 5px;
+    overflow: hidden;
+    min-width: 60px;
+}
+
+.char-luck-bar .luck-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff9a3c, #ffd700);
+    border-radius: 5px 0 0 5px;
+    transition: width 0.35s ease, background 0.3s ease;
+    box-shadow: 0 0 8px rgba(255, 154, 60, 0.5);
+    width: 0%;
+}
+
+/* Цветовые состояния */
+.char-luck-bar.luck-low .luck-fill {
+    background: linear-gradient(90deg, #ff3c5f, #ff7a94);
+    box-shadow: 0 0 8px rgba(255, 60, 95, 0.6);
+}
+.char-luck-bar.luck-mid .luck-fill {
+    background: linear-gradient(90deg, #ff9a3c, #ffb867);
+}
+
+.char-luck-bar .luck-value {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.82rem;
+    color: #c8d2e0;
+    flex-shrink: 0;
+    min-width: 50px;
+    text-align: right;
+}
+.char-luck-bar .luck-value #luckCurrent {
+    color: #ff9a3c;
+    font-weight: 700;
+}
+
+/* ============================================================
+   3. БЫСТРЫЕ ДЕЙСТВИЯ С ПЗ
+   ============================================================ */
+
+.char-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.qa-btn {
+    flex: 0 0 auto;
+    min-width: 42px;
+    padding: 6px 12px;
+    background: rgba(15, 18, 25, 0.7);
+    border: 1px solid #2a3342;
+    border-radius: 8px;
+    color: #c8d2e0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: 'Consolas', 'Monaco', monospace;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+    line-height: 1;
+}
+.qa-btn:hover {
+    transform: translateY(-1px);
+}
+.qa-btn:active {
+    transform: translateY(0) scale(0.96);
+}
+
+/* Урон */
+.qa-btn.qa-dmg {
+    border-color: rgba(255, 60, 95, 0.4);
+    color: #ff7a94;
+}
+.qa-btn.qa-dmg:hover {
+    background: rgba(255, 60, 95, 0.15);
+    border-color: #ff3c5f;
+}
+
+/* Лечение */
+.qa-btn.qa-heal {
+    border-color: rgba(57, 255, 20, 0.4);
+    color: #7fe57f;
+}
+.qa-btn.qa-heal:hover {
+    background: rgba(57, 255, 20, 0.15);
+    border-color: #39ff14;
+}
+
+/* Полное лечение */
+.qa-btn.qa-heal-lg {
+    flex: 1;
+    border-color: rgba(57, 255, 20, 0.5);
+    color: #39ff14;
+    font-family: 'Inter', sans-serif;
+}
+.qa-btn.qa-heal-lg:hover {
+    background: rgba(57, 255, 20, 0.15);
+    border-color: #39ff14;
+}
+
+/* ============================================================
+   4. КНОПКИ КАРТОЧКИ (Синхронизировать / Редактировать)
+   ============================================================ */
+
+.char-card-controls {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.char-card-controls .cyber-btn.small {
+    flex: 1;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ============================================================
+   5. СЧЁТЧИК СЕССИИ
+   ============================================================ */
+
+.char-session-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(120, 130, 150, 0.15);
+    font-size: 0.75rem;
+    color: #6a7382;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+.char-session-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ============================================================
+   6. АДАПТИВ
+   ============================================================ */
+
+@media (max-width: 700px) {
+    .char-quick-stats {
+        gap: 5px;
+    }
+    .cqs-chip {
+        font-size: 0.76rem;
+        padding: 4px 8px;
+    }
+    .char-luck-bar {
+        padding: 6px 10px;
+    }
+    .char-luck-bar .luck-label,
+    .char-luck-bar .luck-value {
+        font-size: 0.72rem;
+    }
+    .qa-btn {
+        min-width: 36px;
+        padding: 5px 9px;
+        font-size: 0.8rem;
+    }
+    .qa-btn.qa-heal-lg {
+        font-size: 0.76rem;
+    }
+    .char-card-controls .cyber-btn.small {
+        font-size: 0.72rem;
+    }
+}
+
+/* ============================================================
+   7. CYBERPUNK THEME
+   ============================================================ */
+
+body.cyberpunk-theme .cqs-chip {
+    background: rgba(0, 0, 0, 0.55);
+    border-color: rgba(255, 215, 0, 0.3);
+}
+body.cyberpunk-theme .cqs-chip.cqs-hp .cqs-value { color: #ff7a94; }
+body.cyberpunk-theme .cqs-chip.cqs-humanity .cqs-value { color: #7ab6ff; }
+body.cyberpunk-theme .cqs-chip.cqs-money .cqs-value { color: #ffd700; }
+body.cyberpunk-theme .cqs-chip.cqs-rep .cqs-value { color: #ffd700; }
+body.cyberpunk-theme .cqs-chip.cqs-ip .cqs-value { color: #00ff64; }
+
+body.cyberpunk-theme .char-luck-bar {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 215, 0, 0.3);
+}
+body.cyberpunk-theme .char-luck-bar .luck-fill {
+    background: linear-gradient(90deg, #ffd700, #fff200);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.65);
+}
+body.cyberpunk-theme .char-luck-bar .luck-value #luckCurrent {
+    color: #ffd700;
+}
+
+body.cyberpunk-theme .qa-btn {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 215, 0, 0.3);
+}
+body.cyberpunk-theme .qa-btn.qa-dmg {
+    color: #ff0050;
+    border-color: rgba(255, 0, 80, 0.5);
+}
+body.cyberpunk-theme .qa-btn.qa-dmg:hover {
+    background: rgba(255, 0, 80, 0.18);
+    border-color: #ff0050;
+}
+body.cyberpunk-theme .qa-btn.qa-heal,
+body.cyberpunk-theme .qa-btn.qa-heal-lg {
+    color: #00ff64;
+    border-color: rgba(0, 255, 100, 0.5);
+}
+body.cyberpunk-theme .qa-btn.qa-heal:hover,
+body.cyberpunk-theme .qa-btn.qa-heal-lg:hover {
+    background: rgba(0, 255, 100, 0.18);
+    border-color: #00ff64;
+}
+
+body.cyberpunk-theme .char-session-stats {
+    color: #7a7a5a;
+}

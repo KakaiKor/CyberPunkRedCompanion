@@ -96,50 +96,120 @@
                                 <option>Фиксер</option>
                                 <option>Кочевник</option>
                             </select></label>
-                        <div class="button-group">
-                            <button id="calcCharBtn">📐 Рассчитать</button>
-                            <button id="buildCharCardBtn">🃏 Создать карточку</button>
-                            <!-- <button id="saveCharBtn">💾 Сохранить</button>
-                            <button id="loadCharBtn">📂 Загрузить</button> -->
+                                                                        <!-- ===== МИНИ-СТАТУС-БАР ===== -->
+                        <div class="char-quick-stats" id="charQuickStats">
+                            <span class="cqs-chip cqs-hp" data-stat="hp" title="Пункты здоровья">
+                                <span class="cqs-icon">❤️</span>
+                                <span class="cqs-value" id="cqsHp">—</span>
+                            </span>
+                            <span class="cqs-chip cqs-humanity" data-stat="humanity" title="Человечность">
+                                <span class="cqs-icon">🧠</span>
+                                <span class="cqs-value" id="cqsHumanity">—</span>
+                            </span>
+                            <span class="cqs-chip cqs-money" data-stat="money" title="Деньги">
+                                <span class="cqs-icon">💰</span>
+                                <span class="cqs-value" id="cqsMoney">—</span>
+                            </span>
+                            <span class="cqs-chip cqs-rep" data-stat="reputation" title="Репутация">
+                                <span class="cqs-icon">📢</span>
+                                <span class="cqs-value" id="cqsReputation">—</span>
+                            </span>
+                            <span class="cqs-chip cqs-ip" data-stat="ip" title="Очки развития">
+                                <span class="cqs-icon">💾</span>
+                                <span class="cqs-value" id="cqsIp">—</span>
+                            </span>
                         </div>
+
+                        <!-- ===== ПУЛ УДАЧИ ===== -->
+                        <div class="char-luck-bar" id="charLuckBar">
+                            <span class="luck-label">🎲 УДЧ</span>
+                            <div class="luck-track">
+                                <div class="luck-fill" id="luckFill"></div>
+                            </div>
+                            <span class="luck-value">
+                                <span id="luckCurrent">0</span> / <span id="luckMax">0</span>
+                            </span>
+                        </div>
+
+                        <!-- ===== БЫСТРЫЕ ДЕЙСТВИЯ С ПЗ ===== -->
+                        <div class="char-quick-actions">
+                            <button type="button" class="qa-btn qa-dmg" data-hp-delta="-5" title="Получить 5 урона">−5</button>
+                            <button type="button" class="qa-btn qa-dmg" data-hp-delta="-1" title="Получить 1 урон">−1</button>
+                            <button type="button" class="qa-btn qa-heal" data-hp-delta="+1" title="Восстановить 1 ПЗ">+1</button>
+                            <button type="button" class="qa-btn qa-heal-lg" id="qaHealFull" title="Полное лечение на ТЕЛО ПЗ">💊 Лечение</button>
+                        </div>
+
+                        <!-- ===== КНОПКИ КАРТОЧКИ ===== -->
+                        <div class="button-group char-card-controls">
+                            <button type="button" id="syncCardBtn" class="cyber-btn small" title="Обновить карточку внизу">🔄 Синхронизировать</button>
+                            <button type="button" id="editCardBtn" class="cyber-btn small" title="Перейти к редактированию карточки">✏️ Редактировать</button>
+                        </div>
+
+                        <!-- ===== ЭКСПОРТ / ИМПОРТ ===== -->
                         <div class="button-group" style="margin-top: 10px;">
                             <button id="exportCharJsonBtn" class="cyber-btn">📤 Экспорт (JSON)</button>
                             <button id="importCharJsonBtn" class="cyber-btn">📥 Импорт (JSON)</button>
                             <input type="file" id="importCharJsonInput" accept=".json" style="display:none">
                         </div>
-                        <div id="charDerived" class="info-block"></div>
-                        <div id="charSaveStatus"></div>
+
+                        <!-- ===== СЧЁТЧИК СЕССИИ ===== -->
+                        <div class="char-session-stats" id="charSessionStats">
+                            <span title="Время с начала сессии">⏱ <span id="sessionTime">0ч 00мин</span></span>
+                            <span title="Количество бросков за сессию">🎲 Бросков: <span id="sessionRolls">0</span></span>
+                        </div>
                     </div>
 
-                    <div class="card">
-                        <h3>Человечность</h3>
-                        <label>Текущая ЧЕЛ: <input type="number" id="currentHumanity" value="60"></label>
-                        <label>Имплант: <select id="implantSelect">
-                                <option value="0">Выберите...</option>
-                                <option value="14">Боргирование (4d6)</option>
-                                <option value="7">Тяжёлый (2d6)</option>
-                                <option value="3">Стандартный (1d6)</option>
-                            </select></label>
-                        <div class="button-group"><button id="rollHumanityBtn">🎲 Бросить ПЧ</button><button
-                                id="applyHumanityBtn">⚡ Применить</button></div>
-                        <div id="humanityResult" class="info-block"></div>
-                    </div>
-                    <div class="card">
-                        <h3>Расходы</h3>
-                        <label>Образ жизни: <select id="lifestyleSelect">
-                                <option value="100">Киббл (100eb)</option>
-                                <option value="300">Полуфабрикаты (300eb)</option>
-                                <option value="600">Хорошие (600eb)</option>
-                                <option value="1500">Свежая еда (1500eb)</option>
-                            </select></label>
-                        <label>Жильё: <select id="housingSelect">
-                                <option value="500">Куб-отель (500eb)</option>
-                                <option value="1000">Контейнер (1000eb)</option>
-                                <option value="1500">Студия (1500eb)</option>
-                                <option value="2500">2-спальная (2500eb)</option>
-                            </select></label>
-                        <button id="calcExpensesBtn">💰 Рассчитать</button>
-                        <div id="expensesResult" class="info-block"></div>
+                                        <div class="card skill-check-card">
+                        <div class="skill-check-header">
+                            <h3>🎲 Проверка навыка</h3>
+                            <button type="button" id="skillCheckResetBtn" class="skill-check-reset-btn" title="Сброс полей">🔄</button>
+                        </div>
+
+                        <div class="skill-check-main-row">
+                            <select id="skillCheckSkill" class="skill-check-select">
+                                <option value="">— выберите навык —</option>
+                            </select>
+                            <div class="skill-check-total" id="skillCheckTotal">
+                                <span class="skill-check-total-label">ИТОГ</span>
+                                <span class="skill-check-total-value is-empty">—</span>
+                            </div>
+                        </div>
+
+                        <div class="skill-check-formula" id="skillCheckFormula">
+                            Выберите навык
+                        </div>
+
+                        <div class="skill-check-inputs">
+                            <label class="skill-check-field">
+                                <span>d10</span>
+                                <div class="skill-check-d10-wrap">
+                                    <input type="number" id="skillCheckD10" min="1" max="10" value="5" step="1">
+                                    <button type="button" id="skillCheckRollBtn" class="skill-check-roll-btn" title="Бросить d10">🎲</button>
+                                </div>
+                            </label>
+
+                            <label class="skill-check-field">
+                                <span>Мод</span>
+                                <input type="number" id="skillCheckModifier" value="0" step="1" title="Ситуативный модификатор (свет, дистанция, укрытие)">
+                            </label>
+
+                            <label class="skill-check-field">
+                                <span>УДЧ (<span id="skillCheckLuckMax">0</span>)</span>
+                                <input type="number" id="skillCheckLuck" min="0" value="0" step="1" title="Трата Удачи: 1 очко = +1 к результату">
+                            </label>
+                        </div>
+
+                        <div class="skill-check-difficulties" id="skillCheckDifficulties">
+                            <div class="skill-check-diff-row" data-dv="9"><span class="dv-value">9</span><span class="dv-result">—</span></div>
+                            <div class="skill-check-diff-row" data-dv="13"><span class="dv-value">13</span><span class="dv-result">—</span></div>
+                            <div class="skill-check-diff-row" data-dv="15"><span class="dv-value">15</span><span class="dv-result">—</span></div>
+                            <div class="skill-check-diff-row" data-dv="17"><span class="dv-value">17</span><span class="dv-result">—</span></div>
+                            <div class="skill-check-diff-row" data-dv="21"><span class="dv-value">21</span><span class="dv-result">—</span></div>
+                            <div class="skill-check-diff-row" data-dv="24"><span class="dv-value">24</span><span class="dv-result">—</span></div>
+                            <div class="skill-check-diff-row" data-dv="29"><span class="dv-value">29</span><span class="dv-result">—</span></div>
+                        </div>
+
+                        <div class="skill-check-history" id="skillCheckHistory"></div>
                     </div>
                 </div>
                 <div id="characterCardContainer" style="margin-top: 20px;"></div>

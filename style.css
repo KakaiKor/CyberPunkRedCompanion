@@ -1,4 +1,6 @@
 @import url(./css/base.css);
+@import url(./css/gameplay/skill-check.css);
+@import url(./css/gameplay/char-quick-stats.css);
 @import url(./css/gameplay/shop-and-wizard.css);
 @import url(./css/gameplay/rumors.css);
 @import url(./css/gameplay/screamsheet.css);

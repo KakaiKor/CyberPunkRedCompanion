@@ -1,0 +1,345 @@
+/* ============================================================
+   КАЛЬКУЛЯТОР ПРОВЕРОК НАВЫКОВ — КОМПАКТНАЯ ВЕРСИЯ
+   ============================================================ */
+/* Сетка на странице «Основное»: узкая левая колонка + широкая правая */
+.card-grid:has(.skill-check-card) {
+    grid-template-columns: minmax(260px, 340px) 1fr;
+    align-items: start;
+}
+.skill-check-card {
+    padding: 14px 16px !important;
+    min-width: 0;   /* чтобы flex/grid не растягивал карточку по контенту */
+}
+/* ---------- Заголовок + кнопка сброса ---------- */
+.skill-check-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.skill-check-header h3 {
+    margin: 0;
+    font-size: 1rem;
+}
+.skill-check-reset-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: rgba(255, 154, 60, 0.1);
+    border: 1px solid rgba(255, 154, 60, 0.35);
+    border-radius: 6px;
+    color: #ff9a3c;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.skill-check-reset-btn:hover {
+    background: rgba(255, 154, 60, 0.3);
+}
+.skill-check-reset-btn:active {
+    transform: scale(0.92);
+}
+
+/* ---------- Селект + ИТОГ в одну строку ---------- */
+.skill-check-main-row {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+.skill-check-select {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 12px;
+    background: #1e2530;
+    border: 1px solid #2a3342;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.88rem;
+    cursor: pointer;
+}
+.skill-check-select:hover,
+.skill-check-select:focus {
+    border-color: #ff9a3c;
+    outline: none;
+}
+
+/* Итог — компактный "чип" справа */
+.skill-check-total {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: linear-gradient(90deg, rgba(255,154,60,0.14), rgba(255,154,60,0.04));
+    border: 1px solid rgba(255, 154, 60, 0.35);
+    border-radius: 8px;
+    flex-shrink: 0;
+    min-width: 90px;
+    justify-content: center;
+}
+.skill-check-total-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ff9a3c;
+    font-weight: 600;
+}
+.skill-check-total-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Orbitron', 'Consolas', monospace;
+    text-shadow: 0 0 10px rgba(255, 154, 60, 0.5);
+    line-height: 1;
+    transition: color 0.15s ease;
+}
+.skill-check-total-value.is-empty {
+    color: #4a5261;
+    font-size: 1.15rem;
+    text-shadow: none;
+}
+
+/* ---------- Формула — компактно ---------- */
+.skill-check-formula {
+    padding: 6px 12px;
+    background: rgba(255, 154, 60, 0.06);
+    border-left: 3px solid #ff9a3c;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    color: #c8d2e0;
+    font-size: 0.82rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+    line-height: 1.4;
+}
+.skill-check-formula strong {
+    color: #ff9a3c;
+}
+.skill-check-formula .formula-priority {
+    color: #ffd700;
+    font-size: 0.9em;
+}
+
+/* ---------- Поля ввода ---------- */
+.skill-check-inputs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.skill-check-field {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.skill-check-field > span {
+    font-size: 0.68rem;
+    color: #9aa4bf;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.skill-check-field input {
+    padding: 6px 8px;
+    background: #0f1219;
+    border: 1px solid #2a3342;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.85rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+    width: 100%;
+    box-sizing: border-box;
+}
+.skill-check-field input:focus {
+    border-color: #ff9a3c;
+    outline: none;
+}
+.skill-check-d10-wrap {
+    display: flex;
+    gap: 4px;
+}
+.skill-check-d10-wrap input {
+    flex: 1;
+    min-width: 0;
+}
+.skill-check-roll-btn {
+    padding: 0 10px;
+    background: rgba(255, 154, 60, 0.15);
+    border: 1px solid rgba(255, 154, 60, 0.5);
+    border-radius: 6px;
+    color: #ff9a3c;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.skill-check-roll-btn:hover {
+    background: rgba(255, 154, 60, 0.35);
+}
+.skill-check-roll-btn:active {
+    transform: scale(0.94);
+}
+
+/* ---------- Сложности — горизонтальные чипы ---------- */
+.skill-check-difficulties {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 8px;
+}
+.skill-check-diff-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: rgba(15, 18, 25, 0.5);
+    border: 1px solid #1e2530;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.skill-check-diff-row .dv-value {
+    color: #9aa4bf;
+    font-weight: 600;
+}
+.skill-check-diff-row .dv-result {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #4a5261;
+}
+
+/* Успех — зелёный */
+.skill-check-diff-row.is-success {
+    background: rgba(57, 255, 20, 0.1);
+    border-color: rgba(57, 255, 20, 0.5);
+}
+.skill-check-diff-row.is-success .dv-value,
+.skill-check-diff-row.is-success .dv-result {
+    color: #39ff14;
+}
+
+/* Провал — красный */
+.skill-check-diff-row.is-fail {
+    background: rgba(255, 60, 95, 0.08);
+    border-color: rgba(255, 60, 95, 0.4);
+}
+.skill-check-diff-row.is-fail .dv-value {
+    color: #ff3c5f;
+}
+.skill-check-diff-row.is-fail .dv-result {
+    color: #ff3c5f;
+}
+
+/* ---------- История — в одну строку ---------- */
+.skill-check-history {
+    font-size: 0.75rem;
+    color: #9aa4bf;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(120, 130, 150, 0.15);
+}
+.skill-check-history:empty {
+    display: none;
+    border-top: none;
+}
+.skill-check-history .history-title {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6a7382;
+    margin-right: 4px;
+}
+.skill-check-history .history-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    background: rgba(15, 18, 25, 0.4);
+    border-radius: 10px;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+.skill-check-history .history-item .hi-result {
+    color: #ff9a3c;
+    font-weight: 600;
+}
+
+/* ---------- Адаптив ---------- */
+@media (max-width: 700px) {
+    .skill-check-inputs {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .skill-check-main-row {
+        flex-direction: column;
+        gap: 6px;
+    }
+    .skill-check-total {
+        align-self: flex-start;
+    }
+    .skill-check-field > span {
+        font-size: 0.62rem;
+    }
+}
+
+/* ---------- Cyberpunk theme ---------- */
+body.cyberpunk-theme .skill-check-select,
+body.cyberpunk-theme .skill-check-field input {
+    background: #0a0a0a;
+    border-color: rgba(255, 215, 0, 0.35);
+    color: #ffe6a1;
+}
+body.cyberpunk-theme .skill-check-select:focus,
+body.cyberpunk-theme .skill-check-field input:focus {
+    border-color: #ffd700;
+}
+body.cyberpunk-theme .skill-check-formula {
+    background: rgba(255, 215, 0, 0.06);
+    border-left-color: #ffd700;
+}
+body.cyberpunk-theme .skill-check-formula strong {
+    color: #ffd700;
+}
+body.cyberpunk-theme .skill-check-total {
+    background: linear-gradient(90deg, rgba(255,215,0,0.14), rgba(255,215,0,0.03));
+    border-color: rgba(255, 215, 0, 0.45);
+}
+body.cyberpunk-theme .skill-check-total-label {
+    color: #ffd700;
+}
+body.cyberpunk-theme .skill-check-total-value {
+    text-shadow: 0 0 12px rgba(255, 215, 0, 0.55);
+}
+body.cyberpunk-theme .skill-check-roll-btn,
+body.cyberpunk-theme .skill-check-reset-btn {
+    background: rgba(255, 215, 0, 0.12);
+    border-color: rgba(255, 215, 0, 0.5);
+    color: #ffd700;
+}
+body.cyberpunk-theme .skill-check-roll-btn:hover,
+body.cyberpunk-theme .skill-check-reset-btn:hover {
+    background: rgba(255, 215, 0, 0.32);
+}
+body.cyberpunk-theme .skill-check-diff-row.is-success {
+    background: rgba(0, 255, 100, 0.1);
+    border-color: rgba(0, 255, 100, 0.5);
+}
+body.cyberpunk-theme .skill-check-diff-row.is-success .dv-value,
+body.cyberpunk-theme .skill-check-diff-row.is-success .dv-result {
+    color: #00ff64;
+}
+body.cyberpunk-theme .skill-check-diff-row.is-fail {
+    background: rgba(255, 0, 80, 0.1);
+    border-color: rgba(255, 0, 80, 0.5);
+}
+body.cyberpunk-theme .skill-check-diff-row.is-fail .dv-value,
+body.cyberpunk-theme .skill-check-diff-row.is-fail .dv-result {
+    color: #ff0050;
+}
