@@ -13,11 +13,12 @@ export function renderRoleStep(data) {
         "Фиксер": "🤝", "Кочевник": "🏍️"
     };
 
-    const rolesList = rolesData.map(role => `
+        const rolesList = rolesData.map(role => `
         <div class="role-card-v2 ${selectedRole === role.name ? 'active' : ''}" data-role="${role.name}">
             <div class="role-card-icon">${roleIcons[role.name] || "🎲"}</div>
             <div class="role-card-name">${role.name}</div>
             <div class="role-card-skill">${role.skill}</div>
+            <button class="role-card-detail-btn" data-role="${role.name}" title="Подробнее о роли" aria-label="Подробнее о роли">📖</button>
         </div>
     `).join('');
 

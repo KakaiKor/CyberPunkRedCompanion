@@ -15,7 +15,7 @@ import { renderHumanityStep } from './wizard-step-humanity.js';
 import { renderExpensesStep } from './wizard-step-expenses.js';
 import { renderNotesStep } from './wizard-step-notes.js';
 import { renderSummaryStep } from './wizard-step-summary.js';
-
+import { openRoleDetailModal } from './role-detail-modal.js';
 export class CharacterWizard {
     constructor() {
         this.currentStep = 0;
@@ -194,44 +194,63 @@ export class CharacterWizard {
         this.saveProgress();
     }
 
-    attachRoleEvents() {
-    // Обработчики для карточек ролей (стильные)
-    const roleCards = document.querySelectorAll('.role-card-v2');
-    roleCards.forEach(card => {
-        card.removeEventListener('click', this._roleCardHandler);
-        this._roleCardHandler = () => {
-            const newRole = card.dataset.role;
-            if (newRole && this.data.role !== newRole) {
-                this.data.role = newRole;
-                this.saveProgress();
-                this.renderStep(); // перерисовываем шаг
-            }
-        };
-        card.addEventListener('click', this._roleCardHandler);
-    });
-    
-    // Также старые радиокнопки (если они есть)
-    const roleRadios = document.querySelectorAll('input[name="role"]');
-    roleRadios.forEach(radio => {
-        radio.removeEventListener('change', this._roleRadioHandler);
-        this._roleRadioHandler = () => {
-            this.data.role = radio.value;
-            this.saveProgress();
-            this.renderStep();
-        };
-        radio.addEventListener('change', this._roleRadioHandler);
-    });
+        attachRoleEvents() {
+        // Клик по карточке — выбрать роль
+        const roleCards = document.querySelectorAll('.role-card-v2');
+        roleCards.forEach(card => {
+            card.removeEventListener('click', this._roleCardHandler);
+            this._roleCardHandler = () => {
+                const newRole = card.dataset.role;
+                if (newRole && this.data.role !== newRole) {
+                    this.data.role = newRole;
+                    this.saveProgress();
+                    this.renderStep();
+                }
+            };
+            card.addEventListener('click', this._roleCardHandler);
+        });
 
-    const rankInput = document.getElementById('roleRank');
-    if (rankInput) {
-        rankInput.removeEventListener('change', this._roleRankHandler);
-        this._roleRankHandler = () => {
-            this.data.roleRank = parseInt(rankInput.value) || 4;
-            this.saveProgress();
-        };
-        rankInput.addEventListener('change', this._roleRankHandler);
+        // [ROLE-MODAL] Клик по кнопке «Подробнее» — открыть модалку, НЕ выбирать роль
+        const detailBtns = document.querySelectorAll('.role-card-detail-btn');
+        detailBtns.forEach(btn => {
+            btn.removeEventListener('click', this._roleDetailHandler);
+            this._roleDetailHandler = (e) => {
+                e.stopPropagation();  // не даём клику уйти на карточку и выбрать роль
+                const roleName = btn.dataset.role;
+                openRoleDetailModal(roleName, (selected) => {
+                    // Пользователь нажал «Выбрать эту роль» в модалке
+                    if (selected && this.data.role !== selected) {
+                        this.data.role = selected;
+                        this.saveProgress();
+                        this.renderStep();
+                    }
+                });
+            };
+            btn.addEventListener('click', this._roleDetailHandler);
+        });
+
+        // Старые радиокнопки (если остались)
+        const roleRadios = document.querySelectorAll('input[name="role"]');
+        roleRadios.forEach(radio => {
+            radio.removeEventListener('change', this._roleRadioHandler);
+            this._roleRadioHandler = () => {
+                this.data.role = radio.value;
+                this.saveProgress();
+                this.renderStep();
+            };
+            radio.addEventListener('change', this._roleRadioHandler);
+        });
+
+        const rankInput = document.getElementById('roleRank');
+        if (rankInput) {
+            rankInput.removeEventListener('change', this._roleRankHandler);
+            this._roleRankHandler = () => {
+                this.data.roleRank = parseInt(rankInput.value) || 4;
+                this.saveProgress();
+            };
+            rankInput.addEventListener('change', this._roleRankHandler);
+        }
     }
-}
 
     attachStatsEvents() {
         const inputs = document.querySelectorAll('.stat-input');
