@@ -21,6 +21,8 @@ export class QuickStats {
         this.luckFill = document.getElementById('luckFill');
         this.luckCurrent = document.getElementById('luckCurrent');
         this.luckMax = document.getElementById('luckMax');
+        this.luckTrack = document.getElementById('luckTrack');
+        this.luckResetBtn = document.getElementById('luckResetBtn');
 
         // Быстрые действия с ПЗ
         this.hpDeltaBtns = document.querySelectorAll('.qa-btn[data-hp-delta]');
@@ -143,6 +145,35 @@ export class QuickStats {
 
         // Счётчик бросков из калькулятора
         window.addEventListener('skillCheckRolled', () => this.bumpRolls());
+
+        // ─── УДЧ: трата и восстановление ──────────────────────
+        this.luckTrack?.addEventListener('click', () => this.spendLuck(1));
+        this.luckResetBtn?.addEventListener('click', () => this.resetLuck());
+    }
+
+    // ─── Трата УДЧ ─────────────────────────────────────────
+    spendLuck(amount = 1) {
+        const char = loadCharacter();
+        if (!char) return;
+        const maxLuck = (char.baseStats && char.baseStats.LUCK) || char.LUCK || 6;
+        let current = char.currentLuck !== undefined ? char.currentLuck : maxLuck;
+        current = Math.max(0, current - amount);
+        char.currentLuck = current;
+        saveCharacter(char);
+        this.refreshLuck(char);
+        // Оповестим калькулятор проверок, что пул уменьшился
+        window.dispatchEvent(new Event('luckChanged'));
+    }
+
+    // ─── Восстановление УДЧ до максимума ───────────────────
+    resetLuck() {
+        const char = loadCharacter();
+        if (!char) return;
+        const maxLuck = (char.baseStats && char.baseStats.LUCK) || char.LUCK || 6;
+        char.currentLuck = maxLuck;
+        saveCharacter(char);
+        this.refreshLuck(char);
+        window.dispatchEvent(new Event('luckChanged'));
     }
 
     // ─── Изменение ПЗ ──────────────────────────────────────────
@@ -247,11 +278,15 @@ export class QuickStats {
         this.refreshLuck(char);
     }
 
-    refreshLuck(char) {
+     refreshLuck(char) {
         if (!this.luckBar) return;
         const luckStat = (char.baseStats && char.baseStats.LUCK) || char.LUCK || 6;
-        // Если нет отдельного currentLuck — используем максимум
-        const current = char.currentLuck !== undefined ? char.currentLuck : luckStat;
+        // Инициализируем currentLuck при первом запуске
+        if (char.currentLuck === undefined) {
+            char.currentLuck = luckStat;
+            saveCharacter(char);
+        }
+        const current = Math.min(char.currentLuck, luckStat);
         const max = luckStat;
 
         if (this.luckCurrent) this.luckCurrent.textContent = current;

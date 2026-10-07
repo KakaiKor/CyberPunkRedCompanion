@@ -96,12 +96,19 @@ export class SkillCheckCalculator {
     }
 
     // ─── Обновить пул УДЧ ──────────────────────────────────────
-    refreshLuckMax() {
+        refreshLuckMax() {
         if (!this.luckMaxEl) return;
         const char = loadCharacter() || {};
-        const luck = (char.baseStats && char.baseStats.LUCK) || char.LUCK || 6;
-        this.luckMaxEl.textContent = luck;
-        if (this.luckEl) this.luckEl.max = luck;
+        const luckStat = (char.baseStats && char.baseStats.LUCK) || char.LUCK || 6;
+        // Текущий пул — то, что осталось на сессию
+        const currentLuck = char.currentLuck !== undefined ? char.currentLuck : luckStat;
+        this.luckMaxEl.textContent = currentLuck;
+        if (this.luckEl) {
+            this.luckEl.max = currentLuck;
+            // Если в поле ввода УДЧ больше текущего пула — обрезаем
+            const v = parseInt(this.luckEl.value) || 0;
+            if (v > currentLuck) this.luckEl.value = currentLuck;
+        }
     }
 
     // ─── Обработчики ───────────────────────────────────────────
@@ -127,10 +134,16 @@ export class SkillCheckCalculator {
             window.dispatchEvent(new CustomEvent('skillCheckRolled', { detail: { d10 } }));
         });
 
-        this.resetBtn?.addEventListener('click', () => {
+                this.resetBtn?.addEventListener('click', () => {
             if (this.d10El) this.d10El.value = 5;
             if (this.modEl) this.modEl.value = 0;
             if (this.luckEl) this.luckEl.value = 0;
+            this.recalculate();
+        });
+
+        // Реакция на изменение пула УДЧ (клик в баре)
+        window.addEventListener('luckChanged', () => {
+            this.refreshLuckMax();
             this.recalculate();
         });
     }

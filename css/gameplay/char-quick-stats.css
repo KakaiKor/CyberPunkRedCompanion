@@ -100,6 +100,15 @@
     color: #c8d2e0;
     flex-shrink: 0;
     letter-spacing: 0.3px;
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: 4px;
+    transition: background 0.15s ease, color 0.15s ease;
+    user-select: none;
+}
+.char-luck-bar .luck-label:hover {
+    background: rgba(255, 154, 60, 0.15);
+    color: #ff9a3c;
 }
 
 .char-luck-bar .luck-track {
@@ -110,6 +119,11 @@
     border-radius: 5px;
     overflow: hidden;
     min-width: 60px;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+.char-luck-bar .luck-track:hover {
+    border-color: #ff9a3c;
 }
 
 .char-luck-bar .luck-fill {
@@ -329,4 +343,16 @@ body.cyberpunk-theme .qa-btn.qa-heal-lg:hover {
 
 body.cyberpunk-theme .char-session-stats {
     color: #7a7a5a;
+}
+/* Анимация при клике на бар */
+.char-luck-bar .luck-track:active .luck-fill {
+    filter: brightness(1.4);
+}
+
+body.cyberpunk-theme .char-luck-bar .luck-label:hover {
+    background: rgba(255, 215, 0, 0.15);
+    color: #ffd700;
+}
+body.cyberpunk-theme .char-luck-bar .luck-track:hover {
+    border-color: #ffd700;
 }
