@@ -323,7 +323,7 @@ export class CharacterHelper {
         return `<li data-weapon-idx="${idx}" class="weapon-item"><div class="weapon-header"><strong class="weapon-name">${this.escapeHtml(w)}</strong></div><div class="weapon-stats">${statsWeapon}</div></li>`;
     }).join('');
 
-    const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}</li>`).join('');
+    const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}${this.buildCyberwareTooltip(c)}</li>`).join('');
     const gearHtmlItems = (gear.items || []).map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
     const ammoList = this.getAmmoFromChar(ammo);
     let ammoHtml = '';
@@ -1085,6 +1085,19 @@ if (repDec) {
         if (!str) return '';
         return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
     }
+        // [CYBER-TIP] Тултип с описанием киберимпланта
+    buildCyberwareTooltip(cyberName) {
+        const info = detailedCyberware.find(i => i.name === cyberName);
+        if (!info) return '';
+
+        return `
+            <span class="skill-info-icon" aria-label="Описание импланта">i<span class="skill-tooltip">
+                <span class="tip-section"><span class="tip-label">Установка</span><span class="tip-text">${this.escapeTip(info.install || '—')}</span></span>
+                <span class="tip-section"><span class="tip-label">Эффект</span><span class="tip-text">${this.escapeTip(info.effect || '—')}</span></span>
+                <span class="tip-section"><span class="tip-label">Цена / ПЧ</span><span class="tip-text">${info.cost} eb · ПЧ ${info.humanity}</span></span>
+            </span></span>`;
+    }
+
         // [TIP] Экранирование текста тултипа — полное, включая кавычки
     escapeTip(str) {
         if (!str) return '';
