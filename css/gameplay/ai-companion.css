@@ -527,3 +527,196 @@ body.cyberpunk-theme .ai-log-clear:hover {
     border-color: rgba(255, 0, 80, 0.5);
     color: #ff0050;
 }
+/* ============================================================
+   БЛОК СПАСБРОСКА ОТ СМЕРТИ
+   ============================================================ */
+
+.ai-death-save {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: rgba(255, 60, 95, 0.08);
+    border-left: 3px solid #ff3c5f;
+    border-radius: 6px;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Накопленный штраф — блок светится сильнее */
+.ai-death-save.ds-penalty-active {
+    background: rgba(255, 60, 95, 0.15);
+    box-shadow: 0 0 8px rgba(255, 60, 95, 0.3);
+}
+
+/* Критический штраф (≥3) — пульсирует */
+.ai-death-save.ds-penalty-critical {
+    background: rgba(255, 60, 95, 0.22);
+    animation: dsPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes dsPulse {
+    0%, 100% { box-shadow: 0 0 4px rgba(255, 60, 95, 0.3); }
+    50%      { box-shadow: 0 0 16px rgba(255, 60, 95, 0.7); }
+}
+
+.ai-ds-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #ff7a94;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.ai-ds-formula {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.72rem;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #9aa4bf;
+    font-weight: 400;
+}
+
+.ai-ds-body {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ai-ds-btn {
+    padding: 6px 14px;
+    background: rgba(255, 60, 95, 0.15);
+    border: 1px solid rgba(255, 60, 95, 0.5);
+    border-radius: 6px;
+    color: #ff7a94;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+    white-space: nowrap;
+}
+.ai-ds-btn:hover {
+    background: rgba(255, 60, 95, 0.3);
+}
+.ai-ds-btn:active {
+    transform: scale(0.95);
+}
+
+.ai-ds-result {
+    font-family: 'Orbitron', 'Consolas', monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ff3c5f;
+    text-shadow: 0 0 10px rgba(255, 60, 95, 0.5);
+    line-height: 1;
+    min-width: 30px;
+    text-align: center;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.ai-ds-result.is-survived {
+    color: #39ff14;
+    text-shadow: 0 0 12px rgba(57, 255, 20, 0.6);
+}
+
+.ai-ds-result.is-dead {
+    color: #ff0033;
+    font-size: 1.8rem;
+    text-shadow: 0 0 16px rgba(255, 0, 51, 0.9);
+    animation: dsDeathShake 0.5s ease-in-out;
+}
+
+@keyframes dsDeathShake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-3px); }
+    75%      { transform: translateX(3px); }
+}
+
+.ai-ds-reset {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    background: rgba(15, 18, 25, 0.6);
+    border: 1px solid rgba(64, 156, 255, 0.4);
+    border-radius: 5px;
+    color: #7ab6ff;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin-left: auto;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+.ai-ds-reset:hover {
+    background: rgba(64, 156, 255, 0.25);
+    transform: rotate(-90deg);
+}
+
+/* Адаптив */
+@media (max-width: 700px) {
+    .ai-ds-btn {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+    }
+    .ai-ds-result {
+        font-size: 1.2rem;
+    }
+}
+
+/* Cyberpunk theme */
+body.cyberpunk-theme .ai-death-save {
+    background: rgba(255, 0, 80, 0.08);
+    border-left-color: #ff0050;
+}
+body.cyberpunk-theme .ai-death-save.ds-penalty-active {
+    background: rgba(255, 0, 80, 0.15);
+    box-shadow: 0 0 10px rgba(255, 0, 80, 0.35);
+}
+body.cyberpunk-theme .ai-death-save.ds-penalty-critical {
+    background: rgba(255, 0, 80, 0.22);
+}
+body.cyberpunk-theme .ai-ds-header {
+    color: #ff0050;
+}
+body.cyberpunk-theme .ai-ds-btn {
+    background: rgba(255, 0, 80, 0.15);
+    border-color: rgba(255, 0, 80, 0.5);
+    color: #ff0050;
+}
+body.cyberpunk-theme .ai-ds-btn:hover {
+    background: rgba(255, 0, 80, 0.3);
+}
+body.cyberpunk-theme .ai-ds-result {
+    color: #ff0050;
+}
+body.cyberpunk-theme .ai-ds-result.is-survived {
+    color: #00ff64;
+    text-shadow: 0 0 12px rgba(0, 255, 100, 0.7);
+}
+body.cyberpunk-theme .ai-ds-result.is-dead {
+    color: #ff0050;
+    text-shadow: 0 0 18px rgba(255, 0, 80, 1);
+}
+/* Иконка «i» в блоке спасброска — под красную тему */
+.ai-death-save .skill-info-icon {
+    margin-left: 6px;
+    background: rgba(255, 60, 95, 0.15);
+    border-color: rgba(255, 60, 95, 0.55);
+    color: #ff7a94;
+    vertical-align: middle;
+}
+.ai-death-save .skill-info-icon:hover {
+    background: rgba(255, 60, 95, 0.35);
+}
+
+body.cyberpunk-theme .ai-death-save .skill-info-icon {
+    background: rgba(255, 0, 80, 0.15);
+    border-color: rgba(255, 0, 80, 0.55);
+    color: #ff0050;
+}
+body.cyberpunk-theme .ai-death-save .skill-info-icon:hover {
+    background: rgba(255, 0, 80, 0.35);
+}

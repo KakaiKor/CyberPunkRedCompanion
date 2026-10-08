@@ -8,6 +8,7 @@ const NAME = 'ЮКИ';               // ← имя можно поменять �
 const CYCLE_INTERVAL = 30000;     // автосмена реплики (30 сек)
 
 // ─── Реплики по контексту ────────────────────────────────────
+// ─── Реплики по контексту ────────────────────────────────────
 const QUOTES = {
     greeting: [
         'Привет, чумба. Готов к движухе?',
@@ -15,7 +16,11 @@ const QUOTES = {
         'С возвращением в Найт-Сити.',
         'Смотри-ка, кто вернулся.',
         'Начинаем. Только не сдохни.',
-        'Привет. Скучал?'
+        'Привет. Скучал?',
+        'О, живой. Хорошо.',
+        'Деньги в кармане, пушка на месте?',
+        'Опять ты. Ладно, входи.',
+        'Ну что, потанцуем?'
     ],
     idle: [
         'Найт-Сити не ждёт.',
@@ -41,61 +46,188 @@ const QUOTES = {
         'Хочешь жить — крутись.',
         'Хром греет, но не спасает.',
         'Чем тише ночь, тем громче утро.',
-        'Никогда не знаешь, кто стоит за тобой.'
+        'Никогда не знаешь, кто стоит за тобой.',
+        'В Найт-Сити доверие стоит дороже хрома.',
+        'Люди умирают. Легенды остаются.',
+        'Твоя пушка — твой лучший адвокат.',
+        'Не обещай того, что не сможешь отдать.',
+        'Каждое утро — новая рулетка.',
+        'Не беги, если не знаешь, куда.',
+        'Умный живёт дольше смелого. Иногда.',
+        'Корпораты не спят. И ты не спи.',
+        'Тени длиннее, чем кажется.',
+        'Если что-то слишком легко — жди подвоха.',
+        'Держи друзей близко. Врагов — ещё ближе.',
+        'Не каждый друг — друг. Не каждый враг — враг.',
+        'Кровь не смывает долг.',
+        'Иногда лучше промолчать. Но редко.',
+        'Прошлое догонит. Вопрос лишь когда.',
+        'Сегодня ты охотник. Завтра — дичь.'
     ],
     hpLow: [
         'Полегче, чумба. Ты не бессмертный.',
         'ПЗ на исходе. Может, отступим?',
         'Кровь — плохой декор.',
         'Каждый удар может стать последним.',
-        'Не рискуй. Сегодня — не твой день.'
+        'Не рискуй. Сегодня — не твой день.',
+        'Ещё немного — и начнёшь собирать травмы.',
+        'Может, перевязку? Не стыдно.',
+        'Ты теряешь форму. Отступай.',
+        'Полегче. Ты не из железа.',
+        'Раны имеют привычку открываться. Иди к медтеху.'
     ],
     hpCritical: [
         'ПЗ критично. Уже писал завещание?',
         'Ты на грани. Пора к медтеху.',
         'Пульс падает. Вызываю Trauma Team?',
         'Ещё один выстрел — и всё.',
-        'Не двигайся. Дыши. Держись.'
+        'Не двигайся. Дыши. Держись.',
+        'Ты труп с отсрочкой. Не двигайся.',
+        'Смертельное ранение. Каждый ход — спасбросок.',
+        'Осталось мало. Не облажайся.',
+        'Либо стабилизация, либо морг.',
+        'Сейчас не до героизма. Прячься.'
     ],
     hpFull: [
         'Всё в порядке. Продолжаем?',
         'Отдохнул? Двигаемся дальше.',
-        'Цел. Пока что.'
+        'Цел. Пока что.',
+        'Мясо на месте, хром работает.',
+        'Как новый. Не портись.',
+        'Цел и почти невредим. Хорошо.',
+        'Подлатали. Пора работать.',
+        'Здоров. Пользуйся, пока можешь.'
     ],
     humanityLow: [
         'Киберпсихоз не за горами…',
         'ЧЕЛ тает. Полегче с имплантами.',
         'Ты ещё человек? Или уже машина?',
         'Держись за людей, пока можешь.',
-        'Разум — не расходник.'
+        'Разум — не расходник.',
+        'Ещё пара имплантов — и всё.',
+        'Ты теряешь себя. Заметь это.',
+        'Сходи к терапевту. Не тяни.',
+        'Хром не заменит тебя.',
+        'Человечность важнее рефлексов.'
     ],
     humanityCritical: [
         'КИБЕРПСИХОЗ. Прячусь.',
         'Психоотряд в пути. Шучу. Или нет.',
         'Слишком много хрома. Слишком мало тебя.',
         'Мастер уже точит карандаш.',
-        'Это конец. Или начало конца.'
+        'Это конец. Или начало конца.',
+        'Психоотряд найдёт тебя. Рано или поздно.',
+        'Ты стал машиной, которая убивает.',
+        'Макс-Так уже едет.',
+        'Ты убил себя. Тело ещё ходит.',
+        'Один звонок — и тебя обнулят.'
     ],
-    luckZero: [
-        'УДЧ кончилась. Удачи.',
-        'Пусто в кармане удачи.',
-        'Дальше — только на своих.',
-        'Без страховки. Будь аккуратнее.',
-        'Удача — не бесконечная.'
+    moneyLow: [
+        'Денег мало. Пора взять контракт.',
+        'Пустой кошелёк — плохой компаньон.',
+        'Скоро аренда. Ищи работу.',
+        'Эдди заканчиваются. Фиксер подкинет что-нибудь.',
+        'Бедный бегущий — мёртвый бегущий.',
+        'На мели. Это плохо.',
+        'Считай каждый эдди.',
+        'Скоро придётся есть киббл. Опять.'
     ],
-    luckLow: [
-        'УДЧ на исходе. Поберегись.',
-        'Прибереги удачу напоследок.',
-        'Ещё пара бросков — и пусто.',
-        'Удача тает. Не трать зря.',
-        'Держи УДЧ на крайний случай.'
+    moneyZero: [
+        'Ноль эдди. Либо заказ, либо смерть с голоду.',
+        'На мели. Ищи фиксера.',
+        'Нищие герои долго не живут.',
+        'Пустой кошелёк. Бери первую работу.',
+        'Платить нечем. Даже киббл — уже роскошь.',
+        'Ты банкрот. Пора двигаться.',
+        'Денег нет. Хуже только пуля.',
+        'Ноль на счету. Это уже диагноз.'
     ],
     ipAvailable: [
         'Столько IP не потратить — грех.',
         'Не забудь про развитие.',
         'Ты растёшь. Я вижу.',
         'Вкладывайся. Сейчас самое время.',
-        'IP — это будущее. Не тормози.'
+        'IP — это будущее. Не тормози.',
+        'Расти. Найт-Сити не ждёт слабых.',
+        'Прокачай что-нибудь. Пока есть время.',
+        'IP лежат мёртвым грузом. Оживи их.'
+    ],
+    // ─── НОВЫЕ ───────────────────────────────────────────────
+    critRoll: [
+        'Джекпот! Судьба на твоей стороне.',
+        'Десятка! В этот раз — всё по-твоему.',
+        'Красиво. Так и надо.',
+        'Проверка прошла. И даже с блеском.',
+        'Вот это бросок. Запомни его.'
+    ],
+    failRoll: [
+        'Ох. Не твой день.',
+        'Единица. Судьба отвернулась.',
+        'Плохой бросок. Держись.',
+        'Бывает. Не зацикливайся.',
+        'Так бывает. Главное — выживи.'
+    ],
+    initHigh: [
+        'Хорошая инициатива. Действуй первым.',
+        'Ты быстрее. Пользуйся.',
+        'Опередил всех. Не тормози.',
+        'Первый ход — твой. Не облажайся.'
+    ],
+    initLow: [
+        'Инициатива низкая. Готовься.',
+        'Они быстрее. Защищайся.',
+        'Последний ход. Не спеши.',
+        'Они начнут первыми. Терпи.'
+    ],
+    roleSolo: [
+        'Соло живёт боем. Боевое чутьё — вторая кожа.',
+        'Твоя работа — убивать. Не отвлекайся.',
+        'Рефлексы решают. Хром и тренировки — вечная инвестиция.'
+    ],
+    roleNetrunner: [
+        'Нетраннер работает головой. Держи деку при себе.',
+        'Не входи в архитектуру без плана отхода.',
+        'Программы — твоё оружие. Следи за слотами.'
+    ],
+    roleMedtech: [
+        'Медтех держит команду на ногах. Следи за аптечкой.',
+        'Ты — сердце отряда. Без тебя раненые не выживут.',
+        'Фармацевтика — твоё оружие. Стимы, детоксы, антибиотики.'
+    ],
+    roleFixer: [
+        'Фиксер — посредник. У тебя связи по всему городу.',
+        'Ты знаешь, где достать что угодно. Продай дороже.',
+        'Доверие клиентов — твой капитал. Не теряй.'
+    ],
+    roleRockerboy: [
+        'Твоя сцена — весь мир. Играй громче.',
+        'Фанаты — твоя армия. Управляй ими.',
+        'Слово рокербоя сильнее пули. Иногда.'
+    ],
+    roleTech: [
+        'Техник чинит всё. Даже то, что не должно работать.',
+        'Твой мультитул — визитка.',
+        'Изобретай. Продавай. Богатей.'
+    ],
+    roleMedia: [
+        'Правда сильнее пули. Иногда.',
+        'Твои источники — твоё богатство.',
+        'Скримлист выйдет. Даже если ты уже мёртв.'
+    ],
+    roleLawman: [
+        'Коп в Найт-Сити живёт на лезвии.',
+        'Подкрепление — твой козырь. Но не спам.',
+        'Значок — не защита. Но иногда помогает.'
+    ],
+    roleManager: [
+        'Команда — твоё всё. Лояльность — твоя работа.',
+        'Корпоративное жильё бесплатно. Плата — душой.',
+        'Ты не воюешь. Ты организуешь.'
+    ],
+    roleNomad: [
+        'Семья — твоё всё. Дорога — дом.',
+        'Автопарк растёт с рангом Мото. Пользуйся.',
+        'Твой транспорт — вторая кожа. Уважай его.'
     ],
     click: [
         'Опять ты?',
@@ -117,7 +249,17 @@ const QUOTES = {
         'Опять?',
         'Серьёзно?',
         'Ну сколько можно.',
-        'Тебе больше нечем заняться?'
+        'Тебе больше нечем заняться?',
+        'Пальцы сотрёшь.',
+        'Ещё раз — и я обижусь.',
+        'Тебя никто не учил не тыкать?',
+        'Я тут не для развлечения.',
+        'Ты как ребёнок с кнопкой.',
+        'Может, помощь нужна? Скажи словами.',
+        'Ну и?',
+        'Дальше что?',
+        'Терпение у меня не бесконечное.',
+        'Утомил.'
     ]
 };
 
@@ -141,7 +283,12 @@ export class AICompanion {
         this.initBtn = document.getElementById('aiInitBtn');
         this.initResult = document.getElementById('aiInitResult');
         this.initFormula = document.getElementById('aiInitFormula');
-
+         // Спасбросок от смерти
+        this.dsBox = document.getElementById('aiDeathSave');
+        this.dsBtn = document.getElementById('aiDsBtn');
+        this.dsResult = document.getElementById('aiDsResult');
+        this.dsFormula = document.getElementById('aiDsFormula');
+        this.dsResetBtn = document.getElementById('aiDsResetBtn');
         // Лог
         this.logList = document.getElementById('aiLogList');
         this.logClearBtn = document.getElementById('aiLogClearBtn');
@@ -153,11 +300,14 @@ export class AICompanion {
         this.cycleTimer = null;
         this.lastTipCategory = null;   // защита от спама одной темой
         this.tipStreak = 0;            // сколько раз подряд одна тема
+        // Штраф к спасброскам от смерти (накапливается в сессии)
+        this.deathSavePenalty = this.loadDeathSavePenalty();
 
         this.attachEvents();
         this.updateState(true);
         this.showTip();
         this.refreshInitFormula();
+        this.refreshDeathSaveFormula();
         this.loadLog();
         this.startCycle();
 
@@ -185,11 +335,27 @@ export class AICompanion {
             this.rollInitiative();
         });
 
-        // Очистка лога
+                // Очистка лога
         this.logClearBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
             if (confirm('Очистить лог сессии?')) {
                 this.clearLog();
+            }
+        });
+
+        // Спасбросок от смерти
+        this.dsBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.rollDeathSave();
+        });
+
+        // Сброс штрафа (стабилизация)
+        this.dsResetBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm('Сбросить штраф к спасброскам? (стабилизация)')) {
+                this.deathSavePenalty = 0;
+                this.saveDeathSavePenalty();
+                this.refreshDeathSaveFormula();
             }
         });
 
@@ -363,10 +529,14 @@ export class AICompanion {
             this.say(pickRandom(QUOTES.idle), 'active');
         }
 
-          if (this.tipText) {
+                  // Обновляем совет под текущее состояние
+        if (this.tipText) {
             const tip = this.pickSmartTip(char);
             this.tipText.textContent = tip;
         }
+
+        // Обновляем формулу инициативы (РЕФ мог измениться из-за брони/имплантов)
+        this.refreshInitFormula();
     }
 
     // ─── Смена реплики ────────────────────────────────────────
@@ -399,24 +569,34 @@ export class AICompanion {
         if (state === 'critical') this.avatar.classList.add('ai-state-critical');
     }
         // ─── Инициатива ────────────────────────────────────────
-    refreshInitFormula() {
-        const char = loadCharacter();
-        const ref = (char && char.baseStats && char.baseStats.REF) || (char && char.REF) || 6;
-        if (this.initFormula) {
-            this.initFormula.textContent = `РЕФ ${ref} + d10`;
-        }
+          refreshInitFormula() {
+        const { ref, bonus } = this.getInitData();
+        if (!this.initFormula) return;
+        const bonusText = bonus > 0 ? ` + ${bonus}` : '';
+        this.initFormula.textContent = `РЕФ ${ref}${bonusText} + d10 = ${ref + bonus}`;
     }
 
-    rollInitiative() {
+    // Возвращает финальный РЕФ и бонус к инициативе
+    getInitData() {
+        const char = loadCharacter();
+        // Приоритет — финальные значения, посчитанные в character-helper.js
+        const finalStats = window.__finalStats || null;
+        const bonus = window.__initiativeBonus || 0;
+        const ref = finalStats?.REF !== undefined
+            ? finalStats.REF
+            : ((char && char.baseStats && char.baseStats.REF) || (char && char.REF) || 6);
+        return { ref, bonus };
+    }
+
+       rollInitiative() {
         const char = loadCharacter();
         if (!char) {
             alert('Сначала создайте персонажа.');
             return;
         }
-        const ref = (char.baseStats && char.baseStats.REF) || char.REF || 6;
+        const { ref, bonus } = this.getInitData();
         const d10 = Math.floor(Math.random() * 10) + 1;
-        const total = ref + d10;
-
+        const total = ref + bonus + d10;
         // Анимация «роллинга»
         if (this.initResult) {
             this.initResult.classList.add('is-rolling');
@@ -429,11 +609,16 @@ export class AICompanion {
                     setTimeout(() => this.initResult.classList.remove('is-crit'), 1500);
                 }
             }, 250);
+           // Реакция на критический бросок инициативы
+        if (d10 === 10) this.say(pickRandom(QUOTES.critRoll), 'active');
+        else if (d10 === 1) this.say(pickRandom(QUOTES.failRoll), 'warning');
+        else if (total >= 12) this.say(pickRandom(QUOTES.initHigh), 'active');
+        else if (total <= 4) this.say(pickRandom(QUOTES.initLow), 'warning');
         }
 
         // В лог
-        this.addLog(`Инициатива → ${total} (РЕФ ${ref} + d10 ${d10})`);
-
+               const bonusText = bonus > 0 ? ` + ${bonus}` : '';
+        this.addLog(`Инициатива → ${total} (РЕФ ${ref}${bonusText} + d10 ${d10})`);
         // ЮКИ комментирует
         if (d10 === 10) this.say('Джекпот! Инициатива на максимуме.', 'active');
         else if (d10 === 1) this.say('Ох. Не твой день.', 'warning');
@@ -492,5 +677,121 @@ export class AICompanion {
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
+    }
+        // ─── Спасбросок от смерти ──────────────────────────────
+    loadDeathSavePenalty() {
+        try {
+            const raw = sessionStorage.getItem('cpr_death_save_penalty');
+            return raw ? (parseInt(raw, 10) || 0) : 0;
+        } catch (e) {
+            return 0;
+        }
+    }
+
+    saveDeathSavePenalty() {
+        try {
+            sessionStorage.setItem('cpr_death_save_penalty', String(this.deathSavePenalty));
+        } catch (e) { /* ignore */ }
+    }
+
+     refreshDeathSaveFormula() {
+        const body = this.getBodyForDeathSave();
+        if (this.dsFormula) {
+            this.dsFormula.textContent = `ТЕЛО ${body} · штраф +${this.deathSavePenalty}`;
+        }
+        // Обновляем визуальное состояние блока
+        if (this.dsBox) {
+            this.dsBox.classList.remove('ds-penalty-active', 'ds-penalty-critical');
+            if (this.deathSavePenalty >= 3) {
+                this.dsBox.classList.add('ds-penalty-critical');
+            } else if (this.deathSavePenalty >= 1) {
+                this.dsBox.classList.add('ds-penalty-active');
+            }
+        }
+    }
+
+    rollDeathSave() {
+               const char = loadCharacter();
+        if (!char) {
+            alert('Сначала создайте персонажа.');
+            return;
+        }
+        const body = this.getBodyForDeathSave();
+        const d10 = Math.floor(Math.random() * 10) + 1;
+        const adjusted = d10 + this.deathSavePenalty;   // штраф прибавляется к броску
+
+        // Автопровал на 10 (по правилам), либо когда d10+штраф ≥ 10
+        const autoFail = (d10 === 10);
+        const success = !autoFail && (adjusted < body);
+
+        // Показываем результат
+        if (this.dsResult) {
+            this.dsResult.classList.remove('is-survived', 'is-dead');
+            if (success) {
+                this.dsResult.classList.add('is-survived');
+                this.dsResult.textContent = `${d10}+${this.deathSavePenalty}=${adjusted}`;
+            } else if (autoFail) {
+                this.dsResult.classList.add('is-dead');
+                this.dsResult.textContent = '10';
+            } else {
+                this.dsResult.classList.add('is-dead');
+                this.dsResult.textContent = `${d10}+${this.deathSavePenalty}=${adjusted}`;
+            }
+        }
+
+        // ЮКИ комментирует
+        if (success) {
+            this.say(pickRandom([
+                'Живой. Ещё один ход.',
+                'Повезло. Снова.',
+                'Держишься. Продолжай.',
+                'Смерть подождёт. Пока что.'
+            ]), this.deathSavePenalty >= 3 ? 'warning' : 'active');
+        } else {
+            this.say(pickRandom([
+                'Всё. Ты ушёл.',
+                'Конец. Хорошая была поездка.',
+                'Обнулился. Прощай, чумба.',
+                'Это было. Финита.'
+            ]), 'critical');
+        }
+
+        // Логируем
+        const mark = success ? '✅' : '💀';
+        const text = success
+            ? `Спасбросок от смерти → ${adjusted} vs ТЕЛО ${body} ${mark} (штраф +${this.deathSavePenalty})`
+            : autoFail
+                ? `Спасбросок от смерти → 10 (автопровал) 💀 СМЕРТЬ`
+                : `Спасбросок от смерти → ${adjusted} vs ТЕЛО ${body} 💀 СМЕРТЬ`;
+        this.addLog(text, success ? 'is-heal' : 'is-damage');
+
+        // Если провал — сообщение
+        if (!success) {
+            alert('💀 СПАСБРОСОК ПРОВАЛЕН. Персонаж мёртв.');
+        }
+
+        // Накопление штрафа (по правилам Cyberpunk RED — +1 за каждый броcок)
+        this.deathSavePenalty += 1;
+        this.saveDeathSavePenalty();
+        this.refreshDeathSaveFormula();
+    }
+        // Финальный ТЕЛО с учётом имплантов (Эндоскелеты, Искусственные мышцы)
+    getBodyForDeathSave() {
+        const char = loadCharacter();
+        if (!char) return 6;
+
+        // Приоритет — финальный ТЕЛО из character-helper.js (уже с имплантами и без штрафа брони)
+        const finalStats = window.__finalStats || null;
+        if (finalStats && finalStats.BODY !== undefined) {
+            return finalStats.BODY;
+        }
+
+        // Fallback — ручной расчёт по имплантам
+        const base = (char.baseStats && char.baseStats.BODY) || char.BODY || 6;
+        const cyber = char.cyberware || [];
+        if (cyber.includes('Эндоскелет Бета') || cyber.includes('Эндоскелет ß (Бета)')) return 14;
+        if (cyber.includes('Эндоскелет Сигма') || cyber.includes('Эндоскелет ∑ (Сигма)')) return 12;
+        if (cyber.includes('Искусственные мышцы и усиленные кости')) return Math.min(10, base + 2);
+        return base;
     }
 }

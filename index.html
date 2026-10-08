@@ -241,7 +241,7 @@
                     <div class="ai-initiative" id="aiInitiative">
                         <div class="ai-init-header">
                             <span>⚡ Инициатива</span>
-                            <span class="ai-init-formula" id="aiInitFormula">РЕФ 6 + d10</span>
+                               <span class="ai-init-formula" id="aiInitFormula">—</span>
                         </div>
                         <div class="ai-init-body">
                             <button type="button" class="ai-init-btn" id="aiInitBtn">🎲 Бросить</button>
@@ -259,7 +259,22 @@
                             <div class="ai-log-empty">Пока пусто</div>
                         </div>
                     </div>
-
+                                        <!-- ===== СПАСБРОСОК ОТ СМЕРТИ ===== -->
+                    <div class="ai-death-save" id="aiDeathSave">
+                        <div class="ai-ds-header">
+                            <span>💀 Спасбросок от смерти<span class="skill-info-icon" aria-label="Как работает спасбросок">i<span class="skill-tooltip">
+                                <span class="tip-section"><span class="tip-label">Что это</span><span class="tip-text">Бросок в начале каждого хода, пока ты в смертельном ранении (0 ПЗ или меньше).</span></span>
+                                <span class="tip-section"><span class="tip-label">Как применять</span><span class="tip-text">1d10 + штраф строго меньше ТЕЛО — выжил. Если выпало 10 — автопровал, смерть.</span></span>
+                                <span class="tip-section"><span class="tip-label">Важно</span><span class="tip-text">Каждый бросок даёт +1 к штрафу. Сбрасывается только стабилизацией (медтех/первая помощь).</span></span>
+                            </span></span></span>
+                            <span class="ai-ds-formula" id="aiDsFormula">ТЕЛО 6 · штраф +0</span>
+                        </div>
+                        <div class="ai-ds-body">
+                            <button type="button" class="ai-ds-btn" id="aiDsBtn">🎲 Спасбросок</button>
+                            <div class="ai-ds-result" id="aiDsResult">—</div>
+                            <button type="button" class="ai-ds-reset" id="aiDsResetBtn" title="Сбросить штраф (стабилизация)">↺</button>
+                        </div>
+                    </div>
                     <div class="ai-hint">Клик по блоку — другая реплика</div>
                         </div>
                     </div>

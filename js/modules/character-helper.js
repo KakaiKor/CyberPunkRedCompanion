@@ -525,6 +525,11 @@ ${penaltyDisplay}
     // 4. Удаляем вспомогательные поля (если они есть)
     delete finalStats._initiativeBonus;
     delete finalStats._extraEffects;
+     // Сохраняем финальные характеристики для других модулей (ЮКИ, калькулятор)
+       // Сохраняем финальные характеристики для других модулей (ЮКИ, калькулятор проверок)
+    window.__finalStats = { ...finalStats };
+    // Бонус к инициативе от имплантов — считаем прямо здесь
+    window.__initiativeBonus = (cyberware.includes('Керензиков')) ? 2 : 0;
 
     // 5. Собираем остальные данные для карточки
     const gear = char.gear || { weapons: [], armor: { body: '', head: '' }, items: [] };
