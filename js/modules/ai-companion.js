@@ -424,6 +424,8 @@ export class AICompanion {
 
         this.currentQuote = '';
         this.cycleTimer = null;
+          // Мимика
+        this.startBlinking();
         this.lastTipCategory = null;   // защита от спама одной темой
         this.tipStreak = 0;            // сколько раз подряд одна тема
         // Штраф к спасброскам от смерти (накапливается в сессии)
@@ -589,10 +591,40 @@ export class AICompanion {
         return null;
     }
 
-    startCycle() {
+        startCycle() {
         this.cycleTimer = setInterval(() => {
             this.updateState();
         }, CYCLE_INTERVAL);
+    }
+
+    // ─── Мигание ────────────────────────────────────────────
+    startBlinking() {
+        const blink = () => {
+            if (!this.avatar) return;
+            this.avatar.classList.add('blink');
+            setTimeout(() => this.avatar?.classList.remove('blink'), 100);
+            // Следующее моргание — через 2-5 сек
+            setTimeout(blink, 2000 + Math.random() * 3000);
+        };
+        setTimeout(blink, 1500 + Math.random() * 2000);
+    }
+
+    // ─── Смена мимики: tsun / dere / warning / critical ─────
+    setMood(mood) {
+        if (!this.avatar) return;
+        this.avatar.classList.remove('tsun', 'dere');
+        if (mood === 'tsun') this.avatar.classList.add('tsun');
+        if (mood === 'dere') this.avatar.classList.add('dere');
+    }
+
+    // ─── Пульс при смене реплики ────────────────────────────
+    pulseAvatar() {
+        if (!this.avatar) return;
+        this.avatar.classList.remove('pulse');
+        // Форсируем reflow, чтобы анимация перезапустилась
+        void this.avatar.offsetWidth;
+        this.avatar.classList.add('pulse');
+        setTimeout(() => this.avatar?.classList.remove('pulse'), 400);
     }
 
     // ─── Определение состояния ────────────────────────────────
@@ -636,6 +668,12 @@ export class AICompanion {
             this.say(pickRandom(QUOTES.humanityLow), 'warning');
             return;
         }
+                // Обеспокоенность → dere-мимика
+        if (humanity <= 30) {
+            this.setMood('dere');
+        } else if (humanity <= 60) {
+            this.setMood(Math.random() < 0.5 ? 'dere' : 'tsun');
+        }
         if (hpPct < 1) {
             this.setAvatarState('warning');
             this.say(pickRandom(QUOTES.hpLow), 'warning');
@@ -649,6 +687,8 @@ export class AICompanion {
 
                 // Все в норме
         this.setAvatarState('active');
+        // Цундере-мимика: 70% tsun, 30% dere
+        this.setMood(Math.random() < 0.7 ? 'tsun' : 'dere');
         if (initial) {
             this.say(pickRandom(QUOTES.greeting), 'active');
         } else {
@@ -669,7 +709,7 @@ export class AICompanion {
     say(text, state = 'active') {
         if (!this.quoteEl || text === this.currentQuote) return;
         this.currentQuote = text;
-
+          this.pulseAvatar();
         // Плавное исчезновение → смена → появление
         this.quoteEl.classList.add('is-fading');
         setTimeout(() => {

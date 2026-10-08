@@ -215,11 +215,42 @@
                         <!-- ===== ИИ-КОМПАНЬОН ===== -->
                         <div class="ai-companion" id="aiCompanion">
                             <div class="ai-header">
-                                <div class="ai-avatar" id="aiAvatar">
-                                    <div class="ai-core"></div>
-                                    <div class="ai-eye ai-eye-left"></div>
-                                    <div class="ai-eye ai-eye-right"></div>
-                                </div>
+                                                       <div class="ai-avatar ai-avatar-v2" id="aiAvatar" data-state="active">
+                            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" class="ai-face-svg">
+                                <!-- Фон головы -->
+                                <defs>
+                                    <radialGradient id="aiHeadGrad" cx="50%" cy="40%" r="60%">
+                                        <stop offset="0%" stop-color="#2a3a4d"/>
+                                        <stop offset="100%" stop-color="#0a0f15"/>
+                                    </radialGradient>
+                                </defs>
+                                <circle cx="32" cy="32" r="29" fill="url(#aiHeadGrad)" stroke="currentColor" stroke-width="0.8"/>
+
+                                <!-- Волосы (две пряди по бокам + чёлка) -->
+                                <path class="ai-hair" d="M 8 30 Q 8 10 32 8 Q 56 10 56 30 Q 50 22 42 22 Q 38 16 32 16 Q 26 16 22 22 Q 14 22 8 30 Z" fill="currentColor" opacity="0.85"/>
+                                <path class="ai-hair-strand" d="M 10 32 Q 6 46 12 54 Q 14 44 12 32 Z" fill="currentColor" opacity="0.7"/>
+                                <path class="ai-hair-strand" d="M 54 32 Q 58 46 52 54 Q 50 44 52 32 Z" fill="currentColor" opacity="0.7"/>
+
+                                <!-- Брови (угол меняется через CSS) -->
+                                <line class="ai-brow ai-brow-left"  x1="17" y1="27" x2="25" y2="27" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <line class="ai-brow ai-brow-right" x1="39" y1="27" x2="47" y2="27" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+
+                                <!-- Глаза: белок + зрачок + блик -->
+                                <ellipse class="ai-eye-white" cx="21" cy="33" rx="4.5" ry="6" fill="#fff"/>
+                                <ellipse class="ai-eye-white" cx="43" cy="33" rx="4.5" ry="6" fill="#fff"/>
+                                <circle class="ai-pupil" cx="21" cy="33.5" r="2.6" fill="currentColor"/>
+                                <circle class="ai-pupil" cx="43" cy="33.5" r="2.6" fill="currentColor"/>
+                                <circle class="ai-gleam" cx="22" cy="31.5" r="0.9" fill="#fff"/>
+                                <circle class="ai-gleam" cx="44" cy="31.5" r="0.9" fill="#fff"/>
+
+                                <!-- Румянец (появляется при смущении) -->
+                                <ellipse class="ai-blush ai-blush-left"  cx="15" cy="40" rx="4" ry="2" fill="#ff7a94"/>
+                                <ellipse class="ai-blush ai-blush-right" cx="49" cy="40" rx="4" ry="2" fill="#ff7a94"/>
+
+                                <!-- Рот (форма меняется) -->
+                                <path class="ai-mouth" d="M 30 44 Q 32 46 34 44" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </div>
                                 <div class="ai-name-wrap">
                                     <span class="ai-name" id="aiName">ЮКИ</span>
                                     <span class="ai-status" id="aiStatus">онлайн</span>

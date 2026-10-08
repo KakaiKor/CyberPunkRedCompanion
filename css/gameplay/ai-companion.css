@@ -41,67 +41,123 @@
     margin-bottom: 10px;
 }
 
-/* ---------- Аватар ---------- */
+/* ============================================================
+   АВАТАР ЮКИ v2 — АНИМЕ-ЛИЦО (цундере)
+   ============================================================ */
+
 .ai-avatar {
     position: relative;
-    width: 36px;
-    height: 36px;
+    width: 48px;
+    height: 48px;
     flex-shrink: 0;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #2a3a4d, #0a0f15);
-    border: 1px solid #3a4a5d;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
     overflow: hidden;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease;
+    color: #39ff14;   /* базовый цвет — «волосы», зрачки, ободок */
 }
 
-.ai-core {
-    position: absolute;
-    inset: 6px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #39ff14 0%, rgba(57,255,20,0.2) 60%, transparent 75%);
-    animation: aiCorePulse 2.4s ease-in-out infinite;
-    transition: background 0.3s ease;
+.ai-face-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
-.ai-eye {
-    position: absolute;
-    top: 14px;
-    width: 3px;
-    height: 6px;
-    background: #0a0f15;
-    border-radius: 2px;
-    animation: aiBlink 4s ease-in-out infinite;
-    z-index: 2;
-}
-.ai-eye-left  { left: 12px; }
-.ai-eye-right { right: 12px; }
-
-@keyframes aiCorePulse {
-    0%, 100% { opacity: 0.7; transform: scale(0.95); }
-    50%      { opacity: 1;   transform: scale(1.05); }
-}
-@keyframes aiBlink {
-    0%, 92%, 100% { transform: scaleY(1); }
-    94%, 96%      { transform: scaleY(0.1); }
+/* ─── Базовые элементы ──────────────────────────────────── */
+.ai-brow,
+.ai-brow-left,
+.ai-brow-right {
+    transform-origin: center;
+    transition: transform 0.3s ease;
+    transform-box: fill-box;
 }
 
-/* Состояния аватара */
-.ai-avatar.ai-state-warning .ai-core {
-    background: radial-gradient(circle, #ff9a3c 0%, rgba(255,154,60,0.2) 60%, transparent 75%);
-}
-.ai-avatar.ai-state-warning {
-    border-color: rgba(255, 154, 60, 0.5);
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8), 0 0 8px rgba(255, 154, 60, 0.4);
+.ai-blush {
+    opacity: 0;
+    transition: opacity 0.4s ease;
 }
 
-.ai-avatar.ai-state-critical .ai-core {
-    background: radial-gradient(circle, #ff3c5f 0%, rgba(255,60,95,0.3) 60%, transparent 75%);
-    animation: aiCorePulse 0.8s ease-in-out infinite;
+.ai-mouth {
+    transition: d 0.3s ease;
 }
-.ai-avatar.ai-state-critical {
-    border-color: #ff3c5f;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 60, 95, 0.6);
+
+/* ─── Смущение (dere): румянец + мягкий рот ───────────── */
+.ai-avatar.dere .ai-blush {
+    opacity: 0.75;
+}
+.ai-avatar.dere .ai-mouth {
+    d: path("M 29 44 Q 32 47 35 44");
+}
+
+/* ─── Цундере: нахмуренные брови + отвёрнутый взгляд ──── */
+.ai-avatar.tsun .ai-brow-left {
+    transform: rotate(15deg) translateY(-0.5px);
+}
+.ai-avatar.tsun .ai-brow-right {
+    transform: rotate(-15deg) translateY(-0.5px);
+}
+.ai-avatar.tsun .ai-pupil {
+    transform: translateX(-1px);
+}
+.ai-avatar.tsun .ai-mouth {
+    d: path("M 30 45 L 34 45");   /* прямая линия — «хмпф» */
+}
+
+/* ─── Тревога / критическое состояние ──────────────────── */
+.ai-avatar.warning {
+    color: #ff9a3c;
+}
+.ai-avatar.critical {
+    color: #ff3c5f;
+    animation: aiAvatarShake 0.6s ease-in-out infinite;
+}
+.ai-avatar.critical .ai-mouth {
+    d: path("M 29 45 Q 32 42 35 45");   /* рот раскрыт в тревоге */
+}
+.ai-avatar.critical .ai-pupil {
+    transform: scale(0.7);
+}
+
+@keyframes aiAvatarShake {
+    0%, 100% { transform: translate(0, 0); }
+    25%      { transform: translate(-1px, 0); }
+    75%      { transform: translate(1px, 0); }
+}
+
+/* ─── Анимация при смене реплики ───────────────────────── */
+.ai-avatar.pulse {
+    animation: aiAvatarPulse 0.4s ease-out;
+}
+@keyframes aiAvatarPulse {
+    0%   { transform: scale(1);    filter: drop-shadow(0 0 0 transparent); }
+    50%  { transform: scale(1.12); filter: drop-shadow(0 0 8px currentColor); }
+    100% { transform: scale(1);    filter: drop-shadow(0 0 0 transparent); }
+}
+
+/* ─── Моргание глаз ────────────────────────────────────── */
+.ai-avatar .ai-eye-white,
+.ai-avatar .ai-pupil,
+.ai-avatar .ai-gleam {
+    transition: transform 0.1s ease;
+}
+.ai-avatar.blink .ai-eye-white,
+.ai-avatar.blink .ai-pupil {
+    transform: scaleY(0.1);
+    transform-origin: center;
+    transform-box: fill-box;
+}
+
+/* ─── Cyberpunk theme ──────────────────────────────────── */
+body.cyberpunk-theme .ai-avatar {
+    color: #ffd700;
+}
+body.cyberpunk-theme .ai-avatar.warning {
+    color: #ff9a3c;
+}
+body.cyberpunk-theme .ai-avatar.critical {
+    color: #ff0050;
+}
+body.cyberpunk-theme .ai-avatar .ai-blush {
+    fill: #ff5a7a;
 }
 
 /* ---------- Имя и статус ---------- */
