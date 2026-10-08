@@ -159,7 +159,8 @@
                         </div>
                     </div>
 
-                                        <div class="card skill-check-card">
+                                                            <div class="right-column">
+                    <div class="card skill-check-card">
                         <div class="skill-check-header">
                             <h3>🎲 Проверка навыка</h3>
                             <button type="button" id="skillCheckResetBtn" class="skill-check-reset-btn" title="Сброс полей">🔄</button>
@@ -210,6 +211,57 @@
                         </div>
 
                         <div class="skill-check-history" id="skillCheckHistory"></div>
+                                        </div>
+                        <!-- ===== ИИ-КОМПАНЬОН ===== -->
+                        <div class="ai-companion" id="aiCompanion">
+                            <div class="ai-header">
+                                <div class="ai-avatar" id="aiAvatar">
+                                    <div class="ai-core"></div>
+                                    <div class="ai-eye ai-eye-left"></div>
+                                    <div class="ai-eye ai-eye-right"></div>
+                                </div>
+                                <div class="ai-name-wrap">
+                                    <span class="ai-name" id="aiName">ЮКИ</span>
+                                    <span class="ai-status" id="aiStatus">онлайн</span>
+                                </div>
+                                <div class="ai-version">v0.7</div>
+                            </div>
+                                                <div class="ai-speech" id="aiSpeech">
+                        <span class="ai-quote">«…»</span>
+                    </div>
+                                        <div class="ai-tip-box" id="aiTipBox">
+                        <div class="ai-tip-header">
+                            <span>💡 Совет ЮКИ</span>
+                            <button type="button" class="ai-tip-next" id="aiTipNextBtn" title="Другой совет">🎲</button>
+                        </div>
+                        <div class="ai-tip-text" id="aiTipText">Загрузка…</div>
+                    </div>
+
+                    <!-- ===== ИНИЦИАТИВА ===== -->
+                    <div class="ai-initiative" id="aiInitiative">
+                        <div class="ai-init-header">
+                            <span>⚡ Инициатива</span>
+                            <span class="ai-init-formula" id="aiInitFormula">РЕФ 6 + d10</span>
+                        </div>
+                        <div class="ai-init-body">
+                            <button type="button" class="ai-init-btn" id="aiInitBtn">🎲 Бросить</button>
+                            <div class="ai-init-result" id="aiInitResult">—</div>
+                        </div>
+                    </div>
+
+                    <!-- ===== ЛОГ СЕССИИ ===== -->
+                    <div class="ai-log" id="aiLog">
+                        <div class="ai-log-header">
+                            <span>📋 Лог сессии</span>
+                            <button type="button" class="ai-log-clear" id="aiLogClearBtn" title="Очистить">🗑️</button>
+                        </div>
+                        <div class="ai-log-list" id="aiLogList">
+                            <div class="ai-log-empty">Пока пусто</div>
+                        </div>
+                    </div>
+
+                    <div class="ai-hint">Клик по блоку — другая реплика</div>
+                        </div>
                     </div>
                 </div>
                 <div id="characterCardContainer" style="margin-top: 20px;"></div>

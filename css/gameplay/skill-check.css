@@ -4,7 +4,7 @@
 /* Сетка на странице «Основное»: узкая левая колонка + широкая правая */
 .card-grid:has(.skill-check-card) {
     grid-template-columns: minmax(260px, 340px) 1fr;
-    align-items: start;
+    align-items: stretch;   /* вместо start — чтобы ячейки тянулись по высоте */
 }
 .skill-check-card {
     padding: 14px 16px !important;

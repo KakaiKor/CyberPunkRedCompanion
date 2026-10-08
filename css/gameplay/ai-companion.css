@@ -1,0 +1,529 @@
+/* ============================================================
+   ИИ-КОМПАНЬОН ЮКИ
+   Маленький атмосферный блок на странице «Персонаж → Основное»
+   ============================================================ */
+/* ============================================================
+   ПРАВАЯ КОЛОНКА СЕТКИ — калькулятор + ЮКИ
+   ============================================================ */
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+    height: 100%;             /* растянуть на высоту левой колонки */
+}
+
+.right-column .ai-companion {
+    margin-top: auto;         /* прижать ЮКИ к низу */
+}
+
+.ai-companion {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(15,18,25,0.85), rgba(20,25,35,0.7));
+    border: 1px solid #2a3342;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    user-select: none;
+}
+.ai-companion:hover {
+    border-color: rgba(255, 154, 60, 0.4);
+    box-shadow: 0 0 16px rgba(255, 154, 60, 0.12);
+}
+
+/* ---------- Заголовок с аватаром ---------- */
+.ai-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* ---------- Аватар ---------- */
+.ai-avatar {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #2a3a4d, #0a0f15);
+    border: 1px solid #3a4a5d;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ai-core {
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #39ff14 0%, rgba(57,255,20,0.2) 60%, transparent 75%);
+    animation: aiCorePulse 2.4s ease-in-out infinite;
+    transition: background 0.3s ease;
+}
+
+.ai-eye {
+    position: absolute;
+    top: 14px;
+    width: 3px;
+    height: 6px;
+    background: #0a0f15;
+    border-radius: 2px;
+    animation: aiBlink 4s ease-in-out infinite;
+    z-index: 2;
+}
+.ai-eye-left  { left: 12px; }
+.ai-eye-right { right: 12px; }
+
+@keyframes aiCorePulse {
+    0%, 100% { opacity: 0.7; transform: scale(0.95); }
+    50%      { opacity: 1;   transform: scale(1.05); }
+}
+@keyframes aiBlink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    94%, 96%      { transform: scaleY(0.1); }
+}
+
+/* Состояния аватара */
+.ai-avatar.ai-state-warning .ai-core {
+    background: radial-gradient(circle, #ff9a3c 0%, rgba(255,154,60,0.2) 60%, transparent 75%);
+}
+.ai-avatar.ai-state-warning {
+    border-color: rgba(255, 154, 60, 0.5);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8), 0 0 8px rgba(255, 154, 60, 0.4);
+}
+
+.ai-avatar.ai-state-critical .ai-core {
+    background: radial-gradient(circle, #ff3c5f 0%, rgba(255,60,95,0.3) 60%, transparent 75%);
+    animation: aiCorePulse 0.8s ease-in-out infinite;
+}
+.ai-avatar.ai-state-critical {
+    border-color: #ff3c5f;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 60, 95, 0.6);
+}
+
+/* ---------- Имя и статус ---------- */
+.ai-name-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+}
+.ai-name {
+    font-family: 'Orbitron', 'Consolas', monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ff9a3c;
+    letter-spacing: 1.5px;
+}
+.ai-status {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6a7382;
+    transition: color 0.3s ease;
+}
+.ai-status.is-active { color: #39ff14; }
+.ai-status.is-warning { color: #ff9a3c; }
+.ai-status.is-critical { color: #ff3c5f; }
+
+.ai-version {
+    font-family: 'Consolas', monospace;
+    font-size: 0.65rem;
+    color: #4a5261;
+    flex-shrink: 0;
+}
+
+/* ---------- Реплика ---------- */
+.ai-speech {
+    position: relative;
+    padding: 10px 12px;
+    background: rgba(10, 15, 21, 0.7);
+    border-left: 3px solid #ff9a3c;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+}
+.ai-quote {
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: #c8d2e0;
+    font-style: italic;
+    transition: opacity 0.25s ease;
+}
+.ai-quote.is-fading {
+    opacity: 0;
+}
+
+/* ---------- Подсказка ---------- */
+.ai-hint {
+    font-size: 0.65rem;
+    color: #4a5261;
+    text-align: right;
+    letter-spacing: 0.3px;
+}
+
+/* ---------- Адаптив ---------- */
+@media (max-width: 700px) {
+    .ai-companion {
+        padding: 10px 12px;
+    }
+    .ai-avatar { width: 32px; height: 32px; }
+    .ai-eye { top: 12px; width: 3px; height: 5px; }
+    .ai-eye-left  { left: 10px; }
+    .ai-eye-right { right: 10px; }
+    .ai-name { font-size: 0.85rem; }
+    .ai-quote { font-size: 0.8rem; }
+}
+
+/* ---------- Cyberpunk theme ---------- */
+body.cyberpunk-theme .ai-companion {
+    background: linear-gradient(135deg, rgba(10,10,10,0.9), rgba(20,15,0,0.7));
+    border-color: rgba(255, 215, 0, 0.25);
+}
+body.cyberpunk-theme .ai-companion:hover {
+    border-color: rgba(255, 215, 0, 0.55);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
+}
+body.cyberpunk-theme .ai-name { color: #ffd700; }
+body.cyberpunk-theme .ai-core {
+    background: radial-gradient(circle, #ffd700 0%, rgba(255,215,0,0.2) 60%, transparent 75%);
+}
+body.cyberpunk-theme .ai-speech {
+    border-left-color: #ffd700;
+}
+body.cyberpunk-theme .ai-avatar.ai-state-warning .ai-core {
+    background: radial-gradient(circle, #ff9a3c 0%, rgba(255,154,60,0.2) 60%, transparent 75%);
+}
+body.cyberpunk-theme .ai-avatar.ai-state-critical .ai-core {
+    background: radial-gradient(circle, #ff0050 0%, rgba(255,0,80,0.3) 60%, transparent 75%);
+}
+/* ============================================================
+   БЛОК СОВЕТА ЮКИ (всегда видимый)
+   ============================================================ */
+
+.ai-tip-box {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: rgba(255, 154, 60, 0.08);
+    border-left: 3px solid #ff9a3c;
+    border-radius: 6px;
+}
+
+.ai-tip-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #ff9a3c;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.ai-tip-next {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    background: rgba(255, 154, 60, 0.15);
+    border: 1px solid rgba(255, 154, 60, 0.4);
+    border-radius: 5px;
+    color: #ff9a3c;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+.ai-tip-next:hover {
+    background: rgba(255, 154, 60, 0.3);
+}
+.ai-tip-next:active {
+    transform: scale(0.92) rotate(-15deg);
+}
+
+.ai-tip-text {
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: #c8d2e0;
+    font-style: italic;
+}
+
+/* Нижняя подсказка про клик */
+.ai-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.65rem;
+    color: #4a5261;
+    letter-spacing: 0.3px;
+    text-align: right;
+}
+
+/* Адаптив */
+@media (max-width: 700px) {
+    .ai-tip-box {
+        padding: 8px 10px;
+    }
+    .ai-tip-text {
+        font-size: 0.78rem;
+    }
+}
+
+/* Cyberpunk theme */
+body.cyberpunk-theme .ai-tip-box {
+    background: rgba(255, 215, 0, 0.08);
+    border-left-color: #ffd700;
+}
+body.cyberpunk-theme .ai-tip-header {
+    color: #ffd700;
+}
+body.cyberpunk-theme .ai-tip-next {
+    background: rgba(255, 215, 0, 0.12);
+    border-color: rgba(255, 215, 0, 0.4);
+    color: #ffd700;
+}
+body.cyberpunk-theme .ai-tip-next:hover {
+    background: rgba(255, 215, 0, 0.3);
+}
+/* ============================================================
+   БЛОК ИНИЦИАТИВЫ
+   ============================================================ */
+
+.ai-initiative {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: rgba(255, 60, 95, 0.06);
+    border-left: 3px solid #ff3c5f;
+    border-radius: 6px;
+}
+
+.ai-init-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #ff7a94;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.ai-init-formula {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.72rem;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #9aa4bf;
+    font-weight: 400;
+}
+
+.ai-init-body {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ai-init-btn {
+    padding: 6px 14px;
+    background: rgba(255, 60, 95, 0.15);
+    border: 1px solid rgba(255, 60, 95, 0.5);
+    border-radius: 6px;
+    color: #ff7a94;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+    white-space: nowrap;
+}
+.ai-init-btn:hover {
+    background: rgba(255, 60, 95, 0.3);
+}
+.ai-init-btn:active {
+    transform: scale(0.95);
+}
+
+.ai-init-result {
+    font-family: 'Orbitron', 'Consolas', monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #ff3c5f;
+    text-shadow: 0 0 10px rgba(255, 60, 95, 0.5);
+    line-height: 1;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+.ai-init-result.is-rolling {
+    color: #4a5261;
+    text-shadow: none;
+    font-size: 1.1rem;
+}
+.ai-init-result.is-crit {
+    color: #39ff14;
+    text-shadow: 0 0 14px rgba(57, 255, 20, 0.7);
+    transform: scale(1.1);
+}
+
+/* ============================================================
+   ЛОГ СЕССИИ
+   ============================================================ */
+
+.ai-log {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: rgba(64, 156, 255, 0.06);
+    border-left: 3px solid #409cff;
+    border-radius: 6px;
+}
+
+.ai-log-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #7ab6ff;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.ai-log-clear {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    background: rgba(64, 156, 255, 0.15);
+    border: 1px solid rgba(64, 156, 255, 0.4);
+    border-radius: 5px;
+    color: #7ab6ff;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: background 0.15s ease;
+}
+.ai-log-clear:hover {
+    background: rgba(255, 60, 95, 0.25);
+    border-color: rgba(255, 60, 95, 0.5);
+    color: #ff7a94;
+}
+
+.ai-log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    max-height: 140px;
+    overflow-y: auto;
+    font-size: 0.75rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+    scrollbar-width: thin;
+}
+
+.ai-log-empty {
+    color: #4a5261;
+    font-style: italic;
+    text-align: center;
+    padding: 6px 0;
+}
+
+.ai-log-item {
+    display: flex;
+    gap: 8px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: rgba(15, 18, 25, 0.4);
+    animation: aiLogFadeIn 0.25s ease-out;
+}
+
+@keyframes aiLogFadeIn {
+    from { opacity: 0; transform: translateX(-4px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.ai-log-item .log-time {
+    color: #6a7382;
+    flex-shrink: 0;
+    min-width: 38px;
+}
+.ai-log-item .log-text {
+    color: #c8d2e0;
+    flex: 1;
+    min-width: 0;
+}
+.ai-log-item.is-success .log-text { color: #39ff14; }
+.ai-log-item.is-fail .log-text    { color: #ff3c5f; }
+.ai-log-item.is-damage .log-text  { color: #ff7a94; }
+.ai-log-item.is-heal .log-text    { color: #7fe57f; }
+
+/* ============================================================
+   Адаптив
+   ============================================================ */
+
+@media (max-width: 700px) {
+    .ai-init-btn {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+    }
+    .ai-init-result {
+        font-size: 1.3rem;
+    }
+    .ai-log-list {
+        font-size: 0.72rem;
+        max-height: 110px;
+    }
+}
+
+/* ============================================================
+   Cyberpunk theme
+   ============================================================ */
+
+body.cyberpunk-theme .ai-initiative {
+    background: rgba(255, 0, 80, 0.06);
+    border-left-color: #ff0050;
+}
+body.cyberpunk-theme .ai-init-header {
+    color: #ff0050;
+}
+body.cyberpunk-theme .ai-init-btn {
+    background: rgba(255, 0, 80, 0.15);
+    border-color: rgba(255, 0, 80, 0.5);
+    color: #ff0050;
+}
+body.cyberpunk-theme .ai-init-btn:hover {
+    background: rgba(255, 0, 80, 0.3);
+}
+body.cyberpunk-theme .ai-init-result {
+    color: #ff0050;
+    text-shadow: 0 0 12px rgba(255, 0, 80, 0.6);
+}
+body.cyberpunk-theme .ai-init-result.is-crit {
+    color: #00ff64;
+    text-shadow: 0 0 14px rgba(0, 255, 100, 0.7);
+}
+
+body.cyberpunk-theme .ai-log {
+    background: rgba(255, 215, 0, 0.06);
+    border-left-color: #ffd700;
+}
+body.cyberpunk-theme .ai-log-header {
+    color: #ffd700;
+}
+body.cyberpunk-theme .ai-log-clear {
+    background: rgba(255, 215, 0, 0.12);
+    border-color: rgba(255, 215, 0, 0.4);
+    color: #ffd700;
+}
+body.cyberpunk-theme .ai-log-clear:hover {
+    background: rgba(255, 0, 80, 0.25);
+    border-color: rgba(255, 0, 80, 0.5);
+    color: #ff0050;
+}

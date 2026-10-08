@@ -32,6 +32,7 @@ import { getCharacterWithIP, upgradeSkill, upgradeRoleRank, getUpgradeableSkills
 import { initTooltipPositioning } from './modules/ui/tooltip-positioner.js';
 import { SkillCheckCalculator } from './modules/skill-check.js';
 import { QuickStats } from './modules/quick-stats.js';
+import { AICompanion } from './modules/ai-companion.js';
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
     const data = {
@@ -266,6 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTooltipPositioning();
     updateAllTables();
     fillIpTable();
+    window.aiCompanion = new AICompanion();
     new AutoFireUI();
     new TabManager();
     // new NightMarket();
