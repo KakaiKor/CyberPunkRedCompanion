@@ -612,3 +612,65 @@ body.cyberpunk-theme .crit-roll-result {
 body.cyberpunk-theme .crit-name {
     color: #ff0050;
 }
+/* ─── Блок причин штрафов от травм в результате атаки ─── */
+.attack-trauma-block {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: rgba(255, 60, 95, 0.08);
+    border-left: 3px solid #ff3c5f;
+    border-radius: 6px;
+    color: #ff7a94;
+    font-size: 0.85rem;
+}
+.attack-trauma-list {
+    margin: 6px 0 0 0;
+    padding-left: 18px;
+    color: #c8d2e0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+.attack-trauma-list li { margin-bottom: 2px; }
+
+body.cyberpunk-theme .attack-trauma-block {
+    background: rgba(255, 0, 80, 0.08);
+    border-left-color: #ff0050;
+}
+body.cyberpunk-theme .attack-trauma-list { color: #ffe6a1; }
+/* ─── Блок причин штрафов от травм в результате атаки ─── */
+.attack-trauma-block {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: rgba(255, 60, 95, 0.08);
+    border-left: 3px solid #ff3c5f;
+    border-radius: 6px;
+    color: #ff7a94;
+    font-size: 0.85rem;
+}
+.attack-trauma-list {
+    margin: 6px 0 0 0;
+    padding-left: 18px;
+    color: #c8d2e0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+.attack-trauma-list li { margin-bottom: 3px; }
+.trauma-affected {
+    color: #ff7a94;
+    font-weight: 600;
+    font-size: 0.78em;
+    margin-left: 6px;
+}
+.trauma-not-affected {
+    color: #9aa4bf;
+    font-style: italic;
+    font-size: 0.78em;
+    margin-left: 6px;
+}
+
+/* Cyberpunk theme */
+body.cyberpunk-theme .attack-trauma-block {
+    background: rgba(255, 0, 80, 0.08);
+    border-left-color: #ff0050;
+}
+body.cyberpunk-theme .attack-trauma-list { color: #ffe6a1; }
+body.cyberpunk-theme .trauma-affected { color: #ff0050; }

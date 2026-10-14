@@ -174,8 +174,9 @@ export class CharacterHelper {
             name, role, roleRank: 4, stats, skills, gear, cyberware: [],
             currentHp: hp, maxHp: hp, severe, humanity, empFrom, deathSave, notes: '', avatar: '', money: 1000
         });
-        const charData = { name, role, ...stats, money: 1000 };
+              const charData = { name, role, ...stats, money: 1000 };
         saveCharacter(charData);
+        window.dispatchEvent(new Event('characterUpdated'));
         document.getElementById('charSaveStatus').innerText = 'Персонаж сгенерирован!';
     }
 
@@ -639,8 +640,10 @@ ${penaltyDisplay}
                 char.ip = { totalEarned: 0, spent: 0, available: 0, history: [] };
             }
             if (!char.ip.history) char.ip.history = [];
-            ['INT', 'REF', 'DEX', 'TECH', 'COOL', 'WILL', 'LUCK', 'MOVE', 'BODY', 'EMP'].forEach(s => delete char[s]);
+                       ['INT', 'REF', 'DEX', 'TECH', 'COOL', 'WILL', 'LUCK', 'MOVE', 'BODY', 'EMP'].forEach(s => delete char[s]);
             saveCharacter(char);
+            // ✅ Оповещаем все модули (TraumaTracker, QuickStats, ЮКИ, CombatFormulas)
+            window.dispatchEvent(new Event('characterUpdated'));
             const nameInp = document.getElementById('charName');
             const roleSel = document.getElementById('genRole');
             if (nameInp) nameInp.value = char.name;
@@ -950,10 +953,12 @@ ${penaltyDisplay}
         ammo: newAmmo,
         reputation: newReputation
     };
-    saveCharacter(charData);
+      saveCharacter(charData);
     if (window.shopUI) window.shopUI.render();
     if (window.inventoryUI) window.inventoryUI.render();
     this.displaySavedCharacterCard();
+    // ✅ Оповещаем все модули — после сохранения карточки
+    window.dispatchEvent(new Event('characterUpdated'));
 }
 
     syncFromTabs() {

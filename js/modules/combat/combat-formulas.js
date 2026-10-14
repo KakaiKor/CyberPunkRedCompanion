@@ -93,66 +93,102 @@ export class CombatFormulas {
     }
 
         calculateAttack() {
-        const type = document.getElementById('combatType').value;
-        const roll = parseInt(document.getElementById('d10Roll').value) || 1;
-        const mod = parseInt(document.getElementById('modifiers').value) || 0;
+    const type = document.getElementById('combatType').value;
+    const roll = parseInt(document.getElementById('d10Roll').value) || 1;
+    const mod = parseInt(document.getElementById('modifiers').value) || 0;
 
-        let attackValue = 0;
-        let attackDesc = "";
+    const char = loadCharacter();
+    const traumaInfo = this.getTraumaPenalties(char, type);
+    const allTraumas = (char && Array.isArray(char.traumas)) ? char.traumas : [];
 
-        if (type === 'ranged') {
-            const ref = parseInt(document.getElementById('refValue').value) || 0;
-            const skill = parseInt(document.getElementById('rangedSkill').value) || 0;
-            attackValue = ref + skill + roll + mod;
-            attackDesc = `${ref} (РЕФ) + ${skill} (навык) + ${roll} (d10) + ${mod} (мод)`;
-        } else {
-            const dex = parseInt(document.getElementById('dexValue').value) || 0;
-            const skill = parseInt(document.getElementById('meleeSkill').value) || 0;
-            attackValue = dex + skill + roll + mod;
-            attackDesc = `${dex} (ЛВК) + ${skill} (навык) + ${roll} (d10) + ${mod} (мод)`;
-        }
+    let attackValue = 0;
+    let attackDesc = "";
 
-        // Берём СЛ из поля, а не через prompt
-        const slInput = document.getElementById('attackSL');
-        const target = parseInt(slInput?.value);
-
-        if (isNaN(target)) {
-            document.getElementById('attackResult').innerHTML =
-                `<span style="color:#ff3c5f;">❌ Введите СЛ или результат защиты цели.</span>`;
-            return;
-        }
-
-        const isHit = attackValue > target;
-        const excess = attackValue - target;
-
-        let resultHtml = '';
-        if (isHit) {
-            let excessText = '';
-            if (excess >= 10) excessText = ' (блестяще! +' + excess + ')';
-            else if (excess >= 5) excessText = ' (уверенно, +' + excess + ')';
-            else excessText = ' (в притирку, +' + excess + ')';
-
-            resultHtml = `
-                <div style="color:#39ff14;">
-                    <strong>✅ ПОПАДАНИЕ!</strong>${excessText}<br>
-                    <span style="font-family:monospace; font-size:0.85em;">${attackDesc} = <strong>${attackValue}</strong></span><br>
-                    Против СЛ ${target}<br>
-                    <span style="color:#9aa4bf; font-size:0.85em;">→ Переходи к броску урона. Не забудь про ОС брони цели.</span>
-                </div>
-            `;
-        } else {
-            const missBy = Math.abs(excess);
-            resultHtml = `
-                <div style="color:#ff9a3c;">
-                    <strong>❌ ПРОМАХ</strong> (не хватило ${missBy})<br>
-                    <span style="font-family:monospace; font-size:0.85em;">${attackDesc} = <strong>${attackValue}</strong></span><br>
-                    Против СЛ ${target}
-                </div>
-            `;
-        }
-
-        document.getElementById('attackResult').innerHTML = resultHtml;
+    if (type === 'ranged') {
+        const ref = parseInt(document.getElementById('refValue').value) || 0;
+        const skill = parseInt(document.getElementById('rangedSkill').value) || 0;
+        attackValue = ref + skill + roll + mod + traumaInfo.total;
+        attackDesc = `${ref} (РЕФ) + ${skill} (навык) + ${roll} (d10) + ${mod} (мод)`
+            + (traumaInfo.total !== 0 ? ` + ${traumaInfo.total} (травмы)` : '');
+    } else {
+        const dex = parseInt(document.getElementById('dexValue').value) || 0;
+        const skill = parseInt(document.getElementById('meleeSkill').value) || 0;
+        attackValue = dex + skill + roll + mod + traumaInfo.total;
+        attackDesc = `${dex} (ЛВК) + ${skill} (навык) + ${roll} (d10) + ${mod} (мод)`
+            + (traumaInfo.total !== 0 ? ` + ${traumaInfo.total} (травмы)` : '');
     }
+
+    // СЛ из поля
+    const slInput = document.getElementById('attackSL');
+    const target = parseInt(slInput?.value);
+
+    if (isNaN(target)) {
+        document.getElementById('attackResult').innerHTML =
+            `<span style="color:#ff3c5f;">❌ Введите СЛ или результат защиты цели.</span>`;
+        return;
+    }
+
+    const isHit = attackValue > target;
+    const excess = attackValue - target;
+
+    // ─── Блок со ВСЕМИ активными травмами ──────────────────────
+    // Показываем каждую травму и помечаем, учтена ли она в броске
+    let traumaBlock = '';
+    if (allTraumas.length > 0) {
+        const reasons = traumaInfo.reasons;   // строки вида "Название: –4 (...)"
+        const items = allTraumas.map(t => {
+            const name = t.name || 'Без названия';
+            const isPenalty = reasons.some(r => r.startsWith(name));
+            const mark = isPenalty ? '⚠️' : 'ℹ️';
+            const status = isPenalty ? '<span class="trauma-affected">учтено в броске</span>'
+                                     : '<span class="trauma-not-affected">не влияет на атаку</span>';
+            return `<li>${mark} <strong>${this._escHtml(name)}</strong> — ${this._escHtml(t.effect || '')} ${status}</li>`;
+        }).join('');
+
+        traumaBlock = `
+            <div class="attack-trauma-block">
+                🩹 <strong>Активные травмы (${allTraumas.length}):</strong>
+                <ul class="attack-trauma-list">${items}</ul>
+            </div>
+        `;
+    }
+
+    let resultHtml = '';
+    if (isHit) {
+        let excessText = '';
+        if (excess >= 10) excessText = ` (блестяще! +${excess})`;
+        else if (excess >= 5) excessText = ` (уверенно, +${excess})`;
+        else excessText = ` (в притирку, +${excess})`;
+
+        resultHtml = `
+            <div style="color:#39ff14;">
+                <strong>✅ ПОПАДАНИЕ!</strong>${excessText}<br>
+                <span style="font-family:monospace; font-size:0.85em;">${attackDesc} = <strong>${attackValue}</strong></span><br>
+                Против СЛ ${target}<br>
+                <span style="color:#9aa4bf; font-size:0.85em;">→ Переходи к броску урона. Не забудь про ОС брони цели.</span>
+            </div>
+            ${traumaBlock}
+        `;
+    } else {
+        const missBy = Math.abs(excess);
+        resultHtml = `
+            <div style="color:#ff9a3c;">
+                <strong>❌ ПРОМАХ</strong> (не хватило ${missBy})<br>
+                <span style="font-family:monospace; font-size:0.85em;">${attackDesc} = <strong>${attackValue}</strong></span><br>
+                Против СЛ ${target}
+            </div>
+            ${traumaBlock}
+        `;
+    }
+
+    document.getElementById('attackResult').innerHTML = resultHtml;
+}
+
+// Хелпер: безопасно экранирует HTML в названиях травм
+_escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]));
+}
         // ─── Заполнение селекта оружием из инвентаря ─────────────
     populateWeaponSelect() {
         const select = document.getElementById('attackWeaponSelect');
@@ -269,7 +305,113 @@ export class CombatFormulas {
         }
         return fallback;
     }
+    // ─── Штрафы от активных травм ────────────────────────────
+// Возвращает { attack, ranged, melee, move, total, reasons }
+// ─── Штрафы от активных травм ────────────────────────────
+// Возвращает { attack, ranged, melee, move, total, reasons }
+getTraumaPenalties(char, attackType = 'ranged') {
+    const traumas = (char && Array.isArray(char.traumas)) ? char.traumas : [];
+    const result = {
+        attack: 0,
+        ranged: 0,
+        melee: 0,
+        move: 0,
+        total: 0,
+        reasons: []
+    };
 
+    for (const t of traumas) {
+        const name = (t && t.name) ? t.name : '';
+        switch (name) {
+            // ── Универсальные штрафы (влияют на атаку любого типа) ──
+            case 'Перелом руки':
+                result.attack -= 2;
+                result.reasons.push(`${name}: –2 (рука повреждена)`);
+                break;
+            case 'Раздробленные пальцы':
+                result.attack -= 4;
+                result.reasons.push(`${name}: –4 к действиям этой рукой`);
+                break;
+            case 'Травма мозга':
+            case 'Сотрясение':
+                result.attack -= 2;
+                result.reasons.push(`${name}: –2 ко всем действиям`);
+                break;
+            case 'Травма позвоночника':
+                result.attack -= 2;
+                result.reasons.push(`${name}: –2 (только перемещение)`);
+                break;
+
+            // ── Только к рукопашной ──
+            case 'Разрыв мышц':
+                result.melee -= 2;
+                result.reasons.push(`${name}: –2 к рукопашным атакам`);
+                break;
+
+            // ── Только к дальнему бою ──
+            case 'Потеря глаза':
+                result.ranged -= 4;
+                result.reasons.push(`${name}: –4 к дальним атакам`);
+                break;
+            case 'Повреждение глаза':
+                result.ranged -= 2;
+                result.reasons.push(`${name}: –2 к дальним атакам`);
+                break;
+
+            // ── Влияют на перемещение, не на атаку ──
+            case 'Перелом ноги':
+                result.move -= 4;
+                result.reasons.push(`${name}: –4 к СКО`);
+                break;
+            case 'Разрыв лёгкого':
+                result.move -= 2;
+                result.reasons.push(`${name}: –2 к СКО`);
+                break;
+            case 'Оторванная нога':
+                result.move -= 6;
+                result.reasons.push(`${name}: –6 к СКО (нельзя уклоняться)`);
+                break;
+
+            // ── Информационные (влияют на что-то другое, но не на бросок атаки) ──
+            // НЕ добавляем в reasons — они не должны менять attackValue.
+            // Но их всё равно видно в блоке «Активные травмы» через allTraumas.
+            case 'Оторванная рука':
+            case 'Оторванная кисть':
+                // – никак не влияет на броску атаки. +1 к спасброскам.
+                break;
+            case 'Перелом рёбер':
+            case 'Инородное тело':
+                // Боль при беге > 4 м — не влияет на атаку.
+                break;
+            case 'Хлыстовая травма шеи':
+                // +1 к спасброскам.
+                break;
+            case 'Трещина черепа':
+                // Прицельные в голову ×3.
+                break;
+            case 'Перелом челюсти':
+                // –4 к речи.
+                break;
+            case 'Раздавленная трахея':
+            case 'Травма трахеи':
+                // Нельзя говорить.
+                break;
+            case 'Повреждение уха':
+                // –2 к слуховому Восприятию.
+                break;
+            case 'Потеря уха':
+                // –4 к слуховому Восприятию.
+                break;
+        }
+    }
+
+    // Итоговый модификатор к броску атаки
+    result.total = (attackType === 'ranged')
+        ? result.attack + result.ranged
+        : result.attack + result.melee;
+
+    return result;
+}
     // ─── Загрузка данных из карточки персонажа ────────────────
     loadFromCharacter() {
         const char = loadCharacter();
@@ -298,7 +440,13 @@ export class CombatFormulas {
             const skillInput = document.getElementById('meleeSkill');
             if (skillInput && meleeSkill > 0) skillInput.value = meleeSkill;
         }
-
+         // Травмы — предупреждение в подсказке
+    const traumas = char.traumas || [];
+    let traumaHint = '';
+    if (traumas.length > 0) {
+        const names = traumas.map(t => t.name).join(', ');
+        traumaHint = ` 🩹 Травмы: ${names}.`;
+    }
         this.showWeaponHint(`📥 Загружено из карточки: РЕФ ${ref}, ЛВК ${dex}.`);
     }
 
