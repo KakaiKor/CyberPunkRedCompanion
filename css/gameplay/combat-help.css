@@ -162,3 +162,453 @@
     color: #9aa4bf;
     margin: 10px 0;
 }
+/* ============================================================
+   КАЛЬКУЛЯТОР АТАКИ — НОВАЯ РАЗМЕТКА
+   ============================================================ */
+
+/* Поле d10 с кнопкой броска */
+.d10-wrap {
+    display: inline-flex;
+    gap: 4px;
+    align-items: stretch;
+}
+.d10-wrap input {
+    width: 60px;
+}
+.roll-d10-btn {
+    padding: 0 10px;
+    background: rgba(255, 154, 60, 0.15);
+    border: 1px solid rgba(255, 154, 60, 0.5);
+    border-radius: 6px;
+    color: #ff9a3c;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.roll-d10-btn:hover {
+    background: rgba(255, 154, 60, 0.35);
+}
+.roll-d10-btn:active {
+    transform: scale(0.94);
+}
+
+/* Строка «d10 + модификатор» */
+.attack-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin: 10px 0;
+}
+.attack-row label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.85rem;
+    color: #c8d2e0;
+}
+
+/* Строка СЛ */
+.attack-sl-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 10px 0 12px;
+    padding: 10px 12px;
+    background: rgba(255, 154, 60, 0.06);
+    border-left: 3px solid #ff9a3c;
+    border-radius: 6px;
+}
+.sl-input-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #e6ecf5;
+    font-weight: 500;
+    flex-wrap: wrap;
+}
+.sl-input-label input {
+    width: 80px;
+    padding: 6px 10px;
+    background: #0f1219;
+    border: 1px solid #2a3342;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.95rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+.sl-input-label input:focus {
+    border-color: #ff9a3c;
+    outline: none;
+}
+.sl-hint {
+    font-size: 0.75rem;
+    color: #9aa4bf;
+    font-style: italic;
+    line-height: 1.35;
+}
+
+/* Cyberpunk theme */
+body.cyberpunk-theme .roll-d10-btn {
+    background: rgba(255, 215, 0, 0.15);
+    border-color: rgba(255, 215, 0, 0.5);
+    color: #ffd700;
+}
+body.cyberpunk-theme .roll-d10-btn:hover {
+    background: rgba(255, 215, 0, 0.35);
+}
+body.cyberpunk-theme .attack-sl-row {
+    background: rgba(255, 215, 0, 0.06);
+    border-left-color: #ffd700;
+}
+body.cyberpunk-theme .sl-input-label input:focus {
+    border-color: #ffd700;
+}
+/* ============================================================
+   ВЫБОР ОРУЖИЯ ИЗ ИНВЕНТАРЯ
+   ============================================================ */
+
+.attack-weapon-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.attack-weapon-label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.85rem;
+    color: #c8d2e0;
+    flex: 1;
+    min-width: 220px;
+}
+
+.attack-weapon-select {
+    padding: 8px 12px;
+    background: #0f1219;
+    border: 1px solid #2a3342;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.9rem;
+    cursor: pointer;
+    width: 100%;
+}
+.attack-weapon-select:hover,
+.attack-weapon-select:focus {
+    border-color: #ff9a3c;
+    outline: none;
+}
+
+.attack-weapon-row .cyber-btn.small {
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    align-self: flex-end;
+}
+
+.attack-weapon-hint {
+    padding: 6px 10px;
+    background: rgba(64, 156, 255, 0.08);
+    border-left: 3px solid #409cff;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 0.78rem;
+    color: #c8d2e0;
+    font-style: italic;
+}
+
+/* Cyberpunk theme */
+body.cyberpunk-theme .attack-weapon-select {
+    background: #0a0a0a;
+    border-color: rgba(255, 215, 0, 0.35);
+    color: #ffe6a1;
+}
+body.cyberpunk-theme .attack-weapon-select:focus {
+    border-color: #ffd700;
+}
+body.cyberpunk-theme .attack-weapon-hint {
+    background: rgba(255, 215, 0, 0.06);
+    border-left-color: #ffd700;
+}
+/* ============================================================
+   УРОН И БРОНЯ — РЕЗУЛЬТАТ
+   ============================================================ */
+
+.damage-roll-result {
+    padding: 10px 14px;
+    background: rgba(255, 154, 60, 0.06);
+    border-left: 3px solid #ff9a3c;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+.damage-roll-formula {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9rem;
+    color: #c8d2e0;
+    margin-bottom: 6px;
+}
+.damage-roll-formula strong {
+    color: #fff;
+}
+.damage-roll-armor {
+    font-size: 0.82rem;
+    color: #9aa4bf;
+    margin-bottom: 6px;
+}
+.damage-roll-final {
+    font-size: 0.95rem;
+    color: #ff7a94;
+    font-weight: 600;
+}
+.damage-roll-final strong {
+    color: #ff3c5f;
+    font-size: 1.15em;
+}
+.damage-roll-crit {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: rgba(255, 60, 95, 0.15);
+    border: 1px solid rgba(255, 60, 95, 0.5);
+    border-radius: 6px;
+    color: #ff3c5f;
+    font-size: 0.9rem;
+    animation: critPulse 0.6s ease-in-out;
+}
+@keyframes critPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 60, 95, 0.4); }
+    50%      { box-shadow: 0 0 0 6px rgba(255, 60, 95, 0); }
+}
+
+/* ============================================================
+   КРИТИЧЕСКИЕ ТРАВМЫ — РЕЗУЛЬТАТ БРОСКА
+   ============================================================ */
+
+.crit-roll-result {
+    padding: 12px 16px;
+    background: rgba(255, 60, 95, 0.08);
+    border-left: 3px solid #ff3c5f;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+.crit-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ff3c5f;
+    margin: 6px 0;
+}
+.crit-effect {
+    font-size: 0.88rem;
+    color: #c8d2e0;
+    line-height: 1.4;
+}
+.crit-treat {
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: #9aa4bf;
+    font-style: italic;
+}
+
+/* ============================================================
+   АКТИВНЫЕ ТРАВМЫ ПЕРСОНАЖА
+   ============================================================ */
+
+.trauma-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    align-items: center;
+}
+
+.trauma-controls select {
+    padding: 6px 10px;
+    background: #0f1219;
+    border: 1px solid #2a3342;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.85rem;
+    cursor: pointer;
+    min-width: 140px;
+}
+.trauma-controls select:focus {
+    border-color: #ff9a3c;
+    outline: none;
+}
+.trauma-controls .cyber-btn {
+    padding: 6px 14px;
+    font-size: 0.82rem;
+}
+.trauma-controls .cyber-btn.small {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+}
+
+.trauma-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.trauma-empty {
+    padding: 14px;
+    text-align: center;
+    color: #4a5261;
+    font-style: italic;
+    background: rgba(15, 18, 25, 0.4);
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.trauma-item {
+    padding: 10px 14px;
+    background: rgba(255, 60, 95, 0.08);
+    border-left: 3px solid #ff3c5f;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+.trauma-item:hover {
+    background: rgba(255, 60, 95, 0.14);
+}
+
+.trauma-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.trauma-zone {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #ff7a94;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.trauma-name {
+    font-weight: 600;
+    color: #fff;
+    flex: 1;
+    min-width: 0;
+}
+
+.trauma-remove {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid rgba(255, 60, 95, 0.4);
+    border-radius: 4px;
+    color: #ff7a94;
+    font-size: 12px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background 0.15s ease;
+    flex-shrink: 0;
+}
+.trauma-remove:hover {
+    background: rgba(255, 60, 95, 0.3);
+}
+
+.trauma-effect {
+    font-size: 0.82rem;
+    color: #c8d2e0;
+    line-height: 1.4;
+}
+
+.trauma-treat {
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: #9aa4bf;
+    font-style: italic;
+}
+
+/* ============================================================
+   КНОПКИ БРОСКА КРИТА + СВЁРНУТЫЕ ТАБЛИЦЫ
+   ============================================================ */
+
+.crit-roll-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.crit-tables-details {
+    background: #14181f;
+    border: 1px solid #2a3342;
+    border-radius: 12px;
+    padding: 0;
+    margin-top: 16px;
+    overflow: hidden;
+}
+.crit-tables-details summary {
+    padding: 12px 16px;
+    cursor: pointer;
+    background: #1e2530;
+    list-style: none;
+    font-weight: 600;
+    color: #e6ecf5;
+    font-size: 0.9rem;
+}
+.crit-tables-details summary::before {
+    content: "▶";
+    margin-right: 10px;
+    color: #ff9a3c;
+}
+.crit-tables-details[open] summary::before {
+    content: "▼";
+}
+.crit-tables-details > div {
+    padding: 12px 16px;
+    border-top: 1px solid #2a3342;
+}
+
+/* ============================================================
+   CYBERPUNK THEME
+   ============================================================ */
+
+body.cyberpunk-theme .trauma-controls select {
+    background: #0a0a0a;
+    border-color: rgba(255, 215, 0, 0.35);
+    color: #ffe6a1;
+}
+body.cyberpunk-theme .trauma-controls select:focus {
+    border-color: #ffd700;
+}
+body.cyberpunk-theme .trauma-item {
+    background: rgba(255, 0, 80, 0.08);
+    border-left-color: #ff0050;
+}
+body.cyberpunk-theme .trauma-item:hover {
+    background: rgba(255, 0, 80, 0.15);
+}
+body.cyberpunk-theme .trauma-zone {
+    color: #ff0050;
+}
+body.cyberpunk-theme .damage-roll-result {
+    background: rgba(255, 215, 0, 0.06);
+    border-left-color: #ffd700;
+}
+body.cyberpunk-theme .damage-roll-final {
+    color: #ff9a3c;
+}
+body.cyberpunk-theme .damage-roll-crit {
+    background: rgba(255, 0, 80, 0.15);
+    border-color: rgba(255, 0, 80, 0.5);
+    color: #ff0050;
+}
+body.cyberpunk-theme .crit-roll-result {
+    background: rgba(255, 0, 80, 0.08);
+    border-left-color: #ff0050;
+}
+body.cyberpunk-theme .crit-name {
+    color: #ff0050;
+}

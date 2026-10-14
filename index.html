@@ -35,7 +35,7 @@
         <!-- Терминал -->
         <div class="terminal-container">
             <div class="terminal-header" id="terminalHeader">
-                <span class="terminal-title">⚡ EDGERUNNER INTERFACE v.0.0.0.21_beta ⚡</span>
+                <span class="terminal-title">⚡ EDGERUNNER INTERFACE v.0.0.0.22_beta ⚡</span>
                 <button class="terminal-toggle" id="terminalToggle">−</button>
             </div>
             <div class="terminal-body" id="terminalBody">
@@ -515,48 +515,14 @@
             </div>
         </div>
         <!-- Панель БОЙ (оставлена без изменений) -->
-        <div id="tab-combat" class="main-pane">
+                <div id="tab-combat" class="main-pane">
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" data-sub="combat-calc"> Калькуляторы </button>
-                <button class="sub-tab-btn" data-sub="combat-init"> Инициатива </button>
-                <button class="sub-tab-btn" data-sub="combat-crit"> Криты </button>
-                <button class="sub-tab-btn" data-sub="combat-formulas"> Формулы боя </button>
-                <button class="sub-tab-btn" data-sub="combat-help"> Справка по бою </button>
+                <button class="sub-tab-btn active" data-sub="combat-formulas"> ⚔️ Быстрый бой </button>
+                <button class="sub-tab-btn" data-sub="combat-init"> ⚡ Инициатива </button>
+                <button class="sub-tab-btn" data-sub="combat-crit"> 🩹 Травмы </button>
+                <button class="sub-tab-btn" data-sub="combat-help"> 📖 Справка </button>
             </div>
-            <div id="combat-calc" class="sub-pane active">
-                <div class="card-grid">
-                    <div class="card">
-                        <h3>ПЗ и спасбросок</h3><label>ТЕЛО: <input id="calcBody" type="number"
-                                value="6"></label><label>ВОЛЯ: <input id="calcWill" type="number"
-                                value="6"></label><button id="calcHpBtn">Рассчитать</button>
-                        <div id="calcResult"></div>
-                    </div>
-                    <div class="card">
-                        <h3>Урон и броня</h3>
-                        <label>Тип урона:
-                            <select id="damageDice">
-                                <option value="1d6">1d6</option>
-                                <option value="2d6" selected>2d6</option>
-                                <option value="3d6">3d6</option>
-                                <option value="4d6">4d6</option>
-                                <option value="5d6">5d6</option>
-                                <option value="6d6">6d6</option>
-                                <option value="8d6">8d6</option>
-                            </select>
-                        </label>
-                        <label>Броня (ОС): <input id="armorInput" type="number" value="0"></label>
-                        <label><input type="checkbox" id="coldWeaponCheck"> Холодное (½ ОС)</label>
-                        <button id="rollDamageBtn" class="cyber-btn">🎲 Бросить урон</button>
-                        <div id="damageResult"></div>
-                    </div>
-                    <div class="card">
-                        <h3>Таран</h3><label>Скорость: <input id="ramSpeed" type="number"
-                                value="60"></label><label>Масса: <input id="ramWeight" type="number"
-                                value="1500"></label><button id="calcRamBtn">Урон</button>
-                        <div id="ramResult"></div>
-                    </div>
-                </div>
-            </div>
+            
             <div id="combat-help" class="sub-pane"></div>
             <div id="combat-init" class="sub-pane">
                 <div class="card-grid">
@@ -576,29 +542,116 @@
                     </div>
                 </div>
             </div>
-            <div id="combat-crit" class="sub-pane">
-                <div class="card"><button id="rollCritBtn">🎲 Тело</button><button id="rollCritHeadBtn">🎲
-                        Голова</button>
-                    <div id="critResult"></div>
+                        <div id="combat-crit" class="sub-pane">
+                <!-- ===== АКТИВНЫЕ ТРАВМЫ ПЕРСОНАЖА ===== -->
+                <div class="card">
+                    <h3>🩹 Активные травмы персонажа</h3>
+                    <p class="note">Список критических травм, которые сейчас действуют на персонажа. Добавляй сюда всё, что не вылечено.</p>
+                    <div class="trauma-controls">
+                        <select id="traumaZoneSelect">
+                            <option value="body">Тело</option>
+                            <option value="head">Голова</option>
+                        </select>
+                        <select id="traumaNameSelect">
+                            <option value="">— выберите травму —</option>
+                        </select>
+                        <button type="button" id="addTraumaBtn" class="cyber-btn">➕ Добавить</button>
+                        <button type="button" id="clearAllTraumasBtn" class="cyber-btn small" title="Снять все травмы (полное лечение)">🗑️ Снять все</button>
+                    </div>
+                    <div id="activeTraumasList" class="trauma-list">
+                        <div class="trauma-empty">Пока нет активных травм</div>
+                    </div>
+                </div>
+
+                <!-- ===== БРОСОК КРИТИЧЕСКОЙ ТРАВМЫ ===== -->
+                <div class="card">
+                    <h3>🎲 Бросить критическую травму</h3>
+                    <div class="crit-roll-buttons">
+                        <button id="rollCritBtn" class="cyber-btn">🎲 По телу</button>
+                        <button id="rollCritHeadBtn" class="cyber-btn">🎲 По голове</button>
+                    </div>
+                    <div id="critResult" class="info-block"></div>
+                </div>
+
+                <!-- ===== СПРАВОЧНЫЕ ТАБЛИЦЫ ===== -->
+                <details class="crit-tables-details">
+                    <summary>📋 Таблицы критических травм</summary>
                     <div id="crit-body-table"></div>
                     <div id="crit-head-table"></div>
-                </div>
+                </details>
             </div>
-            <div id="combat-formulas" class="sub-pane">
-                <div class="card">
+               <div id="combat-formulas" class="sub-pane active">
+                                           <div class="card">
                     <h3>🎲 Калькулятор атаки</h3>
+
+                    <div class="attack-weapon-row">
+                        <label class="attack-weapon-label">
+                            Оружие из инвентаря:
+                            <select id="attackWeaponSelect" class="attack-weapon-select">
+                                <option value="">— нет оружия в инвентаре —</option>
+                            </select>
+                        </label>
+                        <button type="button" id="loadFromCharBtn" class="cyber-btn small" title="Подтянуть ХАР и навыки из карточки персонажа">📥 Из карточки</button>
+                    </div>
+
                     <label>Тип атаки: <select id="combatType">
                             <option value="ranged">Дистанционная</option>
                             <option value="melee">Рукопашная</option>
                         </select></label>
-                    <div id="rangedFields"><label>РЕФ: <input id="refValue" value="6"></label><label>Навык: <input
-                                id="rangedSkill" value="6"></label></div>
-                    <div id="meleeFields" style="display:none"><label>ЛВК: <input id="dexValue"
-                                value="6"></label><label>Навык: <input id="meleeSkill" value="6"></label></div>
-                    <label>Бросок d10: <input id="d10Roll" value="5" min="1" max="10"></label>
-                    <label>Модификаторы: <input id="modifiers" value="0"></label>
-                    <button id="calcAttackBtn">🧮 Рассчитать атаку</button>
+
+                    <div id="rangedFields">
+                        <label>РЕФ: <input id="refValue" type="number" value="6" min="2" max="10"></label>
+                        <label>Навык: <input id="rangedSkill" type="number" value="6" min="0" max="10" placeholder="напр. Короткоствольное"></label>
+                    </div>
+                    <div id="meleeFields" style="display:none">
+                        <label>ЛВК: <input id="dexValue" type="number" value="6" min="2" max="10"></label>
+                        <label>Навык: <input id="meleeSkill" type="number" value="6" min="0" max="10" placeholder="напр. Драка"></label>
+                    </div>
+
+                    <div class="attack-row">
+                        <label>d10:
+                            <div class="d10-wrap">
+                                <input type="number" id="d10Roll" value="5" min="1" max="10">
+                                <button type="button" class="roll-d10-btn" id="rollAttackD10" title="Бросить d10">🎲</button>
+                            </div>
+                        </label>
+                        <label>Модификатор: <input id="modifiers" type="number" value="0" step="1" title="Ситуативные бонусы и штрафы (свет, дым, укрытие)"></label>
+                    </div>
+
+                                        <div class="attack-sl-row" id="attackSLRow">
+                        <label class="sl-input-label"><span id="attackSLLabel">СЛ дистанции:</span>
+                            <input type="number" id="attackSL" value="15" min="0" step="1">
+                        </label>
+                        <span class="sl-hint" id="attackSLHint">СЛ берётся из таблицы дистанций для выбранного оружия. Если цель уклоняется (РЕФ ≥ 8) — введи её результат: ЛВК + Уклонение + 1d10.</span>
+                    </div>
+
+                    <button id="calcAttackBtn" class="cyber-btn">🧮 Рассчитать атаку</button>
                     <div id="attackResult" class="info-block"></div>
+                </div>
+                                <!-- ===== УРОН И БРОНЯ ===== -->
+                <div class="card" id="damageCard">
+                    <h3>💥 Урон и броня</h3>
+                    <div class="damage-row">
+                        <label>Тип урона:
+                            <select id="damageDice">
+                                <option value="1d6">1d6</option>
+                                <option value="2d6">2d6</option>
+                                <option value="3d6">3d6</option>
+                                <option value="4d6">4d6</option>
+                                <option value="5d6" selected>5d6</option>
+                                <option value="6d6">6d6</option>
+                                <option value="8d6">8d6</option>
+                            </select>
+                        </label>
+                        <label>ОС брони цели:
+                            <input type="number" id="armorInput" type="number" value="11" min="0" step="1">
+                        </label>
+                        <label class="cold-checkbox-label">
+                            <input type="checkbox" id="coldWeaponCheck"> Холодное (½ ОС)
+                        </label>
+                    </div>
+                    <button id="rollDamageBtn" class="cyber-btn">🎲 Бросить урон</button>
+                    <div id="damageResult" class="info-block"></div>
                 </div>
                 <div class="card">
                     <h3>📏 Калькулятор дистанции</h3>
@@ -1060,6 +1113,13 @@
                 </div>
                 <div class="modal-body" id="changelogBody">
                     <div class="changelog-version">
+                        <h3>Версия 0.0.0.22_beta</h3>
+                        <ul>
+                            <li><strong>✨ Переделано:</strong> Карточка Боя  </li>
+                            <li><strong>✨ Добавлено:</strong> Отображение Травм в карточке</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-version">
                         <h3>Версия 0.0.0.21_beta</h3>
                         <ul>
                             <li><strong>✨ Добавлено:</strong> Компаньон Юки </li>
@@ -1171,7 +1231,7 @@
     </div>
     <div class="footer-bottom">
         <p>Cyberpunk RED Companion. 2026. | <a href="#" id="toggleThemeBtn" style="color:#ff9a3c;">Версия
-                0.0.0.21_beta</a></p>
+                0.0.0.22_beta</a></p>
     </div>
 </footer>
 

@@ -186,11 +186,11 @@ export class CharacterHelper {
     generateStartingGear(role) { return { weapons: [], armor: { body: '', head: '' }, items: [], cyberware: [] }; }
 
     // ========== КАРТОЧКА ПЕРСОНАЖА ==========
-    buildCharacterCard(cardData) {
-        const { name, role, roleRank = 4, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar = '', money = 0, baseStats = null, ammo, armorPenalty = null} = cardData;
+        buildCharacterCard(cardData) {
+        const { name, role, roleRank = 4, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar = '', money = 0, baseStats = null, ammo, armorPenalty = null, traumas = [] } = cardData;
         const container = document.getElementById('characterCardContainer');
         if (!container) return;
-        const cardHtml = this.buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats, ammo, reputation: cardData.reputation, armorPenalty });
+const cardHtml = this.buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats, ammo, reputation: cardData.reputation, armorPenalty, traumas });
         container.innerHTML = cardHtml;
         this.attachCardEventHandlers();
         const editBtn = container.querySelector('.edit-card-btn');
@@ -199,7 +199,7 @@ export class CharacterHelper {
         if (syncBtn) syncBtn.addEventListener('click', () => this.syncFromTabs());
     }
 
-    buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats, ammo = [], reputation = 0, armorPenalty = null }) {
+      buildCharacterCardHTML({ name, role, roleRank, stats, skills, gear, cyberware, currentHp, maxHp, severe, humanity, empFrom, deathSave, notes, avatar, money, baseStats, ammo = [], reputation = 0, armorPenalty = null, traumas = [] }) {
     // ===== ДЛЯ ОТЛАДКИ =====
     console.log('buildCharacterCardHTML получил armorPenalty:', armorPenalty);
     console.log('buildCharacterCardHTML получил baseStats:', baseStats);
@@ -397,7 +397,25 @@ export class CharacterHelper {
 ${bonuses.initiative !== 0 ? `<div>⚡ Инициатива: ${stats.REF || 6} + ${bonuses.initiative}</div>` : ''}
 ${extraEffects.length ? `<div class="implant-effects">✨ ${extraEffects.join(', ')}</div>` : ''}
 ${penaltyDisplay}
-`;
+`; 
+// ===== АКТИВНЫЕ ТРАВМЫ =====
+    const traumasList = traumas || [];
+    
+    const traumasHtml = traumas.length === 0 ? '' : `
+        <div class="char-traumas" data-traumas>
+            <h5 class="char-traumas-title">🩹 Активные травмы (${traumas.length})</h5>
+            <ul class="char-traumas-list">
+                ${traumas.map((t, idx) => {
+                    const zoneIcon = t.zone === 'head' ? '🧠' : '💪';
+                    return `<li data-trauma-idx="${idx}">
+                        <span class="trauma-zone-badge">${zoneIcon}</span>
+                        <strong>${this.escapeHtml(t.name)}</strong>
+                        <span class="trauma-effect-mini">${this.escapeHtml(t.effect || '')}</span>
+                    </li>`;
+                }).join('')}
+            </ul>
+        </div>
+    `;
 
     const roleInfo = rolesData.find(r => r.name === role);
     const roleSkillHtml = `<div class="role-skill-badge"><span class="role-skill-name">${roleInfo ? roleInfo.skill : '—'}</span><span class="role-skill-rank">${roleRank ? ` (ранг ${roleRank})` : ''}</span></div>`;
@@ -421,13 +439,14 @@ ${penaltyDisplay}
                     <h4>📊 Характеристики</h4>
                     <div class="stats-grid" data-stats-container>${statsHtml}</div>
                 </div>
-                <div class="char-section" data-section="derived">
+                                <div class="char-section" data-section="derived">
                     <h4>❤️ Состояние</h4>
                     <div class="derived-stats">${derivedStatsHtml}</div>
                     <div class="combat-buttons">
                         <button class="heal-btn">💊 Лечение (+${stats.BODY || 6} ПЗ)</button>
                         <button class="damage-btn">💥 Урон</button>
                     </div>
+                    ${traumasHtml}
                 </div>
                 <div class="char-section" data-section="skills">
                     <h4>🎯 Навыки</h4>
@@ -557,6 +576,7 @@ ${penaltyDisplay}
     this.buildCharacterCard({
         name: char.name || 'Безымянный',
         role: char.role || 'Без роли',
+        traumas: char.traumas || [],
         roleRank: char.roleRank || 4,
         stats: finalStats,                 // финальные ХАР с учётом имплантов и штрафа брони
         baseStats: baseStats,              // базовые ХАР для редактирования

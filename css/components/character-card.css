@@ -1023,3 +1023,73 @@ body.cyberpunk-theme #idealSkillPoints {
     font-size: 0.85rem;
     border-left: 3px solid #ff9a3c;
 }
+/* ============================================================
+   АКТИВНЫЕ ТРАВМЫ В КАРТОЧКЕ ПЕРСОНАЖА
+   ============================================================ */
+
+.char-traumas {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: rgba(255, 60, 95, 0.08);
+    border-left: 3px solid #ff3c5f;
+    border-radius: 6px;
+}
+
+.char-traumas-title {
+    margin: 0 0 8px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #ff7a94;
+    font-weight: 600;
+}
+
+.char-traumas-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.char-traumas-list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+    padding: 5px 8px;
+    background: rgba(15, 18, 25, 0.4);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    line-height: 1.35;
+}
+
+.trauma-zone-badge {
+    font-size: 0.9em;
+    flex-shrink: 0;
+}
+
+.char-traumas-list strong {
+    color: #ff7a94;
+    font-weight: 600;
+}
+
+.trauma-effect-mini {
+    color: #9aa4bf;
+    font-size: 0.85em;
+    flex-basis: 100%;
+    padding-left: 20px;
+}
+
+/* Cyberpunk theme */
+body.cyberpunk-theme .char-traumas {
+    background: rgba(255, 0, 80, 0.08);
+    border-left-color: #ff0050;
+}
+body.cyberpunk-theme .char-traumas-title {
+    color: #ff0050;
+}
+body.cyberpunk-theme .char-traumas-list strong {
+    color: #ff0050;
+}

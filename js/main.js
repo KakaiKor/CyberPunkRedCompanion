@@ -33,6 +33,7 @@ import { initTooltipPositioning } from './modules/ui/tooltip-positioner.js';
 import { SkillCheckCalculator } from './modules/skill-check.js';
 import { QuickStats } from './modules/quick-stats.js';
 import { AICompanion } from './modules/ai-companion.js';
+import { TraumaTracker } from './modules/combat/trauma-tracker.js';
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
     const data = {
@@ -275,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new DistanceCalculator();
     window.initTracker = new InitiativeTracker();
     new CombatCalculatorUI();
+    window.traumaTracker = new TraumaTracker();
     // new HumanityCalculator();
     window.groupInitiative = new GroupInitiative();
     initTransport();
