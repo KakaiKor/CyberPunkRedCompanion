@@ -619,10 +619,12 @@
                     </div>
 
                                         <div class="attack-sl-row" id="attackSLRow">
-                        <label class="sl-input-label"><span id="attackSLLabel">СЛ дистанции:</span>
+                        <label class="sl-input-label" for="attackSL"><span id="attackSLLabel">СЛ дистанции:</span>
                             <input type="number" id="attackSL" value="15" min="0" step="1">
                         </label>
+                        <button type="button" id="showDistanceBtn" class="sl-distance-btn" title="Показать таблицу дистанций" onclick="window.__toggleDistWidget && window.__toggleDistWidget(event)">📏</button>
                         <span class="sl-hint" id="attackSLHint">СЛ берётся из таблицы дистанций для выбранного оружия. Если цель уклоняется (РЕФ ≥ 8) — введи её результат: ЛВК + Уклонение + 1d10.</span>
+                        <div id="distanceWidget" class="distance-widget" style="display: none;"></div>
                     </div>
 
                     <button id="calcAttackBtn" class="cyber-btn">🧮 Рассчитать атаку</button>

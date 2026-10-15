@@ -2,6 +2,12 @@ import { loadCharacter } from '../../storage.js';
 import { rangedWeapons, meleeWeapons } from '../../data.js';
 export class CombatFormulas {
             constructor() {
+        // Глобальный доступ для inline-onclick на кнопке 📏 (страховка от потери контекста)
+        window.__toggleDistWidget = (e) => {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            this.toggleDistanceWidget();
+        };
+
         this.fillDistanceTable();
         document.getElementById('combatType')?.addEventListener('change', () => this.toggleFields());
                 // Помечаем поле СЛ как «изменённое вручную»
@@ -27,6 +33,11 @@ export class CombatFormulas {
             this.loadFromCharacter();
         });
 
+        // // Кнопка «📏» — таблица дистанций
+        // document.getElementById('showDistanceBtn')?.addEventListener('click', () => {
+        //     this.toggleDistanceWidget();
+        // });
+
         this.populateWeaponSelect();
         this.toggleFields();
 
@@ -47,11 +58,15 @@ export class CombatFormulas {
         const slHint = document.getElementById('attackSLHint');
         const slInput = document.getElementById('attackSL');
 
+        const distBtn = document.getElementById('showDistanceBtn');
+        const distWidget = document.getElementById('distanceWidget');
+
         if (type === 'ranged') {
             if (rangedDiv) rangedDiv.style.display = 'block';
             if (meleeDiv) meleeDiv.style.display = 'none';
             if (slLabel) slLabel.textContent = 'СЛ дистанции:';
             if (slHint) slHint.textContent = 'СЛ берётся из таблицы дистанций для выбранного оружия. Если цель уклоняется (РЕФ ≥ 8) — введи её результат: ЛВК + Уклонение + 1d10.';
+            if (distBtn) distBtn.style.display = 'inline-flex';
             // Дефолт для дальнего боя — 15 (средняя дистанция)
             if (slInput && !slInput.dataset.userEdited) slInput.value = 15;
         } else {
@@ -59,6 +74,8 @@ export class CombatFormulas {
             if (meleeDiv) meleeDiv.style.display = 'block';
             if (slLabel) slLabel.textContent = 'Результат уклонения цели:';
             if (slHint) slHint.textContent = 'Для рукопашной СЛ = ЛВК + Уклонение + 1d10 цели. Если цель не уклоняется — СЛ 13 (обычная сложность).';
+            if (distBtn) distBtn.style.display = 'none';
+            if (distWidget) distWidget.style.display = 'none';
             // Дефолт для рукопашной — 13
             if (slInput && !slInput.dataset.userEdited) slInput.value = 13;
         }
@@ -273,6 +290,11 @@ _escHtml(str) {
 
         // Обновляем СЛ если есть подходящее поле
         this.suggestSL(weaponName, ranged);
+        // Если виджет дистанций открыт — обновляем его под новое оружие
+        const widget = document.getElementById('distanceWidget');
+        if (widget && widget.style.display !== 'none') {
+            this.renderDistanceWidget(weaponName);
+        }
     }
 
     // ─── Маппинг холдного оружия на навык ────────────────────
@@ -463,9 +485,188 @@ getTraumaPenalties(char, attackType = 'ranged') {
         hint.textContent = text;
     }
 
-    // ─── Подсказка СЛ по дистанции (заглушка, развивается в 2.2) ──
+      // ─── Подсказка СЛ по дистанции ─────────────────────────
     suggestSL(weaponName, isRanged) {
-        // На этапе 2.2 сделаем полноценную модалку с дистанцией
-        // Сейчас — оставляем дефолт
+        // Ничего не делаем автоматически — игрок сам решает, использовать ли виджет.
+        // Но при выборе оружия на всякий случай прячем открытый виджет,
+        // чтобы он не показывал СЛ от старого оружия.
+        const widget = document.getElementById('distanceWidget');
+        if (widget) widget.style.display = 'none';
+    }
+
+    // ─── Виджет дистанций: переключить ────────────────────
+    toggleDistanceWidget() {
+        const widget = document.getElementById('distanceWidget');
+        if (!widget) return;
+
+        const weaponName = document.getElementById('attackWeaponSelect')?.value;
+
+        if (widget.style.display === 'none' || !widget.innerHTML.trim()) {
+            this.renderDistanceWidget(weaponName);
+            widget.style.display = 'block';
+        } else {
+            widget.style.display = 'none';
+        }
+    }
+
+    // ─── Виджет дистанций: отрисовать ──────────────────────
+    renderDistanceWidget(weaponName) {
+        const widget = document.getElementById('distanceWidget');
+        if (!widget) return;
+
+        const DISTANCES = [
+            { label: '0–6 м',    max: 6 },
+            { label: '7–12 м',   max: 12 },
+            { label: '13–25 м',  max: 25 },
+            { label: '26–50 м',  max: 50 },
+            { label: '51–100 м', max: 100 },
+            { label: '101–200 м', max: 200 },
+            { label: '201–400 м', max: 400 },
+            { label: '401–800 м', max: 800 }
+        ];
+
+        // Таблица СЛ по категориям оружия (из правил Cyberpunk RED, стр. 174)
+        const SL_TABLE = {
+            pistol:  [13, 15, 20, 25, 30, 30, '—', '—'],
+            smg:     [15, 13, 15, 20, 25, 25, 30, '—'],
+            shotgun: [13, 15, 20, 25, 30, 35, '—', '—'],
+            rifle:   [17, 16, 15, 13, 15, 20, 25, 30],
+            sniper:  [30, 25, 25, 20, 15, 16, 17, 20],
+            bow:     [15, 13, 15, 17, 20, 22, '—', '—'],
+            grenade: [16, 15, 15, 17, 20, 22, 25, '—'],
+            rocket:  [17, 16, 15, 15, 20, 20, 25, 30]
+        };
+
+        const CATEGORY_LABELS = {
+            pistol:  'Пистолет / ПП (одиночный)',
+            smg:     'Пистолет-пулемёт',
+            shotgun: 'Дробовик (жакан)',
+            rifle:   'Штурмовая винтовка',
+            sniper:  'Снайперская винтовка',
+            bow:     'Лук / арбалет',
+            grenade: 'Гранатомёт',
+            rocket:  'Ракетница'
+        };
+
+        const category = this.detectWeaponCategory(weaponName);
+
+        // Если категория не определена — показываем все категории
+        const categoriesToShow = category ? [category] : Object.keys(SL_TABLE);
+
+        // Находим «золотую зону» для каждой категории
+        const findGoldenIndex = (row) => {
+            let bestIdx = -1, bestVal = Infinity;
+            row.forEach((v, i) => {
+                if (typeof v === 'number' && v < bestVal) { bestVal = v; bestIdx = i; }
+            });
+            return bestIdx;
+        };
+
+        let html = '';
+
+        if (weaponName && category) {
+            html += `<div class="dist-widget-title">📏 ${this._escHtml(weaponName)} <span class="dist-widget-category">(${CATEGORY_LABELS[category]})</span></div>`;
+        } else if (weaponName) {
+            html += `<div class="dist-widget-title">📏 ${this._escHtml(weaponName)} <span class="dist-widget-category">(категория не определена)</span></div>`;
+        } else {
+            html += `<div class="dist-widget-title">📏 Выберите оружие в инвентаре, чтобы увидеть точные СЛ. Ниже — все категории.</div>`;
+        }
+
+        html += `<div class="dist-widget-scroll"><table class="dist-widget-table">`;
+
+        // Заголовок
+        html += `<thead><tr><th>Оружие</th>`;
+        DISTANCES.forEach(d => { html += `<th>${d.label}</th>`; });
+        html += `</tr></thead><tbody>`;
+
+        categoriesToShow.forEach(cat => {
+            const row = SL_TABLE[cat];
+            const goldenIdx = findGoldenIndex(row);
+            html += `<tr data-category="${cat}">`;
+            html += `<td class="dist-cat-name">${CATEGORY_LABELS[cat]}</td>`;
+            row.forEach((v, i) => {
+                const isGolden = i === goldenIdx;
+                const cls = [
+                    'dist-cell',
+                    isGolden ? 'dist-golden' : '',
+                    typeof v !== 'number' ? 'dist-empty' : ''
+                ].filter(Boolean).join(' ');
+                if (typeof v === 'number') {
+                    html += `<td class="${cls}" data-sl="${v}" title="Клик — подставить СЛ ${v}">${v}</td>`;
+                } else {
+                    html += `<td class="${cls}">${v}</td>`;
+                }
+            });
+            html += `</tr>`;
+        });
+
+        html += `</tbody></table></div>`;
+        html += `<div class="dist-widget-hint">💡 Клик по ячейке — подставить СЛ в поле. <span class="dist-golden-legend">Золотая зона</span> — минимальная СЛ.</div>`;
+
+        widget.innerHTML = html;
+
+        // Обработчики кликов
+        widget.querySelectorAll('.dist-cell[data-sl]').forEach(cell => {
+            cell.addEventListener('click', () => {
+                const sl = parseInt(cell.dataset.sl);
+                const slInput = document.getElementById('attackSL');
+                if (slInput) {
+                    slInput.value = sl;
+                    slInput.dataset.userEdited = '1'; // помечаем как «введено вручную» — toggleFields не перезапишет
+                }
+                widget.style.display = 'none';
+            });
+        });
+    }
+
+    // ─── Определение категории оружия по имени ────────────
+    // Использует данные из rangedWeapons (name + notes), чтобы решить, к какой строке
+    // таблицы дистанций отнести оружие.
+    detectWeaponCategory(weaponName) {
+        if (!weaponName) return null;
+
+        // Точное совпадение в rangedWeapons
+        const w = rangedWeapons.find(x => x.name === weaponName);
+        const nameLower = (weaponName || '').toLowerCase();
+        const notes = (w && w.notes) ? w.notes.toLowerCase() : '';
+
+        // Снайперская — раньше всех остальных
+        if (nameLower.includes('снайперск')) return 'sniper';
+
+        // Гранатомёт / ракетница
+        if (nameLower.includes('гранатомёт') || nameLower.includes('гранатомет')) return 'grenade';
+        if (nameLower.includes('ракетниц')) return 'rocket';
+
+        // Лук / арбалет
+        if (nameLower.includes('лук') || nameLower.includes('арбалет')) return 'bow';
+
+        // Дробовик
+        if (nameLower.includes('дробовик')) return 'shotgun';
+
+        // Штурмовая винтовка
+        if (nameLower.includes('винтовка')) return 'rifle';
+
+        // ПП (пистолет-пулемёт) — но не «тяжёлый ПП», там всё равно ПП-таблица
+        if (nameLower.includes('пп') || nameLower.includes('пистолет-пулемёт') || nameLower.includes('пистолет-пулемет')) return 'smg';
+
+        // Пистолеты (все разновидности)
+        if (nameLower.includes('пистолет')) return 'pistol';
+
+        // Если ничего не нашли — пробуем по навыку из справочника
+        if (w && w.skill) {
+            const skillLower = w.skill.toLowerCase();
+            if (skillLower.includes('луки')) return 'bow';
+            if (skillLower.includes('тяжёлое') || skillLower.includes('тяжелое')) return 'grenade';
+            if (skillLower.includes('длинноствольн')) return 'rifle';
+            if (skillLower.includes('короткоствольн')) return 'pistol';
+        }
+
+        return null;
+    }
+
+    // Хелпер: безопасно экранирует HTML (если ещё нет — добавляем)
+    _escHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]));
     }
 }

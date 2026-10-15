@@ -674,3 +674,171 @@ body.cyberpunk-theme .attack-trauma-block {
 }
 body.cyberpunk-theme .attack-trauma-list { color: #ffe6a1; }
 body.cyberpunk-theme .trauma-affected { color: #ff0050; }
+/* ═══════════════════════════════════════════════════════════
+   ВИДЖЕТ ДИСТАНЦИЙ (📏 СЛ дистанции)
+   ═══════════════════════════════════════════════════════════ */
+
+/* Кнопка 📏 рядом с полем СЛ */
+.sl-distance-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    height: 32px;
+    margin-left: 8px;
+    background: rgba(255, 154, 60, 0.15);
+    border: 1px solid rgba(255, 154, 60, 0.5);
+    border-radius: 6px;
+    color: #ff9a3c;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+.sl-distance-btn:hover {
+    background: rgba(255, 154, 60, 0.35);
+}
+.sl-distance-btn:active {
+    transform: scale(0.94);
+}
+
+/* Контейнер виджета */
+.distance-widget {
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: #0a0c12;
+    border: 1px solid #2a3342;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    animation: distWidgetFade 0.2s ease;
+}
+@keyframes distWidgetFade {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.dist-widget-title {
+    font-weight: 600;
+    color: #e6ecf5;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+.dist-widget-category {
+    color: #9aa4bf;
+    font-weight: 400;
+    font-size: 0.82rem;
+    font-style: italic;
+}
+
+.dist-widget-scroll {
+    overflow-x: auto;
+    margin-bottom: 8px;
+}
+
+.dist-widget-table {
+    width: 100%;
+    min-width: 620px;
+    border-collapse: collapse;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.8rem;
+}
+.dist-widget-table th {
+    padding: 6px 8px;
+    text-align: center;
+    color: #9aa4bf;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid #2a3342;
+    background: #0f1219;
+}
+.dist-widget-table th:first-child {
+    text-align: left;
+    min-width: 150px;
+}
+.dist-widget-table td {
+    padding: 6px 8px;
+    text-align: center;
+    color: #c8d2e0;
+    border-bottom: 1px solid rgba(42, 51, 66, 0.5);
+}
+.dist-widget-table td.dist-cat-name {
+    text-align: left;
+    color: #e6ecf5;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+}
+.dist-widget-table .dist-cell {
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease;
+    font-weight: 600;
+}
+.dist-widget-table .dist-cell:hover {
+    background: rgba(255, 154, 60, 0.2);
+    color: #fff;
+}
+.dist-widget-table .dist-empty {
+    color: #4a5261;
+    cursor: default;
+    font-weight: 400;
+}
+.dist-widget-table .dist-empty:hover {
+    background: transparent;
+    color: #4a5261;
+}
+.dist-widget-table .dist-golden {
+    color: #39ff14;
+    background: rgba(57, 255, 20, 0.08);
+}
+.dist-widget-table .dist-golden:hover {
+    background: rgba(57, 255, 20, 0.2);
+    color: #39ff14;
+}
+
+.dist-widget-hint {
+    font-size: 0.75rem;
+    color: #9aa4bf;
+    font-style: italic;
+    line-height: 1.4;
+}
+.dist-golden-legend {
+    display: inline-block;
+    padding: 1px 6px;
+    background: rgba(57, 255, 20, 0.15);
+    color: #39ff14;
+    border-radius: 4px;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 0.7rem;
+}
+
+/* Cyberpunk theme */
+body.cyberpunk-theme .sl-distance-btn {
+    background: rgba(255, 215, 0, 0.15);
+    border-color: rgba(255, 215, 0, 0.5);
+    color: #ffd700;
+}
+body.cyberpunk-theme .sl-distance-btn:hover {
+    background: rgba(255, 215, 0, 0.35);
+}
+body.cyberpunk-theme .distance-widget {
+    background: #0a0a0a;
+    border-color: rgba(255, 215, 0, 0.3);
+}
+body.cyberpunk-theme .dist-widget-table .dist-golden {
+    color: #ffd700;
+    background: rgba(255, 215, 0, 0.1);
+}
+body.cyberpunk-theme .dist-widget-table .dist-golden:hover {
+    background: rgba(255, 215, 0, 0.25);
+    color: #ffd700;
+}
+body.cyberpunk-theme .dist-widget-table .dist-cell:hover {
+    background: rgba(255, 215, 0, 0.2);
+    color: #ffe6a1;
+}
+body.cyberpunk-theme .dist-golden-legend {
+    background: rgba(255, 215, 0, 0.15);
+    color: #ffd700;
+}
