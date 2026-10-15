@@ -165,18 +165,25 @@ export class QuickStats {
         window.dispatchEvent(new Event('luckChanged'));
     }
 
-    // ─── Восстановление УДЧ до максимума ───────────────────
+        // ─── Восстановление УДЧ до максимума ───────────────────
     resetLuck() {
         const char = loadCharacter();
         if (!char) return;
         const maxLuck = (char.baseStats && char.baseStats.LUCK) || char.LUCK || 6;
+        const prev = char.currentLuck !== undefined ? char.currentLuck : 0;
         char.currentLuck = maxLuck;
         saveCharacter(char);
         this.refreshLuck(char);
         window.dispatchEvent(new Event('luckChanged'));
+        // [ЮКИ] Оповещаем о восстановлении УДЧ (только если реально изменилось)
+        if (maxLuck > prev) {
+            window.dispatchEvent(new CustomEvent('luckRestored', {
+                detail: { newValue: maxLuck, prevValue: prev }
+            }));
+        }
     }
 
-    // ─── Изменение ПЗ ──────────────────────────────────────────
+        // ─── Изменение ПЗ ──────────────────────────────────────────
     applyHpDelta(delta) {
         const char = loadCharacter();
         if (!char) {
@@ -191,6 +198,8 @@ export class QuickStats {
         if (!char.maxHp) char.maxHp = maxHp;
 
         const current = char.currentHp !== undefined ? char.currentHp : maxHp;
+        const severe = Math.ceil(maxHp / 2);
+        const wasAboveSevere = current > severe;
         let newHp = Math.max(0, Math.min(maxHp, current + delta));
         char.currentHp = newHp;
 
@@ -199,8 +208,17 @@ export class QuickStats {
         // Уведомляем всё приложение — карточка и чипсы обновятся
         window.dispatchEvent(new Event('characterUpdated'));
 
+        // [ЮКИ] Оповещаем о реальном изменении ПЗ
+        window.dispatchEvent(new CustomEvent('hpChanged', {
+            detail: {
+                delta: newHp - current,   // реальное изменение (могло быть обрезано)
+                newHp: newHp,
+                maxHp: maxHp,
+                wasAboveSevere: wasAboveSevere
+            }
+        }));
+
         // Предупреждения по порогам
-        const severe = Math.ceil(maxHp / 2);
         if (newHp <= 0) {
             alert('💀 Смертельное ранение! Требуется спасбросок.');
         } else if (newHp <= severe && current > severe) {

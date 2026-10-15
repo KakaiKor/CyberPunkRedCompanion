@@ -51,14 +51,30 @@ export class CombatCalculatorUI {
                 `;
             }
 
-            html += `</div>`;
+                        html += `</div>`;
             if (damageResultDiv) damageResultDiv.innerHTML = html;
+
+            // ─── [ЮКИ] Оповещаем о броске урона ────────────────
+            const weaponName = document.getElementById('attackWeaponSelect')?.value || null;
+            window.dispatchEvent(new CustomEvent('skillCheckRolled', {
+                detail: {
+                    skill: weaponName ? `Урон: ${weaponName}` : 'Урон',
+                    total: finalDamage,
+                    d10: total,       // сумма кубов урона
+                    mod: -armor,      // сколько поглотила броня
+                    success: isCrit,  // критическая травма
+                    kind: 'damage',
+                    sixes: sixes,
+                    rawTotal: total,
+                    armor: armorOriginal
+                }
+            }));
         });
     }
 
     // ─── Критические травмы ──────────────────────────────────
     attachCritHandlers() {
-        document.getElementById('rollCritBtn')?.addEventListener('click', () => {
+               document.getElementById('rollCritBtn')?.addEventListener('click', () => {
             const r = Math.floor(Math.random() * 11) + 2;
             const crit = critBody.find(c => c.roll === r);
             document.getElementById('critResult').innerHTML = `
@@ -69,9 +85,21 @@ export class CombatCalculatorUI {
                     ${crit && crit.treat ? `<div class="crit-treat">Лечение: ${crit.treat}</div>` : ''}
                 </div>
             `;
+
+            // ─── [ЮКИ] Логируем полученную критическую травму ──
+            if (crit) {
+                window.dispatchEvent(new CustomEvent('skillCheckRolled', {
+                    detail: {
+                        skill: `Травма (тело): ${crit.name}`,
+                        total: r,
+                        success: false,
+                        kind: 'trauma'
+                    }
+                }));
+            }
         });
 
-        document.getElementById('rollCritHeadBtn')?.addEventListener('click', () => {
+               document.getElementById('rollCritHeadBtn')?.addEventListener('click', () => {
             const r = Math.floor(Math.random() * 11) + 2;
             const crit = critHead.find(c => c.roll === r);
             document.getElementById('critResult').innerHTML = `
@@ -82,6 +110,18 @@ export class CombatCalculatorUI {
                     ${crit && crit.treat ? `<div class="crit-treat">Лечение: ${crit.treat}</div>` : ''}
                 </div>
             `;
+
+            // ─── [ЮКИ] Логируем полученную критическую травму ──
+            if (crit) {
+                window.dispatchEvent(new CustomEvent('skillCheckRolled', {
+                    detail: {
+                        skill: `Травма (голова): ${crit.name}`,
+                        total: r,
+                        success: false,
+                        kind: 'trauma'
+                    }
+                }));
+            }
         });
     }
 

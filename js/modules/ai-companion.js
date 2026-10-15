@@ -340,7 +340,153 @@ const QUOTES = {
         'Они впереди. Не зевай.',
         'Последний в очереди. Держись.'
     ],
+        // ═══ БЛИЗКИЙ УСПЕХ ═══════════════════════════════════════
+    closeHit: [
+        'В притирку. Хорошо, что не промах.',
+        'На грани. Но попал.',
+        'Чуть-чуть не хватило — но хватило.',
+        'Один пункт. Один. Держись так и дальше.',
+        'Едва зацепил. Считай — повезло.',
+        'В самый раз. Не расслабляйся.',
+        'На волоске. Буквально.',
+        'На один больше, чем надо. Отлично.'
+    ],
 
+    // ═══ БЛЕСТЯЩИЙ УСПЕХ ═════════════════════════════════════
+    greatHit: [
+        'Красиво! Даже я впечатлён.',
+        'Это было чисто. Очень чисто.',
+        'Вот это уровень. Так держать.',
+        'Идеально. Даже добавить нечего.',
+        'Блестяще. Запомни это чувство.',
+        'Мастерски. В топ.',
+        'Так и надо. Пусть видят.',
+        'Стильно. Очень стильно.',
+        'Профессионал. Настоящий.',
+        'Красиво ушёл. Красиво попал.'
+    ],
+
+    // ═══ БОЛЬШОЙ ПРОМАХ ══════════════════════════════════════
+    bigMiss: [
+        'Мимо. Сильно мимо.',
+        'Не твой день. Совсем не твой.',
+        'Промазал. Хорошо, что не по своим.',
+        'Пуля ушла в молоко.',
+        'Даже не близко. Дыши.',
+        'Промах. Хуже некуда. Но жив.',
+        'В молоко. Ты не первый, ты не последний.',
+        'Не попал. Бывает. Продолжай.'
+    ],
+
+    // ═══ ПОЛУЧЕНИЕ УРОНА ═════════════════════════════════════
+    damageTaken: [
+        'Получил. Терпи.',
+        'Кровь — не вода. Останови.',
+        'Боль — это сигнал. Слушай его.',
+        'Держись. Ещё немного.',
+        'Не геройствуй. Отступай.',
+        'Ох. Больно.',
+        'Принял удар. Не принимай второй.',
+        'Идёт кровь. Позаботься.',
+        'Ты живой. Пока что.',
+        'Дыши. Просто дыши.'
+    ],
+
+    // ═══ ЛЕЧЕНИЕ ═════════════════════════════════════════════
+    healed: [
+        'Подлатали. Живи дальше.',
+        'Кровь остановили. Хорошо.',
+        'Чувствуешь себя лучше? Отлично.',
+        'Ещё повоюешь.',
+        'Восстановился. Не портись.',
+        'Мясо на месте. Продолжаем.',
+        'Цел. Пока что.',
+        'Хорошо. Двигаемся.'
+    ],
+
+    // ═══ ТЯЖЁЛОЕ РАНЕНИЕ ═════════════════════════════════════
+    heavyWound: [
+        'Тяжёлое ранение. Штраф –2 ко всему.',
+        'Половина ПЗ. Пора в укрытие.',
+        'Ты теряешь форму. Отступай.',
+        'Хватит. Отходи.',
+        'Опасно. Не рискуй больше.',
+        'Это уже серьёзно. Лечись.',
+        'Штраф –2. Помни об этом.',
+        'Держись за укрытие. Сейчас.'
+    ],
+
+    // ═══ СМЕРТЕЛЬНОЕ РАНЕНИЕ ═════════════════════════════════
+    mortalWound: [
+        'Смертельное ранение. Считай ходы.',
+        'Каждый ход — спасбросок. Действуй.',
+        'Ты в шаге от смерти. Буквально.',
+        'Стабилизируйся. Срочно.',
+        'Ещё удар — и всё. Беги.',
+        'Позови медтеха. Немедленно.',
+        'Ты труп с отсрочкой. Шевелись.',
+        'Один ход. Одно решение. Думай.'
+    ],
+
+    // ═══ ТРАТА УДЧ ═══════════════════════════════════════════
+    luckSpent: [
+        'Судьба помогает. Но не вечно.',
+        'Ещё немного удачи — и в плюсе.',
+        'УДЧ тает. Не жадничай.',
+        'Хороший бросок. Но это стоило.',
+        'Судьба не бесконечна.',
+        'Тратишь удачу. Разумно.',
+        'Пул УДЧ уменьшился. Помни.',
+        'Осталось меньше. Действуй.' 
+    ],
+
+    // ═══ ВОССТАНОВЛЕНИЕ УДЧ ══════════════════════════════════
+    luckRestored: [
+        'Судьба вернулась. Пользуйся.',
+        'УДЧ полный. Вперёд.',
+        'Удача снова с тобой.',
+        'Пул восстановлен. Не забудь.',
+        'Судьба на твоей стороне.',
+        'УДЧ снова полный. Красиво.',
+        'Начинай заново. Аккуратно.',
+        'Пул свежий. Работай.'
+    ],
+
+    // ═══ ПОЛУЧЕНИЕ ТРАВМЫ ════════════════════════════════════
+    traumaAdded: [
+        'Это надолго. Лечись.',
+        'Травма. Сходи к медтеху.',
+        'Тяжело. Полегче с нагрузкой.',
+        'Больно? Ещё бы.',
+        'Это будет мешать. Помни.',
+        'Новая травма. Копится.',
+        'Осторожнее. Каждая травма — груз.',
+        'Терпи. И лечись.'
+    ],
+
+    // ═══ СНЯТИЕ ТРАВМЫ ═══════════════════════════════════════
+    traumaRemoved: [
+        'Одной проблемой меньше.',
+        'Вылечил. Хорошо.',
+        'Травма снята. Свободнее.',
+        'Восстановился. Продолжай.',
+        'Так держать. Тело чинится.',
+        'Этот груз сброшен.',
+        'Лучше. Намного лучше.',
+        'Свободен. Отлично.'
+    ],
+
+    // ═══ КИБЕРПСИХОЗ (ЧЕЛ ≤ 0) ══════════════════════════════
+    cyberpsychosis: [
+        'КИБЕРПСИХОЗ. Я вижу это в твоих глазах.',
+        'Ты не человек больше. Ты — машина.',
+        'Психоотряд уже ищет тебя.',
+        'Каждый шорох — это враг.',
+        'Ты опасен для команды. Уходи.',
+        'Это конец. Или начало конца.',
+        'Ты больше не ты.',
+        'Я боюсь тебя. И правильно.'
+    ],
     // ═══ КЛИК ПО БЛОКУ ═══════════════════════════════════════
     click: [
         'Опять ты?',
@@ -490,17 +636,124 @@ export class AICompanion {
         // Слушаем события от других модулей — для записи в лог
         window.addEventListener('skillCheckRolled', (e) => {
             const detail = e.detail || {};
-            if (detail.total !== undefined && detail.skill) {
-                const success = detail.success;
-                const cls = success === true ? 'is-success' : success === false ? 'is-fail' : '';
-                const mark = success === true ? ' ✅' : success === false ? ' ❌' : '';
+            if (detail.total === undefined || !detail.skill) return;
+
+            const success = detail.success;
+            const cls = success === true ? 'is-success' : success === false ? 'is-fail' : '';
+            const mark = success === true ? ' ✅' : success === false ? ' ❌' : '';
+
+            // Разный формат для атаки/урона/проверки навыка
+            const kind = detail.kind || 'skill';
+
+                        if (kind === 'attack') {
+                const slText = detail.sl !== undefined ? ` vs СЛ ${detail.sl}` : '';
+                const excessText = (detail.excess !== undefined && detail.excess > 0)
+                    ? ` (+${detail.excess})`
+                    : (detail.excess !== undefined && detail.excess < 0)
+                        ? ` (${detail.excess})`
+                        : '';
+                this.addLog(`🎯 ${detail.skill} → ${detail.total}${slText}${excessText}${mark}`, cls);
+
+                                // ── Реакции по контексту броска ──
+                const excess = detail.excess;
+                if (detail.d10 === 10) {
+                    this.say(pickRandom(QUOTES.critRoll), 'active');
+                    this.reactAvatar('good', { duration: 700 });
+                } else if (detail.d10 === 1) {
+                    this.say(pickRandom(QUOTES.failRoll), 'warning');
+                    this.reactAvatar('bad', { shake: true, duration: 700 });
+                } else if (detail.success === true && excess >= 10) {
+                    this.say(pickRandom(QUOTES.greatHit), 'active');
+                    this.reactAvatar('good', { duration: 500 });
+                } else if (detail.success === true && excess !== undefined && excess >= 1 && excess <= 2) {
+                    this.say(pickRandom(QUOTES.closeHit), 'active');
+                } else if (detail.success === false && excess !== undefined && excess <= -5) {
+                    this.say(pickRandom(QUOTES.bigMiss), 'warning');
+                    this.reactAvatar('warning', { duration: 500 });
+                }
+                       } else if (kind === 'damage') {
+                const critText = success ? ' 💀 КРИТ' : '';
+                this.addLog(`💥 ${detail.skill} → ${detail.total}${critText}`, cls);
+                if (success) {
+                    this.say('Критическая травма! Держись.', 'warning');
+                    this.reactAvatar('bad', { shake: true, duration: 800 });
+                } else if (detail.total >= 15) {
+                    this.reactAvatar('warning', { duration: 500 });
+                }
+            } else if (kind === 'trauma') {
+                this.addLog(`🩹 ${detail.skill}`, 'is-fail');
+                this.say(pickRandom([
+                    'Это надолго. Лечись.',
+                    'Травма. Сходи к медтеху.',
+                    'Тяжело. Полегче с нагрузкой.',
+                    'Больно? Ещё бы.'
+                ]), 'warning');
+            } else {
+                // Проверка навыка (из skill-check.js) — старый формат
                 this.addLog(`${detail.skill} → ${detail.total}${mark}`, cls);
             }
         });
 
-        window.addEventListener('characterUpdated', () => {
+          window.addEventListener('characterUpdated', () => {
             // Не логируем каждое обновление — только реальные изменения ПЗ
             // Логируется через прямой вызов из quick-stats (см. ниже)
+        });
+
+              // ─── ПЗ изменилось (из quick-stats) ───────────────────
+        window.addEventListener('hpChanged', (e) => {
+            const d = e.detail || {};
+            const delta = d.delta || 0;
+            if (delta < 0) {
+                this.addLog(`❤️ Урон: ${Math.abs(delta)} ПЗ (${d.newHp}/${d.maxHp})`, 'is-damage');
+                // Переход в смертельное / тяжёлое ранение
+                if (d.newHp <= 0) {
+                    this.say(pickRandom(QUOTES.mortalWound), 'critical');
+                    this.reactAvatar('bad', { shake: true, duration: 900 });
+                } else if (d.newHp <= Math.ceil(d.maxHp / 2) && d.wasAboveSevere) {
+                    this.say(pickRandom(QUOTES.heavyWound), 'warning');
+                    this.reactAvatar('warning', { duration: 700 });
+                } else {
+                    this.say(pickRandom(QUOTES.damageTaken), 'warning');
+                    // Большой урон (≥ 10 за раз)
+                    if (Math.abs(delta) >= 10) {
+                        this.reactAvatar('bad', { shake: true, duration: 600 });
+                    }
+                }
+            } else if (delta > 0) {
+                this.addLog(`💊 Лечение: +${delta} ПЗ (${d.newHp}/${d.maxHp})`, 'is-heal');
+                this.say(pickRandom(QUOTES.healed), 'active');
+                this.reactAvatar('good', { duration: 500 });
+            }
+        });
+
+               // ─── УДЧ ──────────────────────────────────────────────
+        window.addEventListener('luckSpent', (e) => {
+            const d = e.detail || {};
+            this.addLog(`🍀 УДЧ: −${d.amount} (осталось ${d.remaining})`, '');
+            this.say(pickRandom(QUOTES.luckSpent), 'active');
+            this.reactAvatar('info', { duration: 400 });
+        });
+
+        window.addEventListener('luckRestored', (e) => {
+            const d = e.detail || {};
+            this.addLog(`🍀 УДЧ восстановлен (${d.newValue})`, 'is-heal');
+            this.say(pickRandom(QUOTES.luckRestored), 'active');
+            this.reactAvatar('good', { duration: 500 });
+        });
+
+                // ─── Травмы ───────────────────────────────────────────
+        window.addEventListener('traumaAdded', (e) => {
+            const d = e.detail || {};
+            this.addLog(`🩹 Получена травма: ${d.name}`, 'is-fail');
+            this.say(pickRandom(QUOTES.traumaAdded), 'warning');
+            this.reactAvatar('warning', { shake: true, duration: 600 });
+        });
+
+        window.addEventListener('traumaRemoved', (e) => {
+            const d = e.detail || {};
+            this.addLog(`🩹 Снята травма: ${d.name}`, 'is-heal');
+            this.say(pickRandom(QUOTES.traumaRemoved), 'active');
+            this.reactAvatar('good', { duration: 400 });
         });
     }
 
@@ -542,6 +795,9 @@ export class AICompanion {
         if (contextTips.humanityCritical.includes(text) || contextTips.humanityLow.includes(text)) return 'humanity';
         if (contextTips.moneyZero.includes(text) || contextTips.moneyLow.includes(text)) return 'money';
         if (contextTips.ipAvailable.includes(text)) return 'ip';
+        if (contextTips.traumaTips.includes(text)) return 'trauma';
+        if (contextTips.reputationLow.includes(text)) return 'reputation';
+        if (contextTips.luckEmpty.includes(text)) return 'luck';
         return 'role';
     }
 
@@ -562,14 +818,34 @@ export class AICompanion {
         const money = (char.money !== undefined && !isNaN(char.money)) ? char.money : 0;
         const ipAvailable = (char.ip && char.ip.available) || 0;
 
+               // Травмы — высокий приоритет (мешает в бою)
+        const traumas = Array.isArray(char.traumas) ? char.traumas : [];
+        const hasTraumas = traumas.length > 0;
+
         // Приоритеты: критичное → важное → ролевое → общий
         if (hpPct <= 0.5)       return pickTip(contextTips.hpCritical);
         if (humanity <= 0)      return pickTip(contextTips.humanityCritical);
+        if (hasTraumas && Math.random() < 0.35) {
+            return pickTip(contextTips.traumaTips);
+        }
         if (humanity <= 30)     return pickTip(contextTips.humanityLow);
         if (hpPct < 1)          return pickTip(contextTips.hpLow);
         if (money === 0)        return pickTip(contextTips.moneyZero);
         if (money < 200)        return pickTip(contextTips.moneyLow);
         if (ipAvailable >= 50)  return pickTip(contextTips.ipAvailable);
+
+        // Низкая репутация — средний приоритет
+        const reputation = char.reputation !== undefined ? char.reputation : 0;
+        if (reputation < 0 && Math.random() < 0.3) {
+            return pickTip(contextTips.reputationLow);
+        }
+
+        // УДЧ на нуле
+        const luckStat = (char.baseStats && char.baseStats.LUCK) || char.LUCK || 6;
+        const currentLuck = char.currentLuck !== undefined ? char.currentLuck : luckStat;
+        if (currentLuck === 0 && Math.random() < 0.3) {
+            return pickTip(contextTips.luckEmpty);
+        }
 
         // Ролевые — только если ничего критичного нет (20% шанс)
         if (Math.random() < 0.2) {
@@ -617,7 +893,7 @@ export class AICompanion {
         if (mood === 'dere') this.avatar.classList.add('dere');
     }
 
-    // ─── Пульс при смене реплики ────────────────────────────
+     // ─── Пульс при смене реплики ────────────────────────────
     pulseAvatar() {
         if (!this.avatar) return;
         this.avatar.classList.remove('pulse');
@@ -627,11 +903,39 @@ export class AICompanion {
         setTimeout(() => this.avatar?.classList.remove('pulse'), 400);
     }
 
+    // ─── Визуальные вспышки и тряска ─────────────────────────
+    // type: 'good' | 'bad' | 'warning' | 'info'
+    // duration: мс (по умолчанию 600)
+    flashAvatar(type = 'info', duration = 600) {
+        if (!this.avatar) return;
+        const cls = `av-flash-${type}`;
+        this.avatar.classList.remove(cls);
+        void this.avatar.offsetWidth;
+        this.avatar.classList.add(cls);
+        setTimeout(() => this.avatar?.classList.remove(cls), duration);
+    }
+
+    shakeAvatar(duration = 500) {
+        if (!this.avatar) return;
+        this.avatar.classList.remove('av-shake');
+        void this.avatar.offsetWidth;
+        this.avatar.classList.add('av-shake');
+        setTimeout(() => this.avatar?.classList.remove('av-shake'), duration);
+    }
+
+    // Комбо: вспышка + тряска (для критов и больших ударов)
+    reactAvatar(type = 'info', { shake = false, duration = 600 } = {}) {
+        this.flashAvatar(type, duration);
+        if (shake) this.shakeAvatar(duration);
+    }
+
     // ─── Определение состояния ────────────────────────────────
+        // ─── Определение состояния ────────────────────────────────
     updateState(initial = false) {
-         const char = loadCharacter();
+        const char = loadCharacter();
         if (!char) {
             this.setAvatarState('active');
+            this.setMood('tsun');
             this.say('Персонаж не загружен. Создай кого-нибудь.', 'warning');
             return;
         }
@@ -644,65 +948,95 @@ export class AICompanion {
 
         const emp = (char.baseStats && char.baseStats.EMP) || char.EMP || 6;
         const humanity = char.humanity !== undefined ? char.humanity : emp * 10;
+        const humanityPct = (emp * 10) > 0 ? humanity / (emp * 10) : 0;
 
         const ipAvailable = (char.ip && char.ip.available) || 0;
 
-        // Приоритеты: сначала критично, потом менее важно
-        if (hpPct <= 0) {
+        // ─── Мимика (независимо от реплик) ─────────────────
+        // Правило: чем хуже состояние — тем ближе к tsun (нахмурен)
+        // Чем лучше — тем чаще dere (смущённо-заботливый)
+        this.setMood(this.pickMood(hpPct, humanityPct));
+
+        // ─── Состояние аватара (свечение) ────────────────────
+        // critical: hp <= 0 ИЛИ humanity <= 0
+        // warning:  hp <= 0.5 ИЛИ humanity <= 30
+        // active:   всё в норме
+        if (hpPct <= 0 || humanity <= 0) {
             this.setAvatarState('critical');
+        } else if (hpPct <= 0.5 || humanity <= 30) {
+            this.setAvatarState('warning');
+        } else {
+            this.setAvatarState('active');
+        }
+
+        // ─── Реплики (с приоритетом, коротким замыканием) ───
+        if (hpPct <= 0) {
             this.say(pickRandom(QUOTES.hpCritical), 'critical');
+            this._refreshTipOnly(char);
+            this.refreshInitFormula();
             return;
         }
         if (hpPct <= 0.5) {
-            this.setAvatarState('critical');
             this.say(pickRandom(QUOTES.hpCritical), 'critical');
+            this._refreshTipOnly(char);
+            this.refreshInitFormula();
             return;
         }
         if (humanity <= 0) {
-            this.setAvatarState('critical');
             this.say(pickRandom(QUOTES.humanityCritical), 'critical');
+            this._refreshTipOnly(char);
+            this.refreshInitFormula();
             return;
         }
         if (humanity <= 30) {
-            this.setAvatarState('warning');
             this.say(pickRandom(QUOTES.humanityLow), 'warning');
+            this._refreshTipOnly(char);
+            this.refreshInitFormula();
             return;
-        }
-                // Обеспокоенность → dere-мимика
-        if (humanity <= 30) {
-            this.setMood('dere');
-        } else if (humanity <= 60) {
-            this.setMood(Math.random() < 0.5 ? 'dere' : 'tsun');
         }
         if (hpPct < 1) {
-            this.setAvatarState('warning');
             this.say(pickRandom(QUOTES.hpLow), 'warning');
+            this._refreshTipOnly(char);
+            this.refreshInitFormula();
             return;
         }
         if (ipAvailable >= 50) {
-            this.setAvatarState('active');
             this.say(pickRandom(QUOTES.ipAvailable), 'active');
+            this._refreshTipOnly(char);
+            this.refreshInitFormula();
             return;
         }
 
-                // Все в норме
-        this.setAvatarState('active');
-        // Цундере-мимика: 70% tsun, 30% dere
-        this.setMood(Math.random() < 0.7 ? 'tsun' : 'dere');
+        // Все в норме
         if (initial) {
             this.say(pickRandom(QUOTES.greeting), 'active');
         } else {
             this.say(pickRandom(QUOTES.idle), 'active');
         }
 
-                  // Обновляем совет под текущее состояние
-        if (this.tipText) {
-            const tip = this.pickSmartTip(char);
-            this.tipText.textContent = tip;
+        this._refreshTipOnly(char);
+        this.refreshInitFormula();
+    }
+
+    // ─── Выбор мимики ─────────────────────────────────────────
+    pickMood(hpPct, humanityPct) {
+        // Критическое состояние → всегда tsun (нахмурен)
+        if (hpPct <= 0.5 || humanityPct <= 0.3) return 'tsun';
+
+        // Плохое состояние → чаще tsun
+        if (hpPct < 1 || humanityPct < 0.7) {
+            return Math.random() < 0.75 ? 'tsun' : 'dere';
         }
 
-        // Обновляем формулу инициативы (РЕФ мог измениться из-за брони/имплантов)
-        this.refreshInitFormula();
+        // Всё хорошо → 60/40 в пользу tsun (цундере же)
+        return Math.random() < 0.6 ? 'tsun' : 'dere';
+    }
+
+    // ─── Обновление только совета (без изменения реплики) ────
+    _refreshTipOnly(char) {
+        if (!this.tipText) return;
+        const tip = this.pickSmartTip(char);
+        this.tipText.textContent = tip;
     }
 
     // ─── Смена реплики ────────────────────────────────────────

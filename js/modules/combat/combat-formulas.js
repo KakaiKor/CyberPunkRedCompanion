@@ -199,6 +199,29 @@ export class CombatFormulas {
     }
 
     document.getElementById('attackResult').innerHTML = resultHtml;
+
+    // ─── [ЮКИ] Оповещаем модуль ИИ-компаньона о броске атаки ────
+    const weaponName = document.getElementById('attackWeaponSelect')?.value || null;
+    const skillName = (type === 'ranged')
+        ? (document.getElementById('rangedSkill')?.previousElementSibling?.textContent?.includes('Навык')
+            ? 'Дистанционная атака'
+            : 'Дистанционная атака')
+        : 'Рукопашная атака';
+
+    window.dispatchEvent(new CustomEvent('skillCheckRolled', {
+        detail: {
+            skill: weaponName
+                ? `${skillName}: ${weaponName}`
+                : skillName,
+            total: attackValue,
+            d10: roll,
+            mod: mod + traumaInfo.total,
+            success: isHit,
+            kind: 'attack',
+            sl: target,
+            excess: excess
+        }
+    }));
 }
 
 // Хелпер: безопасно экранирует HTML в названиях травм

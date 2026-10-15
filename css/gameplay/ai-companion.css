@@ -776,3 +776,95 @@ body.cyberpunk-theme .ai-death-save .skill-info-icon {
 body.cyberpunk-theme .ai-death-save .skill-info-icon:hover {
     background: rgba(255, 0, 80, 0.35);
 }
+/* ═══════════════════════════════════════════════════════════
+   ВИЗУАЛЬНЫЕ РЕАКЦИИ ЮКИ
+   ═══════════════════════════════════════════════════════════ */
+
+/* Вспышки (кратковременное свечение аватара) */
+.ai-avatar.av-flash-good {
+    box-shadow: 0 0 0 3px #39ff14, 0 0 18px rgba(57, 255, 20, 0.7);
+    animation: avFlashGood 0.6s ease-out;
+}
+.ai-avatar.av-flash-bad {
+    box-shadow: 0 0 0 3px #ff3c5f, 0 0 18px rgba(255, 60, 95, 0.7);
+    animation: avFlashBad 0.6s ease-out;
+}
+.ai-avatar.av-flash-warning {
+    box-shadow: 0 0 0 3px #ff9a3c, 0 0 18px rgba(255, 154, 60, 0.7);
+    animation: avFlashWarning 0.6s ease-out;
+}
+.ai-avatar.av-flash-info {
+    box-shadow: 0 0 0 3px #409cff, 0 0 18px rgba(64, 156, 255, 0.7);
+    animation: avFlashInfo 0.6s ease-out;
+}
+
+@keyframes avFlashGood {
+    0%   { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.9), 0 0 0 rgba(57, 255, 20, 0); }
+    50%  { box-shadow: 0 0 0 6px rgba(57, 255, 20, 0.4), 0 0 24px rgba(57, 255, 20, 0.8); }
+    100% { box-shadow: 0 0 0 3px #39ff14, 0 0 18px rgba(57, 255, 20, 0.7); }
+}
+@keyframes avFlashBad {
+    0%   { box-shadow: 0 0 0 0 rgba(255, 60, 95, 0.9), 0 0 0 rgba(255, 60, 95, 0); }
+    50%  { box-shadow: 0 0 0 6px rgba(255, 60, 95, 0.4), 0 0 24px rgba(255, 60, 95, 0.8); }
+    100% { box-shadow: 0 0 0 3px #ff3c5f, 0 0 18px rgba(255, 60, 95, 0.7); }
+}
+@keyframes avFlashWarning {
+    0%   { box-shadow: 0 0 0 0 rgba(255, 154, 60, 0.9), 0 0 0 rgba(255, 154, 60, 0); }
+    50%  { box-shadow: 0 0 0 6px rgba(255, 154, 60, 0.4), 0 0 24px rgba(255, 154, 60, 0.8); }
+    100% { box-shadow: 0 0 0 3px #ff9a3c, 0 0 18px rgba(255, 154, 60, 0.7); }
+}
+@keyframes avFlashInfo {
+    0%   { box-shadow: 0 0 0 0 rgba(64, 156, 255, 0.9), 0 0 0 rgba(64, 156, 255, 0); }
+    50%  { box-shadow: 0 0 0 6px rgba(64, 156, 255, 0.4), 0 0 24px rgba(64, 156, 255, 0.8); }
+    100% { box-shadow: 0 0 0 3px #409cff, 0 0 18px rgba(64, 156, 255, 0.7); }
+}
+
+/* Тряска аватара */
+.ai-avatar.av-shake {
+    animation: avShake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+@keyframes avShake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+    40%, 60% { transform: translate3d(3px, 0, 0); }
+}
+
+/* Комбо: вспышка good + лёгкое покачивание (для критов успеха) */
+.ai-avatar.av-flash-good.av-shake {
+    animation: avShake 0.5s cubic-bezier(.36,.07,.19,.97) both,
+               avFlashGood 0.6s ease-out;
+}
+.ai-avatar.av-flash-bad.av-shake {
+    animation: avShake 0.5s cubic-bezier(.36,.07,.19,.97) both,
+               avFlashBad 0.6s ease-out;
+}
+
+/* Для постоянных состояний (не вспышки) */
+.ai-avatar.ai-state-critical {
+    box-shadow: 0 0 0 2px #ff3c5f, 0 0 16px rgba(255, 60, 95, 0.6);
+    animation: avCriticalPulse 1.6s ease-in-out infinite;
+}
+.ai-avatar.ai-state-warning {
+    box-shadow: 0 0 0 2px #ff9a3c, 0 0 14px rgba(255, 154, 60, 0.5);
+    animation: avWarningPulse 2.2s ease-in-out infinite;
+}
+@keyframes avCriticalPulse {
+    0%, 100% { box-shadow: 0 0 0 2px #ff3c5f, 0 0 16px rgba(255, 60, 95, 0.4); }
+    50%      { box-shadow: 0 0 0 4px #ff3c5f, 0 0 24px rgba(255, 60, 95, 0.8); }
+}
+@keyframes avWarningPulse {
+    0%, 100% { box-shadow: 0 0 0 2px #ff9a3c, 0 0 14px rgba(255, 154, 60, 0.3); }
+    50%      { box-shadow: 0 0 0 3px #ff9a3c, 0 0 20px rgba(255, 154, 60, 0.6); }
+}
+
+/* Cyberpunk theme — те же анимации, но с жёлтым акцентом */
+body.cyberpunk-theme .ai-avatar.av-flash-good {
+    box-shadow: 0 0 0 3px #39ff14, 0 0 18px rgba(57, 255, 20, 0.8);
+}
+body.cyberpunk-theme .ai-avatar.ai-state-critical {
+    box-shadow: 0 0 0 2px #ff0050, 0 0 16px rgba(255, 0, 80, 0.6);
+}
+body.cyberpunk-theme .ai-avatar.ai-state-warning {
+    box-shadow: 0 0 0 2px #ffd700, 0 0 14px rgba(255, 215, 0, 0.5);
+}

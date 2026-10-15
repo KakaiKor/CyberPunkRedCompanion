@@ -99,7 +99,7 @@ export class TraumaTracker {
         const crit = list.find(c => c.roll === roll);
         if (!crit) return;
 
-        this.traumas.push({
+                const newTrauma = {
             zone,
             roll: crit.roll,
             name: crit.name,
@@ -107,28 +107,47 @@ export class TraumaTracker {
             quick: crit.quick || '',
             treat: crit.treat || '',
             addedAt: new Date().toISOString()
-        });
+        };
+        this.traumas.push(newTrauma);
 
         this.saveTraumas();
         this.render();
         this.nameSelect.value = '';
+
+        // [ЮКИ] Оповещаем о новой травме
+        window.dispatchEvent(new CustomEvent('traumaAdded', {
+            detail: { name: newTrauma.name, zone: newTrauma.zone }
+        }));
     }
 
-    // ─── Удаление ────────────────────────────────────────────
+        // ─── Удаление ────────────────────────────────────────────
     removeTrauma(idx) {
         if (idx < 0 || idx >= this.traumas.length) return;
-        this.traumas.splice(idx, 1);
+        const removed = this.traumas.splice(idx, 1)[0];
         this.saveTraumas();
         this.render();
+
+        // [ЮКИ] Оповещаем о снятии травмы
+        if (removed) {
+            window.dispatchEvent(new CustomEvent('traumaRemoved', {
+                detail: { name: removed.name, zone: removed.zone }
+            }));
+        }
     }
 
-    // ─── Снять все (полное лечение) ─────────────────────────
+        // ─── Снять все (полное лечение) ─────────────────────────
     clearAll() {
         if (this.traumas.length === 0) return;
         if (!confirm('Снять все активные травмы (полное лечение)?')) return;
+        const count = this.traumas.length;
         this.traumas = [];
         this.saveTraumas();
         this.render();
+
+        // [ЮКИ] Оповещаем о массовом снятии
+        window.dispatchEvent(new CustomEvent('traumaRemoved', {
+            detail: { name: `все (${count})`, zone: 'all', mass: true }
+        }));
     }
 
     // ─── Обработчики ────────────────────────────────────────
