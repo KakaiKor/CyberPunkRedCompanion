@@ -1,4 +1,5 @@
 import { rangedWeapons, meleeWeapons, armors, gearItems } from '../../data.js';
+import { icon } from '../ui/icons.js';
 
 export function renderGearStep(data, getItemCost) {
     const gear = data.gear || { weapons: [], armor: { body: "", head: "" }, items: [] };
@@ -6,7 +7,7 @@ export function renderGearStep(data, getItemCost) {
     const remaining = 2550 - totalSpent;
 
     return `
-        <h3>🛡️ Снаряжение (общий бюджет 2550 eb на снаряжение + импланты)</h3>
+        <h3>${icon('shield', { size: 20 })} Снаряжение (общий бюджет 2550 eb на снаряжение + импланты)</h3>
         <div class="gear-budget">Осталось: <strong class="${remaining < 0 ? 'over' : 'ok'}">${remaining}</strong> eb</div>
         
         <div class="gear-filter">
@@ -18,26 +19,26 @@ export function renderGearStep(data, getItemCost) {
                     <option value="items">Снаряжение</option>
                 </select>
             </label>
-            <input type="text" id="gearSearch" placeholder="🔍 Поиск...">
+            <input type="text" id="gearSearch" placeholder="Поиск...">
         </div>
 
         <div id="weaponsSection" class="gear-section">
-            <h4>🔫 Дальнобойное оружие</h4>
+            <h4>${icon('pistol', { size: 16 })} Дальнобойное оружие</h4>
             ${renderTable(rangedWeapons, 'weapon', gear.weapons, ['Название', 'Навык', 'Урон', 'Маг.', 'СКОР', 'Рук'])}
-            <h4>🗡️ Холодное оружие</h4>
+            <h4>${icon('sword', { size: 16 })} Холодное оружие</h4>
             ${renderTable(meleeWeapons, 'weapon', gear.weapons, ['Название', 'Тип', 'Урон', 'СКОР'])}
         </div>
 
         <div id="armorSection" class="gear-section" style="display: none;">
-            <h4>🛡️ Броня (тело)</h4>
+            <h4>${icon('shield', { size: 16 })} Броня (тело)</h4>
             ${renderTable(armors, 'armorBody', [gear.armor.body], ['Название', 'ОС', 'Штраф'])}
-            <h4>🛡️ Броня (голова)</h4>
+            <h4>${icon('shield', { size: 16 })} Броня (голова)</h4>
             ${renderTable(armors, 'armorHead', [gear.armor.head], ['Название', 'ОС', 'Штраф'])}
             <p class="note">Выберите броню для тела и головы отдельно.</p>
         </div>
 
         <div id="itemsSection" class="gear-section" style="display: none;">
-            <h4>🎒 Снаряжение</h4>
+            <h4>${icon('briefcase', { size: 16 })} Снаряжение</h4>
             ${renderGearTable(gearItems, 'item', gear.items, ['Название', 'Категория', 'Описание', 'Эффект'])}
         </div>
     `;

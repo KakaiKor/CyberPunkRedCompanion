@@ -1,16 +1,17 @@
 import { detailedCyberware } from '../../data.js';
 import { getRequirements, areRequirementsMet } from '../../data/cyberware-requirements.js';  // [REQ]
 import { cyberwareRecommendations } from '../../data/cyberware-recommendations.js';
+import { icon } from '../ui/icons.js';
 export function renderCyberwareStep(data) {
     const groups = {
-        "нейро": { name: "🧠 Нейроимпланты", items: [] },
-        "оптика": { name: "👁️ Оптика", items: [] },
-        "аудио": { name: "🎧 Аудио", items: [] },
-        "внутренние": { name: "💪 Внутренние", items: [] },
-        "внешние": { name: "🛡️ Внешние", items: [] },
-        "конечности": { name: "🦿 Конечности", items: [] },
-        "боргирование": { name: "🤖 Боргирование", items: [] },
-        "стилевые": { name: "✨ Стилевые", items: [] }
+        "нейро": { name: "Нейроимпланты", icon: "brain", items: [] },
+        "оптика": { name: "Оптика", icon: "eye", items: [] },
+        "аудио": { name: "Аудио", icon: "activity", items: [] },
+        "внутренние": { name: "Внутренние", icon: "heart", items: [] },
+        "внешние": { name: "Внешние", icon: "shield", items: [] },
+        "конечности": { name: "Конечности", icon: "cpu", items: [] },
+        "боргирование": { name: "Боргирование", icon: "bot", items: [] },
+        "стилевые": { name: "Стилевые", icon: "sparkles", items: [] }
     };
     detailedCyberware.forEach(item => {
         if (groups[item.type]) groups[item.type].items.push(item);
@@ -31,7 +32,7 @@ export function renderCyberwareStep(data) {
         <div id="cyberTablesContainer">
             ${Object.entries(groups).map(([key, group]) => `
                 <div class="cyber-group-table" data-group="${key}">
-                    <h4 class="collapsible-header">📦 ${group.name} <span class="collapse-icon">▼</span></h4>
+                    <h4 class="collapsible-header">${icon(group.icon, { size: 16 })} ${group.name} <span class="collapse-icon">▼</span></h4>
                     <div class="table-wrapper">
                         <table class="cyber-table">
                             <thead>
@@ -47,9 +48,9 @@ export function renderCyberwareStep(data) {
 
     // Иконки рядом с названием
     const lockIcon = isLocked
-        ? ` <span class="cyber-lock-icon" aria-label="Заблокировано">🔒</span>` : '';
+        ? ` <span class="cyber-lock-icon" aria-label="Заблокировано">${icon('info', { size: 12 })}</span>` : '';
     const starIcon = isRecommended
-        ? ` <span class="cyber-rec-icon" aria-label="Рекомендуется для роли">⭐</span>` : '';
+        ? ` <span class="cyber-rec-icon" aria-label="Рекомендуется для роли">${icon('sparkles', { size: 12 })}</span>` : '';
 
     // Классы на строке
     const rowClasses = [

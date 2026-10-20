@@ -4,12 +4,24 @@
 
 import { roleSkillDescriptions } from '../../data/role-skill-descriptions.js';
 import { rolesData } from '../../data/roles-data.js';
+import { icon } from '../ui/icons.js';
 
 const ROLE_ICONS = {
-    "Рокербой": "🎸", "Соло": "⚔️", "Нетраннер": "💻", "Техник": "🔧",
-    "Медтех": "🩺", "Медиа": "📹", "Законник": "👮", "Менеджер": "💼",
-    "Фиксер": "🤝", "Кочевник": "🏍️"
+    "Рокербой": "megaphone",
+    "Соло": "sword",
+    "Нетраннер": "cpu",
+    "Техник": "info",
+    "Медтех": "stethoscope",
+    "Медиа": "eye",
+    "Законник": "shield",
+    "Менеджер": "briefcase",
+    "Фиксер": "dollar",
+    "Кочевник": "car"
 };
+
+function roleIcon(name, size = 16) {
+    return icon(ROLE_ICONS[name] || 'user', { size });
+}
 
 let modalEl = null;
 
@@ -27,7 +39,7 @@ function ensureModal() {
             </div>
             <div class="modal-body" id="rdmBody"></div>
             <div class="modal-footer">
-                <button class="cyber-btn" id="rdmSelectBtn">✓ Выбрать эту роль</button>
+                <button class="cyber-btn" id="rdmSelectBtn">${icon('check', { size: 14 })} Выбрать эту роль</button>
                 <button class="modal-close-btn" id="rdmCloseBottom">Закрыть</button>
             </div>
         </div>
@@ -53,13 +65,12 @@ export function openRoleDetailModal(roleName, onSelect) {
         return;
     }
 
-    const skill = roleSkillDescriptions[role.skill]; // детальное описание из нового файла
-    const icon = ROLE_ICONS[roleName] || '🎲';
+        const skill = roleSkillDescriptions[role.skill]; // детальное описание из нового файла
 
     const modal = ensureModal();
 
     // Заголовок
-    modal.querySelector('#rdmTitle').innerHTML = `${icon} ${roleName}`;
+    modal.querySelector('#rdmTitle').innerHTML = `${roleIcon(roleName, 18)} ${escapeHtml(roleName)}`;
 
     // Тело
     const body = modal.querySelector('#rdmBody');
@@ -74,7 +85,7 @@ export function openRoleDetailModal(roleName, onSelect) {
         // ЧТО ЭТО
         html += `
             <div class="role-detail-section">
-                <h4>📖 Что это</h4>
+                <h4>${icon('bookOpen', { size: 16 })} Что это</h4>
                 <p>${escapeHtml(skill.what || '')}</p>
             </div>
         `;
@@ -83,7 +94,7 @@ export function openRoleDetailModal(roleName, onSelect) {
         if (skill.how) {
             html += `
                 <div class="role-detail-section">
-                    <h4>⚙️ Как применять</h4>
+                  <h4>${icon('info', { size: 16 })} Как применять</h4>
                     <p>${escapeHtml(skill.how)}</p>
                 </div>
             `;
@@ -93,7 +104,7 @@ export function openRoleDetailModal(roleName, onSelect) {
         if (skill.abilities && skill.abilities.length) {
             html += `
                 <div class="role-detail-section">
-                    <h4>✨ Способности</h4>
+                                        <h4>${icon('sparkles', { size: 16 })} Способности</h4>
                     <ul class="role-detail-abilities">
                         ${skill.abilities.map(a => `
                             <li>
@@ -110,7 +121,7 @@ export function openRoleDetailModal(roleName, onSelect) {
         if (skill.example || role.example) {
             html += `
                 <div class="role-detail-section role-detail-example">
-                    <h4>💡 Пример из игры</h4>
+                    <h4>${icon('lightbulb', { size: 16 })} Пример из игры</h4>
                     <p>${escapeHtml(skill.example || role.example)}</p>
                 </div>
             `;
@@ -121,7 +132,7 @@ export function openRoleDetailModal(roleName, onSelect) {
         if (rankList.length) {
             html += `
                 <div class="role-detail-section">
-                    <h4>📊 Что дают ранги</h4>
+                    <h4>${icon('clipboardList', { size: 16 })} Что дают ранги</h4>
                     <div class="role-detail-ranks">
                         ${rankList.map(r => `
                             <div class="role-rank-row">
@@ -137,7 +148,7 @@ export function openRoleDetailModal(roleName, onSelect) {
         // Fallback — если в role-skill-descriptions.js нет записи, показываем только базовое из roles-data
         html += `
             <div class="role-detail-section">
-                <h4>📖 Описание</h4>
+                <h4>${icon('bookOpen', { size: 16 })} Описание</h4>
                 <p>${escapeHtml(role.description || '')}</p>
             </div>
         `;
@@ -159,7 +170,7 @@ export function openRoleDetailModal(roleName, onSelect) {
         if (role.example) {
             html += `
                 <div class="role-detail-section role-detail-example">
-                    <h4>💡 Пример</h4>
+                    <h4>${icon('lightbulb', { size: 16 })} Пример</h4>
                     <p>${escapeHtml(role.example)}</p>
                 </div>
             `;

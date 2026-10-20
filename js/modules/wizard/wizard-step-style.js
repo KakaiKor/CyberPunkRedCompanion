@@ -1,5 +1,6 @@
 // modules/wizard/wizard-step-style.js
 import { gearItems } from '../../data.js';
+import { icon } from '../ui/icons.js';
 
 export function renderStyleStep(data, getItemCost) {
     // Расширенный список стильных вещей
@@ -44,10 +45,10 @@ export function renderStyleStep(data, getItemCost) {
     }
     const remaining = 800 - totalCost;
     return `
-        <h3>✨ Стиль и внешний вид (бюджет: 800 eb)</h3>
+        <h3>${icon('sparkles', { size: 20 })} Стиль и внешний вид (бюджет: 800 eb)</h3>
         <div class="style-budget">Осталось: <strong class="${remaining < 0 ? 'over' : 'ok'}">${remaining}</strong> eb</div>
         <div class="style-controls">
-            <input type="text" id="styleSearch" placeholder="🔍 Поиск предметов...">
+            <input type="text" id="styleSearch" placeholder="Поиск предметов...">
         </div>
         <div class="table-wrapper">
             <table class="cyber-table">

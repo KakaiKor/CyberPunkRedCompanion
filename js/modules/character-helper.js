@@ -5,6 +5,7 @@ import { detailedCyberware, armors, rangedWeapons, meleeWeapons, gearItems } fro
 import { rolesData } from '../data/roles-data.js';
 import { skillDescriptions } from '../data/skills-descriptions.js';   // [TIP]
 import { roleTemplates } from '../data/skills-data.js';       
+import { icon } from './ui/icons.js';
 
 const STAT_NAMES = {
     INT: 'ИНТ',
@@ -324,8 +325,8 @@ const cardHtml = this.buildCharacterCardHTML({ name, role, roleRank, stats, skil
         return `<li data-weapon-idx="${idx}" class="weapon-item"><div class="weapon-header"><strong class="weapon-name">${this.escapeHtml(w)}</strong></div><div class="weapon-stats">${statsWeapon}</div></li>`;
     }).join('');
 
-    const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">🦾 ${this.escapeHtml(c)}${this.buildCyberwareTooltip(c)}</li>`).join('');
-    const gearHtmlItems = (gear.items || []).map((g, idx) => `<li data-gear-idx="${idx}">📦 ${this.escapeHtml(g)}</li>`).join('');
+    const cyberHtml = (cyberware || []).map((c, idx) => `<li data-cyber-idx="${idx}">${icon('cpu', { size: 14 })} ${this.escapeHtml(c)}${this.buildCyberwareTooltip(c)}</li>`).join('');
+    const gearHtmlItems = (gear.items || []).map((g, idx) => `<li data-gear-idx="${idx}">${icon('briefcase', { size: 14 })} ${this.escapeHtml(g)}</li>`).join('');
     const ammoList = this.getAmmoFromChar(ammo);
     let ammoHtml = '';
     if (ammoList.length > 0) {
@@ -343,7 +344,7 @@ const cardHtml = this.buildCharacterCardHTML({ name, role, roleRank, stats, skil
             else if (a.name.toLowerCase().includes('очень тяжёлый')) typeHint = ' (оч. тяжёлый)';
             let qtyText = `${a.quantity} шт.`;
             if (a.quantity === 1) qtyText = '1 шт.';
-            return `<li data-ammo-name="${this.escapeHtml(a.name)}" data-ammo-qty="${a.quantity}">🔸 ${this.escapeHtml(a.name)}${typeHint}: ${qtyText}</li>`;
+            return `<li data-ammo-name="${this.escapeHtml(a.name)}" data-ammo-qty="${a.quantity}">${icon('zap', { size: 12 })} ${this.escapeHtml(a.name)}${typeHint}: ${qtyText}</li>`;
         }).join('')}
         </ul>
     </div>
@@ -351,8 +352,8 @@ const cardHtml = this.buildCharacterCardHTML({ name, role, roleRank, stats, skil
     }
     const bodyArmorInfo = armors.find(a => a.name === gear.armor?.body);
     const headArmorInfo = armors.find(a => a.name === gear.armor?.head);
-    const armorHtml = `<li>🛡️ Тело: ${this.escapeHtml(gear.armor?.body || 'нет')}${bodyArmorInfo ? ` (ОС ${bodyArmorInfo.sp}, штраф ${bodyArmorInfo.penalty})` : ''}</li><li>⛑️ Голова: ${this.escapeHtml(gear.armor?.head || 'нет')}${headArmorInfo ? ` (ОС ${headArmorInfo.sp}, штраф ${headArmorInfo.penalty})` : ''}</li>`;
-    const notesHtml = `<div class="char-section" data-section="notes"><h4>📝 Заметки</h4><div class="notes-preview">${this.escapeHtml(notes) || '— нет —'}</div></div>`;
+    const armorHtml = `<li>${icon('shield', { size: 14 })} Тело: ${this.escapeHtml(gear.armor?.body || 'нет')}${bodyArmorInfo ? ` (ОС ${bodyArmorInfo.sp}, штраф ${bodyArmorInfo.penalty})` : ''}</li><li>${icon('shield', { size: 14 })} Голова: ${this.escapeHtml(gear.armor?.head || 'нет')}${headArmorInfo ? ` (ОС ${headArmorInfo.sp}, штраф ${headArmorInfo.penalty})` : ''}</li>`;
+    const notesHtml = `<div class="char-section" data-section="notes"><h4>${icon('pencil', { size: 16 })} Заметки</h4><div class="notes-preview">${this.escapeHtml(notes) || '— нет —'}</div></div>`;
 
     // ===== БЛОК ШТРАФА БРОНИ (ОБЩАЯ СНОСКА) =====
     let penaltyDisplay = '';
@@ -374,26 +375,26 @@ const cardHtml = this.buildCharacterCardHTML({ name, role, roleRank, stats, skil
 
     let derivedStatsHtml = `
 <div data-derived="hp">
-    <span class="derived-label">❤️ ПЗ</span>
+    <span class="derived-label">${icon('heart', { size: 14 })} ПЗ</span>
     <span class="current-hp">${currentHp}</span> / ${maxHp}
     <span class="hp-threshold">(тяж. ≤ ${severe})</span>
     <div class="hp-bar-container"><div class="hp-bar" style="width:${Math.min(100, (currentHp / maxHp) * 100)}%;"></div></div>
 </div>
 <div data-derived="humanity">
-    <span class="derived-label">🧠 ЧЕЛ</span>
+    <span class="derived-label">${icon('brain', { size: 14 })} ЧЕЛ</span>
     ${humanity} / ${empFrom * 10}
     <div class="hp-bar-container"><div class="humanity-bar" style="width:${Math.min(100, (humanity / (empFrom * 10)) * 100)}%;"></div></div>
 </div>
-<div data-derived="deathSave">💀 Спасбросок: ${deathSave}</div>
-<div data-derived="money">💰 Деньги: <span class="char-money">${isNaN(money) ? 0 : money}</span> eb</div>
-<div data-derived="reputation">📢 Репутация: <span class="char-reputation">${reputation ?? 0}</span> 
+<div data-derived="deathSave">${icon('skull', { size: 14 })} Спасбросок: ${deathSave}</div>
+<div data-derived="money">${icon('dollar', { size: 14 })} Деньги: <span class="char-money">${isNaN(money) ? 0 : money}</span> eb</div>
+<div data-derived="reputation">${icon('megaphone', { size: 14 })} Репутация: <span class="char-reputation">${reputation ?? 0}</span> 
     ${reputation < 0 ? '<span style="color:#ff9a3c; font-size:0.7rem;"> (штраф)</span>' : ''}
     <div style="display: inline-block; margin-left: 4px;">
-        <button class="reputation-inc-btn" style="background:none; border:none; color:#39ff14; cursor:pointer; font-size:0.8rem;">▲</button>
-        <button class="reputation-dec-btn" style="background:none; border:none; color:#ff3c5f; cursor:pointer; font-size:0.8rem;">▼</button>
+        <button class="reputation-inc-btn" style="background:none; border:none; color:#39ff14; cursor:pointer; font-size:0.8rem;" title="Повысить репутацию">${icon('plus', { size: 12 })}</button>
+        <button class="reputation-dec-btn" style="background:none; border:none; color:#ff3c5f; cursor:pointer; font-size:0.8rem;" title="Понизить репутацию">${icon('minus', { size: 12 })}</button>
     </div>
-    <button class="confrontation-btn" style="background:#1e2530; border:1px solid #2a3342; border-radius:30px; padding:2px 10px; color:#fff; cursor:pointer; font-size:0.7rem;">⚔️</button>
-    <button class="npc-reaction-btn" style="background:#1e2530; border:1px solid #2a3342; border-radius:30px; padding:2px 10px; color:#fff; cursor:pointer; font-size:0.7rem;">👥</button>
+    <button class="confrontation-btn" style="background:#1e2530; border:1px solid #2a3342; border-radius:30px; padding:2px 10px; color:#fff; cursor:pointer; font-size:0.7rem;" title="Разборка">${icon('sword', { size: 12 })}</button>
+    <button class="npc-reaction-btn" style="background:#1e2530; border:1px solid #2a3342; border-radius:30px; padding:2px 10px; color:#fff; cursor:pointer; font-size:0.7rem;" title="Реакция NPC">${icon('users', { size: 12 })}</button>
 </div>
 ${bonuses.initiative !== 0 ? `<div>⚡ Инициатива: ${stats.REF || 6} + ${bonuses.initiative}</div>` : ''}
 ${extraEffects.length ? `<div class="implant-effects">✨ ${extraEffects.join(', ')}</div>` : ''}
@@ -407,7 +408,9 @@ ${penaltyDisplay}
             <h5 class="char-traumas-title">🩹 Активные травмы (${traumas.length})</h5>
             <ul class="char-traumas-list">
                 ${traumas.map((t, idx) => {
-                    const zoneIcon = t.zone === 'head' ? '🧠' : '💪';
+                    const zoneIcon = t.zone === 'head'
+                        ? icon('brain', { size: 12 })
+                        : icon('heart', { size: 12 });
                     return `<li data-trauma-idx="${idx}">
                         <span class="trauma-zone-badge">${zoneIcon}</span>
                         <strong>${this.escapeHtml(t.name)}</strong>
@@ -437,38 +440,38 @@ ${penaltyDisplay}
             </div>
             <div class="character-card-body">
                 <div class="char-section" data-section="stats">
-                    <h4>📊 Характеристики</h4>
+                    <h4>${icon('activity', { size: 16 })} Характеристики</h4>
                     <div class="stats-grid" data-stats-container>${statsHtml}</div>
                 </div>
                                 <div class="char-section" data-section="derived">
-                    <h4>❤️ Состояние</h4>
+                    <h4>${icon('heart', { size: 16 })} Состояние</h4>
                     <div class="derived-stats">${derivedStatsHtml}</div>
                     <div class="combat-buttons">
-                        <button class="heal-btn">💊 Лечение (+${stats.BODY || 6} ПЗ)</button>
-                        <button class="damage-btn">💥 Урон</button>
+                        <button class="heal-btn">${icon('pill', { size: 14 })} Лечение (+${stats.BODY || 6} ПЗ)</button>
+                        <button class="damage-btn">${icon('explosion', { size: 14 })} Урон</button>
                     </div>
                     ${traumasHtml}
                 </div>
                 <div class="char-section" data-section="skills">
-                    <h4>🎯 Навыки</h4>
+                    <h4>${icon('target', { size: 16 })} Навыки</h4>
                     <div class="skills-grid" data-skills-container>${skillsHtml || '<p>— нет —</p>'}</div>
                 </div>
                 ${notesHtml}
                 <div class="equipment-grid" data-equipment>
                     <div class="equipment-card" data-type="armor">
-                        <h5>🛡️ Броня</h5>
+                        <h5>${icon('shield', { size: 14 })} Броня</h5>
                         <ul class="compact" data-armor-list>${armorHtml}</ul>
                     </div>
                     <div class="equipment-card" data-type="weapons">
-                        <h5>🔫 Оружие</h5>
+                        <h5>${icon('pistol', { size: 14 })} Оружие</h5>
                         <ul class="compact" data-weapons-list>${weaponsHtml || '<li>— нет —</li>'}</ul>
                     </div>
                     <div class="equipment-card" data-type="cyberware">
-                        <h5>🦾 Киберимпланты</h5>
+                        <h5>${icon('cpu', { size: 14 })} Киберимпланты</h5>
                         <ul class="compact" data-cyber-list>${cyberHtml || '<li>— нет —</li>'}</ul>
                     </div>
                     <div class="equipment-card" data-type="gear">
-                        <h5>🎒 Снаряжение</h5>
+                        <h5>${icon('briefcase', { size: 14 })} Снаряжение</h5>
                         <ul class="compact" data-gear-list>${gearHtmlItems || '<li>— нет —</li>'}</ul>
                     </div>
                     ${ammoHtml}

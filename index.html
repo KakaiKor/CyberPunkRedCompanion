@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Cyberpunk RED Companion</title>
     <link rel="stylesheet" href="style.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link rel="stylesheet" href="css/components/icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
@@ -19,16 +17,16 @@
         <header>
             <h1>⚡ CYBERPUNK RED Companion⚡</h1>
             <div class="search-bar">
-                <input type="text" id="globalSearch" placeholder="🔍 Поиск по всем таблицам...">
-                <button id="clearSearch" class="reset-btn">✖</button>
+                <input type="text" id="globalSearch" placeholder="Поиск по всем таблицам...">
+                <button id="clearSearch" class="reset-btn"><span data-icon="x" data-icon-size="14"></span></button>
             </div>
-            <div class="toolbar">
-                <button id="exportDataBtn" class="tool-btn">📤 Экспорт</button>
-                <button id="importDataBtn" class="tool-btn">📥 Импорт</button>
+                        <div class="toolbar">
+                <button id="exportDataBtn" class="tool-btn"><span data-icon="upload" data-icon-size="16"></span> Экспорт</button>
+                <button id="importDataBtn" class="tool-btn"><span data-icon="download" data-icon-size="16"></span> Импорт</button>
                 <input type="file" id="importFileInput" style="display:none" accept=".json">
-                <button id="resetAllDataBtn" class="tool-btn">♻️ Сброс</button>
-                <button id="toggleThemeBtn" class="tool-btn">🎨 Cyberpunk Theme</button>
-                <button id="changelogBtn" class="tool-btn">📋 Что нового</button>
+                <button id="resetAllDataBtn" class="tool-btn"><span data-icon="rotateCcw" data-icon-size="16"></span> Сброс</button>
+                <button id="toggleThemeBtn" class="tool-btn"><span data-icon="palette" data-icon-size="16"></span> Cyberpunk Theme</button>
+                <button id="changelogBtn" class="tool-btn"><span data-icon="scrollText" data-icon-size="16"></span> Что нового</button>
             </div>
         </header>
 
@@ -48,29 +46,29 @@
         </div>
 
         <div class="main-tabs">
-            <button class="tab-btn active" data-tab="tab-character"> Персонаж </button>
-            <button class="tab-btn" data-tab="tab-gear"> Снаряжение </button>
-            <button class="tab-btn" data-tab="tab-combat"> Бой </button>
-            <button class="tab-btn" data-tab="tab-netrunner"> Нетраннинг </button>
-            <button class="tab-btn" data-tab="tab-gm"> GM инструменты </button>
-            <button class="tab-btn" data-tab="tab-story">GM Сценарий</button>
-            <button class="tab-btn" data-tab="tab-market"> Рынок & Трофеи </button>
+            <button class="tab-btn active" data-tab="tab-character"><span data-icon="user" data-icon-size="16"></span> Персонаж</button>
+            <button class="tab-btn" data-tab="tab-gear"><span data-icon="briefcase" data-icon-size="16"></span> Снаряжение</button>
+            <button class="tab-btn" data-tab="tab-combat"><span data-icon="sword" data-icon-size="16"></span> Бой</button>
+            <button class="tab-btn" data-tab="tab-netrunner"><span data-icon="cpu" data-icon-size="16"></span> Нетраннинг</button>
+            <button class="tab-btn" data-tab="tab-gm"><span data-icon="bot" data-icon-size="16"></span> GM инструменты</button>
+            <button class="tab-btn" data-tab="tab-story"><span data-icon="bookOpen" data-icon-size="16"></span> GM Сценарий</button>
+            <button class="tab-btn" data-tab="tab-market"><span data-icon="mapPin" data-icon-size="16"></span> Рынок & Трофеи</button>
         </div>
 
         <!-- ================= Панель ПЕРСОНАЖА ================= -->
         <div id="tab-character" class="main-pane active">
             <div class="sub-tabs">
                 <!-- Вкладка char-wizard удалена, так как конструктор теперь в модалке -->
-                <button class="sub-tab-btn active" data-sub="char-main">Основное</button>
-                <button class="sub-tab-btn" data-sub="char-stats">ХАР & Навыки</button>
-                <button class="sub-tab-btn" data-sub="char-development"> Развитие</button>
-                <button class="sub-tab-btn" data-sub="char-roles">Роли</button>
-                <button class="sub-tab-btn" data-sub="char-help">📖 Помощь игроку</button>
+                <button class="sub-tab-btn active" data-sub="char-main"><span data-icon="user" data-icon-size="16"></span> Основное</button>
+                <button class="sub-tab-btn" data-sub="char-stats"><span data-icon="activity" data-icon-size="16"></span> ХАР & Навыки</button>
+                <button class="sub-tab-btn" data-sub="char-development"><span data-icon="sparkles" data-icon-size="16"></span> Развитие</button>
+                <button class="sub-tab-btn" data-sub="char-roles"><span data-icon="mask" data-icon-size="16"></span> Роли</button>
+                <button class="sub-tab-btn" data-sub="char-help"><span data-icon="bookOpen" data-icon-size="16"></span> Помощь игроку</button>
             </div>
 
             <!-- Кнопка открытия модального окна конструктора -->
             <div style="margin-bottom: 15px;">
-                <button id="openWizardModalBtn" class="cyber-btn">✨ Создать персонажа</button>
+                <button id="openWizardModalBtn" class="cyber-btn"><span data-icon="sparkles" data-icon-size="14"></span> Создать персонажа</button>
             </div>
             <div id="char-development" class="sub-pane">
                 <div id="developmentContainer"></div>
@@ -99,30 +97,30 @@
                                                                         <!-- ===== МИНИ-СТАТУС-БАР ===== -->
                         <div class="char-quick-stats" id="charQuickStats">
                             <span class="cqs-chip cqs-hp" data-stat="hp" title="Пункты здоровья">
-                                <span class="cqs-icon">❤️</span>
+                                <span class="cqs-icon"><span data-icon="heart" data-icon-size="14"></span></span>
                                 <span class="cqs-value" id="cqsHp">—</span>
                             </span>
                             <span class="cqs-chip cqs-humanity" data-stat="humanity" title="Человечность">
-                                <span class="cqs-icon">🧠</span>
+                                <span class="cqs-icon"><span data-icon="brain" data-icon-size="14"></span></span>
                                 <span class="cqs-value" id="cqsHumanity">—</span>
                             </span>
                             <span class="cqs-chip cqs-money" data-stat="money" title="Деньги">
-                                <span class="cqs-icon">💰</span>
+                                <span class="cqs-icon"><span data-icon="dollar" data-icon-size="14"></span></span>
                                 <span class="cqs-value" id="cqsMoney">—</span>
                             </span>
                             <span class="cqs-chip cqs-rep" data-stat="reputation" title="Репутация">
-                                <span class="cqs-icon">📢</span>
+                                <span class="cqs-icon"><span data-icon="megaphone" data-icon-size="14"></span></span>
                                 <span class="cqs-value" id="cqsReputation">—</span>
                             </span>
                             <span class="cqs-chip cqs-ip" data-stat="ip" title="Очки развития">
-                                <span class="cqs-icon">💾</span>
+                                <span class="cqs-icon"><span data-icon="sparkles" data-icon-size="14"></span></span>
                                 <span class="cqs-value" id="cqsIp">—</span>
                             </span>
                         </div>
 
                         <!-- ===== ПУЛ УДАЧИ ===== -->
                                                 <div class="char-luck-bar" id="charLuckBar">
-                            <span class="luck-label" id="luckResetBtn" title="Клик — восстановить УДЧ до максимума">🎲 УДЧ</span>
+                            <span class="luck-label" id="luckResetBtn" title="Клик — восстановить УДЧ до максимума"><span data-icon="dice" data-icon-size="14"></span> УДЧ</span>
                             <div class="luck-track" id="luckTrack" title="Клик — потратить 1 УДЧ">
                                 <div class="luck-fill" id="luckFill"></div>
                             </div>
@@ -136,34 +134,34 @@
                             <button type="button" class="qa-btn qa-dmg" data-hp-delta="-5" title="Получить 5 урона">−5</button>
                             <button type="button" class="qa-btn qa-dmg" data-hp-delta="-1" title="Получить 1 урон">−1</button>
                             <button type="button" class="qa-btn qa-heal" data-hp-delta="+1" title="Восстановить 1 ПЗ">+1</button>
-                            <button type="button" class="qa-btn qa-heal-lg" id="qaHealFull" title="Полное лечение на ТЕЛО ПЗ">💊 Лечение</button>
+                            <button type="button" class="qa-btn qa-heal-lg" id="qaHealFull" title="Полное лечение на ТЕЛО ПЗ"><span data-icon="pill" data-icon-size="14"></span> Лечение</button>
                         </div>
 
                         <!-- ===== КНОПКИ КАРТОЧКИ ===== -->
                         <div class="button-group char-card-controls">
-                            <button type="button" id="syncCardBtn" class="cyber-btn small" title="Обновить карточку внизу">🔄 Синхронизировать</button>
-                            <button type="button" id="editCardBtn" class="cyber-btn small" title="Перейти к редактированию карточки">✏️ Редактировать</button>
+                            <button type="button" id="syncCardBtn" class="cyber-btn small" title="Обновить карточку внизу"><span data-icon="refresh" data-icon-size="14"></span> Синхронизировать</button>
+                            <button type="button" id="editCardBtn" class="cyber-btn small" title="Перейти к редактированию карточки"><span data-icon="pencil" data-icon-size="14"></span> Редактировать</button>
                         </div>
 
                         <!-- ===== ЭКСПОРТ / ИМПОРТ ===== -->
                         <div class="button-group" style="margin-top: 10px;">
-                            <button id="exportCharJsonBtn" class="cyber-btn">📤 Экспорт (JSON)</button>
-                            <button id="importCharJsonBtn" class="cyber-btn">📥 Импорт (JSON)</button>
+                            <button id="exportCharJsonBtn" class="cyber-btn"><span data-icon="upload" data-icon-size="14"></span> Экспорт (JSON)</button>
+                            <button id="importCharJsonBtn" class="cyber-btn"><span data-icon="download" data-icon-size="14"></span> Импорт (JSON)</button>
                             <input type="file" id="importCharJsonInput" accept=".json" style="display:none">
                         </div>
 
                         <!-- ===== СЧЁТЧИК СЕССИИ ===== -->
                         <div class="char-session-stats" id="charSessionStats">
-                            <span title="Время с начала сессии">⏱ <span id="sessionTime">0ч 00мин</span></span>
-                            <span title="Количество бросков за сессию">🎲 Бросков: <span id="sessionRolls">0</span></span>
+                            <span title="Время с начала сессии"><span data-icon="activity" data-icon-size="12"></span> <span id="sessionTime">0ч 00мин</span></span>
+                            <span title="Количество бросков за сессию"><span data-icon="dice" data-icon-size="12"></span> Бросков: <span id="sessionRolls">0</span></span>
                         </div>
                     </div>
 
                                                             <div class="right-column">
                     <div class="card skill-check-card">
                         <div class="skill-check-header">
-                            <h3>🎲 Проверка навыка</h3>
-                            <button type="button" id="skillCheckResetBtn" class="skill-check-reset-btn" title="Сброс полей">🔄</button>
+                            <h3><span data-icon="dice" data-icon-size="18"></span> Проверка навыка</h3>
+                            <button type="button" id="skillCheckResetBtn" class="skill-check-reset-btn" title="Сброс полей"><span data-icon="refresh" data-icon-size="14"></span></button>
                         </div>
 
                         <div class="skill-check-main-row">
@@ -262,8 +260,8 @@
                     </div>
                                         <div class="ai-tip-box" id="aiTipBox">
                         <div class="ai-tip-header">
-                            <span>💡 Совет ЮКИ</span>
-                            <button type="button" class="ai-tip-next" id="aiTipNextBtn" title="Другой совет">🎲</button>
+                            <span><span data-icon="lightbulb" data-icon-size="14"></span> Совет ЮКИ</span>
+                            <button type="button" class="ai-tip-next" id="aiTipNextBtn" title="Другой совет"><span data-icon="dice" data-icon-size="14"></span></button>
                         </div>
                         <div class="ai-tip-text" id="aiTipText">Загрузка…</div>
                     </div>
@@ -271,11 +269,11 @@
                     <!-- ===== ИНИЦИАТИВА ===== -->
                     <div class="ai-initiative" id="aiInitiative">
                         <div class="ai-init-header">
-                            <span>⚡ Инициатива</span>
+                            <span><span data-icon="zap" data-icon-size="14"></span> Инициатива</span>
                                <span class="ai-init-formula" id="aiInitFormula">—</span>
                         </div>
                         <div class="ai-init-body">
-                            <button type="button" class="ai-init-btn" id="aiInitBtn">🎲 Бросить</button>
+                            <button type="button" class="ai-init-btn" id="aiInitBtn"><span data-icon="dice" data-icon-size="14"></span> Бросить</button>
                             <div class="ai-init-result" id="aiInitResult">—</div>
                         </div>
                     </div>
@@ -283,8 +281,8 @@
                     <!-- ===== ЛОГ СЕССИИ ===== -->
                     <div class="ai-log" id="aiLog">
                         <div class="ai-log-header">
-                            <span>📋 Лог сессии</span>
-                            <button type="button" class="ai-log-clear" id="aiLogClearBtn" title="Очистить">🗑️</button>
+                            <span><span data-icon="clipboardList" data-icon-size="14"></span> Лог сессии</span>
+                            <button type="button" class="ai-log-clear" id="aiLogClearBtn" title="Очистить"><span data-icon="trash" data-icon-size="14"></span></button>
                         </div>
                         <div class="ai-log-list" id="aiLogList">
                             <div class="ai-log-empty">Пока пусто</div>
@@ -301,7 +299,7 @@
                             <span class="ai-ds-formula" id="aiDsFormula">ТЕЛО 6 · штраф +0</span>
                         </div>
                         <div class="ai-ds-body">
-                            <button type="button" class="ai-ds-btn" id="aiDsBtn">🎲 Спасбросок</button>
+                            <button type="button" class="ai-ds-btn" id="aiDsBtn"><span data-icon="dice" data-icon-size="14"></span> Спасбросок</button>
                             <div class="ai-ds-result" id="aiDsResult">—</div>
                             <button type="button" class="ai-ds-reset" id="aiDsResetBtn" title="Сбросить штраф (стабилизация)">↺</button>
                         </div>
@@ -356,14 +354,14 @@
         <!-- Панель СНАРЯЖЕНИЕ (оставлена без изменений, но для краткости приведены основные блоки) -->
         <div id="tab-gear" class="main-pane">
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" data-sub="gear-weapons">🔫 Оружие</button>
-                <button class="sub-tab-btn" data-sub="gear-armor">🛡️ Броня</button>
-                <button class="sub-tab-btn" data-sub="gear-cyber">🧠 Киберимпланты</button>
-                <button class="sub-tab-btn" data-sub="gear-transport">🚗 Транспорт</button>
-                <button class="sub-tab-btn" data-sub="gear-drugs">💊 Наркотики</button>
-                <button class="sub-tab-btn" data-sub="gear-ammo">🔫 Боеприпасы</button>
-                <button class="sub-tab-btn" data-sub="gear-attach">🔧 Приспособления</button>
-                <button class="sub-tab-btn" data-sub="gear-gear">🎒 Снаряжение</button>
+                <button class="sub-tab-btn active" data-sub="gear-weapons"><span data-icon="pistol" data-icon-size="16"></span> Оружие</button>
+                <button class="sub-tab-btn" data-sub="gear-armor"><span data-icon="shield" data-icon-size="16"></span> Броня</button>
+                <button class="sub-tab-btn" data-sub="gear-cyber"><span data-icon="cpu" data-icon-size="16"></span> Киберимпланты</button>
+                <button class="sub-tab-btn" data-sub="gear-transport"><span data-icon="car" data-icon-size="16"></span> Транспорт</button>
+                <button class="sub-tab-btn" data-sub="gear-drugs"><span data-icon="pill" data-icon-size="16"></span> Наркотики</button>
+                <button class="sub-tab-btn" data-sub="gear-ammo"><span data-icon="zap" data-icon-size="16"></span> Боеприпасы</button>
+                <button class="sub-tab-btn" data-sub="gear-attach"><span data-icon="info" data-icon-size="16"></span> Приспособления</button>
+                <button class="sub-tab-btn" data-sub="gear-gear"><span data-icon="briefcase" data-icon-size="16"></span> Снаряжение</button>
             </div>
             <div id="gear-weapons" class="sub-pane active">
                 <div class="card">
@@ -427,11 +425,11 @@
         </div>
         <div id="tab-story" class="main-pane">
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" data-sub="story-campaigns">📁 Кампании</button>
-                <button class="sub-tab-btn" data-sub="story-board">🗺️ Доска</button>
-                <button class="sub-tab-btn" data-sub="story-tree">🌳 Дерево</button>
-                <button class="sub-tab-btn" data-sub="story-timeline">⏳ Таймлайн</button>
-                <button class="sub-tab-btn" data-sub="story-integration">🔗 Привязки</button>
+                <button class="sub-tab-btn active" data-sub="story-campaigns"><span data-icon="bookOpen" data-icon-size="16"></span> Кампании</button>
+                <button class="sub-tab-btn" data-sub="story-board"><span data-icon="map" data-icon-size="16"></span> Доска</button>
+                <button class="sub-tab-btn" data-sub="story-tree"><span data-icon="mapPin" data-icon-size="16"></span> Дерево</button>
+                <button class="sub-tab-btn" data-sub="story-timeline"><span data-icon="activity" data-icon-size="16"></span> Таймлайн</button>
+                <button class="sub-tab-btn" data-sub="story-integration"><span data-icon="zap" data-icon-size="16"></span> Привязки</button>
             </div>
 
             <!-- Панель: Кампании (список, создание, импорт/экспорт) -->
@@ -517,10 +515,10 @@
         <!-- Панель БОЙ (оставлена без изменений) -->
                 <div id="tab-combat" class="main-pane">
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" data-sub="combat-formulas"> ⚔️ Быстрый бой </button>
-                <button class="sub-tab-btn" data-sub="combat-init"> ⚡ Инициатива </button>
-                <button class="sub-tab-btn" data-sub="combat-crit"> 🩹 Травмы </button>
-                <button class="sub-tab-btn" data-sub="combat-help"> 📖 Справка </button>
+                <button class="sub-tab-btn active" data-sub="combat-formulas"><span data-icon="sword" data-icon-size="16"></span> Быстрый бой</button>
+                <button class="sub-tab-btn" data-sub="combat-init"><span data-icon="zap" data-icon-size="16"></span> Инициатива</button>
+                <button class="sub-tab-btn" data-sub="combat-crit"><span data-icon="bandage" data-icon-size="16"></span> Травмы</button>
+                <button class="sub-tab-btn" data-sub="combat-help"><span data-icon="bookOpen" data-icon-size="16"></span> Справка</button>
             </div>
             
             <div id="combat-help" class="sub-pane"></div>
@@ -545,7 +543,7 @@
                         <div id="combat-crit" class="sub-pane">
                 <!-- ===== АКТИВНЫЕ ТРАВМЫ ПЕРСОНАЖА ===== -->
                 <div class="card">
-                    <h3>🩹 Активные травмы персонажа</h3>
+                    <h3><span data-icon="bandage" data-icon-size="20"></span> Активные травмы персонажа</h3>
                     <p class="note">Список критических травм, которые сейчас действуют на персонажа. Добавляй сюда всё, что не вылечено.</p>
                     <div class="trauma-controls">
                         <select id="traumaZoneSelect">
@@ -555,8 +553,8 @@
                         <select id="traumaNameSelect">
                             <option value="">— выберите травму —</option>
                         </select>
-                        <button type="button" id="addTraumaBtn" class="cyber-btn">➕ Добавить</button>
-                        <button type="button" id="clearAllTraumasBtn" class="cyber-btn small" title="Снять все травмы (полное лечение)">🗑️ Снять все</button>
+                        <button type="button" id="addTraumaBtn" class="cyber-btn"><span data-icon="plus" data-icon-size="14"></span> Добавить</button>
+                        <button type="button" id="clearAllTraumasBtn" class="cyber-btn small" title="Снять все травмы (полное лечение)"><span data-icon="trash" data-icon-size="14"></span> Снять все</button>
                     </div>
                     <div id="activeTraumasList" class="trauma-list">
                         <div class="trauma-empty">Пока нет активных травм</div>
@@ -565,17 +563,17 @@
 
                 <!-- ===== БРОСОК КРИТИЧЕСКОЙ ТРАВМЫ ===== -->
                 <div class="card">
-                    <h3>🎲 Бросить критическую травму</h3>
+                    <h3><span data-icon="dice" data-icon-size="20"></span> Бросить критическую травму</h3>
                     <div class="crit-roll-buttons">
-                        <button id="rollCritBtn" class="cyber-btn">🎲 По телу</button>
-                        <button id="rollCritHeadBtn" class="cyber-btn">🎲 По голове</button>
+                        <button id="rollCritBtn" class="cyber-btn"><span data-icon="bandage" data-icon-size="14"></span> По телу</button>
+                        <button id="rollCritHeadBtn" class="cyber-btn"><span data-icon="brain" data-icon-size="14"></span> По голове</button>
                     </div>
                     <div id="critResult" class="info-block"></div>
                 </div>
 
                 <!-- ===== СПРАВОЧНЫЕ ТАБЛИЦЫ ===== -->
                 <details class="crit-tables-details">
-                    <summary>📋 Таблицы критических травм</summary>
+                    <summary><span data-icon="clipboardList" data-icon-size="16"></span> Таблицы критических травм</summary>
                     <div id="crit-body-table"></div>
                     <div id="crit-head-table"></div>
                 </details>
@@ -591,7 +589,7 @@
                                 <option value="">— нет оружия в инвентаре —</option>
                             </select>
                         </label>
-                        <button type="button" id="loadFromCharBtn" class="cyber-btn small" title="Подтянуть ХАР и навыки из карточки персонажа">📥 Из карточки</button>
+                        <button type="button" id="loadFromCharBtn" class="cyber-btn small" title="Подтянуть ХАР и навыки из карточки персонажа"><span data-icon="download" data-icon-size="14"></span> Из карточки</button>
                     </div>
 
                     <label>Тип атаки: <select id="combatType">
@@ -612,7 +610,7 @@
                         <label>d10:
                             <div class="d10-wrap">
                                 <input type="number" id="d10Roll" value="5" min="1" max="10">
-                                <button type="button" class="roll-d10-btn" id="rollAttackD10" title="Бросить d10">🎲</button>
+                                <button type="button" class="roll-d10-btn" id="rollAttackD10" title="Бросить d10"><span data-icon="dice" data-icon-size="14"></span></button>
                             </div>
                         </label>
                         <label>Модификатор: <input id="modifiers" type="number" value="0" step="1" title="Ситуативные бонусы и штрафы (свет, дым, укрытие)"></label>
@@ -622,12 +620,12 @@
                         <label class="sl-input-label" for="attackSL"><span id="attackSLLabel">СЛ дистанции:</span>
                             <input type="number" id="attackSL" value="15" min="0" step="1">
                         </label>
-                        <button type="button" id="showDistanceBtn" class="sl-distance-btn" title="Показать таблицу дистанций" onclick="window.__toggleDistWidget && window.__toggleDistWidget(event)">📏</button>
+                        <button type="button" id="showDistanceBtn" class="sl-distance-btn" title="Показать таблицу дистанций" onclick="window.__toggleDistWidget && window.__toggleDistWidget(event)">Таблица дистанции</button>
                         <span class="sl-hint" id="attackSLHint">СЛ берётся из таблицы дистанций для выбранного оружия. Если цель уклоняется (РЕФ ≥ 8) — введи её результат: ЛВК + Уклонение + 1d10.</span>
                         <div id="distanceWidget" class="distance-widget" style="display: none;"></div>
                     </div>
 
-                    <button id="calcAttackBtn" class="cyber-btn">🧮 Рассчитать атаку</button>
+                    <button id="calcAttackBtn" class="cyber-btn"><span data-icon="target" data-icon-size="14"></span> Рассчитать атаку</button>
                     <div id="attackResult" class="info-block"></div>
                 </div>
                                 <!-- ===== УРОН И БРОНЯ ===== -->
@@ -652,7 +650,7 @@
                             <input type="checkbox" id="coldWeaponCheck"> Холодное (½ ОС)
                         </label>
                     </div>
-                    <button id="rollDamageBtn" class="cyber-btn">🎲 Бросить урон</button>
+                    <button id="rollDamageBtn" class="cyber-btn"><span data-icon="explosion" data-icon-size="14"></span> Бросить урон</button>
                     <div id="damageResult" class="info-block"></div>
                 </div>
                 <div class="card">
@@ -682,10 +680,10 @@
         <!-- Нетраннер -->
         <div id="tab-netrunner" class="main-pane">
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" data-sub="netrunner-cyberdeck">🖥️ Кибердека</button>
-                <button class="sub-tab-btn" data-sub="netrunner-architecture">🏛️ Архитектура сети</button>
-                <button class="sub-tab-btn" data-sub="netrunner-combat">⚔️ Сетевой бой</button>
-                <button class="sub-tab-btn" data-sub="netrunner-help">📖 Справка</button>
+                <button class="sub-tab-btn active" data-sub="netrunner-cyberdeck"><span data-icon="cpu" data-icon-size="16"></span> Кибердека</button>
+                <button class="sub-tab-btn" data-sub="netrunner-architecture"><span data-icon="map" data-icon-size="16"></span> Архитектура сети</button>
+                <button class="sub-tab-btn" data-sub="netrunner-combat"><span data-icon="crosshair" data-icon-size="16"></span> Сетевой бой</button>
+                <button class="sub-tab-btn" data-sub="netrunner-help"><span data-icon="bookOpen" data-icon-size="16"></span> Справка</button>
             </div>
             <div id="netrunner-cyberdeck" class="sub-pane active">
                 <div class="card">
@@ -725,17 +723,17 @@
         <!-- Панель GM (оставлена без изменений, приведены основные блоки для краткости) -->
         <div id="tab-gm" class="main-pane">
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" data-sub="gm-npc">🤖 NPC</button>
-                <button class="sub-tab-btn" data-sub="gm-group">👥 Группа</button>
-                <button class="sub-tab-btn" data-sub="gm-contract-advanced">📜 Контракты </button>
-                <button class="sub-tab-btn" data-sub="gm-scream">📰 Скримлист</button>
-                <button class="sub-tab-btn" data-sub="gm-story-generator">📖 Генератор сценариев</button>
-                <button class="sub-tab-btn" data-sub="gm-psycho">🧠 Киберпсихоз</button>
-                <button class="sub-tab-btn" data-sub="gm-net">🌐 Архитектура сети</button>
-                <button class="sub-tab-btn" data-sub="gm-mooks">💀 Пушечное мясо</button>
-                <button class="sub-tab-btn" data-sub="gm-encounters">🗺️ Случайные встречи</button>
-                <button class="sub-tab-btn" data-sub="gm-rumor">🎭 Слухи & Крючки</button>
-                <button class="sub-tab-btn" data-sub="gm-development">📈 Развитие (IP)</button>
+                <button class="sub-tab-btn active" data-sub="gm-npc"><span data-icon="users" data-icon-size="16"></span> NPC</button>
+                <button class="sub-tab-btn" data-sub="gm-group"><span data-icon="users" data-icon-size="16"></span> Группа</button>
+                <button class="sub-tab-btn" data-sub="gm-contract-advanced"><span data-icon="clipboard" data-icon-size="16"></span> Контракты</button>
+                <button class="sub-tab-btn" data-sub="gm-scream"><span data-icon="scrollText" data-icon-size="16"></span> Скримлист</button>
+                <button class="sub-tab-btn" data-sub="gm-story-generator"><span data-icon="bookOpen" data-icon-size="16"></span> Генератор сценариев</button>
+                <button class="sub-tab-btn" data-sub="gm-psycho"><span data-icon="brain" data-icon-size="16"></span> Киберпсихоз</button>
+                <button class="sub-tab-btn" data-sub="gm-net"><span data-icon="map" data-icon-size="16"></span> Архитектура сети</button>
+                <button class="sub-tab-btn" data-sub="gm-mooks"><span data-icon="skull" data-icon-size="16"></span> Пушечное мясо</button>
+                <button class="sub-tab-btn" data-sub="gm-encounters"><span data-icon="mapPin" data-icon-size="16"></span> Случайные встречи</button>
+                <button class="sub-tab-btn" data-sub="gm-rumor"><span data-icon="messageSquare" data-icon-size="16"></span> Слухи & Крючки</button>
+                <button class="sub-tab-btn" data-sub="gm-development"><span data-icon="sparkles" data-icon-size="16"></span> Развитие (IP)</button>
             </div>
             <div id="gm-story-generator" class="sub-pane">
                 <div class="card">
@@ -990,9 +988,9 @@
         <!-- Панель Рынок -->
         <div id="tab-market" class="main-pane">
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" data-sub="market-shop">🛒 Магазин</button>
-                <button class="sub-tab-btn" data-sub="market-inventory">🎒 Инвентарь</button>
-                <button class="sub-tab-btn" data-sub="market-treasure">💎 Трофеи</button>
+                <button class="sub-tab-btn active" data-sub="market-shop"><span data-icon="dollar" data-icon-size="16"></span> Магазин</button>
+                <button class="sub-tab-btn" data-sub="market-inventory"><span data-icon="briefcase" data-icon-size="16"></span> Инвентарь</button>
+                <button class="sub-tab-btn" data-sub="market-treasure"><span data-icon="sparkles" data-icon-size="16"></span> Трофеи</button>
             </div>
             <div id="market-shop" class="sub-pane active">
                 <div class="card">
@@ -1029,18 +1027,17 @@
                                 целях</div>
                         </div>
                         <div class="wizard-steps">
-                            <div class="step" data-step="0"><i class="fas fa-user"></i><span>Имя</span></div>
-                            <div class="step" data-step="1"><i class="fas fa-mask"></i><span>Роль</span></div>
-                            <div class="step" data-step="2"><i class="fas fa-chart-line"></i><span>ХАР</span></div>
-                            <div class="step" data-step="3"><i class="fas fa-vest"></i><span>Снаряжение</span></div>
-                            <div class="step" data-step="4"><i class="fas fa-brain"></i><span>Навыки</span></div>
-                            <div class="step" data-step="5"><i class="fas fa-microchip"></i><span>Импланты</span></div>
-                            <div class="step" data-step="6"><i class="fas fa-palette"></i><span>Стиль</span></div>
-                            <div class="step" data-step="7"><i class="fas fa-heartbeat"></i><span>Человечность</span>
-                            </div>
-                            <div class="step" data-step="8"><i class="fas fa-coins"></i><span>Расходы</span></div>
-                            <div class="step" data-step="9"><i class="fas fa-pen"></i><span>Заметки</span></div>
-                            <div class="step" data-step="10"><i class="fas fa-check-circle"></i><span>Итог</span></div>
+                            <div class="step" data-step="0"><span data-icon="user" data-icon-size="18"></span><span>Имя</span></div>
+                            <div class="step" data-step="1"><span data-icon="mask" data-icon-size="18"></span><span>Роль</span></div>
+                            <div class="step" data-step="2"><span data-icon="activity" data-icon-size="18"></span><span>ХАР</span></div>
+                            <div class="step" data-step="3"><span data-icon="shield" data-icon-size="18"></span><span>Снаряжение</span></div>
+                            <div class="step" data-step="4"><span data-icon="brain" data-icon-size="18"></span><span>Навыки</span></div>
+                            <div class="step" data-step="5"><span data-icon="cpu" data-icon-size="18"></span><span>Импланты</span></div>
+                            <div class="step" data-step="6"><span data-icon="palette" data-icon-size="18"></span><span>Стиль</span></div>
+                            <div class="step" data-step="7"><span data-icon="heart" data-icon-size="18"></span><span>Человечность</span></div>
+                            <div class="step" data-step="8"><span data-icon="dollar" data-icon-size="18"></span><span>Расходы</span></div>
+                            <div class="step" data-step="9"><span data-icon="pencil" data-icon-size="18"></span><span>Заметки</span></div>
+                            <div class="step" data-step="10"><span data-icon="check" data-icon-size="18"></span><span>Итог</span></div>
                         </div>
                         <div class="wizard-content" id="wizardContent"></div>
                         <div class="wizard-buttons">

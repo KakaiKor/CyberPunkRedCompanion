@@ -1,6 +1,7 @@
 // js/modules/wizard/wizard-step-skills.js
 import { allSkills, roleTemplates } from '../../data/skills-data.js';
 import { skillDescriptions } from '../../data/skills-descriptions.js'; // [TIP]
+import { icon } from '../ui/icons.js';
 
 export function renderSkillsStep(data, skillsList) {
     const userSkills = data.skills || {};
@@ -19,7 +20,7 @@ export function renderSkillsStep(data, skillsList) {
     const hasAnyPriority = Object.keys(roleTemplate).length > 0;
 
     return `
-        <h3>🎯 Навыки (очков: 86, базовые минимум 2)</h3>
+        <h3>${icon('target', { size: 20 })} Навыки (очков: 86, базовые минимум 2)</h3>
         <div class="skills-budget">Осталось очков: <strong class="${remaining < 0 ? 'over' : 'ok'}">${remaining}</strong></div>
 
         ${hasAnyPriority ? `
@@ -32,12 +33,12 @@ export function renderSkillsStep(data, skillsList) {
         ` : ''}
 
         <div class="skills-controls">
-            <input type="text" id="skillsSearchTable" placeholder="🔍 Поиск по названию...">
+            <input type="text" id="skillsSearchTable" placeholder="Поиск по названию...">
         </div>
         <div id="skillsTablesContainer">
             ${Object.entries(categories).map(([category, skills]) => `
                 <div class="skills-category-table" data-category="${category}">
-                    <h4 class="collapsible-header">📁 ${category} <span class="collapse-icon">▼</span></h4>
+                    <h4 class="collapsible-header">${icon('bookOpen', { size: 16 })} ${category} <span class="collapse-icon">▼</span></h4>
                     <div class="table-wrapper">
                         <table class="cyber-table skills-table">
                             <thead>

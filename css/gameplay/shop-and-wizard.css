@@ -23,10 +23,14 @@
     gap: 4px;
     font-size: 0.75rem;
 }
-.wizard-steps .step i {
+.wizard-steps .step > span[data-icon],
+.wizard-steps .step > i {
     font-size: 1.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
-.wizard-steps .step span {
+.wizard-steps .step > span:not([data-icon]) {
     font-size: 0.7rem;
     font-weight: 600;
 }
@@ -261,6 +265,13 @@
 .role-card-icon {
     font-size: 2.2rem;
     margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff9a3c;
+}
+.role-card-v2.active .role-card-icon {
+    color: #ffd700;
 }
 .role-card-name {
     font-weight: bold;

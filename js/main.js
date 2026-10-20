@@ -34,6 +34,7 @@ import { SkillCheckCalculator } from './modules/skill-check.js';
 import { QuickStats } from './modules/quick-stats.js';
 import { AICompanion } from './modules/ai-companion.js';
 import { TraumaTracker } from './modules/combat/trauma-tracker.js';
+import { icon, hydrateIcons } from './modules/ui/icons.js';
 // ========== Глобальные функции для экспорта/импорта ==========
 function exportAllData() {
     const data = {
@@ -265,6 +266,7 @@ function calculateIp() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    hydrateIcons();   // ← добавить эту строку первой
     initTooltipPositioning();
     updateAllTables();
     fillIpTable();

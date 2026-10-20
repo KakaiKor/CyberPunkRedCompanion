@@ -1,3 +1,5 @@
+import { icon } from '../ui/icons.js';
+
 export function renderStatsStep(data) {
     const STAT_NAMES = {
         INT: 'ИНТ',
@@ -21,6 +23,6 @@ export function renderStatsStep(data) {
             ${stats.map(s => `<label>${STAT_NAMES[s]}: <input type="number" class="stat-input" data-stat="${s}" min="2" max="8" value="${data.stats[s]}"></label>`).join('')}
         </div>
         <div class="points-counter">Осталось очков: <strong class="${remaining < 0 ? 'over' : 'ok'}">${remaining}</strong></div>
-        <button id="randomStatsWizardBtn" class="cyber-btn">🎲 Случайные ХАР</button>
+        <button id="randomStatsWizardBtn" class="cyber-btn">${icon('dice', { size: 14 })} Случайные ХАР</button>
     `;
 }

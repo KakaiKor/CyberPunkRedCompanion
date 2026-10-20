@@ -463,7 +463,7 @@ this.data.gear.armor.head = headCheckbox ? headCheckbox.value : '';
 
             const required = row.dataset.required || '';
             const optionName = row.dataset.name || 'Эта опция';
-            alert(`🔒 ${optionName}\n\nТребуется сначала установить: ${required}`);
+                        alert(`Требуется сначала установить: ${required}\n\n(опция: ${optionName})`);
         });
     }
 }
@@ -504,11 +504,11 @@ refreshCyberwareLocks() {
         const nameCell = row.children[1];
         if (nameCell) {
             const existing = nameCell.querySelector('.cyber-lock-icon');
-            if (locked && !existing) {
+                        if (locked && !existing) {
                 const span = document.createElement('span');
                 span.className = 'cyber-lock-icon';
                 span.setAttribute('aria-label', 'Заблокировано');
-                span.textContent = '🔒';
+                span.textContent = '!';   // ← простой символ, чтобы не тянуть icon() в core
                 nameCell.appendChild(span);
             } else if (!locked && existing) {
                 existing.remove();

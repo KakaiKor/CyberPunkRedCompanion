@@ -1,6 +1,7 @@
 // wizard-step-summary.js (исправленная версия с русскими названиями ХАР)
 import { getHP } from '../../utils.js';
 import { detailedCyberware } from '../../data.js';
+import { icon } from '../ui/icons.js';
 
 const STAT_NAMES = {
     INT: 'ИНТ',
@@ -57,17 +58,17 @@ export function renderSummaryStep(data) {
     `).join('');
 
     // Рендер снаряжения
-    const weaponsHtml = weapons.map(w => `<li>🔫 ${escapeHtml(w)}</li>`).join('');
-    const cyberHtml = cyberware.map(c => `<li>🦾 ${escapeHtml(c)}</li>`).join('');
-    const gearHtml = items.map(i => `<li>📦 ${escapeHtml(i)}</li>`).join('');
-    const styleHtml = styleItems.map(s => `<li>✨ ${escapeHtml(s)}</li>`).join('');
+    const weaponsHtml = weapons.map(w => `<li>${icon('pistol', { size: 14 })} ${escapeHtml(w)}</li>`).join('');
+    const cyberHtml = cyberware.map(c => `<li>${icon('cpu', { size: 14 })} ${escapeHtml(c)}</li>`).join('');
+    const gearHtml = items.map(i => `<li>${icon('briefcase', { size: 14 })} ${escapeHtml(i)}</li>`).join('');
+    const styleHtml = styleItems.map(s => `<li>${icon('sparkles', { size: 14 })} ${escapeHtml(s)}</li>`).join('');
     const armorHtml = `
-        <li>🛡️ Тело: ${escapeHtml(armorBody)}</li>
-        <li>⛑️ Голова: ${escapeHtml(armorHead)}</li>
+        <li>${icon('shield', { size: 14 })} Тело: ${escapeHtml(armorBody)}</li>
+        <li>${icon('shield', { size: 14 })} Голова: ${escapeHtml(armorHead)}</li>
     `;
 
     return `
-        <h3>📋 Итоговый персонаж</h3>
+        <h3>${icon('clipboardList', { size: 20 })} Итоговый персонаж</h3>
         <div class="character-card" data-name="${escapeHtml(data.name)}" data-role="${data.role}">
             <div class="character-card-header">
                 <div class="character-name">${escapeHtml(data.name)}</div>
@@ -75,11 +76,11 @@ export function renderSummaryStep(data) {
             </div>
             <div class="character-card-body">
                 <div class="char-section" data-section="stats">
-                    <h4>📊 Характеристики</h4>
+                    <h4>${icon('activity', { size: 16 })} Характеристики</h4>
                     <div class="stats-grid">${statsHtml}</div>
                 </div>
                 <div class="char-section" data-section="derived">
-                    <h4>❤️ Состояние</h4>
+                    <h4>${icon('heart', { size: 16 })} Состояние</h4>
                     <div class="derived-stats">
                         <div>ПЗ: ${hp} (тяж. ≤ ${severe})</div>
                         <div data-derived="hp">ПЗ: 
@@ -90,38 +91,38 @@ export function renderSummaryStep(data) {
                         <div>Человечность: ${humanity} (${STAT_NAMES.EMP} = ${empFrom})</div>
                     </div>
                     <div class="combat-buttons">
-                        <button class="heal-btn" type="button">💊 Лечение (+${body} ПЗ)</button>
-                        <button class="damage-btn" type="button">💥 Урон</button>
+                        <button class="heal-btn" type="button">${icon('pill', { size: 14 })} Лечение (+${body} ПЗ)</button>
+                        <button class="damage-btn" type="button">${icon('explosion', { size: 14 })} Урон</button>
                     </div>
                 </div>
                 <div class="char-section" data-section="skills">
-                    <h4>🎯 Навыки</h4>
+                    <h4>${icon('target', { size: 16 })} Навыки</h4>
                     <div class="skills-grid">${skillsHtml || '<p>— нет —</p>'}</div>
                 </div>
                 <div class="char-section" data-section="notes">
-                    <h4>📝 Заметки</h4>
+                    <h4>${icon('pencil', { size: 16 })} Заметки</h4>
                     <div class="notes-preview">${escapeHtml(data.notes || '— нет —')}</div>
                 </div>
                 <div class="equipment-grid">
                     <div class="equipment-card">
-                        <h5>🛡️ Броня</h5>
+                        <h5>${icon('shield', { size: 14 })} Броня</h5>
                         <ul class="compact">${armorHtml}</ul>
                     </div>
                     <div class="equipment-card">
-                        <h5>🔫 Оружие</h5>
+                        <h5>${icon('pistol', { size: 14 })} Оружие</h5>
                         <ul class="compact">${weaponsHtml || '<li>— нет —</li>'}</ul>
                     </div>
                     <div class="equipment-card">
-                        <h5>🦾 Киберимпланты</h5>
+                        <h5>${icon('cpu', { size: 14 })} Киберимпланты</h5>
                         <ul class="compact">${cyberHtml || '<li>— нет —</li>'}</ul>
                     </div>
                     <div class="equipment-card">
-                        <h5>🎒 Снаряжение</h5>
+                        <h5>${icon('briefcase', { size: 14 })} Снаряжение</h5>
                         <ul class="compact">${gearHtml || '<li>— нет —</li>'}</ul>
                     </div>
                     ${styleItems?.length ? `
                     <div class="equipment-card">
-                        <h5>✨ Стиль</h5>
+                        <h5>${icon('sparkles', { size: 14 })} Стиль</h5>
                         <ul class="compact">${styleHtml}</ul>
                     </div>
                     ` : ''}
@@ -129,7 +130,7 @@ export function renderSummaryStep(data) {
             </div>
         </div>
         <div class="summary-actions">
-            <button id="exportPngBtn" class="cyber-btn">📸 Сохранить как PNG</button>
+            <button id="exportPngBtn" class="cyber-btn">${icon('download', { size: 14 })} Сохранить как PNG</button>
         </div>
         <p class="note">Нажмите «Сохранить персонажа», чтобы записать его в хранилище.</p>
     `;
