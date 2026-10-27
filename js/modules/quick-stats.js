@@ -4,6 +4,7 @@
 
 import { loadCharacter, saveCharacter } from '../storage.js';
 import { getHP } from '../utils.js';
+import { icon } from './ui/icons.js';
 
 const SESSION_KEY = 'cpr_session_stats';
 
@@ -220,9 +221,9 @@ export class QuickStats {
 
         // Предупреждения по порогам
         if (newHp <= 0) {
-            alert('💀 Смертельное ранение! Требуется спасбросок.');
+            alert('Смертельное ранение! Требуется спасбросок.');
         } else if (newHp <= severe && current > severe) {
-            alert('⚠️ Тяжёлое ранение! Штраф –2 ко всем действиям.');
+            alert('Тяжёлое ранение! Штраф –2 ко всем действиям.');
         }
     }
 

@@ -4,6 +4,7 @@
 
 import { loadCharacter, saveCharacter } from '../../storage.js';
 import { critBody, critHead } from '../../data.js';
+import { icon } from '../ui/icons.js';
 
 export class TraumaTracker {
     constructor() {
@@ -63,13 +64,15 @@ export class TraumaTracker {
         }
 
         this.list.innerHTML = this.traumas.map((t, idx) => {
-            const zoneLabel = t.zone === 'head' ? '🧠 Голова' : '💪 Тело';
+            const zoneLabel = t.zone === 'head'
+                ? `${icon('brain', { size: 12 })} Голова`
+                : `${icon('heart', { size: 12 })} Тело`;
             return `
                 <div class="trauma-item" data-idx="${idx}">
                     <div class="trauma-header">
                         <span class="trauma-zone">${zoneLabel}</span>
                         <span class="trauma-name">${this.escapeHtml(t.name)}</span>
-                        <button type="button" class="trauma-remove" data-idx="${idx}" title="Снять травму">✖</button>
+                        <button type="button" class="trauma-remove" data-idx="${idx}" title="Снять травму">${icon('x', { size: 12 })}</button>
                     </div>
                     <div class="trauma-effect">${this.escapeHtml(t.effect || '')}</div>
                     ${t.treat ? `<div class="trauma-treat">Лечение: ${this.escapeHtml(t.treat)}</div>` : ''}
@@ -90,10 +93,7 @@ export class TraumaTracker {
         if (!this.zoneSelect || !this.nameSelect) return;
         const zone = this.zoneSelect.value;
         const roll = parseInt(this.nameSelect.value);
-        if (isNaN(roll)) {
-            alert('Выберите травму из списка.');
-            return;
-        }
+        if (!confirm('Снять все активные травмы (полное лечение)?')) return;
 
         const list = zone === 'head' ? critHead : critBody;
         const crit = list.find(c => c.roll === roll);

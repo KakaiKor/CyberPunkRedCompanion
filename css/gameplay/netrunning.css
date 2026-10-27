@@ -1,94 +1,299 @@
-/* Нетраннер интерфейс */
+/* ========== НЕТРАННЕР ИНТЕРФЕЙС (ОБНОВЛЕНО) ========== */
 .netrunner-panel {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
 }
-.cyberdeck-info {
-    background: #0f1219;
-    padding: 10px;
-    border-radius: 12px;
+
+/* Краткая сводка */
+.netrunner-quick-guide {
+    background: #14181f;
+    border: 1px solid #2a3342;
+    border-radius: 16px;
+    overflow: hidden;
+}
+.netrunner-quick-guide summary {
+    background: #1e2530;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #ff9a3c;
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+}
+.netrunner-quick-guide summary::-webkit-details-marker {
+    display: none;
+}
+.netrunner-quick-guide summary::before {
+    content: "▶";
+    font-size: 0.8rem;
+    margin-right: 4px;
+    transition: transform 0.2s;
+}
+.netrunner-quick-guide[open] summary::before {
+    transform: rotate(90deg);
+}
+.guide-content {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    background: #0a0c12;
+}
+.guide-item {
+    display: flex;
+    gap: 12px;
+    background: #14181f;
+    padding: 12px;
+    border-radius: 12px;
+    border-left: 3px solid #ff9a3c;
+}
+.guide-icon {
+    color: #39ff14;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.guide-text strong {
+    display: block;
+    color: #ff9a3c;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+}
+.guide-text span {
+    font-size: 0.85rem;
+    color: #c8d2e0;
+    line-height: 1.4;
+}
+.guide-text em {
+    color: #39ff14;
+    font-style: normal;
+    font-weight: 600;
+}
+
+/* Статус-бар */
+.cyberdeck-info {
+    display: flex;
     flex-wrap: wrap;
     gap: 10px;
 }
-.programs-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 12px;
-    margin-top: 10px;
-}
-.program-card {
+.cyberdeck-stat {
     background: #1a1e2a;
     border: 1px solid #2a3342;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    color: #c8d2e0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.cyberdeck-stat strong {
+    color: #fff;
+}
+.cyberdeck-stat.highlight {
+    background: rgba(57, 255, 20, 0.08);
+    border-color: rgba(57, 255, 20, 0.3);
+    color: #39ff14;
+}
+.cyberdeck-stat.highlight strong {
+    color: #39ff14;
+}
+.stat-sep {
+    color: #4a5261;
+    margin: 0 4px;
+}
+
+/* Программы */
+.installed-programs h4, 
+.add-program h4, 
+.active-effects h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ff9a3c;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+}
+
+.programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+.program-card {
+    background: linear-gradient(145deg, #1a1e2a, #14181f);
+    border: 1px solid #2a3342;
     border-radius: 16px;
-    padding: 10px;
-    transition: 0.2s;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s ease;
+}
+.program-card:hover {
+    border-color: #ff9a3c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 .program-card.active {
     border-color: #39ff14;
-    box-shadow: 0 0 8px rgba(57,255,20,0.3);
+    box-shadow: 0 0 12px rgba(57,255,20,0.15);
+    background: linear-gradient(145deg, #1a2a1a, #0f1219);
+}
+.program-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    gap: 10px;
 }
 .program-name {
-    font-weight: bold;
-    font-size: 1rem;
-    color: #ff9a3c;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #e6ecf5;
+}
+.program-card.active .program-name {
+    color: #39ff14;
 }
 .program-type {
-    font-size: 0.7rem;
-    color: #9aa4bf;
+    font-size: 0.65rem;
+    color: #0a0c12;
+    background: #9aa4bf;
+    padding: 2px 8px;
+    border-radius: 20px;
     text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 .program-effects {
-    font-size: 0.8rem;
-    margin: 8px 0;
+    font-size: 0.85rem;
+    color: #c8d2e0;
+    line-height: 1.4;
+    margin-bottom: 16px;
+    flex-grow: 1;
 }
 .program-actions {
     display: flex;
     gap: 8px;
-    margin-top: 8px;
+    margin-top: auto;
+    border-top: 1px solid rgba(42, 51, 66, 0.5);
+    padding-top: 12px;
 }
-.toggle-program, .remove-program, #installProgramBtn {
+.toggle-program, .remove-program {
     background: #2a3342;
     border: none;
-    padding: 4px 8px;
-    border-radius: 20px;
+    padding: 6px 12px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #e6ecf5;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
 }
 .toggle-program:hover {
     background: #39ff14;
     color: #0a0c12;
 }
-.remove-program:hover {
+.toggle-program.is-active:hover {
     background: #ff3c5f;
+    color: #fff;
 }
-#installProgramBtn {
-    background: #ff9a3c;
-    color: #0a0c12;
+.remove-program {
+    background: transparent;
+    border: 1px solid #2a3342;
+    color: #9aa4bf;
 }
+.remove-program:hover {
+    background: rgba(255, 60, 95, 0.2);
+    border-color: #ff3c5f;
+    color: #ff3c5f;
+}
+
+/* Добавление программы */
 .add-program {
+    background: #0f1219;
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid #2a3342;
+}
+.add-program-controls {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     align-items: center;
     flex-wrap: wrap;
 }
 #programSelect {
     flex: 1;
-    padding: 6px;
+    min-width: 200px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #1a1e2a;
+    border: 1px solid #2a3342;
+    color: #fff;
+}
+#programSelect:focus {
+    border-color: #ff9a3c;
+    outline: none;
+}
+#installProgramBtn {
+    background: #ff9a3c;
+    color: #0a0c12;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
+}
+#installProgramBtn:hover {
+    background: #e68a2e;
+    transform: translateY(-1px);
+}
+
+/* Активные эффекты */
+.active-effects {
+    background: #0f1219;
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid #2a3342;
 }
 .active-effects ul {
     list-style: none;
     padding: 0;
-    margin: 8px 0 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 .active-effects li {
-    background: #0a0c12;
-    padding: 4px 8px;
-    border-radius: 20px;
-    margin-bottom: 4px;
-    font-size: 0.8rem;
+    background: #1a1e2a;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #c8d2e0;
+    border-left: 3px solid #39ff14;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.active-effects li strong {
+    color: #39ff14;
+}
+
+/* Заглушки */
+.empty-state {
+    color: #4a5261;
+    font-style: italic;
+    font-size: 0.85rem;
+    padding: 8px 0;
 }
 
 /* Архитектура сети */
@@ -1112,4 +1317,93 @@
 .active-row {
     background-color: rgba(255, 154, 60, 0.2);
     border-left: 3px solid #ff9a3c;
+}
+/* ============================================================
+   СУПЕР-ФИКС ДЛЯ СВОДКИ НЕТРАННЕРА (Перебиваем всё)
+   ============================================================ */
+
+/* Контейнер внутри спойлера */
+.netrunner-quick-guide[open] .guide-content {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+    gap: 16px !important;
+    padding: 16px !important;
+    background: #0a0c12 !important;
+    border-top: 1px solid #2a3342 !important;
+}
+
+/* Карточка одного пункта */
+.netrunner-quick-guide .guide-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    background: #14181f !important;
+    padding: 16px !important;
+    border-radius: 12px !important;
+    border: 1px solid #2a3342 !important;
+    border-left: 4px solid #ff9a3c !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+}
+
+/* Иконка */
+.netrunner-quick-guide .guide-icon {
+    flex-shrink: 0 !important;
+    color: #39ff14 !important;
+    margin-top: 2px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Текстовый блок */
+.netrunner-quick-guide .guide-text {
+    display: flex !important;
+    flex-direction: column !important; /* Заголовок над текстом */
+    gap: 6px !important;
+    flex: 1 !important;
+}
+
+/* Заголовок (strong) */
+.netrunner-quick-guide .guide-text strong {
+    display: block !important;
+    color: #ff9a3c !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+}
+
+/* Текст описания (span) */
+.netrunner-quick-guide .guide-text span {
+    display: block !important;
+    font-size: 0.85rem !important;
+    color: #c8d2e0 !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+}
+
+/* Выделенные слова (em) */
+.netrunner-quick-guide .guide-text em {
+    color: #39ff14 !important;
+    font-style: normal !important;
+    font-weight: 600 !important;
+}
+
+/* Кнопка-спойлер */
+.netrunner-quick-guide summary {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 12px 16px !important;
+    background: #1e2530 !important;
+    color: #ff9a3c !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    border-radius: 16px !important; /* Если закрыт */
+}
+
+.netrunner-quick-guide[open] summary {
+    border-radius: 16px 16px 0 0 !important; /* Если открыт */
+    border-bottom: 1px solid #2a3342 !important;
 }

@@ -53,7 +53,7 @@ export class CharacterWizard {
         localStorage.setItem('wizard_progress', JSON.stringify(this.data));
         const statusDiv = document.getElementById('wizardStatus');
         if (statusDiv) {
-            statusDiv.innerHTML = '<span style="color:#39ff14;">✅ Прогресс сохранён</span>';
+            statusDiv.innerHTML = `<span style="color:#39ff14;">${icon('check', { size: 12 })} Прогресс сохранён</span>`;
             setTimeout(() => statusDiv.innerHTML = '', 2000);
         }
     }

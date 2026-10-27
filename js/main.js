@@ -1864,7 +1864,7 @@ setTimeout(() => {
                 if (campaignsSubBtn) campaignsSubBtn.click();
             }
 
-            alert(`✅ Кампания "${campaign.name}" сохранена в Story Master!`);
+            alert(`Кампания "${campaign.name}" сохранена в Story Master!`);
             
             // Скрываем кнопку сохранения, чтобы не сохранять повторно
             saveStoryBtn.style.display = 'none';

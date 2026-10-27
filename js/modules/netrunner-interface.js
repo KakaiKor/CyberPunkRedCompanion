@@ -1,6 +1,7 @@
 // modules/netrunner-interface.js
 import { loadCharacter, saveCharacter } from '../storage.js';
-import { programs } from '../data/net-programs.js'; // Импорт массива программ (создайте этот файл)
+import { programs } from '../data/net-programs.js';
+import { icon } from './ui/icons.js';
 
 export class NetrunnerInterface {
     constructor(containerId = 'netrunnerInterfaceContainer') {
@@ -54,7 +55,7 @@ export class NetrunnerInterface {
         return programs || [];
     }
 
-    render() {
+        render() {
         if (!this.cyberdeck) return;
         const installed = this.cyberdeck.programs || [];
         const freeSlots = this.cyberdeck.slots - installed.length;
@@ -64,56 +65,101 @@ export class NetrunnerInterface {
             <div class="netrunner-panel">
                 <!-- Краткая сводка -->
                 <details class="netrunner-quick-guide">
-                    <summary><strong>🎓 Как играть за нетраннера (краткая сводка)</strong></summary>
+                    <summary>${icon('bookOpen', { size: 16 })} <strong>Как играть за нетраннера (краткая сводка)</strong></summary>
                     <div class="guide-content">
-                        <p><strong>Интерфейс (ролевой навык):</strong> определяет количество <strong>сетевых действий</strong> за ход. Ранг 1-3 → 2 действия, 4-6 → 3 действия, 7-9 → 4 действия, 10 → 5 действий.</p>
-                        <p><strong>Кибердека:</strong> имеет слоты для программ (обычно 7). Программы бывают <strong>усиливающие</strong> (дают бонусы, пока активны), <strong>защитные</strong> (снижают урон или блокируют эффекты), <strong>атакующие</strong> (наносят урон по мозгу или программам). <strong>Чёрный лёд</strong> — мощные программы-убийцы.</p>
-                        <p><strong>Сетевые действия:</strong> используются для способностей интерфейса: <em>бэкдор, вирус, идентификация, контроль, плащ, подкат, разряд, сканер, следопыт</em>. Подробнее — в книге правил, стр. 197-200.</p>
-                        <p><strong>Проверки в сети:</strong> Интерфейс + 1d10 против СЛ (или защиты чёрного льда). При успехе — эффект срабатывает.</p>
-                        <p><strong>Совет:</strong> Всегда имей активную <em>Броню</em> или <em>Щит</em> и не лезь в архитектуру без поддержки команды.</p>
+                        <div class="guide-item">
+                            <div class="guide-icon">${icon('zap', { size: 20 })}</div>
+                            <div class="guide-text">
+                                <strong>Интерфейс (ролевой навык)</strong>
+                                <span>Определяет количество <em>сетевых действий</em> за ход. Ранг 1-3 → 2 действия, 4-6 → 3 действия, 7-9 → 4 действия, 10 → 5 действий.</span>
+                            </div>
+                        </div>
+                        <div class="guide-item">
+                            <div class="guide-icon">${icon('cpu', { size: 20 })}</div>
+                            <div class="guide-text">
+                                <strong>Кибердека</strong>
+                                <span>Имеет слоты для программ (обычно 7). Программы бывают <em>усиливающие</em> (баффы), <em>защитные</em> (снижают урон) и <em>атакующие</em> (урон по мозгу/программам). <em>Чёрный лёд</em> — мощные программы-убийцы.</span>
+                            </div>
+                        </div>
+                        <div class="guide-item">
+                            <div class="guide-icon">${icon('target', { size: 20 })}</div>
+                            <div class="guide-text">
+                                <strong>Сетевые действия</strong>
+                                <span>Используются для способностей: <em>бэкдор, вирус, идентификация, контроль, плащ, подкат, разряд, сканер, следопыт</em>. Подробнее — в книге правил, стр. 197-200.</span>
+                            </div>
+                        </div>
+                        <div class="guide-item">
+                            <div class="guide-icon">${icon('dice', { size: 20 })}</div>
+                            <div class="guide-text">
+                                <strong>Проверки в сети</strong>
+                                <span>Интерфейс + 1d10 против СЛ (или защиты чёрного льда). При успехе — эффект срабатывает.</span>
+                            </div>
+                        </div>
+                        <div class="guide-item">
+                            <div class="guide-icon">${icon('lightbulb', { size: 20 })}</div>
+                            <div class="guide-text">
+                                <strong>Совет</strong>
+                                <span>Всегда имей активную <em>Броню</em> или <em>Щит</em> и не лезь в архитектуру без поддержки команды.</span>
+                            </div>
+                        </div>
                     </div>
                 </details>
 
-                <h3>🖥️ Кибердека</h3>
+                <h3>${icon('cpu', { size: 20 })} Кибердека</h3>
+                
                 <div class="cyberdeck-info">
-                    <div>Слотов: ${this.cyberdeck.slots} | Свободно: ${freeSlots}</div>
-                    <div>🎭 Интерфейс (ранг): ${this.interfaceRank} | Сетевых действий за ход: ${netActions}</div>
+                    <div class="cyberdeck-stat">
+                        ${icon('briefcase', { size: 14 })} Слотов: <strong>${this.cyberdeck.slots}</strong> 
+                        <span class="stat-sep">|</span> Свободно: <strong>${freeSlots}</strong>
+                    </div>
+                    <div class="cyberdeck-stat">
+                        ${icon('user', { size: 14 })} Интерфейс: <strong>${this.interfaceRank}</strong>
+                    </div>
+                    <div class="cyberdeck-stat highlight">
+                        ${icon('zap', { size: 14 })} Сетевых действий за ход: <strong>${netActions}</strong>
+                    </div>
                 </div>
 
                 <div class="installed-programs">
-                    <h4>📀 Установленные программы</h4>
+                    <h4>${icon('database', { size: 16 })} Установленные программы</h4>
                     <div class="programs-grid">
                         ${installed.map((prog, idx) => `
                             <div class="program-card ${prog.active ? 'active' : ''}" data-idx="${idx}">
-                                <div class="program-name">${this.escapeHtml(prog.name)}</div>
-                                <div class="program-type">${prog.type || ''}</div>
+                                <div class="program-header">
+                                    <div class="program-name">${this.escapeHtml(prog.name)}</div>
+                                    <div class="program-type">${prog.type || 'Программа'}</div>
+                                </div>
                                 <div class="program-effects">${prog.effect ? this.escapeHtml(prog.effect) : ''}</div>
                                 <div class="program-actions">
-                                    <button class="toggle-program" data-idx="${idx}">${prog.active ? '🔴 Деактивировать' : '🟢 Активировать'}</button>
-                                    <button class="remove-program" data-idx="${idx}">🗑️ Удалить</button>
+                                    <button class="toggle-program ${prog.active ? 'is-active' : ''}" data-idx="${idx}">
+                                        ${prog.active ? icon('x', { size: 12 }) + ' Деактивировать' : icon('check', { size: 12 }) + ' Активировать'}
+                                    </button>
+                                    <button class="remove-program" data-idx="${idx}" title="Удалить">
+                                        ${icon('trash', { size: 12 })}
+                                    </button>
                                 </div>
                             </div>
                         `).join('')}
-                        ${installed.length === 0 ? '<p>Нет установленных программ.</p>' : ''}
+                        ${installed.length === 0 ? '<div class="empty-state">Нет установленных программ.</div>' : ''}
                     </div>
                 </div>
 
                 <div class="add-program">
-                    <h4>➕ Добавить программу</h4>
+                    <h4>${icon('plus', { size: 16 })} Добавить программу</h4>
                     <div class="add-program-controls">
                         <select id="programSelect">
                             <option value="">-- Выберите программу --</option>
                             ${this.getAvailablePrograms().map(p => `<option value="${this.escapeHtml(p.name)}" data-type="${p.type}">${this.escapeHtml(p.name)} (${p.type})</option>`).join('')}
                         </select>
-                        <button id="installProgramBtn">Установить</button>
+                        <button id="installProgramBtn">${icon('download', { size: 14 })} Установить</button>
                     </div>
                 </div>
 
                 <div class="active-effects">
-                    <h4>✨ Активные эффекты</h4>
+                    <h4>${icon('sparkles', { size: 16 })} Активные эффекты</h4>
                     <ul>
-                        ${installed.filter(p => p.active).map(p => `<li>${this.escapeHtml(p.name)}: ${this.escapeHtml(p.effect || '')}</li>`).join('')}
-                        ${installed.filter(p => p.active).length === 0 ? '<li>Нет активных эффектов</li>' : ''}
+                        ${installed.filter(p => p.active).map(p => `<li>${icon('zap', { size: 12 })} <strong>${this.escapeHtml(p.name)}</strong>: ${this.escapeHtml(p.effect || '')}</li>`).join('')}
+                        ${installed.filter(p => p.active).length === 0 ? '<li class="empty-state">Нет активных эффектов</li>' : ''}
                     </ul>
                 </div>
             </div>
